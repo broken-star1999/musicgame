@@ -12,8 +12,8 @@ export function swipeDirection(dx: number, dy: number): NoteType | null {
   if (dy < 0 && Math.abs(dy) > Math.abs(dx) * 1.3) return 'up';
   return null;
 }
-export type NoteState = { note: Note; head?: Grade; tail?: Grade; held: boolean };
-export interface Hit { lane: number; grade: Grade; at: number; type: NoteType }
+export type NoteState = { note: Note; head?: Grade; tail?: Grade; headAt?: number; tailAt?: number; held: boolean };
+export interface Hit { lane: number; grade: Grade; at: number; type: NoteType; tail?: boolean }
 
 export class JudgmentEngine {
   states: NoteState[];
@@ -27,19 +27,21 @@ export class JudgmentEngine {
   private cursor = 0;
   private laneIndices: number[][];
   private activeHolds = new Set<NoteState>();
-  constructor(public chart: Chart, public autoplay = false) {
+  constructor(public chart: Chart, public autoplay = false, private onHit?: (hit: Hit) => void) {
     this.states = chart.notes.map(note => ({ note, held: false }));
     this.total = chart.notes.reduce((sum, n) => sum + (n.type === 'hold' ? 2 : 1), 0);
     this.laneIndices = [0, 1, 2, 3].map(lane => this.states.flatMap((s, i) => s.note.lane === lane ? [i] : []));
   }
   private record(state: NoteState, grade: Grade, time: number, tail = false) {
     if (tail ? state.tail !== undefined : state.head !== undefined) return;
-    if (tail) { state.tail = grade; state.held = false; this.activeHolds.delete(state); }
-    else state.head = grade;
+    if (tail) { state.tail = grade; state.tailAt = time; state.held = false; this.activeHolds.delete(state); }
+    else { state.head = grade; state.headAt = time; }
     this.counts[grade]++; this.judged++; this.earned += WEIGHTS[grade];
     this.combo = grade === 'miss' ? 0 : this.combo + 1; this.maxCombo = Math.max(this.maxCombo, this.combo);
-    this.hits.push({ lane: state.note.lane, grade, at: time, type: state.note.type });
+    const hit = { lane: state.note.lane, grade, at: time, type: state.note.type, tail };
+    this.hits.push(hit);
     if (this.hits.length > 20) this.hits.shift();
+    this.onHit?.(hit);
   }
   input(lane: number, time: number, action: 'press' | 'left' | 'right' | 'up'): NoteState | undefined {
     if (this.autoplay) return;

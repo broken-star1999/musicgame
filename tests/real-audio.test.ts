@@ -26,7 +26,7 @@ describe.skipIf(!audioPath)('local real-song analysis', () => {
         expect(active.length).toBeLessThanOrEqual(DIFFICULTIES[difficulty].max);
       }
       expect(chart).toEqual(generateChart(analysis, difficulty));
-      reports.push({ difficulty, notes: chart.notes.length, types: countTypes(chart) });
+      reports.push({ difficulty, notes: chart.notes.length, types: countTypes(chart), repetition: chart.repetition });
     }
     console.log(JSON.stringify({ duration: analysis.duration, bpm: analysis.bpm, confidence: analysis.confidence, onsets: analysis.onsets.length, reports }, null, 2));
   }, 30000);

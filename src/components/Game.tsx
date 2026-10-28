@@ -9,6 +9,7 @@ import { DIFFICULTIES } from '../core/chart';
 import { drawGame } from './renderer';
 import { stageLayout } from '../core/layout';
 import { canvasPoint, readGameViewport } from '../core/viewport';
+import { HitFeedback } from '../core/haptics';
 import './game-layout.css';
 
 type Props = { track: Track; chart: Chart; settings: Settings; autoplay: boolean; onExit: () => void; onFinish: (result: Result) => void };
@@ -27,11 +28,13 @@ export function Game({ track, chart, settings, autoplay, onExit, onFinish }: Pro
   const pauseRef = useRef<() => void>(() => {});
   const mounted = useRef(true), timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const [restarting, setRestarting] = useState(0);
+  const feedbackRef = useRef<HitFeedback | null>(null);
 
   useEffect(() => {
     mounted.current = true;
     const canvas = canvasRef.current!;
-    const engine = new JudgmentEngine(chart, autoplay); engineRef.current = engine;
+    const feedback = new HitFeedback(settings.vibration && !autoplay); feedbackRef.current = feedback;
+    const engine = new JudgmentEngine(chart, autoplay, hit => feedback.hit(hit)); engineRef.current = engine;
     const transport = new Transport(track.buffer, settings.volume); transportRef.current = transport;
     pausedRef.current = false; setPaused(false); setCountdown(null); countdownRef.current = null;
     const ctx = canvas.getContext('2d')!;
@@ -70,6 +73,7 @@ export function Game({ track, chart, settings, autoplay, onExit, onFinish }: Pro
     return () => {
       mounted.current = false; ended = true; cancelAnimationFrame(raf); observer.disconnect(); transport.stop();
       clearTimeout(timer.current); fingers.current.clear();
+      feedback.stop();
     };
   }, [track, chart, settings, autoplay, onFinish, restarting]);
 
@@ -86,6 +90,7 @@ export function Game({ track, chart, settings, autoplay, onExit, onFinish }: Pro
       transportRef.current.pause().catch(() => setAudioError('音频被系统中断，请点击继续重试。'));
     }
     engineRef.current.suspendHolds(); clearFingers();
+    feedbackRef.current?.stop();
   }
   pauseRef.current = pauseGame;
 
@@ -192,8 +197,8 @@ export function Game({ track, chart, settings, autoplay, onExit, onFinish }: Pro
       <div className="hud-stat score"><span>SCORE</span><strong>{String(hud.score).padStart(7, '0')}</strong></div>
     </header>
     <div className="combo-counter"><strong>{hud.combo > 1 ? hud.combo : ''}</strong>{hud.combo > 1 && <span>COMBO</span>}</div>
-    <canvas ref={canvasRef} className="game-canvas" aria-label="四轨音游，点击或长按对应轨道底部，箭头音符按方向滑动" onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerUp} onPointerCancel={() => pauseGame()} onLostPointerCapture={e => { if (fingers.current.has(e.pointerId)) pauseGame(); }} />
-    <div className="game-footer"><span><Volume2 size={12} /> {viewport.rotated && '已自动横向 · '}{autoplay ? '自动演示 · 不记录成绩' : '点击 / 长按 / 按箭头滑动'}</span><span>BEATFALL <i>LIVE SESSION</i></span></div>
+    <canvas ref={canvasRef} className="game-canvas" aria-label="四轨音游，可在对应轨道整列点击或长按；音符到达双线框下沿时判定，箭头音符按方向滑动" onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerUp} onPointerCancel={() => pauseGame()} onLostPointerCapture={e => { if (fingers.current.has(e.pointerId)) pauseGame(); }} />
+    <div className="game-footer"><span><Volume2 size={12} /> {viewport.rotated && '已自动横向 · '}{autoplay ? '自动演示 · 不记录成绩' : '整轨可触 · 双线下沿踩点'}</span><span>BEATFALL <i>LIVE SESSION</i></span></div>
     {paused && <div className={`game-overlay ${countdown !== null ? 'resuming' : ''}`}>
       <div className="pause-card">
         <span className="eyebrow">{countdown !== null ? 'GET READY' : 'TAKE A BREATH'}</span>

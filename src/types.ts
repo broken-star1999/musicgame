@@ -12,6 +12,8 @@ export interface Analysis {
   energyStep: number;
   waveform: number[];
   fingerprint: string;
+  chroma?: number[][];
+  chromaStep?: number;
 }
 export interface Note {
   id: number;
@@ -21,14 +23,15 @@ export interface Note {
   endTime?: number;
 }
 export interface Chart {
-  version: 1;
+  version: 1 | 2;
   fingerprint: string;
   difficulty: Difficulty;
   duration: number;
   bpm: number;
   notes: Note[];
+  repetition?: { detected: number; reused: number; notesReused: number; phraseBeats: number };
 }
-export interface Settings { difficulty: Difficulty; speed: number; scrollMode: ScrollMode; volume: number; offset: number }
+export interface Settings { difficulty: Difficulty; speed: number; scrollMode: ScrollMode; volume: number; offset: number; vibration: boolean }
 export interface Result {
   score: number;
   accuracy: number;

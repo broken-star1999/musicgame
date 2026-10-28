@@ -47,6 +47,11 @@ export function analyzeAudio(samples: Float32Array, sampleRate: number, progress
   const flux = new Float64Array(frames), rms = new Float64Array(frames), bands = new Uint8Array(frames);
   const transform = new FFT(n), input = new Float64Array(n), spectrum = transform.createComplexArray();
   const previous = new Float64Array(n / 2);
+  const chroma: number[][] = [];
+  const pitchBins = Float64Array.from({ length: n / 2 }, (_, k) => {
+    const frequency = k * sampleRate / n;
+    return frequency >= 110 && frequency <= 4000 ? (((69 + 12 * Math.log2(frequency / 440)) % 12) + 12) % 12 : -1;
+  });
   const window = Float64Array.from({ length: n }, (_, i) => 0.5 - 0.5 * Math.cos(2 * Math.PI * i / (n - 1)));
   let maxRms = 0, maxFlux = 0;
   for (let f = 0; f < frames; f++) {
@@ -55,12 +60,24 @@ export function analyzeAudio(samples: Float32Array, sampleRate: number, progress
     rms[f] = Math.sqrt(square / n); maxRms = Math.max(maxRms, rms[f]);
     transform.realTransform(spectrum, input);
     const bandFlux = [0, 0, 0];
+    const pitch = f % 5 === 0 ? Array<number>(12).fill(0) : null;
     for (let k = 1; k < n / 2; k++) {
-      const magnitude = Math.log1p(Math.hypot(spectrum[k * 2], spectrum[k * 2 + 1]));
+      const amplitude = Math.hypot(spectrum[k * 2], spectrum[k * 2 + 1]);
+      const magnitude = Math.log1p(amplitude);
       const difference = Math.max(0, magnitude - previous[k]);
       const freq = k * sampleRate / n;
       bandFlux[freq < 250 ? 0 : freq < 2500 ? 1 : 2] += difference;
       previous[k] = magnitude;
+      if (pitch && pitchBins[k] >= 0) {
+        const lower = Math.floor(pitchBins[k]), fraction = pitchBins[k] - lower, power = amplitude * amplitude / Math.sqrt(k);
+        pitch[lower] += power * (1 - fraction); pitch[(lower + 1) % 12] += power * fraction;
+      }
+    }
+    if (pitch) {
+      const compressed = pitch.map(Math.sqrt), mean = compressed.reduce((sum, value) => sum + value, 0) / 12;
+      const norm = Math.hypot(...compressed);
+      const contrast = Math.hypot(...compressed.map(value => value - mean)) / Math.max(norm, 1e-8);
+      chroma.push(compressed.map(value => rms[f] > 0.001 && contrast > 0.12 && norm > 1e-8 ? value / norm : 0));
     }
     // Equalize the number of bins so the high band does not dominate all songs.
     bandFlux[0] *= 3; bandFlux[1] *= 1.3; bandFlux[2] *= 0.65;
@@ -95,5 +112,5 @@ export function analyzeAudio(samples: Float32Array, sampleRate: number, progress
   }
   const maxWave = Math.max(...waveform, 0.0001);
   progress?.(1, '谱面分析完成');
-  return { duration: samples.length / sampleRate, ...tempo, onsets, energy, energyStep: hop * 5 / sampleRate, waveform: waveform.map(x => x / maxWave), fingerprint: fingerprint(samples) };
+  return { duration: samples.length / sampleRate, ...tempo, onsets, energy, energyStep: hop * 5 / sampleRate, chroma, chromaStep: hop * 5 / sampleRate, waveform: waveform.map(x => x / maxWave), fingerprint: fingerprint(samples) };
 }

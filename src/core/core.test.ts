@@ -85,6 +85,7 @@ describe('built-in demonstration and canvas lifecycle', () => {
       const analysis = analyzeAudio(toMono(createDemo()), RATE);
       const counts = countTypes(generateChart(analysis, 'normal'));
       for (const type of ['tap', 'hold', 'left', 'right', 'up'] as const) expect(counts[type], type).toBeGreaterThan(0);
+      expect(generateChart(analysis, 'normal').repetition?.reused).toBeGreaterThan(0);
     } finally { vi.unstubAllGlobals(); }
   });
   it('does not project a zero-sized canvas during navigation or resizing', () => {
@@ -95,7 +96,7 @@ describe('built-in demonstration and canvas lifecycle', () => {
   });
 });
 
-describe('perspective road and flat input deck alignment', () => {
+describe('perspective road and two-line judgment frame', () => {
   it.each([2, 5, 10])('keeps equal screen displacement in equal time at speed %i', speed => {
     const hitY = 320, travel = 3.6 - speed * 0.26, target = 10;
     const start = target - travel, interval = travel / 5;
@@ -125,12 +126,13 @@ describe('perspective road and flat input deck alignment', () => {
     for (let lane = 0; lane < 4; lane++) {
       const center = (layout.xAt(lane, layout.hitY) + layout.xAt(lane + 1, layout.hitY)) / 2;
       expect(layout.laneAt(center, layout.hitY + 20)).toBe(lane);
-      expect(layout.xAt(lane, height)).toBe(layout.xAt(lane, layout.hitY));
       expect(layout.xAt(lane + 1, layout.hitY) - layout.xAt(lane, layout.hitY)).toBeCloseTo(width * 0.2);
       const above = layout.hitY - 10;
       expect(layout.laneAt((layout.xAt(lane, above) + layout.xAt(lane + 1, above)) / 2, above)).toBe(lane);
     }
-    expect(layout.laneAt(width / 2, 0)).toBeNull();
+    expect(layout.roadWidth(height)).toBeGreaterThan(layout.roadWidth(layout.hitY));
+    expect(layout.frameTop).toBeLessThan(layout.hitY);
+    expect(layout.laneAt(width / 2, 0)).toBe(2);
     expect(layout.laneAt(0, layout.hitY)).toBeNull();
   });
 });

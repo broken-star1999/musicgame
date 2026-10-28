@@ -1,12 +1,13 @@
 import type { Result, Settings } from '../types';
 
-export const DEFAULT_SETTINGS: Settings = { difficulty: 'normal', speed: 5, scrollMode: 'perspective', volume: 0.75, offset: 0 };
+export const DEFAULT_SETTINGS: Settings = { difficulty: 'normal', speed: 5, scrollMode: 'perspective', volume: 0.75, offset: 0, vibration: true };
 export function loadSettings(): Settings {
   try {
     const v = JSON.parse(localStorage.getItem('beatfall:settings') || '{}');
     return {
       difficulty: ['easy', 'normal', 'hard'].includes(v.difficulty) ? v.difficulty : 'normal',
       scrollMode: v.scrollMode === 'screen' ? 'screen' : 'perspective',
+      vibration: v.vibration !== false,
       speed: typeof v.speed === 'number' ? Math.max(2, Math.min(10, v.speed)) : 5,
       volume: typeof v.volume === 'number' ? Math.max(0, Math.min(1, v.volume)) : 0.75,
       offset: typeof v.offset === 'number' ? Math.max(-300, Math.min(300, v.offset)) : 0,

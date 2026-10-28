@@ -1,4 +1,5 @@
 import type { Analysis, Chart, Difficulty, Note, NoteType } from '../types';
+import { reusePhraseTemplates } from './phrases';
 
 export const DIFFICULTIES = {
   easy: { label: '简单', english: 'EASY', gap: 0.25, threshold: 0.2, swipe: 0.08, chord: 0.05, max: 2 },
@@ -58,7 +59,7 @@ export function generateChart(analysis: Analysis, difficulty: Difficulty, bpmOve
   }
   notes.sort((a, b) => a.time - b.time || a.lane - b.lane);
   notes.forEach((note, i) => { note.id = i; });
-  return { version: 1, fingerprint: analysis.fingerprint, difficulty, duration: analysis.duration, bpm, notes };
+  return reusePhraseTemplates(analysis, { version: 2, fingerprint: analysis.fingerprint, difficulty, duration: analysis.duration, bpm, notes }, config.max);
 }
 
 export function countTypes(chart: Chart) {
