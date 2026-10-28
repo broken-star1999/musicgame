@@ -20,15 +20,14 @@ export function Preview({ chart, speed, scrollMode, onDemo }: { chart: Chart | n
     const engine = new JudgmentEngine(chart || placeholder, true);
     let raf = 0, start = performance.now();
     const first = engine.chart.notes[0]?.time || 0;
-    const resize = () => { const r = el.getBoundingClientRect(), d = Math.min(2, window.devicePixelRatio || 1); el.width = r.width * d; el.height = r.height * d; ctx.setTransform(d, 0, 0, d, 0, 0); };
+    const resize = () => { const d = Math.min(2, window.devicePixelRatio || 1); el.width = el.clientWidth * d; el.height = el.clientHeight * d; ctx.setTransform(d, 0, 0, d, 0, 0); };
     const observer = new ResizeObserver(resize); observer.observe(el); resize();
     const frame = (now: number) => {
       const cycle = Math.min(12, Math.max(4, engine.chart.duration - first - 1));
       let time = first + (now - start) / 1000;
       if (time > first + cycle) { start = now; time = first; engine.states.forEach(s => { s.head = undefined; s.tail = undefined; s.held = false; }); }
-      const rect = el.getBoundingClientRect();
       // Menu is a silent visual preview; it does not call the judgment engine.
-      drawGame(ctx, rect.width, rect.height, engine, time, speed, [], true, 0.2, scrollMode);
+      drawGame(ctx, el.clientWidth, el.clientHeight, engine, time, speed, [], true, 0.2, scrollMode);
       raf = requestAnimationFrame(frame);
     };
     raf = requestAnimationFrame(frame);

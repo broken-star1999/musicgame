@@ -8,5 +8,6 @@ import '@fontsource/dm-sans/latin-400.css';
 import '@fontsource/dm-sans/latin-500.css';
 import '@fontsource/dm-sans/latin-600.css';
 import App from './App';
+import { LandscapeViewport } from './components/LandscapeViewport';
 
-ReactDOM.createRoot(document.getElementById('root')!).render(<React.StrictMode><MotionConfig reducedMotion="user" transition={{ duration: 0.25 }}><App /></MotionConfig></React.StrictMode>);
+ReactDOM.createRoot(document.getElementById('root')!).render(<React.StrictMode><MotionConfig reducedMotion="user" transition={{ duration: 0.25 }}><LandscapeViewport><App /></LandscapeViewport></MotionConfig></React.StrictMode>);

@@ -1,0 +1,59 @@
+/* These rules use the logical game size, including a portrait-locked browser. */
+.game-screen[data-layout] {
+  --game-hud-height: 70px;
+  --game-footer-height: 27px;
+  padding: var(--game-safe-top) var(--game-safe-right) var(--game-safe-bottom) var(--game-safe-left);
+}
+
+.game-screen[data-layout] .game-hud {
+  height: var(--game-hud-height);
+  padding: 8px 18px 0;
+}
+
+.game-screen[data-layout] .game-canvas {
+  height: calc(100% - var(--game-hud-height) - var(--game-footer-height));
+}
+
+.game-screen[data-layout] .game-footer {
+  height: var(--game-footer-height);
+}
+
+.game-screen[data-compact='true'] {
+  --game-hud-height: 49px;
+  --game-footer-height: 20px;
+}
+
+.game-screen[data-compact='true'] .game-hud {
+  gap: 14px;
+  padding: 3px 18px 0;
+}
+
+.game-screen[data-compact='true'] .game-song { gap: 4px; }
+.game-screen[data-compact='true'] .game-song > strong { font-size: 10px; }
+.game-screen[data-compact='true'] .game-song > span { font-size: 7px; }
+.game-screen[data-compact='true'] .hud-stat { min-width: 65px; }
+.game-screen[data-compact='true'] .hud-stat > span { font-size: 6px; }
+.game-screen[data-compact='true'] .hud-stat strong { font-size: 21px; }
+.game-screen[data-compact='true'] .hud-stat.score { min-width: 90px; }
+.game-screen[data-compact='true'] .game-hud .icon-button { width: 29px; height: 29px; }
+.game-screen[data-compact='true'] .game-footer { font-size: 7px; }
+.game-screen[data-compact='true'] .game-footer > span:first-child { font-size: 7px; }
+.game-screen[data-compact='true'] .combo-counter { top: 27%; }
+.game-screen[data-compact='true'] .combo-counter strong { font-size: 32px; }
+.game-screen[data-compact='true'] .combo-counter span { font-size: 6px; letter-spacing: 2px; }
+
+.game-screen[data-compact='true'] .pause-card { padding: 14px 24px; }
+.game-screen[data-compact='true'] .pause-card h2 { font-size: 24px; margin: 10px 0; }
+.game-screen[data-compact='true'] .pause-card > p { font-size: 10px; margin-bottom: 12px; }
+.game-screen[data-compact='true'] .pause-actions {
+  max-width: 360px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+}
+.game-screen[data-compact='true'] .pause-actions .primary-button,
+.game-screen[data-compact='true'] .pause-actions .secondary-button { padding: 11px 16px; font-size: 11px; }
+.game-screen[data-compact='true'] .pause-actions > .text-button { grid-column: span 2; margin-top: 3px; }
+.game-screen[data-compact='true'] .game-overlay.resuming h2 { font-size: 45px; }
+.game-screen[data-compact='true'] .game-overlay.resuming .pause-card { padding: 14px 20px; }
+.game-screen[data-compact='true'] .game-overlay.resuming .pause-card > p { font-size: 10px; }

@@ -1,0 +1,66 @@
+html, body, #root { width: 100%; height: 100%; overflow: hidden; }
+
+.landscape-viewport {
+  position: fixed;
+  transform-origin: 0 0;
+  overflow: hidden;
+  container-type: size;
+  container-name: landscape;
+  background: #090b12;
+}
+
+.landscape-scroll {
+  position: absolute;
+  inset: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: var(--viewport-safe-top) var(--viewport-safe-right) var(--viewport-safe-bottom) var(--viewport-safe-left);
+  color-scheme: dark;
+  scrollbar-width: thin;
+  scrollbar-color: #354258 #0c111b;
+}
+
+.landscape-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
+.landscape-scroll::-webkit-scrollbar-track { background: #0c111b; }
+.landscape-scroll::-webkit-scrollbar-thumb { background: #354258; border-radius: 4px; }
+
+.landscape-viewport .modal-backdrop {
+  padding: max(12px, var(--viewport-safe-top)) max(12px, var(--viewport-safe-right)) max(12px, var(--viewport-safe-bottom)) max(12px, var(--viewport-safe-left));
+}
+
+.page-fullscreen {
+  position: absolute;
+  top: max(10px, var(--viewport-safe-top));
+  right: max(12px, var(--viewport-safe-right));
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid #91a6c12b;
+  border-radius: 7px;
+  background: #141b28ec;
+  color: #bdcce0;
+  box-shadow: 0 3px 14px #0002;
+}
+.page-fullscreen[aria-pressed='true'] { color: #c5ed9b; border-color: #b8ed8144; }
+.landscape-viewport .site-header { padding-right: 72px; }
+.landscape-viewport .game-screen .game-hud { padding-right: 72px; }
+.fullscreen-message {
+  position: absolute;
+  top: 54px;
+  right: max(12px, var(--viewport-safe-right));
+  z-index: 40;
+  max-width: min(320px, 80%);
+  padding: 10px 14px;
+  background: #141d2cf5;
+  color: #bacbe0;
+  border: 1px solid #344960;
+  border-radius: 6px;
+  font-size: 11px;
+  line-height: 1.6;
+  pointer-events: none;
+}
+.fullscreen-message:empty { display: none; }
