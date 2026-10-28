@@ -1,4 +1,4 @@
-export type Difficulty = 'easy' | 'normal' | 'hard';
+export type Difficulty = 'one' | 'two' | 'three' | 'four';
 export type ScrollMode = 'perspective' | 'screen';
 export type NoteType = 'tap' | 'hold' | 'left' | 'right' | 'up';
 export type Grade = 'perfect' | 'great' | 'good' | 'miss';
@@ -23,12 +23,13 @@ export interface Note {
   endTime?: number;
 }
 export interface Chart {
-  version: 1 | 2;
+  version: 1 | 2 | 3;
   fingerprint: string;
   difficulty: Difficulty;
   duration: number;
   bpm: number;
   notes: Note[];
+  fingerLimit?: 1 | 2 | 3 | 4;
   repetition?: { detected: number; reused: number; notesReused: number; phraseBeats: number };
 }
 export interface Settings { difficulty: Difficulty; speed: number; scrollMode: ScrollMode; volume: number; offset: number; vibration: boolean }

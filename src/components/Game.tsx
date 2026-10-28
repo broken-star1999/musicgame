@@ -192,7 +192,7 @@ export function Game({ track, chart, settings, autoplay, onExit, onFinish }: Pro
     <div className="game-progress" style={{ width: `${hud.progress * 100}%` }} />
     <header className="game-hud">
       <button className="icon-button" aria-label="暂停游戏" onClick={pauseGame}><Pause size={19} /></button>
-      <div className="game-song"><strong>{track.name}</strong><span>{DIFFICULTIES[chart.difficulty].english} <i>·</i> {chart.bpm} BPM {autoplay && ' · AUTO'}</span></div>
+      <div className="game-song"><strong>{track.name}</strong><span>{DIFFICULTIES[chart.difficulty].label} <i>·</i> {chart.bpm} BPM {autoplay && ' · AUTO'}</span></div>
       <div className="hud-stat"><span>ACCURACY</span><strong>{hud.accuracy.toFixed(2)}<small>%</small></strong></div>
       <div className="hud-stat score"><span>SCORE</span><strong>{String(hud.score).padStart(7, '0')}</strong></div>
     </header>

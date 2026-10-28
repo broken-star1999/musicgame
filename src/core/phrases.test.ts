@@ -14,7 +14,7 @@ function fixture(differentMelody = false) {
   const analysis: Analysis = { duration, bpm: 120, confidence: 1, fingerprint: 'phrases', onsets, energy: Array(300).fill(0.7), energyStep: step, waveform: [], chroma, chromaStep: step };
   const types = ['tap', 'left', 'hold', 'tap', 'right', 'tap', 'up', 'tap'] as const;
   const notes: Note[] = onsets.map((onset, i) => ({ id: i, time: onset.time, lane: i < 8 ? i % 4 : 3 - i % 4, type: i < 8 ? types[i % 8] : 'tap', ...(i === 2 ? { endTime: onset.time + 0.65 } : {}) }));
-  const chart: Chart = { version: 2, fingerprint: 'phrases', difficulty: 'normal', duration, bpm: 120, notes };
+  const chart: Chart = { version: 2, fingerprint: 'phrases', difficulty: 'three', duration, bpm: 120, notes };
   return { analysis, chart };
 }
 

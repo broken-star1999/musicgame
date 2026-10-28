@@ -16,7 +16,7 @@ export function Preview({ chart, speed, scrollMode, onDemo }: { chart: Chart | n
   const canvas = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const el = canvas.current!, ctx = el.getContext('2d')!;
-    const placeholder: Chart = { version: 1, fingerprint: 'preview', difficulty: 'normal', bpm: 128, duration: 16, notes: Array.from({ length: 32 }, (_, i) => ({ id: i, lane: [0, 2, 1, 3, 0, 1, 3, 2][i % 8], time: i * 0.47, type: (['tap', 'tap', 'up', 'tap', 'hold', 'tap', 'right', 'tap'] as const)[i % 8], ...(i % 8 === 4 ? { endTime: i * 0.47 + 0.65 } : {}) })) };
+    const placeholder: Chart = { version: 3, fingerprint: 'preview', difficulty: 'two', bpm: 128, duration: 16, notes: Array.from({ length: 32 }, (_, i) => ({ id: i, lane: [0, 2, 1, 3, 0, 1, 3, 2][i % 8], time: i * 0.47, type: (['tap', 'tap', 'up', 'tap', 'hold', 'tap', 'right', 'tap'] as const)[i % 8], ...(i % 8 === 4 ? { endTime: i * 0.47 + 0.65 } : {}) })) };
     const engine = new JudgmentEngine(chart || placeholder, true);
     let raf = 0, start = performance.now();
     const first = engine.chart.notes[0]?.time || 0;

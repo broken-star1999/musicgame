@@ -1,4 +1,5 @@
 import type { Analysis, Chart, Note, Onset } from '../types';
+import { isPlayableChart } from './chart-constraints';
 
 interface Phrase { start: number; onsets: Onset[]; pitches: number[][] }
 const PHRASE_BEATS = 8;
@@ -34,19 +35,6 @@ function similarity(a: Phrase, b: Phrase, tolerance: number): Map<number, number
   }
   if (matches.size / Math.max(a.onsets.length, b.onsets.length) < 0.85 || bands / matches.size < 0.65) return null;
   return matches;
-}
-
-function playable(notes: Note[], maxFingers: number, duration: number): boolean {
-  const until = [-100, -100, -100, -100];
-  for (let i = 0; i < notes.length; i++) {
-    const note = notes[i];
-    if (note.time - until[note.lane] < 0.1 || (note.endTime || note.time) > duration - 0.1) return false;
-    until[note.lane] = note.endTime || note.time;
-    const activeHolds = until.filter(end => end > note.time + 1e-6).length;
-    const simultaneousTaps = notes.slice(Math.max(0, i - 3), i + 1).filter(n => n.type !== 'hold' && Math.abs(n.time - note.time) < 1e-6).length;
-    if (activeHolds + simultaneousTaps > maxFingers) return false;
-  }
-  return true;
 }
 
 /** Reuse lanes/actions only; each occurrence keeps its own detected onset times. */
@@ -93,7 +81,7 @@ export function reusePhraseTemplates(analysis: Analysis, chart: Chart, maxFinger
       }
       if (mapped.length < sourceNotes.length * 0.85) continue;
       const candidate = [...notes.filter(note => note.time < target.start - 0.025 || note.time >= target.start + length - 0.025), ...mapped].sort((a, b) => a.time - b.time || a.lane - b.lane);
-      if (!playable(candidate, maxFingers, chart.duration)) continue;
+      if (!isPlayableChart(candidate, maxFingers, chart.duration)) continue;
       notes = candidate; repetition.reused++; repetition.notesReused += mapped.length;
       while (targetIndex + 1 < phrases.length && phrases[targetIndex + 1].start < target.start + length - 0.06) targetIndex++;
       break;

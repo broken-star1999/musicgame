@@ -6,6 +6,7 @@ import type { Analysis, Chart, Note } from '../types';
 import { createDemo, toMono } from './audio';
 import { drawGame } from '../components/renderer';
 import { noteScreenY, stageLayout } from './layout';
+import { isPlayableChart, peakFingers } from './chart-constraints';
 
 const RATE = 22050;
 function clickTrack(times: number[], duration = Math.max(...times) + 1) {
@@ -23,7 +24,7 @@ const fixture = (): Analysis => ({
   onsets: Array.from({ length: 180 }, (_, i) => ({ time: i * 0.24 + 0.4, strength: i % 4 === 0 ? 0.95 : 0.25 + (i % 3) * 0.15, band: i % 3 })),
   energy: Array(900).fill(0.7), energyStep: 0.05, waveform: Array(160).fill(0.5),
 });
-function chartOf(notes: Omit<Note, 'id'>[]): Chart { return { version: 1, fingerprint: 'test', difficulty: 'normal', bpm: 120, duration: 10, notes: notes.map((note, id) => ({ ...note, id })) }; }
+function chartOf(notes: Omit<Note, 'id'>[]): Chart { return { version: 1, fingerprint: 'test', difficulty: 'three', bpm: 120, duration: 10, notes: notes.map((note, id) => ({ ...note, id })) }; }
 
 describe('real audio onset analysis', () => {
   it('locates 120 BPM attacks within 50 ms, including leading silence', () => {
@@ -39,7 +40,7 @@ describe('real audio onset analysis', () => {
     const times = [...Array.from({ length: 10 }, (_, i) => 0.8 + i * 0.5), ...Array.from({ length: 10 }, (_, i) => 5.8 + i * 0.4)];
     const analysis = analyzeAudio(clickTrack(times), RATE);
     for (const time of times) expect(Math.min(...analysis.onsets.map(onset => Math.abs(onset.time - time)))).toBeLessThan(0.05);
-    const chart = generateChart(analysis, 'normal');
+    const chart = generateChart(analysis, 'three');
     for (const note of chart.notes) expect(Math.min(...times.map(time => Math.abs(time - note.time)))).toBeLessThan(0.075);
   });
   it('rejects silence, sub-threshold noise and undersized files', () => {
@@ -51,8 +52,8 @@ describe('real audio onset analysis', () => {
 });
 
 describe('playable deterministic chart generation', () => {
-  it('produces the same chart for the same music and difficulty', () => expect(generateChart(fixture(), 'hard')).toEqual(generateChart(fixture(), 'hard')));
-  it.each(['easy', 'normal', 'hard'] as const)('enforces lane spacing, duration, and finger limits for %s', difficulty => {
+  it('produces the same chart for the same music and difficulty', () => expect(generateChart(fixture(), 'four')).toEqual(generateChart(fixture(), 'four')));
+  it.each(['one', 'two', 'three', 'four'] as const)('enforces lane spacing, duration, and finger limits for %s', difficulty => {
     const chart = generateChart(fixture(), difficulty);
     expect(chart.notes.length).toBeGreaterThan(20);
     expect(countTypes(chart).hold).toBeGreaterThan(0);
@@ -68,8 +69,8 @@ describe('playable deterministic chart generation', () => {
     }
   });
   it('increases density with difficulty and supports BPM correction', () => {
-    expect(generateChart(fixture(), 'hard').notes.length).toBeGreaterThan(generateChart(fixture(), 'easy').notes.length);
-    expect(generateChart(fixture(), 'normal', 135).bpm).toBe(135);
+    expect(generateChart(fixture(), 'four').notes.length).toBeGreaterThan(generateChart(fixture(), 'one').notes.length);
+    expect(generateChart(fixture(), 'three', 135).bpm).toBe(135);
   });
 });
 
@@ -83,9 +84,14 @@ describe('built-in demonstration and canvas lifecycle', () => {
     });
     try {
       const analysis = analyzeAudio(toMono(createDemo()), RATE);
-      const counts = countTypes(generateChart(analysis, 'normal'));
+      const counts = countTypes(generateChart(analysis, 'three'));
       for (const type of ['tap', 'hold', 'left', 'right', 'up'] as const) expect(counts[type], type).toBeGreaterThan(0);
-      expect(generateChart(analysis, 'normal').repetition?.reused).toBeGreaterThan(0);
+      expect(generateChart(analysis, 'three').repetition?.reused).toBeGreaterThan(0);
+      for (const difficulty of ['one', 'two', 'three', 'four'] as const) {
+        const chart = generateChart(analysis, difficulty);
+        expect(isPlayableChart(chart.notes, DIFFICULTIES[difficulty].max, chart.duration), difficulty).toBe(true);
+        expect(peakFingers(chart.notes), difficulty).toBe(DIFFICULTIES[difficulty].max);
+      }
     } finally { vi.unstubAllGlobals(); }
   });
   it('does not project a zero-sized canvas during navigation or resizing', () => {

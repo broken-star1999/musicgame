@@ -34,7 +34,7 @@ describe('landscape fallback for portrait-locked phones', () => {
 
   it('maps all four rotated touch targets to their original lanes', () => {
     const layout = stageLayout(logicalWidth, logicalHeight);
-    const chart: Chart = { version: 1, fingerprint: 'rotation', difficulty: 'hard', bpm: 120, duration: 5, notes: [0, 1, 2, 3].map(lane => ({ id: lane, lane, type: 'tap', time: 1 })) };
+    const chart: Chart = { version: 1, fingerprint: 'rotation', difficulty: 'four', bpm: 120, duration: 5, notes: [0, 1, 2, 3].map(lane => ({ id: lane, lane, type: 'tap', time: 1 })) };
     const engine = new JudgmentEngine(chart);
     for (let lane = 0; lane < 4; lane++) {
       const x = (layout.xAt(lane, layout.hitY) + layout.xAt(lane + 1, layout.hitY)) / 2;
@@ -59,7 +59,7 @@ describe('landscape fallback for portrait-locked phones', () => {
   it('allows rotated holds to keep their lane through head and tail', () => {
     const layout = stageLayout(logicalWidth, logicalHeight), point = logicalPoint(logicalWidth * 0.4, layout.hitY + 20);
     const lane = layout.laneAt(point.x, point.y)!;
-    const chart: Chart = { version: 1, fingerprint: 'hold', difficulty: 'normal', bpm: 120, duration: 5, notes: [{ id: 0, lane, type: 'hold', time: 1, endTime: 2 }] };
+    const chart: Chart = { version: 1, fingerprint: 'hold', difficulty: 'three', bpm: 120, duration: 5, notes: [{ id: 0, lane, type: 'hold', time: 1, endTime: 2 }] };
     const engine = new JudgmentEngine(chart);
     const hold = engine.input(lane, 1, 'press'); engine.update(2); engine.release(hold, 2.1);
     expect(engine.counts.perfect).toBe(2);

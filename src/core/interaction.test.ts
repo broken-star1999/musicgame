@@ -29,7 +29,7 @@ describe('full-height touch lanes and extended judgment road', () => {
   });
 
   it('still requires the correct timing after expanding the touch region', () => {
-    const chart: Chart = { version: 2, fingerprint: 'touch', difficulty: 'normal', duration: 3, bpm: 120, notes: [{ id: 0, lane: 0, time: 1, type: 'tap' }] };
+    const chart: Chart = { version: 2, fingerprint: 'touch', difficulty: 'three', duration: 3, bpm: 120, notes: [{ id: 0, lane: 0, time: 1, type: 'tap' }] };
     const engine = new JudgmentEngine(chart), layout = stageLayout(844, 321);
     const lane = layout.laneAt((layout.xAt(0, 30) + layout.xAt(1, 30)) / 2, 30)!;
     engine.input(lane, 0.5, 'press'); expect(engine.judged).toBe(0);
@@ -37,7 +37,7 @@ describe('full-height touch lanes and extended judgment road', () => {
   });
 
   it('lets missed notes cross the lower rail and fade instead of disappearing at the line', () => {
-    const chart: Chart = { version: 2, fingerprint: 'miss', difficulty: 'normal', duration: 3, bpm: 120, notes: [{ id: 0, lane: 0, time: 1, type: 'tap' }] };
+    const chart: Chart = { version: 2, fingerprint: 'miss', difficulty: 'three', duration: 3, bpm: 120, notes: [{ id: 0, lane: 0, time: 1, type: 'tap' }] };
     const engine = new JudgmentEngine(chart); engine.update(1.15);
     expect(engine.states[0].head).toBe('miss');
     expect(noteScreenY(1, 1.16, 2.3, 260, 'perspective')).toBeGreaterThan(260);
@@ -68,7 +68,7 @@ describe('optional hit vibration', () => {
   });
   it('receives both hold judgments from the engine', () => {
     const callback = vi.fn();
-    const chart: Chart = { version: 2, fingerprint: 'hold-feedback', difficulty: 'normal', duration: 4, bpm: 120, notes: [{ id: 0, lane: 0, time: 1, type: 'hold', endTime: 2 }] };
+    const chart: Chart = { version: 2, fingerprint: 'hold-feedback', difficulty: 'three', duration: 4, bpm: 120, notes: [{ id: 0, lane: 0, time: 1, type: 'hold', endTime: 2 }] };
     const engine = new JudgmentEngine(chart, false, callback);
     engine.input(0, 1, 'press'); engine.update(2);
     expect(callback).toHaveBeenCalledTimes(2);

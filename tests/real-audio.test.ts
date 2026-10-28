@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { spawnSync } from 'node:child_process';
 import { analyzeAudio } from '../src/core/analysis';
 import { countTypes, DIFFICULTIES, generateChart } from '../src/core/chart';
+import { isPlayableChart, peakFingers } from '../src/core/chart-constraints';
 
 // Optional private fixture: never copy the user's song into the repository.
 const audioPath = process.env.BEATFALL_TEST_AUDIO;
@@ -15,7 +16,7 @@ describe.skipIf(!audioPath)('local real-song analysis', () => {
     const analysis = analyzeAudio(samples, 22050);
     expect(analysis.duration).toBeGreaterThan(2); expect(analysis.duration).toBeLessThanOrEqual(300);
     const reports = [];
-    for (const difficulty of ['easy', 'normal', 'hard'] as const) {
+    for (const difficulty of ['one', 'two', 'three', 'four'] as const) {
       const chart = generateChart(analysis, difficulty), lastEnd = [-100, -100, -100, -100];
       expect(chart.notes.length).toBeGreaterThan(20);
       for (const note of chart.notes) {
@@ -26,7 +27,9 @@ describe.skipIf(!audioPath)('local real-song analysis', () => {
         expect(active.length).toBeLessThanOrEqual(DIFFICULTIES[difficulty].max);
       }
       expect(chart).toEqual(generateChart(analysis, difficulty));
-      reports.push({ difficulty, notes: chart.notes.length, types: countTypes(chart), repetition: chart.repetition });
+      expect(isPlayableChart(chart.notes, DIFFICULTIES[difficulty].max, chart.duration)).toBe(true);
+      expect(peakFingers(chart.notes)).toBeLessThanOrEqual(DIFFICULTIES[difficulty].max);
+      reports.push({ difficulty, notes: chart.notes.length, fingerLimit: chart.fingerLimit, fingerPeak: peakFingers(chart.notes), types: countTypes(chart), repetition: chart.repetition });
     }
     console.log(JSON.stringify({ duration: analysis.duration, bpm: analysis.bpm, confidence: analysis.confidence, onsets: analysis.onsets.length, reports }, null, 2));
   }, 30000);
