@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Analysis, Chart, Note } from '../types';
-import { reusePhraseTemplates } from './phrases';
+import { reusePhraseTemplates, tonalWarpCost } from './phrases';
+import { beatPosition } from './rhythm';
 
 function fixture(differentMelody = false) {
   const anchor = 0.2, length = 4, step = 0.05, duration = 13.3;
@@ -19,6 +20,32 @@ function fixture(differentMelody = false) {
 }
 
 describe('similar phrases reuse playable key templates', () => {
+  it('aligns a slightly stretched tonal sequence without treating an unrelated melody as a match', () => {
+    const vector = (pitch: number) => Array.from({ length: 12 }, (_, k) => k === pitch ? 1 : 0);
+    const source = Array.from({ length: 32 }, (_, i) => vector([0, 4, 7, 5][Math.floor(i / 8)]));
+    const expressive = Array.from({ length: 32 }, (_, i) => vector(i < 10 ? 0 : i < 18 ? 4 : i < 25 ? 7 : 5));
+    expect(tonalWarpCost(source, expressive)).toBeLessThan(0.05);
+    expect(tonalWarpCost(source, source.map(() => vector(11)))).toBeGreaterThan(0.8);
+  });
+
+  it('reuses a phrase performed at another local tempo and scales holds in beat coordinates', () => {
+    const beats = [...Array.from({ length: 8 }, (_, i) => 0.2 + i * 0.5), ...Array.from({ length: 12 }, (_, i) => 4.2 + i * 0.4)];
+    const { analysis, chart } = fixture();
+    analysis.duration = chart.duration = 8.6;
+    analysis.onsets = beats.slice(0, 16).map((time, i) => ({ time, strength: 0.8, band: i % 8 % 3 }));
+    analysis.rhythm = { beats, tempo: [], confidence: 1, downbeats: [], meterConfidence: 0 };
+    analysis.chroma = Array.from({ length: 172 }, (_, i) => {
+      const index = Math.max(0, Math.floor(beatPosition(beats, i * 0.05, 120))) % 8;
+      const pitch = [0, 4, 7, 4, 0, 5, 9, 5][index]; return Array.from({ length: 12 }, (_, k) => k === pitch ? 1 : 0);
+    });
+    chart.notes = chart.notes.slice(0, 16).map((note, i) => ({ ...note, time: analysis.onsets[i].time, ...(i === 2 ? { endTime: analysis.onsets[i].time + 0.65 } : {}) }));
+    const output = reusePhraseTemplates(analysis, chart, 3);
+    expect(output.repetition?.reused).toBeGreaterThan(0);
+    expect(output.notes.slice(8, 16).map(note => [note.lane, note.type])).toEqual(output.notes.slice(0, 8).map(note => [note.lane, note.type]));
+    expect(output.notes[10].endTime! - output.notes[10].time).toBeCloseTo(0.52, 3);
+    output.notes.forEach((note, i) => expect(note.time).toBe(analysis.onsets[i].time));
+  });
+
   it('reuses lanes/actions while keeping each occurrence’s actual audio times', () => {
     const { analysis, chart } = fixture();
     const output = reusePhraseTemplates(analysis, chart, 3);

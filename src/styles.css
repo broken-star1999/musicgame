@@ -13,3 +13,5 @@
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 
 .difficulty-bars i:nth-child(4){height:12px}.difficulty-bars i.lit{opacity:1}.difficulty-description{font-size:10px;color:#8994a7;line-height:1.65;min-height:33px;margin:8px 0 0}.finger-summary{margin:10px 0 0;font-size:11px;color:#b6c4d7;line-height:1.6}.difficulty-selector button{gap:4px}
+
+.rhythm-summary{font-size:10px;line-height:1.6;color:#8c9cae;margin:5px 0 0}

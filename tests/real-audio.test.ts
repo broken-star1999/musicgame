@@ -3,6 +3,7 @@ import { spawnSync } from 'node:child_process';
 import { analyzeAudio } from '../src/core/analysis';
 import { countTypes, DIFFICULTIES, generateChart } from '../src/core/chart';
 import { isPlayableChart, peakFingers } from '../src/core/chart-constraints';
+import { validateFingering } from '../src/core/fingering';
 
 // Optional private fixture: never copy the user's song into the repository.
 const audioPath = process.env.BEATFALL_TEST_AUDIO;
@@ -28,9 +29,12 @@ describe.skipIf(!audioPath)('local real-song analysis', () => {
       }
       expect(chart).toEqual(generateChart(analysis, difficulty));
       expect(isPlayableChart(chart.notes, DIFFICULTIES[difficulty].max, chart.duration)).toBe(true);
+      expect(validateFingering(chart.notes, DIFFICULTIES[difficulty].max, chart.duration)).toBe(true);
+      expect(chart.fingering?.checked).toBe(true);
+      expect(chart.fingering!.omitted / (chart.notes.length + chart.fingering!.omitted)).toBeLessThan(0.08);
       expect(peakFingers(chart.notes)).toBeLessThanOrEqual(DIFFICULTIES[difficulty].max);
-      reports.push({ difficulty, notes: chart.notes.length, fingerLimit: chart.fingerLimit, fingerPeak: peakFingers(chart.notes), types: countTypes(chart), repetition: chart.repetition });
+      reports.push({ difficulty, notes: chart.notes.length, fingerLimit: chart.fingerLimit, fingerPeak: peakFingers(chart.notes), types: countTypes(chart), repetition: chart.repetition, fingering: chart.fingering, patterns: chart.patterns });
     }
-    console.log(JSON.stringify({ duration: analysis.duration, bpm: analysis.bpm, confidence: analysis.confidence, onsets: analysis.onsets.length, reports }, null, 2));
+    console.log(JSON.stringify({ duration: analysis.duration, bpm: analysis.bpm, confidence: analysis.confidence, onsets: analysis.onsets.length, beats: analysis.rhythm?.beats.length, beatConfidence: analysis.rhythm?.confidence, reports }, null, 2));
   }, 30000);
 });

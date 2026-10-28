@@ -3,6 +3,13 @@ export type ScrollMode = 'perspective' | 'screen';
 export type NoteType = 'tap' | 'hold' | 'left' | 'right' | 'up';
 export type Grade = 'perfect' | 'great' | 'good' | 'miss';
 export interface Onset { time: number; strength: number; band: number }
+export interface Rhythm {
+  beats: number[];
+  tempo: { time: number; bpm: number }[];
+  confidence: number;
+  downbeats: number[];
+  meterConfidence: number;
+}
 export interface Analysis {
   duration: number;
   bpm: number;
@@ -14,6 +21,7 @@ export interface Analysis {
   fingerprint: string;
   chroma?: number[][];
   chromaStep?: number;
+  rhythm?: Rhythm;
 }
 export interface Note {
   id: number;
@@ -21,15 +29,20 @@ export interface Note {
   time: number;
   type: NoteType;
   endTime?: number;
+  finger?: number;
+  strength?: number;
+  pattern?: string;
 }
 export interface Chart {
-  version: 1 | 2 | 3;
+  version: 1 | 2 | 3 | 4;
   fingerprint: string;
   difficulty: Difficulty;
   duration: number;
   bpm: number;
   notes: Note[];
   fingerLimit?: 1 | 2 | 3 | 4;
+  fingering?: { checked: boolean; adjusted: number; omitted: number; peakStrain: number; model: string };
+  patterns?: string[];
   repetition?: { detected: number; reused: number; notesReused: number; phraseBeats: number };
 }
 export interface Settings { difficulty: Difficulty; speed: number; scrollMode: ScrollMode; volume: number; offset: number; vibration: boolean }
