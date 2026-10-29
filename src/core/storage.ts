@@ -1,6 +1,6 @@
 import type { Difficulty, Result, Settings } from '../types';
 
-export const DEFAULT_SETTINGS: Settings = { difficulty: 'two', speed: 5, scrollMode: 'perspective', volume: 0.75, offset: 0, vibration: true };
+export const DEFAULT_SETTINGS: Settings = { difficulty: 'two', speed: 5, scrollMode: 'perspective', volume: 0.75, offset: 0, vibration: true, recognition: 'enhanced' };
 export function loadSettings(): Settings {
   try {
     const v = JSON.parse(localStorage.getItem('beatfall:settings') || '{}');
@@ -9,6 +9,7 @@ export function loadSettings(): Settings {
       difficulty: ['one', 'two', 'three', 'four'].includes(v.difficulty) ? v.difficulty : ['easy', 'normal', 'hard'].includes(v.difficulty) ? legacy[v.difficulty] : 'two',
       scrollMode: v.scrollMode === 'screen' ? 'screen' : 'perspective',
       vibration: v.vibration !== false,
+      recognition: v.recognition === 'basic' ? 'basic' : 'enhanced',
       speed: typeof v.speed === 'number' ? Math.max(2, Math.min(10, v.speed)) : 5,
       volume: typeof v.volume === 'number' ? Math.max(0, Math.min(1, v.volume)) : 0.75,
       offset: typeof v.offset === 'number' ? Math.max(-300, Math.min(300, v.offset)) : 0,

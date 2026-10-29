@@ -7,9 +7,10 @@ const STEP = 0.01;
 export function trackBeats(onsets: Onset[], duration: number, bpm: number): Rhythm {
   if (onsets.length < 4) return { beats: [], tempo: [], confidence: 0, downbeats: [], meterConfidence: 0 };
   const frames = Math.ceil(duration / STEP) + 1, envelope = new Float64Array(frames);
+  const reference = Math.max(1e-8, ...onsets.map(onset => onset.strength));
   for (const onset of onsets) {
     const center = Math.round(onset.time / STEP);
-    for (let d = -4; d <= 4; d++) if (center + d >= 0 && center + d < frames) envelope[center + d] = Math.max(envelope[center + d], onset.strength * Math.exp(-d * d / 5));
+    for (let d = -4; d <= 4; d++) if (center + d >= 0 && center + d < frames) envelope[center + d] = Math.max(envelope[center + d], onset.strength / reference * Math.exp(-d * d / 5));
   }
   const base = 60 / bpm / STEP, local = new Float64Array(Math.ceil(duration / 2) + 1);
   for (let block = 0; block < local.length; block++) {
@@ -48,6 +49,7 @@ export function trackBeats(onsets: Onset[], duration: number, bpm: number): Rhyt
     return { time, bpm: Math.round(60 * (to - from) / (beats[to] - beats[from]) * 10) / 10 };
   });
   const support = path.reduce((sum, frame) => sum + Math.min(1, envelope[frame]), 0) / Math.max(1, path.length);
+  const deviation = path.slice(1).reduce((sum, frame, i) => sum + Math.log((frame - path[i]) / local[Math.min(local.length - 1, Math.round(frame * STEP / 2))]) ** 2, 0) / Math.max(1, path.length - 1);
   const accents = [0, 0, 0, 0], counts = [0, 0, 0, 0];
   beats.forEach((time, i) => {
     const nearby = onsets.filter(onset => Math.abs(onset.time - time) < 0.06);
@@ -55,7 +57,7 @@ export function trackBeats(onsets: Onset[], duration: number, bpm: number): Rhyt
   });
   const means = accents.map((value, i) => value / Math.max(1, counts[i])), sorted = [...means].sort((a, b) => b - a);
   const phase = means.indexOf(sorted[0]), meterConfidence = (sorted[0] - sorted[1]) / Math.max(0.01, sorted[0]);
-  return { beats, tempo, confidence: Math.min(1, support), downbeats: meterConfidence > 0.12 ? beats.filter((_, i) => i % 4 === phase) : [], meterConfidence };
+  return { beats, tempo, confidence: Math.min(1, support * Math.exp(-20 * deviation)), downbeats: meterConfidence > 0.12 ? beats.filter((_, i) => i % 4 === phase) : [], meterConfidence };
 }
 
 export function beatPosition(beats: number[], time: number, fallbackBpm: number): number {
@@ -74,8 +76,8 @@ export function timeAtBeat(beats: number[], position: number, fallbackBpm: numbe
 }
 
 export function chartBeats(analysis: Analysis, bpmOverride?: number): number[] {
-  if (bpmOverride === undefined && analysis.rhythm && analysis.rhythm.confidence >= 0.45 && analysis.rhythm.beats.length > 1) return analysis.rhythm.beats;
-  const bpm = bpmOverride || analysis.bpm, start = analysis.onsets[0]?.time || 0;
+  if (bpmOverride === undefined && analysis.rhythm && (analysis.rhythm.confidence >= 0.45 || analysis.recognition?.engine === 'beat-this') && analysis.rhythm.beats.length > 1) return analysis.rhythm.beats;
+  const bpm = bpmOverride || analysis.bpm, start = analysis.pulse?.onsets.find(onset => onset.role === 'beat')?.time ?? analysis.pulse?.onsets[0]?.time ?? analysis.onsets[0]?.time ?? 0;
   return Array.from({ length: Math.ceil((analysis.duration - start) * bpm / 60) + 1 }, (_, i) => start + i * 60 / bpm);
 }
 

@@ -18,6 +18,27 @@ export function toMono(buffer: AudioBuffer): Float32Array {
   return output;
 }
 
+/** Reject high frequencies BEFORE reducing the sample rate. AudioBufferSource
+ * rate conversion alone is not assumed to provide an anti-aliasing filter. */
+export async function prepareMono(buffer: AudioBuffer): Promise<Float32Array> {
+  if (buffer.sampleRate === SAMPLE_RATE || typeof OfflineAudioContext === 'undefined') return toMono(buffer);
+  const reducing = buffer.sampleRate > SAMPLE_RATE, rate = reducing ? buffer.sampleRate : SAMPLE_RATE;
+  const offline = new OfflineAudioContext(1, Math.floor(buffer.duration * rate), rate);
+  const source = offline.createBufferSource(); source.buffer = buffer;
+  const filters: BiquadFilterNode[] = []; let tail: AudioNode = source;
+  if (reducing) for (let pole = 0; pole < 4; pole++) {
+    const filter = offline.createBiquadFilter(); filter.type = 'lowpass';
+    filter.frequency.value = SAMPLE_RATE * 0.45;
+    const q = 1 / (2 * Math.cos((2 * pole + 1) * Math.PI / 16));
+    // Web Audio lowpass Q is in dB, unlike its bandpass/peaking Q.
+    filter.Q.value = 20 * Math.log10(q);
+    tail.connect(filter); tail = filter; filters.push(filter);
+  }
+  tail.connect(offline.destination); source.start();
+  try { const rendered = await offline.startRendering(); return reducing ? toMono(rendered) : rendered.getChannelData(0); }
+  finally { source.disconnect(); filters.forEach(filter => filter.disconnect()); }
+}
+
 async function inspectDuration(file: File): Promise<number | undefined> {
   // Probe compressed metadata before allocating a potentially large PCM buffer.
   return new Promise(resolve => {

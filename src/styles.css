@@ -15,3 +15,10 @@
 .difficulty-bars i:nth-child(4){height:12px}.difficulty-bars i.lit{opacity:1}.difficulty-description{font-size:10px;color:#8994a7;line-height:1.65;min-height:33px;margin:8px 0 0}.finger-summary{margin:10px 0 0;font-size:11px;color:#b6c4d7;line-height:1.6}.difficulty-selector button{gap:4px}
 
 .rhythm-summary{font-size:10px;line-height:1.6;color:#8c9cae;margin:5px 0 0}
+.recognition-warning{margin:8px 0 0;color:#d5b580;font-size:10px;line-height:1.7}.recognition-warning button{margin-left:9px;padding:0;background:transparent;color:#b8ed81;text-decoration:underline;font-size:10px}
+.recognition-choice { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 7px; color: #adb8cc; font-size: 12px; }
+.recognition-choice > div { display: flex; gap: 3px; border: 1px solid #2a3040; border-radius: 6px; padding: 3px; }
+.recognition-choice button { border: 0; border-radius: 3px; padding: 5px 12px; color: #8895ac; background: transparent; font: inherit; cursor: pointer; }
+.recognition-choice button[aria-pressed="true"] { color: #b8e67a; background: #b8e67a16; }
+.recognition-choice button:focus-visible { outline: 2px solid #b8e67a; outline-offset: 2px; }
+.recognition-detail { margin: 0 0 16px; color: #748198; font-size: 11px; line-height: 1.5; }

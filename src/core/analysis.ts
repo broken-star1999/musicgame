@@ -1,7 +1,7 @@
 import type { Analysis, Onset } from '../types';
 import FFT from 'fft.js';
 import { trackBeats } from './rhythm';
-import { extractChroma } from './chroma';
+import { extractTonalFeatures } from './chroma';
 import { followRhythmSource } from './rhythm-source';
 
 export function fingerprint(samples: Float32Array): string {
@@ -113,7 +113,7 @@ export function analyzeAudio(samples: Float32Array, sampleRate: number, progress
       if (envelope[f] < local[Math.floor(local.length / 2)] * 1.8 + reference * 0.035 || envelope[f] < Math.max(reference * 0.09, maxFlux * 0.012)) continue;
       const event = { time: Math.max(0, (f * hop + n * 0.22) / sampleRate), strength: envelope[f] / reference, band };
       const last = events.at(-1);
-      if (last && event.time - last.time < 0.085) { if (event.strength > last.strength) events[events.length - 1] = event; }
+      if (last && event.time - last.time < 0.04) { if (event.strength > last.strength) events[events.length - 1] = event; }
       else events.push(event);
     }
     return events;
@@ -124,7 +124,7 @@ export function analyzeAudio(samples: Float32Array, sampleRate: number, progress
   const musicalOnsets = pulse.onsets.length >= 3 ? pulse.onsets : onsets;
   const tempo = estimateTempo(musicalOnsets);
   progress?.(0.83, '正在提取乐句音高与持续声音特征');
-  const chroma = extractChroma(samples, sampleRate, hop, rms);
+  const { chroma, tonalEnergy } = extractTonalFeatures(samples, sampleRate, hop, rms);
   progress?.(0.86, '正在跟踪连续拍点与局部速度');
   const rhythm = trackBeats(musicalOnsets, samples.length / sampleRate, tempo.bpm);
   const energy: number[] = [];
@@ -138,5 +138,6 @@ export function analyzeAudio(samples: Float32Array, sampleRate: number, progress
   }
   const maxWave = Math.max(...waveform, 0.0001);
   progress?.(1, '谱面分析完成');
-  return { duration: samples.length / sampleRate, ...tempo, rhythm, pulse: { ...pulse, onsets: musicalOnsets }, onsets, energy, energyStep: hop * 5 / sampleRate, chroma, chromaStep: hop * 5 / sampleRate, waveform: waveform.map(x => x / maxWave), fingerprint: fingerprint(samples) };
+  const candidates = [...onsets, ...streams.flat()].sort((a, b) => a.time - b.time);
+  return { duration: samples.length / sampleRate, ...tempo, rhythm, pulse: { ...pulse, onsets: musicalOnsets }, candidates, onsets, energy, energyStep: hop * 5 / sampleRate, chroma, tonalEnergy, chromaStep: hop * 5 / sampleRate, waveform: waveform.map(x => x / maxWave), fingerprint: fingerprint(samples) };
 }

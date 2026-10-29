@@ -2,7 +2,8 @@ export type Difficulty = 'one' | 'two' | 'three' | 'four';
 export type ScrollMode = 'perspective' | 'screen';
 export type NoteType = 'tap' | 'hold' | 'left' | 'right' | 'up';
 export type Grade = 'perfect' | 'great' | 'good' | 'miss';
-export interface Onset { time: number; strength: number; band: number }
+export type RecognitionMode = 'enhanced' | 'basic';
+export interface Onset { time: number; strength: number; band: number; attack?: number; role?: 'beat' | 'half' | 'quarter' | 'free' }
 export interface RhythmSection { start: number; end: number; band: 'low' | 'mid' | 'high' | 'mixed'; support: number }
 export interface Rhythm {
   beats: number[];
@@ -22,8 +23,11 @@ export interface Analysis {
   fingerprint: string;
   chroma?: number[][];
   chromaStep?: number;
+  tonalEnergy?: number[][];
+  candidates?: Onset[];
   rhythm?: Rhythm;
   pulse?: { onsets: Onset[]; sections: RhythmSection[] };
+  recognition?: { engine: 'beat-this' | 'signal'; model?: string; warning?: string; rawBeats?: number };
 }
 export interface Note {
   id: number;
@@ -36,7 +40,8 @@ export interface Note {
   pattern?: string;
 }
 export interface Chart {
-  version: 1 | 2 | 3 | 4 | 5 | 6;
+  version: 1 | 2 | 3 | 4 | 5 | 6 | 7;
+  generator?: 'beat-this' | 'signal';
   fingerprint: string;
   difficulty: Difficulty;
   duration: number;
@@ -47,7 +52,7 @@ export interface Chart {
   patterns?: string[];
   repetition?: { detected: number; reused: number; notesReused: number; phraseBeats: number };
 }
-export interface Settings { difficulty: Difficulty; speed: number; scrollMode: ScrollMode; volume: number; offset: number; vibration: boolean }
+export interface Settings { difficulty: Difficulty; speed: number; scrollMode: ScrollMode; volume: number; offset: number; vibration: boolean; recognition: RecognitionMode }
 export interface Result {
   score: number;
   accuracy: number;
@@ -56,5 +61,5 @@ export interface Result {
   autoplay: boolean;
 }
 export interface Track { name: string; artist: string; buffer: AudioBuffer; analysis: Analysis; demo: boolean }
-export type WorkerRequest = { samples: Float32Array; sampleRate: number };
+export type WorkerRequest = { samples: Float32Array; sampleRate: number; assetBase: string; recognitionMode?: RecognitionMode };
 export type WorkerResponse = { type: 'progress'; value: number; stage: string } | { type: 'done'; analysis: Analysis } | { type: 'error'; message: string };

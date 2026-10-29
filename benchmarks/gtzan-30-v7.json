@@ -1,0 +1,1862 @@
+{
+  "schema": 1,
+  "date": "2026-10-29T10:53:25.666Z",
+  "pipeline": 7,
+  "runtime": "shipped ONNX model / ONNX Runtime WASM, single thread",
+  "modelSha256": "14a86a7c39ab54d9a69faab54b887a0293fe7ad65c1d0702b0aaf3239299196e",
+  "baseline": "external old core; source hashes included",
+  "baselineSourceSha256": {
+    "analysis": "ffdddb395631e947e6a4b3613c8a19887499c6b4b54d69dbfe872364b495a42c",
+    "chart": "f769b52e57f4cf05af0b74d5b9ae00af3d272a67f8196fdf9cf5c0f55f6ccaad"
+  },
+  "sourceSha256": {
+    "analysis": "b430d5be709be0c6c524507a162cdfc5e235413ad616b178f5393771a76232d3",
+    "beat-decoder": "5e3c34fd689d96f652978cb0e1ff426cc301b1297bf47ceaa328d9a6abd187c7",
+    "beat-features": "f6c63a1414a4f73e61bc30646d488a5e132cc0b3eb988cbe9455d5d05e331c62",
+    "beat-inference": "b06f3ec5693cdb26f1d7148b37cb0fc3ad8aa426a817cd062594f60df92ac150",
+    "recognition": "b1f739facc10d39ce45e4b667b93de61e46c1c829e5bb4af12c1add4ed723f24",
+    "musical-events": "36f53c453ac460ceb46f5a0ea6185812f813970e24ab5a304cef2b2721758883",
+    "chart": "caca9268c7f9afa8bb78d7e3a4b796c7a62ae2389854afeb045048b5e35334fa",
+    "onset-selection": "00a59956b5a27c49d78f6e8cb76fa1aa2bdde5d364d57a2815716a4b096c917f",
+    "patterns": "88d580e3a346cf58f5ae13d43635c6fc07e34ccd2cc3d7f9e18e21253803fda2",
+    "phrases": "8d9029820b333c3f699cecf9998c950294f50d0fe72751cc3fd13b871c5dfc89",
+    "chroma": "4172510959a332bfeff4970964dd5c8ad2a696d1725bbd1496481d8d82f84ded",
+    "rhythm": "476f8a8f1d2a34d39a6dc3cb12ded9e295e9f9284f1bff56dfe2e71f3799b9bd"
+  },
+  "notes": "Beat-reference F1 is not gameplay accuracy or a rating of all melody/offbeat notes. These files form a development comparison subset, not the full GTZAN benchmark. Audio and beat annotations are not distributed in this report.",
+  "tracks": 30,
+  "average": {
+    "beforeClock70": {
+      "f1": 0.6820425621017617,
+      "precision": 0.6944838390095905,
+      "recall": 0.6867448169662805
+    },
+    "afterClock70": {
+      "f1": 0.8427046831599313,
+      "precision": 0.8290147895347424,
+      "recall": 0.8868041316274948
+    },
+    "beforeClock50": {
+      "f1": 0.6140736628064286,
+      "precision": 0.6231591891800385,
+      "recall": 0.6195156091882578
+    },
+    "afterClock50": {
+      "f1": 0.8121323854085617,
+      "precision": 0.8005996120929366,
+      "recall": 0.8519040249607956
+    },
+    "beforeSingleHeads70": {
+      "f1": 0.5244201097964305,
+      "precision": 0.6561865140518696,
+      "recall": 0.4540590163420393
+    },
+    "afterSingleHeads70": {
+      "f1": 0.7775301394885362,
+      "precision": 0.8396888625418275,
+      "recall": 0.7424249877370239
+    }
+  },
+  "rows": [
+    {
+      "name": "blues.00000",
+      "audioPcmSha256": "fffc9c2e72df9844c7f26048c4774e7b3427423fc1a5fbddb4aba2362b45bbb7",
+      "duration": 30.013333333333332,
+      "seconds": 5.1997402,
+      "beforeClock70": {
+        "f1": 0.9919999999999999,
+        "precision": 1,
+        "recall": 0.9841269841269841,
+        "matchedMeanErrorMs": 13.129032258064395
+      },
+      "afterClock70": {
+        "f1": 0.9841269841269841,
+        "precision": 0.9841269841269841,
+        "recall": 0.9841269841269841,
+        "matchedMeanErrorMs": 20.451612903225634
+      },
+      "beforeClock50": {
+        "f1": 0.9919999999999999,
+        "precision": 1,
+        "recall": 0.9841269841269841,
+        "matchedMeanErrorMs": 13.129032258064395
+      },
+      "afterClock50": {
+        "f1": 0.9841269841269841,
+        "precision": 0.9841269841269841,
+        "recall": 0.9841269841269841,
+        "matchedMeanErrorMs": 20.451612903225634
+      },
+      "beforeSingleHeads70": {
+        "f1": 0.6458333333333333,
+        "precision": 0.9393939393939394,
+        "recall": 0.49206349206349204,
+        "matchedMeanErrorMs": 14.49093701996912
+      },
+      "afterSingleHeads70": {
+        "f1": 0.9919999999999999,
+        "precision": 1,
+        "recall": 0.9841269841269841,
+        "matchedMeanErrorMs": 12.594148196913576
+      },
+      "charts": {
+        "one": {
+          "notes": 62,
+          "fingerLimit": 1
+        },
+        "two": {
+          "notes": 69,
+          "fingerLimit": 2
+        },
+        "three": {
+          "notes": 116,
+          "fingerLimit": 3
+        },
+        "four": {
+          "notes": 133,
+          "fingerLimit": 4
+        }
+      }
+    },
+    {
+      "name": "blues.00007",
+      "audioPcmSha256": "d2b4cd072c295b2c6dfcb149a07467bbbe2b39b3e2419fad0ac252ce66f48f8a",
+      "duration": 30.013333333333332,
+      "seconds": 4.7818148,
+      "beforeClock70": {
+        "f1": 0.9574468085106385,
+        "precision": 0.9574468085106383,
+        "recall": 0.9574468085106383,
+        "matchedMeanErrorMs": 24.844444444444353
+      },
+      "afterClock70": {
+        "f1": 1,
+        "precision": 1,
+        "recall": 1,
+        "matchedMeanErrorMs": 15.148936170212673
+      },
+      "beforeClock50": {
+        "f1": 0.9361702127659575,
+        "precision": 0.9361702127659575,
+        "recall": 0.9361702127659575,
+        "matchedMeanErrorMs": 24.227272727272645
+      },
+      "afterClock50": {
+        "f1": 0.9361702127659575,
+        "precision": 0.9361702127659575,
+        "recall": 0.9361702127659575,
+        "matchedMeanErrorMs": 12.113636363636301
+      },
+      "beforeSingleHeads70": {
+        "f1": 0.6666666666666667,
+        "precision": 0.8928571428571429,
+        "recall": 0.5319148936170213,
+        "matchedMeanErrorMs": 23.323736961450585
+      },
+      "afterSingleHeads70": {
+        "f1": 0.9787234042553191,
+        "precision": 0.9787234042553191,
+        "recall": 0.9787234042553191,
+        "matchedMeanErrorMs": 20.519994084589698
+      },
+      "charts": {
+        "one": {
+          "notes": 47,
+          "fingerLimit": 1
+        },
+        "two": {
+          "notes": 69,
+          "fingerLimit": 2
+        },
+        "three": {
+          "notes": 91,
+          "fingerLimit": 3
+        },
+        "four": {
+          "notes": 103,
+          "fingerLimit": 4
+        }
+      }
+    },
+    {
+      "name": "blues.00019",
+      "audioPcmSha256": "2506d33227b23c699ff11969e372b46970c623821edb1d0c14e6966bdc92126e",
+      "duration": 30.013333333333332,
+      "seconds": 4.783046900000001,
+      "beforeClock70": {
+        "f1": 0.18333333333333332,
+        "precision": 0.1896551724137931,
+        "recall": 0.1774193548387097,
+        "matchedMeanErrorMs": 24.63636363636375
+      },
+      "afterClock70": {
+        "f1": 0.6096256684491979,
+        "precision": 0.456,
+        "recall": 0.9193548387096774,
+        "matchedMeanErrorMs": 20.473684210526244
+      },
+      "beforeClock50": {
+        "f1": 0.16666666666666669,
+        "precision": 0.1724137931034483,
+        "recall": 0.16129032258064516,
+        "matchedMeanErrorMs": 20.50000000000023
+      },
+      "afterClock50": {
+        "f1": 0.5882352941176471,
+        "precision": 0.44,
+        "recall": 0.8870967741935484,
+        "matchedMeanErrorMs": 19.163636363636332
+      },
+      "beforeSingleHeads70": {
+        "f1": 0.3106796116504854,
+        "precision": 0.3902439024390244,
+        "recall": 0.25806451612903225,
+        "matchedMeanErrorMs": 22.340731292516605
+      },
+      "afterSingleHeads70": {
+        "f1": 0.2975206611570248,
+        "precision": 0.3050847457627119,
+        "recall": 0.2903225806451613,
+        "matchedMeanErrorMs": 32.09518770471034
+      },
+      "charts": {
+        "one": {
+          "notes": 59,
+          "fingerLimit": 1
+        },
+        "two": {
+          "notes": 102,
+          "fingerLimit": 2
+        },
+        "three": {
+          "notes": 130,
+          "fingerLimit": 3
+        },
+        "four": {
+          "notes": 145,
+          "fingerLimit": 4
+        }
+      }
+    },
+    {
+      "name": "classical.00000",
+      "audioPcmSha256": "60373f3c55107792671e4acbf86fb267d432cd012fd1128e9b70ab8904d7a81a",
+      "duration": 30.013333333333332,
+      "seconds": 4.7999246999999885,
+      "beforeClock70": {
+        "f1": 0.7191011235955055,
+        "precision": 0.7619047619047619,
+        "recall": 0.6808510638297872,
+        "matchedMeanErrorMs": 22.28124999999961
+      },
+      "afterClock70": {
+        "f1": 1,
+        "precision": 1,
+        "recall": 1,
+        "matchedMeanErrorMs": 15.893617021276407
+      },
+      "beforeClock50": {
+        "f1": 0.6741573033707866,
+        "precision": 0.7142857142857143,
+        "recall": 0.6382978723404256,
+        "matchedMeanErrorMs": 19.86666666666628
+      },
+      "afterClock50": {
+        "f1": 0.9787234042553191,
+        "precision": 0.9787234042553191,
+        "recall": 0.9787234042553191,
+        "matchedMeanErrorMs": 15.086956521738937
+      },
+      "beforeSingleHeads70": {
+        "f1": 0.5176470588235293,
+        "precision": 0.5789473684210527,
+        "recall": 0.46808510638297873,
+        "matchedMeanErrorMs": 19.380457637600458
+      },
+      "afterSingleHeads70": {
+        "f1": 0.8863636363636364,
+        "precision": 0.9512195121951219,
+        "recall": 0.8297872340425532,
+        "matchedMeanErrorMs": 17.583638583638454
+      },
+      "charts": {
+        "one": {
+          "notes": 41,
+          "fingerLimit": 1
+        },
+        "two": {
+          "notes": 73,
+          "fingerLimit": 2
+        },
+        "three": {
+          "notes": 81,
+          "fingerLimit": 3
+        },
+        "four": {
+          "notes": 99,
+          "fingerLimit": 4
+        }
+      }
+    },
+    {
+      "name": "classical.00007",
+      "audioPcmSha256": "973fce55eebd8803895f5a29f1d16a0e9a72d7b324f59247f961bbccc9a91c1f",
+      "duration": 30.013333333333332,
+      "seconds": 4.782506800000003,
+      "beforeClock70": {
+        "f1": 0.7339449541284404,
+        "precision": 0.7272727272727273,
+        "recall": 0.7407407407407407,
+        "matchedMeanErrorMs": 34.82499999999971
+      },
+      "afterClock70": {
+        "f1": 0.43749999999999994,
+        "precision": 0.330188679245283,
+        "recall": 0.6481481481481481,
+        "matchedMeanErrorMs": 34.028571428571375
+      },
+      "beforeClock50": {
+        "f1": 0.5504587155963303,
+        "precision": 0.5454545454545454,
+        "recall": 0.5555555555555556,
+        "matchedMeanErrorMs": 26.79999999999955
+      },
+      "afterClock50": {
+        "f1": 0.33749999999999997,
+        "precision": 0.25471698113207547,
+        "recall": 0.5,
+        "matchedMeanErrorMs": 26.999999999999865
+      },
+      "beforeSingleHeads70": {
+        "f1": 0.3116883116883117,
+        "precision": 0.5217391304347826,
+        "recall": 0.2222222222222222,
+        "matchedMeanErrorMs": 30.83616780045251
+      },
+      "afterSingleHeads70": {
+        "f1": 0.37209302325581395,
+        "precision": 0.5,
+        "recall": 0.2962962962962963,
+        "matchedMeanErrorMs": 30.70518707482906
+      },
+      "charts": {
+        "one": {
+          "notes": 32,
+          "fingerLimit": 1
+        },
+        "two": {
+          "notes": 45,
+          "fingerLimit": 2
+        },
+        "three": {
+          "notes": 48,
+          "fingerLimit": 3
+        },
+        "four": {
+          "notes": 52,
+          "fingerLimit": 4
+        }
+      }
+    },
+    {
+      "name": "classical.00019",
+      "audioPcmSha256": "ce899d3d0cb4e000bbdabf2b87862b9fb70bb69fcfbde03590219cb1cf39bdf3",
+      "duration": 30.013333333333332,
+      "seconds": 4.885767400000011,
+      "beforeClock70": {
+        "f1": 0.4615384615384615,
+        "precision": 0.4883720930232558,
+        "recall": 0.4375,
+        "matchedMeanErrorMs": 37.99999999999965
+      },
+      "afterClock70": {
+        "f1": 0.6808510638297872,
+        "precision": 0.6956521739130435,
+        "recall": 0.6666666666666666,
+        "matchedMeanErrorMs": 38.531250000000014
+      },
+      "beforeClock50": {
+        "f1": 0.30769230769230776,
+        "precision": 0.32558139534883723,
+        "recall": 0.2916666666666667,
+        "matchedMeanErrorMs": 26.214285714285275
+      },
+      "afterClock50": {
+        "f1": 0.48936170212765956,
+        "precision": 0.5,
+        "recall": 0.4791666666666667,
+        "matchedMeanErrorMs": 30.73913043478248
+      },
+      "beforeSingleHeads70": {
+        "f1": 0.28571428571428575,
+        "precision": 0.45454545454545453,
+        "recall": 0.20833333333333334,
+        "matchedMeanErrorMs": 39.82249433106508
+      },
+      "afterSingleHeads70": {
+        "f1": 0.6451612903225806,
+        "precision": 0.6666666666666666,
+        "recall": 0.625,
+        "matchedMeanErrorMs": 36.091292517006
+      },
+      "charts": {
+        "one": {
+          "notes": 45,
+          "fingerLimit": 1
+        },
+        "two": {
+          "notes": 73,
+          "fingerLimit": 2
+        },
+        "three": {
+          "notes": 102,
+          "fingerLimit": 3
+        },
+        "four": {
+          "notes": 130,
+          "fingerLimit": 4
+        }
+      }
+    },
+    {
+      "name": "country.00000",
+      "audioPcmSha256": "04b4f73858beecc9a1ef7912e863c5e77746785f3a37ec765441f6db1bb7248a",
+      "duration": 30.081632653061224,
+      "seconds": 4.750280800000008,
+      "beforeClock70": {
+        "f1": 0.5789473684210527,
+        "precision": 0.6666666666666666,
+        "recall": 0.5116279069767442,
+        "matchedMeanErrorMs": 19.045454545454312
+      },
+      "afterClock70": {
+        "f1": 0.8,
+        "precision": 0.8095238095238095,
+        "recall": 0.7906976744186046,
+        "matchedMeanErrorMs": 8.852941176470802
+      },
+      "beforeClock50": {
+        "f1": 0.5526315789473685,
+        "precision": 0.6363636363636364,
+        "recall": 0.4883720930232558,
+        "matchedMeanErrorMs": 17.428571428571146
+      },
+      "afterClock50": {
+        "f1": 0.7764705882352941,
+        "precision": 0.7857142857142857,
+        "recall": 0.7674418604651163,
+        "matchedMeanErrorMs": 7.454545454545682
+      },
+      "beforeSingleHeads70": {
+        "f1": 0.49315068493150693,
+        "precision": 0.6,
+        "recall": 0.4186046511627907,
+        "matchedMeanErrorMs": 20.046686822876318
+      },
+      "afterSingleHeads70": {
+        "f1": 0.6470588235294118,
+        "precision": 0.88,
+        "recall": 0.5116279069767442,
+        "matchedMeanErrorMs": 21.903916718202165
+      },
+      "charts": {
+        "one": {
+          "notes": 25,
+          "fingerLimit": 1
+        },
+        "two": {
+          "notes": 35,
+          "fingerLimit": 2
+        },
+        "three": {
+          "notes": 40,
+          "fingerLimit": 3
+        },
+        "four": {
+          "notes": 46,
+          "fingerLimit": 4
+        }
+      }
+    },
+    {
+      "name": "country.00007",
+      "audioPcmSha256": "bf62e1b5c6d96ea803fc5e054a53c1a74daf9fc9cbeedf157d78d9b5f0711cfd",
+      "duration": 29.98185941043084,
+      "seconds": 4.758740900000005,
+      "beforeClock70": {
+        "f1": 0.2285714285714286,
+        "precision": 0.18181818181818182,
+        "recall": 0.3076923076923077,
+        "matchedMeanErrorMs": 27.875000000000092
+      },
+      "afterClock70": {
+        "f1": 0.6493506493506493,
+        "precision": 0.49019607843137253,
+        "recall": 0.9615384615384616,
+        "matchedMeanErrorMs": 11.479999999999686
+      },
+      "beforeClock50": {
+        "f1": 0.19999999999999998,
+        "precision": 0.1590909090909091,
+        "recall": 0.2692307692307692,
+        "matchedMeanErrorMs": 23.428571428571384
+      },
+      "afterClock50": {
+        "f1": 0.6233766233766235,
+        "precision": 0.47058823529411764,
+        "recall": 0.9230769230769231,
+        "matchedMeanErrorMs": 9.749999999999785
+      },
+      "beforeSingleHeads70": {
+        "f1": 0.12499999999999997,
+        "precision": 0.13636363636363635,
+        "recall": 0.11538461538461539,
+        "matchedMeanErrorMs": 35.28435374149701
+      },
+      "afterSingleHeads70": {
+        "f1": 0.6153846153846154,
+        "precision": 0.6153846153846154,
+        "recall": 0.6153846153846154,
+        "matchedMeanErrorMs": 26.543509070294313
+      },
+      "charts": {
+        "one": {
+          "notes": 26,
+          "fingerLimit": 1
+        },
+        "two": {
+          "notes": 48,
+          "fingerLimit": 2
+        },
+        "three": {
+          "notes": 48,
+          "fingerLimit": 3
+        },
+        "four": {
+          "notes": 54,
+          "fingerLimit": 4
+        }
+      }
+    },
+    {
+      "name": "country.00019",
+      "audioPcmSha256": "451791ad355ba21719586dc934f046b5dd9a7b5d4ce6e56a9a11dcba25067f94",
+      "duration": 30.013333333333332,
+      "seconds": 4.695492800000007,
+      "beforeClock70": {
+        "f1": 0.5208333333333334,
+        "precision": 0.4716981132075472,
+        "recall": 0.5813953488372093,
+        "matchedMeanErrorMs": 22.399999999999764
+      },
+      "afterClock70": {
+        "f1": 1,
+        "precision": 1,
+        "recall": 1,
+        "matchedMeanErrorMs": 13.883720930232299
+      },
+      "beforeClock50": {
+        "f1": 0.47916666666666663,
+        "precision": 0.4339622641509434,
+        "recall": 0.5348837209302325,
+        "matchedMeanErrorMs": 19.391304347825834
+      },
+      "afterClock50": {
+        "f1": 1,
+        "precision": 1,
+        "recall": 1,
+        "matchedMeanErrorMs": 13.883720930232299
+      },
+      "beforeSingleHeads70": {
+        "f1": 0.5396825396825397,
+        "precision": 0.85,
+        "recall": 0.3953488372093023,
+        "matchedMeanErrorMs": 17.550566893423557
+      },
+      "afterSingleHeads70": {
+        "f1": 0.7058823529411763,
+        "precision": 0.96,
+        "recall": 0.5581395348837209,
+        "matchedMeanErrorMs": 19.130612244897204
+      },
+      "charts": {
+        "one": {
+          "notes": 25,
+          "fingerLimit": 1
+        },
+        "two": {
+          "notes": 27,
+          "fingerLimit": 2
+        },
+        "three": {
+          "notes": 29,
+          "fingerLimit": 3
+        },
+        "four": {
+          "notes": 29,
+          "fingerLimit": 4
+        }
+      }
+    },
+    {
+      "name": "disco.00000",
+      "audioPcmSha256": "b70185dc9c8bd064cad892df7641447b6d5a0c7da7638aef13de8bc0bf6c9950",
+      "duration": 30.12154195011338,
+      "seconds": 5.064820600000006,
+      "beforeClock70": {
+        "f1": 1,
+        "precision": 1,
+        "recall": 1,
+        "matchedMeanErrorMs": 33.482758620689324
+      },
+      "afterClock70": {
+        "f1": 1,
+        "precision": 1,
+        "recall": 1,
+        "matchedMeanErrorMs": 11.827586206896507
+      },
+      "beforeClock50": {
+        "f1": 0.896551724137931,
+        "precision": 0.896551724137931,
+        "recall": 0.896551724137931,
+        "matchedMeanErrorMs": 30.49999999999975
+      },
+      "afterClock50": {
+        "f1": 1,
+        "precision": 1,
+        "recall": 1,
+        "matchedMeanErrorMs": 11.827586206896507
+      },
+      "beforeSingleHeads70": {
+        "f1": 0.8363636363636363,
+        "precision": 0.8846153846153846,
+        "recall": 0.7931034482758621,
+        "matchedMeanErrorMs": 32.78385093167683
+      },
+      "afterSingleHeads70": {
+        "f1": 1,
+        "precision": 1,
+        "recall": 1,
+        "matchedMeanErrorMs": 30.003456095081084
+      },
+      "charts": {
+        "one": {
+          "notes": 58,
+          "fingerLimit": 1
+        },
+        "two": {
+          "notes": 94,
+          "fingerLimit": 2
+        },
+        "three": {
+          "notes": 111,
+          "fingerLimit": 3
+        },
+        "four": {
+          "notes": 165,
+          "fingerLimit": 4
+        }
+      }
+    },
+    {
+      "name": "disco.00007",
+      "audioPcmSha256": "f9b3eb1fa98a4a15593f3fa22a5e13c727d3ba40e5bb2789990b9f5dd124d142",
+      "duration": 30.013333333333332,
+      "seconds": 5.194390100000004,
+      "beforeClock70": {
+        "f1": 1,
+        "precision": 1,
+        "recall": 1,
+        "matchedMeanErrorMs": 28.74999999999951
+      },
+      "afterClock70": {
+        "f1": 1,
+        "precision": 1,
+        "recall": 1,
+        "matchedMeanErrorMs": 5.937499999999884
+      },
+      "beforeClock50": {
+        "f1": 1,
+        "precision": 1,
+        "recall": 1,
+        "matchedMeanErrorMs": 28.74999999999951
+      },
+      "afterClock50": {
+        "f1": 1,
+        "precision": 1,
+        "recall": 1,
+        "matchedMeanErrorMs": 5.937499999999884
+      },
+      "beforeSingleHeads70": {
+        "f1": 0.8108108108108107,
+        "precision": 0.9574468085106383,
+        "recall": 0.703125,
+        "matchedMeanErrorMs": 29.08647014361217
+      },
+      "afterSingleHeads70": {
+        "f1": 1,
+        "precision": 1,
+        "recall": 1,
+        "matchedMeanErrorMs": 24.23404195011272
+      },
+      "charts": {
+        "one": {
+          "notes": 64,
+          "fingerLimit": 1
+        },
+        "two": {
+          "notes": 86,
+          "fingerLimit": 2
+        },
+        "three": {
+          "notes": 125,
+          "fingerLimit": 3
+        },
+        "four": {
+          "notes": 140,
+          "fingerLimit": 4
+        }
+      }
+    },
+    {
+      "name": "disco.00019",
+      "audioPcmSha256": "cd9688a945a72558440189104dd99276dae5d76ad3a82096213b442e95f339d4",
+      "duration": 30.013333333333332,
+      "seconds": 4.9020144,
+      "beforeClock70": {
+        "f1": 0.9830508474576272,
+        "precision": 0.9830508474576272,
+        "recall": 0.9830508474576272,
+        "matchedMeanErrorMs": 32.241379310344485
+      },
+      "afterClock70": {
+        "f1": 1,
+        "precision": 1,
+        "recall": 1,
+        "matchedMeanErrorMs": 12.491525423728973
+      },
+      "beforeClock50": {
+        "f1": 0.847457627118644,
+        "precision": 0.847457627118644,
+        "recall": 0.847457627118644,
+        "matchedMeanErrorMs": 28.079999999999604
+      },
+      "afterClock50": {
+        "f1": 0.9830508474576272,
+        "precision": 0.9830508474576272,
+        "recall": 0.9830508474576272,
+        "matchedMeanErrorMs": 11.672413793103615
+      },
+      "beforeSingleHeads70": {
+        "f1": 0.9482758620689654,
+        "precision": 0.9649122807017544,
+        "recall": 0.9322033898305084,
+        "matchedMeanErrorMs": 33.270946196660134
+      },
+      "afterSingleHeads70": {
+        "f1": 1,
+        "precision": 1,
+        "recall": 1,
+        "matchedMeanErrorMs": 31.202313693838523
+      },
+      "charts": {
+        "one": {
+          "notes": 59,
+          "fingerLimit": 1
+        },
+        "two": {
+          "notes": 92,
+          "fingerLimit": 2
+        },
+        "three": {
+          "notes": 118,
+          "fingerLimit": 3
+        },
+        "four": {
+          "notes": 129,
+          "fingerLimit": 4
+        }
+      }
+    },
+    {
+      "name": "hiphop.00000",
+      "audioPcmSha256": "3bc38880651d3c2443fc77b9337f10f6cd65695a4efb9bc711f4f7bda3e7fb9a",
+      "duration": 30.00018140589569,
+      "seconds": 4.761685299999997,
+      "beforeClock70": {
+        "f1": 0.8347826086956521,
+        "precision": 0.8727272727272727,
+        "recall": 0.8,
+        "matchedMeanErrorMs": 36.81249999999957
+      },
+      "afterClock70": {
+        "f1": 1,
+        "precision": 1,
+        "recall": 1,
+        "matchedMeanErrorMs": 13.96666666666677
+      },
+      "beforeClock50": {
+        "f1": 0.8,
+        "precision": 0.8363636363636363,
+        "recall": 0.7666666666666667,
+        "matchedMeanErrorMs": 36.043478260869186
+      },
+      "afterClock50": {
+        "f1": 1,
+        "precision": 1,
+        "recall": 1,
+        "matchedMeanErrorMs": 13.96666666666677
+      },
+      "beforeSingleHeads70": {
+        "f1": 0.464,
+        "precision": 0.4461538461538462,
+        "recall": 0.48333333333333334,
+        "matchedMeanErrorMs": 38.056423488935245
+      },
+      "afterSingleHeads70": {
+        "f1": 0.983050847457627,
+        "precision": 1,
+        "recall": 0.9666666666666667,
+        "matchedMeanErrorMs": 32.1711079834227
+      },
+      "charts": {
+        "one": {
+          "notes": 58,
+          "fingerLimit": 1
+        },
+        "two": {
+          "notes": 96,
+          "fingerLimit": 2
+        },
+        "three": {
+          "notes": 126,
+          "fingerLimit": 3
+        },
+        "four": {
+          "notes": 199,
+          "fingerLimit": 4
+        }
+      }
+    },
+    {
+      "name": "hiphop.00007",
+      "audioPcmSha256": "3d847042d8b3bfc01fe2d281a825e094a70f306aa16423624f17fd58742a201d",
+      "duration": 30.00018140589569,
+      "seconds": 4.790805999999997,
+      "beforeClock70": {
+        "f1": 0.6774193548387096,
+        "precision": 0.65625,
+        "recall": 0.7,
+        "matchedMeanErrorMs": 36.64285714285686
+      },
+      "afterClock70": {
+        "f1": 0.9500000000000001,
+        "precision": 0.95,
+        "recall": 0.95,
+        "matchedMeanErrorMs": 7.17543859649128
+      },
+      "beforeClock50": {
+        "f1": 0.564516129032258,
+        "precision": 0.546875,
+        "recall": 0.5833333333333334,
+        "matchedMeanErrorMs": 32.342857142856786
+      },
+      "afterClock50": {
+        "f1": 0.9500000000000001,
+        "precision": 0.95,
+        "recall": 0.95,
+        "matchedMeanErrorMs": 7.17543859649128
+      },
+      "beforeSingleHeads70": {
+        "f1": 0.5384615384615385,
+        "precision": 0.6363636363636364,
+        "recall": 0.4666666666666667,
+        "matchedMeanErrorMs": 37.445286686102335
+      },
+      "afterSingleHeads70": {
+        "f1": 0.9500000000000001,
+        "precision": 0.95,
+        "recall": 0.95,
+        "matchedMeanErrorMs": 33.21241993873546
+      },
+      "charts": {
+        "one": {
+          "notes": 60,
+          "fingerLimit": 1
+        },
+        "two": {
+          "notes": 81,
+          "fingerLimit": 2
+        },
+        "three": {
+          "notes": 108,
+          "fingerLimit": 3
+        },
+        "four": {
+          "notes": 123,
+          "fingerLimit": 4
+        }
+      }
+    },
+    {
+      "name": "hiphop.00019",
+      "audioPcmSha256": "21a6a81d8e72064b5691b67229c3e17f69748a920777f158130a42ceb448d213",
+      "duration": 30.013333333333332,
+      "seconds": 4.749980500000005,
+      "beforeClock70": {
+        "f1": 0.2588235294117647,
+        "precision": 0.3235294117647059,
+        "recall": 0.21568627450980393,
+        "matchedMeanErrorMs": 34.99999999999937
+      },
+      "afterClock70": {
+        "f1": 1,
+        "precision": 1,
+        "recall": 1,
+        "matchedMeanErrorMs": 10.372549019607838
+      },
+      "beforeClock50": {
+        "f1": 0.18823529411764706,
+        "precision": 0.23529411764705882,
+        "recall": 0.1568627450980392,
+        "matchedMeanErrorMs": 28.249999999999385
+      },
+      "afterClock50": {
+        "f1": 1,
+        "precision": 1,
+        "recall": 1,
+        "matchedMeanErrorMs": 10.372549019607838
+      },
+      "beforeSingleHeads70": {
+        "f1": 0.3516483516483516,
+        "precision": 0.4,
+        "recall": 0.3137254901960784,
+        "matchedMeanErrorMs": 30.008503401360052
+      },
+      "afterSingleHeads70": {
+        "f1": 0.9278350515463919,
+        "precision": 0.9782608695652174,
+        "recall": 0.8823529411764706,
+        "matchedMeanErrorMs": 30.889241622574243
+      },
+      "charts": {
+        "one": {
+          "notes": 46,
+          "fingerLimit": 1
+        },
+        "two": {
+          "notes": 74,
+          "fingerLimit": 2
+        },
+        "three": {
+          "notes": 103,
+          "fingerLimit": 3
+        },
+        "four": {
+          "notes": 152,
+          "fingerLimit": 4
+        }
+      }
+    },
+    {
+      "name": "jazz.00000",
+      "audioPcmSha256": "f3ef11269bfc249c6657f037e8436ca1a2dbfe2ceee95a3504065a06cf8b1fc0",
+      "duration": 30.013333333333332,
+      "seconds": 4.828591899999999,
+      "beforeClock70": {
+        "f1": 0.45528455284552843,
+        "precision": 0.4666666666666667,
+        "recall": 0.4444444444444444,
+        "matchedMeanErrorMs": 38.96428571428551
+      },
+      "afterClock70": {
+        "f1": 0.5913978494623655,
+        "precision": 0.44715447154471544,
+        "recall": 0.873015873015873,
+        "matchedMeanErrorMs": 31.400000000000137
+      },
+      "beforeClock50": {
+        "f1": 0.2926829268292683,
+        "precision": 0.3,
+        "recall": 0.2857142857142857,
+        "matchedMeanErrorMs": 27.499999999999837
+      },
+      "afterClock50": {
+        "f1": 0.4731182795698925,
+        "precision": 0.35772357723577236,
+        "recall": 0.6984126984126984,
+        "matchedMeanErrorMs": 24.545454545454614
+      },
+      "beforeSingleHeads70": {
+        "f1": 0.30303030303030304,
+        "precision": 0.4166666666666667,
+        "recall": 0.23809523809523808,
+        "matchedMeanErrorMs": 43.92205593348394
+      },
+      "afterSingleHeads70": {
+        "f1": 0.6991869918699187,
+        "precision": 0.7166666666666667,
+        "recall": 0.6825396825396826,
+        "matchedMeanErrorMs": 30.788155882507606
+      },
+      "charts": {
+        "one": {
+          "notes": 60,
+          "fingerLimit": 1
+        },
+        "two": {
+          "notes": 92,
+          "fingerLimit": 2
+        },
+        "three": {
+          "notes": 116,
+          "fingerLimit": 3
+        },
+        "four": {
+          "notes": 140,
+          "fingerLimit": 4
+        }
+      }
+    },
+    {
+      "name": "jazz.00007",
+      "audioPcmSha256": "80f82e68aaa0168ae31c1ffaa30b7b798b12dde5f337489ba18915796f1a7c6c",
+      "duration": 30.013333333333332,
+      "seconds": 4.7562036999999835,
+      "beforeClock70": {
+        "f1": 0.4657534246575342,
+        "precision": 0.40476190476190477,
+        "recall": 0.5483870967741935,
+        "matchedMeanErrorMs": 34.29411764705867
+      },
+      "afterClock70": {
+        "f1": 0.8524590163934426,
+        "precision": 0.8666666666666667,
+        "recall": 0.8387096774193549,
+        "matchedMeanErrorMs": 17.153846153846207
+      },
+      "beforeClock50": {
+        "f1": 0.3287671232876712,
+        "precision": 0.2857142857142857,
+        "recall": 0.3870967741935484,
+        "matchedMeanErrorMs": 24.583333333332956
+      },
+      "afterClock50": {
+        "f1": 0.8524590163934426,
+        "precision": 0.8666666666666667,
+        "recall": 0.8387096774193549,
+        "matchedMeanErrorMs": 17.153846153846207
+      },
+      "beforeSingleHeads70": {
+        "f1": 0.4615384615384615,
+        "precision": 0.5714285714285714,
+        "recall": 0.3870967741935484,
+        "matchedMeanErrorMs": 34.17962962962944
+      },
+      "afterSingleHeads70": {
+        "f1": 0.8771929824561403,
+        "precision": 0.9615384615384616,
+        "recall": 0.8064516129032258,
+        "matchedMeanErrorMs": 29.18663038548687
+      },
+      "charts": {
+        "one": {
+          "notes": 26,
+          "fingerLimit": 1
+        },
+        "two": {
+          "notes": 30,
+          "fingerLimit": 2
+        },
+        "three": {
+          "notes": 35,
+          "fingerLimit": 3
+        },
+        "four": {
+          "notes": 40,
+          "fingerLimit": 4
+        }
+      }
+    },
+    {
+      "name": "jazz.00019",
+      "audioPcmSha256": "cf51172c81b1f75b9ef6e2eacea93992496b9a610dc3e9c850e04c8fddf470dc",
+      "duration": 30.013333333333332,
+      "seconds": 5.05757640000002,
+      "beforeClock70": {
+        "f1": 0.27083333333333337,
+        "precision": 0.26,
+        "recall": 0.2826086956521739,
+        "matchedMeanErrorMs": 39.99999999999982
+      },
+      "afterClock70": {
+        "f1": 0.37362637362637363,
+        "precision": 0.37777777777777777,
+        "recall": 0.3695652173913043,
+        "matchedMeanErrorMs": 36.82352941176556
+      },
+      "beforeClock50": {
+        "f1": 0.16666666666666666,
+        "precision": 0.16,
+        "recall": 0.17391304347826086,
+        "matchedMeanErrorMs": 27.9999999999998
+      },
+      "afterClock50": {
+        "f1": 0.24175824175824176,
+        "precision": 0.24444444444444444,
+        "recall": 0.2391304347826087,
+        "matchedMeanErrorMs": 25.636363636364855
+      },
+      "beforeSingleHeads70": {
+        "f1": 0.2465753424657534,
+        "precision": 0.3333333333333333,
+        "recall": 0.1956521739130435,
+        "matchedMeanErrorMs": 38.35500125976304
+      },
+      "afterSingleHeads70": {
+        "f1": 0.275,
+        "precision": 0.3235294117647059,
+        "recall": 0.2391304347826087,
+        "matchedMeanErrorMs": 32.55877138734207
+      },
+      "charts": {
+        "one": {
+          "notes": 34,
+          "fingerLimit": 1
+        },
+        "two": {
+          "notes": 49,
+          "fingerLimit": 2
+        },
+        "three": {
+          "notes": 73,
+          "fingerLimit": 3
+        },
+        "four": {
+          "notes": 85,
+          "fingerLimit": 4
+        }
+      }
+    },
+    {
+      "name": "metal.00000",
+      "audioPcmSha256": "14f4286a666da766627d66dfa4edcd583cec9f511fea114831aa590a7ac4f9f8",
+      "duration": 30.00018140589569,
+      "seconds": 4.791628200000006,
+      "beforeClock70": {
+        "f1": 0.8817204301075269,
+        "precision": 0.8913043478260869,
+        "recall": 0.8723404255319149,
+        "matchedMeanErrorMs": 21.268292682926567
+      },
+      "afterClock70": {
+        "f1": 0.9787234042553191,
+        "precision": 0.9787234042553191,
+        "recall": 0.9787234042553191,
+        "matchedMeanErrorMs": 21.565217391304465
+      },
+      "beforeClock50": {
+        "f1": 0.8387096774193549,
+        "precision": 0.8478260869565217,
+        "recall": 0.8297872340425532,
+        "matchedMeanErrorMs": 19.205128205127934
+      },
+      "afterClock50": {
+        "f1": 0.9148936170212766,
+        "precision": 0.9148936170212766,
+        "recall": 0.9148936170212766,
+        "matchedMeanErrorMs": 19.162790697674474
+      },
+      "beforeSingleHeads70": {
+        "f1": 0.5194805194805194,
+        "precision": 0.6666666666666666,
+        "recall": 0.425531914893617,
+        "matchedMeanErrorMs": 22.912290249432438
+      },
+      "afterSingleHeads70": {
+        "f1": 0.763157894736842,
+        "precision": 1,
+        "recall": 0.6170212765957447,
+        "matchedMeanErrorMs": 24.748565173194955
+      },
+      "charts": {
+        "one": {
+          "notes": 29,
+          "fingerLimit": 1
+        },
+        "two": {
+          "notes": 42,
+          "fingerLimit": 2
+        },
+        "three": {
+          "notes": 44,
+          "fingerLimit": 3
+        },
+        "four": {
+          "notes": 47,
+          "fingerLimit": 4
+        }
+      }
+    },
+    {
+      "name": "metal.00007",
+      "audioPcmSha256": "f34f0bee2b0de07791275432d1c89cad3828385a89024f316675c29de41c99de",
+      "duration": 30.00018140589569,
+      "seconds": 4.784082699999999,
+      "beforeClock70": {
+        "f1": 0.7066666666666668,
+        "precision": 0.7162162162162162,
+        "recall": 0.6973684210526315,
+        "matchedMeanErrorMs": 29.132075471698133
+      },
+      "afterClock70": {
+        "f1": 0.868421052631579,
+        "precision": 0.868421052631579,
+        "recall": 0.868421052631579,
+        "matchedMeanErrorMs": 18.50000000000005
+      },
+      "beforeClock50": {
+        "f1": 0.5866666666666667,
+        "precision": 0.5945945945945946,
+        "recall": 0.5789473684210527,
+        "matchedMeanErrorMs": 22.772727272727238
+      },
+      "afterClock50": {
+        "f1": 0.8289473684210527,
+        "precision": 0.8289473684210527,
+        "recall": 0.8289473684210527,
+        "matchedMeanErrorMs": 16.73015873015878
+      },
+      "beforeSingleHeads70": {
+        "f1": 0.5573770491803278,
+        "precision": 0.7391304347826086,
+        "recall": 0.4473684210526316,
+        "matchedMeanErrorMs": 26.804001600639456
+      },
+      "afterSingleHeads70": {
+        "f1": 0.7591240875912408,
+        "precision": 0.8524590163934426,
+        "recall": 0.6842105263157895,
+        "matchedMeanErrorMs": 22.285417756845813
+      },
+      "charts": {
+        "one": {
+          "notes": 61,
+          "fingerLimit": 1
+        },
+        "two": {
+          "notes": 66,
+          "fingerLimit": 2
+        },
+        "three": {
+          "notes": 97,
+          "fingerLimit": 3
+        },
+        "four": {
+          "notes": 103,
+          "fingerLimit": 4
+        }
+      }
+    },
+    {
+      "name": "metal.00019",
+      "audioPcmSha256": "f9914959f19cb2907c45235b1ddc3f7cbb055b7e4c56614fc65f6d0317f4a1a5",
+      "duration": 30.00018140589569,
+      "seconds": 4.759269900000014,
+      "beforeClock70": {
+        "f1": 0.5679012345679013,
+        "precision": 0.8679245283018868,
+        "recall": 0.42201834862385323,
+        "matchedMeanErrorMs": 34.80434782608678
+      },
+      "afterClock70": {
+        "f1": 0.366412213740458,
+        "precision": 0.3137254901960784,
+        "recall": 0.44036697247706424,
+        "matchedMeanErrorMs": 20.166666666666767
+      },
+      "beforeClock50": {
+        "f1": 0.4197530864197531,
+        "precision": 0.6415094339622641,
+        "recall": 0.3119266055045872,
+        "matchedMeanErrorMs": 26.6176470588234
+      },
+      "afterClock50": {
+        "f1": 0.32824427480916035,
+        "precision": 0.28104575163398693,
+        "recall": 0.3944954128440367,
+        "matchedMeanErrorMs": 15.232558139534978
+      },
+      "beforeSingleHeads70": {
+        "f1": 0.43478260869565216,
+        "precision": 0.6730769230769231,
+        "recall": 0.3211009174311927,
+        "matchedMeanErrorMs": 35.37503077421381
+      },
+      "afterSingleHeads70": {
+        "f1": 0.09333333333333334,
+        "precision": 0.17073170731707318,
+        "recall": 0.06422018348623854,
+        "matchedMeanErrorMs": 42.24535147392247
+      },
+      "charts": {
+        "one": {
+          "notes": 41,
+          "fingerLimit": 1
+        },
+        "two": {
+          "notes": 63,
+          "fingerLimit": 2
+        },
+        "three": {
+          "notes": 72,
+          "fingerLimit": 3
+        },
+        "four": {
+          "notes": 124,
+          "fingerLimit": 4
+        }
+      }
+    },
+    {
+      "name": "pop.00000",
+      "audioPcmSha256": "e57da14b6e70f122406c7b6e3e059dda74c42935647951dcad03c1df98e36fb9",
+      "duration": 30.00018140589569,
+      "seconds": 4.7486675000000105,
+      "beforeClock70": {
+        "f1": 0.380952380952381,
+        "precision": 0.3137254901960784,
+        "recall": 0.48484848484848486,
+        "matchedMeanErrorMs": 29.68749999999963
+      },
+      "afterClock70": {
+        "f1": 0.66,
+        "precision": 0.4925373134328358,
+        "recall": 1,
+        "matchedMeanErrorMs": 5.818181818181699
+      },
+      "beforeClock50": {
+        "f1": 0.380952380952381,
+        "precision": 0.3137254901960784,
+        "recall": 0.48484848484848486,
+        "matchedMeanErrorMs": 29.68749999999963
+      },
+      "afterClock50": {
+        "f1": 0.66,
+        "precision": 0.4925373134328358,
+        "recall": 1,
+        "matchedMeanErrorMs": 5.818181818181699
+      },
+      "beforeSingleHeads70": {
+        "f1": 0.5373134328358209,
+        "precision": 0.5294117647058824,
+        "recall": 0.5454545454545454,
+        "matchedMeanErrorMs": 30.42443940539095
+      },
+      "afterSingleHeads70": {
+        "f1": 0.711111111111111,
+        "precision": 0.5614035087719298,
+        "recall": 0.9696969696969697,
+        "matchedMeanErrorMs": 26.178146258502792
+      },
+      "charts": {
+        "one": {
+          "notes": 57,
+          "fingerLimit": 1
+        },
+        "two": {
+          "notes": 75,
+          "fingerLimit": 2
+        },
+        "three": {
+          "notes": 118,
+          "fingerLimit": 3
+        },
+        "four": {
+          "notes": 134,
+          "fingerLimit": 4
+        }
+      }
+    },
+    {
+      "name": "pop.00007",
+      "audioPcmSha256": "ae1f514141cd96b60c0bb7ea950bd0d76d25a9f2640978aa76830d82bf9bc516",
+      "duration": 30.00018140589569,
+      "seconds": 4.691050199999998,
+      "beforeClock70": {
+        "f1": 0.56,
+        "precision": 0.4117647058823529,
+        "recall": 0.875,
+        "matchedMeanErrorMs": 25.642857142856794
+      },
+      "afterClock70": {
+        "f1": 1,
+        "precision": 1,
+        "recall": 1,
+        "matchedMeanErrorMs": 11.968750000000188
+      },
+      "beforeClock50": {
+        "f1": 0.52,
+        "precision": 0.38235294117647056,
+        "recall": 0.8125,
+        "matchedMeanErrorMs": 23.230769230768917
+      },
+      "afterClock50": {
+        "f1": 1,
+        "precision": 1,
+        "recall": 1,
+        "matchedMeanErrorMs": 11.968750000000188
+      },
+      "beforeSingleHeads70": {
+        "f1": 0.4150943396226415,
+        "precision": 0.5238095238095238,
+        "recall": 0.34375,
+        "matchedMeanErrorMs": 20.940342197483762
+      },
+      "afterSingleHeads70": {
+        "f1": 0.967741935483871,
+        "precision": 1,
+        "recall": 0.9375,
+        "matchedMeanErrorMs": 17.52964474678716
+      },
+      "charts": {
+        "one": {
+          "notes": 30,
+          "fingerLimit": 1
+        },
+        "two": {
+          "notes": 42,
+          "fingerLimit": 2
+        },
+        "three": {
+          "notes": 65,
+          "fingerLimit": 3
+        },
+        "four": {
+          "notes": 73,
+          "fingerLimit": 4
+        }
+      }
+    },
+    {
+      "name": "pop.00019",
+      "audioPcmSha256": "9b570a8e3b708f508700c08ea26f58ba3eb37791cb778d4c8c6b9e7e62ebd4c1",
+      "duration": 30.00018140589569,
+      "seconds": 4.788632500000007,
+      "beforeClock70": {
+        "f1": 0.7356321839080461,
+        "precision": 0.8,
+        "recall": 0.6808510638297872,
+        "matchedMeanErrorMs": 34.281249999999524
+      },
+      "afterClock70": {
+        "f1": 0.989247311827957,
+        "precision": 1,
+        "recall": 0.9787234042553191,
+        "matchedMeanErrorMs": 7.499999999999943
+      },
+      "beforeClock50": {
+        "f1": 0.7356321839080461,
+        "precision": 0.8,
+        "recall": 0.6808510638297872,
+        "matchedMeanErrorMs": 34.281249999999524
+      },
+      "afterClock50": {
+        "f1": 0.989247311827957,
+        "precision": 1,
+        "recall": 0.9787234042553191,
+        "matchedMeanErrorMs": 7.499999999999943
+      },
+      "beforeSingleHeads70": {
+        "f1": 0.5660377358490567,
+        "precision": 0.5084745762711864,
+        "recall": 0.6382978723404256,
+        "matchedMeanErrorMs": 36.376266061979535
+      },
+      "afterSingleHeads70": {
+        "f1": 0.9782608695652174,
+        "precision": 1,
+        "recall": 0.9574468085106383,
+        "matchedMeanErrorMs": 31.992391030485337
+      },
+      "charts": {
+        "one": {
+          "notes": 45,
+          "fingerLimit": 1
+        },
+        "two": {
+          "notes": 74,
+          "fingerLimit": 2
+        },
+        "three": {
+          "notes": 92,
+          "fingerLimit": 3
+        },
+        "four": {
+          "notes": 113,
+          "fingerLimit": 4
+        }
+      }
+    },
+    {
+      "name": "reggae.00000",
+      "audioPcmSha256": "583b13a6aee7027773301c655631edbda919d877011c38d69f046a812a50e4e5",
+      "duration": 30.013333333333332,
+      "seconds": 4.734532800000015,
+      "beforeClock70": {
+        "f1": 1,
+        "precision": 1,
+        "recall": 1,
+        "matchedMeanErrorMs": 30.93442622950804
+      },
+      "afterClock70": {
+        "f1": 1,
+        "precision": 1,
+        "recall": 1,
+        "matchedMeanErrorMs": 7.754098360655896
+      },
+      "beforeClock50": {
+        "f1": 0.9836065573770492,
+        "precision": 0.9836065573770492,
+        "recall": 0.9836065573770492,
+        "matchedMeanErrorMs": 30.433333333333174
+      },
+      "afterClock50": {
+        "f1": 1,
+        "precision": 1,
+        "recall": 1,
+        "matchedMeanErrorMs": 7.754098360655896
+      },
+      "beforeSingleHeads70": {
+        "f1": 0.793103448275862,
+        "precision": 0.8363636363636363,
+        "recall": 0.7540983606557377,
+        "matchedMeanErrorMs": 32.13760228729111
+      },
+      "afterSingleHeads70": {
+        "f1": 1,
+        "precision": 1,
+        "recall": 1,
+        "matchedMeanErrorMs": 24.61675774134721
+      },
+      "charts": {
+        "one": {
+          "notes": 61,
+          "fingerLimit": 1
+        },
+        "two": {
+          "notes": 66,
+          "fingerLimit": 2
+        },
+        "three": {
+          "notes": 106,
+          "fingerLimit": 3
+        },
+        "four": {
+          "notes": 118,
+          "fingerLimit": 4
+        }
+      }
+    },
+    {
+      "name": "reggae.00007",
+      "audioPcmSha256": "104bbae555f9321bc603c25acf67be9fee2204ac27c7317cc81231e30b02b53a",
+      "duration": 30.013333333333332,
+      "seconds": 4.786707599999994,
+      "beforeClock70": {
+        "f1": 0.9866666666666666,
+        "precision": 0.9736842105263158,
+        "recall": 1,
+        "matchedMeanErrorMs": 16.999999999999847
+      },
+      "afterClock70": {
+        "f1": 0.9866666666666666,
+        "precision": 0.9736842105263158,
+        "recall": 1,
+        "matchedMeanErrorMs": 11.270270270270046
+      },
+      "beforeClock50": {
+        "f1": 0.9866666666666666,
+        "precision": 0.9736842105263158,
+        "recall": 1,
+        "matchedMeanErrorMs": 16.999999999999847
+      },
+      "afterClock50": {
+        "f1": 0.9866666666666666,
+        "precision": 0.9736842105263158,
+        "recall": 1,
+        "matchedMeanErrorMs": 11.270270270270046
+      },
+      "beforeSingleHeads70": {
+        "f1": 0.6722689075630253,
+        "precision": 0.8888888888888888,
+        "recall": 0.5405405405405406,
+        "matchedMeanErrorMs": 18.345929705214964
+      },
+      "afterSingleHeads70": {
+        "f1": 0.9798657718120806,
+        "precision": 0.9733333333333334,
+        "recall": 0.9864864864864865,
+        "matchedMeanErrorMs": 12.426974808187998
+      },
+      "charts": {
+        "one": {
+          "notes": 75,
+          "fingerLimit": 1
+        },
+        "two": {
+          "notes": 81,
+          "fingerLimit": 2
+        },
+        "three": {
+          "notes": 99,
+          "fingerLimit": 3
+        },
+        "four": {
+          "notes": 122,
+          "fingerLimit": 4
+        }
+      }
+    },
+    {
+      "name": "reggae.00019",
+      "audioPcmSha256": "c27a5fe8593cc2c1a8c7d5f7df5499e2931ab07bfe1f6f4b19600d44b74fa886",
+      "duration": 30.013333333333332,
+      "seconds": 4.779934500000003,
+      "beforeClock70": {
+        "f1": 0.993103448275862,
+        "precision": 0.9863013698630136,
+        "recall": 1,
+        "matchedMeanErrorMs": 10.819444444444578
+      },
+      "afterClock70": {
+        "f1": 0.6666666666666666,
+        "precision": 1,
+        "recall": 0.5,
+        "matchedMeanErrorMs": 16.44444444444426
+      },
+      "beforeClock50": {
+        "f1": 0.993103448275862,
+        "precision": 0.9863013698630136,
+        "recall": 1,
+        "matchedMeanErrorMs": 10.819444444444578
+      },
+      "afterClock50": {
+        "f1": 0.6666666666666666,
+        "precision": 1,
+        "recall": 0.5,
+        "matchedMeanErrorMs": 16.44444444444426
+      },
+      "beforeSingleHeads70": {
+        "f1": 0.7868852459016393,
+        "precision": 0.96,
+        "recall": 0.6666666666666666,
+        "matchedMeanErrorMs": 10.583749055177272
+      },
+      "afterSingleHeads70": {
+        "f1": 0.6666666666666666,
+        "precision": 1,
+        "recall": 0.5,
+        "matchedMeanErrorMs": 10.589619551524201
+      },
+      "charts": {
+        "one": {
+          "notes": 36,
+          "fingerLimit": 1
+        },
+        "two": {
+          "notes": 72,
+          "fingerLimit": 2
+        },
+        "three": {
+          "notes": 125,
+          "fingerLimit": 3
+        },
+        "four": {
+          "notes": 129,
+          "fingerLimit": 4
+        }
+      }
+    },
+    {
+      "name": "rock.00000",
+      "audioPcmSha256": "1f70fc77150b49b9756db2a9b9d77d2c84a2d47658a89fa9d3fab71e1a878f7d",
+      "duration": 30.013333333333332,
+      "seconds": 4.745256500000018,
+      "beforeClock70": {
+        "f1": 0.9836065573770492,
+        "precision": 0.9836065573770492,
+        "recall": 0.9836065573770492,
+        "matchedMeanErrorMs": 24.799999999999695
+      },
+      "afterClock70": {
+        "f1": 0.8360655737704918,
+        "precision": 0.8360655737704918,
+        "recall": 0.8360655737704918,
+        "matchedMeanErrorMs": 17.450980392156783
+      },
+      "beforeClock50": {
+        "f1": 0.9180327868852459,
+        "precision": 0.9180327868852459,
+        "recall": 0.9180327868852459,
+        "matchedMeanErrorMs": 22.767857142856858
+      },
+      "afterClock50": {
+        "f1": 0.8360655737704918,
+        "precision": 0.8360655737704918,
+        "recall": 0.8360655737704918,
+        "matchedMeanErrorMs": 17.450980392156783
+      },
+      "beforeSingleHeads70": {
+        "f1": 0.5348837209302325,
+        "precision": 0.92,
+        "recall": 0.3770491803278688,
+        "matchedMeanErrorMs": 17.317657497780825
+      },
+      "afterSingleHeads70": {
+        "f1": 0.7524752475247525,
+        "precision": 0.95,
+        "recall": 0.6229508196721312,
+        "matchedMeanErrorMs": 18.08072562358205
+      },
+      "charts": {
+        "one": {
+          "notes": 40,
+          "fingerLimit": 1
+        },
+        "two": {
+          "notes": 54,
+          "fingerLimit": 2
+        },
+        "three": {
+          "notes": 65,
+          "fingerLimit": 3
+        },
+        "four": {
+          "notes": 75,
+          "fingerLimit": 4
+        }
+      }
+    },
+    {
+      "name": "rock.00007",
+      "audioPcmSha256": "4894363525fdbba4463f9588878976ee5283817f1e7a8f4ad914593ce7e3fa3d",
+      "duration": 30.013333333333332,
+      "seconds": 4.765203800000018,
+      "beforeClock70": {
+        "f1": 0.6,
+        "precision": 0.6857142857142857,
+        "recall": 0.5333333333333333,
+        "matchedMeanErrorMs": 37.62500000000004
+      },
+      "afterClock70": {
+        "f1": 1,
+        "precision": 1,
+        "recall": 1,
+        "matchedMeanErrorMs": 20.711111111111112
+      },
+      "beforeClock50": {
+        "f1": 0.425,
+        "precision": 0.4857142857142857,
+        "recall": 0.37777777777777777,
+        "matchedMeanErrorMs": 28.823529411764458
+      },
+      "afterClock50": {
+        "f1": 0.9555555555555556,
+        "precision": 0.9555555555555556,
+        "recall": 0.9555555555555556,
+        "matchedMeanErrorMs": 18.790697674418617
+      },
+      "beforeSingleHeads70": {
+        "f1": 0.5894736842105264,
+        "precision": 0.56,
+        "recall": 0.6222222222222222,
+        "matchedMeanErrorMs": 38.55597667638416
+      },
+      "afterSingleHeads70": {
+        "f1": 0.9069767441860465,
+        "precision": 0.9512195121951219,
+        "recall": 0.8666666666666667,
+        "matchedMeanErrorMs": 37.72554218268449
+      },
+      "charts": {
+        "one": {
+          "notes": 41,
+          "fingerLimit": 1
+        },
+        "two": {
+          "notes": 64,
+          "fingerLimit": 2
+        },
+        "three": {
+          "notes": 65,
+          "fingerLimit": 3
+        },
+        "four": {
+          "notes": 68,
+          "fingerLimit": 4
+        }
+      }
+    },
+    {
+      "name": "rock.00019",
+      "audioPcmSha256": "8d6f0dab966e1afe936c43e16dcd915b29ebf5aec588efb9d0d3b909760710f8",
+      "duration": 30.013333333333332,
+      "seconds": 4.763884900000004,
+      "beforeClock70": {
+        "f1": 0.743362831858407,
+        "precision": 0.7924528301886793,
+        "recall": 0.7,
+        "matchedMeanErrorMs": 30.047619047618724
+      },
+      "afterClock70": {
+        "f1": 1,
+        "precision": 1,
+        "recall": 1,
+        "matchedMeanErrorMs": 12.21666666666659
+      },
+      "beforeClock50": {
+        "f1": 0.6902654867256638,
+        "precision": 0.7358490566037735,
+        "recall": 0.65,
+        "matchedMeanErrorMs": 27.79487179487134
+      },
+      "afterClock50": {
+        "f1": 0.9833333333333333,
+        "precision": 0.9833333333333333,
+        "recall": 0.9833333333333333,
+        "matchedMeanErrorMs": 11.559322033898193
+      },
+      "beforeSingleHeads70": {
+        "f1": 0.4691358024691357,
+        "precision": 0.9047619047619048,
+        "recall": 0.31666666666666665,
+        "matchedMeanErrorMs": 29.98205036400467
+      },
+      "afterSingleHeads70": {
+        "f1": 0.8947368421052632,
+        "precision": 0.9444444444444444,
+        "recall": 0.85,
+        "matchedMeanErrorMs": 25.468213952246742
+      },
+      "charts": {
+        "one": {
+          "notes": 54,
+          "fingerLimit": 1
+        },
+        "two": {
+          "notes": 68,
+          "fingerLimit": 2
+        },
+        "three": {
+          "notes": 84,
+          "fingerLimit": 3
+        },
+        "four": {
+          "notes": 95,
+          "fingerLimit": 4
+        }
+      }
+    }
+  ]
+}

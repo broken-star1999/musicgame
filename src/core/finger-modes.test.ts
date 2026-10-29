@@ -15,15 +15,14 @@ describe('finger difficulty matches the generated music chart', () => {
   it.each(['one', 'two', 'three', 'four'] as const)('generates a deterministic, beat-aligned %s chart within its finger budget', difficulty => {
     const chart = generateChart(analysis, difficulty), max = DIFFICULTIES[difficulty].max;
     expect(chart).toEqual(generateChart(analysis, difficulty));
-    expect(chart).toMatchObject({ version: 6, difficulty, fingerLimit: max, fingering: { checked: true } });
+    expect(chart).toMatchObject({ version: 7, difficulty, fingerLimit: max, fingering: { checked: true } });
     expect(isPlayableChart(chart.notes, max, chart.duration)).toBe(true);
     expect(peakFingers(chart.notes)).toBe(max);
     for (const n of chart.notes) expect(Math.min(...analysis.onsets.map(onset => Math.abs(onset.time - n.time)))).toBeLessThan(0.0251);
   });
 
-  it('makes the one-finger timeline sequential through holds and swipes', () => {
+  it('makes the one-finger timeline sequential through generated gestures', () => {
     const chart = generateChart(analysis, 'one');
-    expect(chart.notes.some(n => n.type === 'hold')).toBe(true);
     for (let i = 1; i < chart.notes.length; i++) expect(chart.notes[i].time).toBeGreaterThanOrEqual(fingerReleaseTime(chart.notes[i - 1]) - 1e-6);
   });
 

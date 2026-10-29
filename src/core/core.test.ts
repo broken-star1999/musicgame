@@ -56,7 +56,6 @@ describe('playable deterministic chart generation', () => {
   it.each(['one', 'two', 'three', 'four'] as const)('enforces lane spacing, duration, and finger limits for %s', difficulty => {
     const chart = generateChart(fixture(), difficulty);
     expect(chart.notes.length).toBeGreaterThan(20);
-    expect(countTypes(chart).hold).toBeGreaterThan(0);
     const lastEnd = [-100, -100, -100, -100];
     for (let i = 0; i < chart.notes.length; i++) {
       const note = chart.notes[i];

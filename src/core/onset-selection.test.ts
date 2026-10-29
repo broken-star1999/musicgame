@@ -5,6 +5,11 @@ import type { Analysis, Onset } from '../types';
 
 const onset = (time: number, strength: number): Onset => ({ time, strength, band: 0 });
 describe('salient musical attacks survive density reduction', () => {
+  it('keeps a quiet learned beat ahead of a louder ornament while thinning higher modes', () => {
+    const events: Onset[] = [{ time: 1, strength: 0.09, band: 0, role: 'beat' }, { time: 1.1, strength: 1, band: 1, role: 'half' }, { time: 1.5, strength: 0.1, band: 0, role: 'beat' }];
+    expect(selectMusicalOnsets(events, 0.23, 0.16).map(value => value.time)).toEqual([1, 1.5]);
+    expect(selectMusicalOnsets(events, 0.08, 0.08)).toEqual(events);
+  });
   it('keeps a clear beat instead of the weak attack immediately before it', () => {
     const events = Array.from({ length: 16 }, (_, i) => [onset(1 + i * 0.5 - 0.12, 0.25), onset(1 + i * 0.5, 1)]).flat();
     expect(selectMusicalOnsets(events, 0.23, 0.16).map(value => value.time)).toEqual(Array.from({ length: 16 }, (_, i) => 1 + i * 0.5));

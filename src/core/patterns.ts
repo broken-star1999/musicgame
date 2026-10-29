@@ -33,26 +33,45 @@ function pitchAt(analysis: Analysis, time: number): number[] | undefined {
   return analysis.chroma?.[Math.max(0, Math.min(analysis.chroma.length - 1, Math.floor(time / (analysis.chromaStep || 0.05))))];
 }
 
-/** Sustained energy AND stable tonal evidence; duration follows the signal. */
+/** A hold needs a newly activated pitch component at this attack. A pad
+ * already sounding before a drum hit cannot lend that drum a fake duration. */
 export function sustainedEnd(analysis: Analysis, time: number, beat: number): number | undefined {
-  const at = pitchAt(analysis, time + 0.15);
+  if (!analysis.tonalEnergy?.length) return undefined;
+  const step = analysis.chromaStep || 0.05;
+  const tonalAt = (at: number) => analysis.tonalEnergy![Math.floor(at / step)];
+  const before = Array<number>(12).fill(0), after = Array<number>(12).fill(0);
+  let beforeCount = 0, afterCount = 0;
+  for (const offset of [-0.25, -0.2, -0.15]) {
+    const frame = tonalAt(time + offset);
+    if (frame) { beforeCount++; frame.forEach((value, k) => { before[k] += value; }); }
+  }
+  for (const offset of [0.1, 0.15, 0.2]) {
+    const frame = tonalAt(time + offset);
+    if (frame) { afterCount++; frame.forEach((value, k) => { after[k] += value; }); }
+  }
+  before.forEach((value, k) => { before[k] = value / Math.max(1, beforeCount); });
+  after.forEach((value, k) => { after[k] = value / Math.max(1, afterCount); });
+  const total = after.reduce((sum, value) => sum + value, 0), pitch = pitchAt(analysis, time + 0.15);
+  let component = -1, largestGain = 0;
+  for (let k = 0; k < 12; k++) {
+    const gain = after[k] - before[k] * 1.35;
+    if (after[k] > Math.max(1e-6, before[k] * 1.8, total * 0.12) && (pitch?.[k] || 0) > 0.2 && gain > largestGain) { component = k; largestGain = gain; }
+  }
+  if (component < 0) return undefined;
   let end = time, supported = 0;
   const maxEnd = Math.min(analysis.duration - 0.2, time + Math.min(2.2, beat * 4));
-  for (let t = time + 0.1; t <= maxEnd; t += 0.05) {
-    const energy = analysis.energy[Math.floor(t / analysis.energyStep)] || 0;
-    const pitch = pitchAt(analysis, t);
-    const similarity = at && pitch ? at.reduce((sum, value, k) => sum + value * pitch[k], 0) : 1;
-    if (energy < 0.18 || similarity < 0.72) { if (t > time + 0.35) break; continue; }
+  const floor = Math.max(after[component] * 0.35, before[component] * 1.3);
+  for (let t = time + 0.1; t <= maxEnd; t += step) {
+    const level = tonalAt(t)?.[component] || 0;
+    if (level < floor) { if (t > time + 0.35) break; continue; }
     end = t; supported++;
   }
-  return end - time >= Math.max(0.5, beat) && supported * 0.05 >= (end - time) * 0.7 ? end : undefined;
+  return end - time >= Math.max(0.5, beat) && supported * step >= (end - time) * 0.7 ? end : undefined;
 }
 
-/** Swipe direction is game choreography, guided by local melodic movement. */
-export function phraseSwipe(analysis: Analysis, time: number, phase: number): NoteType {
-  const before = pitchAt(analysis, time - 0.12), after = pitchAt(analysis, time + 0.12);
-  const centroid = (values: number[]) => values.reduce((sum, value, k) => sum + value * k, 0) / Math.max(1e-6, values.reduce((a, b) => a + b, 0));
-  const movement = before && after ? centroid(after) - centroid(before) : 0;
-  if (movement > 0.7 || Math.round(phase * 2) % 7 === 0) return 'up';
-  return movement < -0.5 || Math.round(phase) % 2 === 0 ? 'left' : 'right';
+/** Gestures are phrase choreography. Pitch classes are circular and cannot
+ * establish ascending/descending melody or octave motion. */
+export function phraseSwipe(_analysis: Analysis, _time: number, phase: number): NoteType {
+  if (Math.round(phase * 2) % 7 === 0) return 'up';
+  return Math.round(phase) % 2 === 0 ? 'left' : 'right';
 }

@@ -69,7 +69,7 @@ export function reusePhraseTemplates(analysis: Analysis, chart: Chart, maxFinger
   const sustainEvidence = new Map(analysis.onsets.map(onset => {
     const position = beatPosition(beats, onset.time, chart.bpm);
     const beat = timeAtBeat(beats, position + 1, chart.bpm) - onset.time;
-    return [onset, sustainedEnd(analysis, onset.time, beat) !== undefined] as const;
+    return [onset, sustainedEnd(analysis, onset.time, beat)] as const;
   }));
   // Candidate starts follow real attacks, so an intro/pickup or a small BPM
   // estimation error cannot shift all later phrases off the comparison grid.
@@ -102,6 +102,7 @@ export function reusePhraseTemplates(analysis: Analysis, chart: Chart, maxFinger
       const sourceNotes = chart.notes.filter(note => note.time >= source.start - 0.025 && note.time < source.end - 0.025);
       if (!sourceNotes.length) continue;
       const mapped: Note[] = [];
+      let articulationSupported = true;
       for (const note of sourceNotes) {
         let nearest = -1, error = 0.055;
         source.onsets.forEach((onset, i) => { const d = Math.abs(onset.time - note.time); if (d < error) { nearest = i; error = d; } });
@@ -109,9 +110,15 @@ export function reusePhraseTemplates(analysis: Analysis, chart: Chart, maxFinger
         if (mappedIndex === undefined) continue;
         const time = target.onsets[mappedIndex].time;
         const span = note.endTime !== undefined ? beatPosition(beats, note.endTime, chart.bpm) - beatPosition(beats, note.time, chart.bpm) : 0;
-        mapped.push({ ...note, time, ...(note.endTime !== undefined ? { endTime: timeAtBeat(beats, beatPosition(beats, time, chart.bpm) + span, chart.bpm) } : {}) });
+        const targetEnd = sustainEvidence.get(target.onsets[mappedIndex]);
+        if (note.type === 'hold' && targetEnd === undefined) { articulationSupported = false; break; }
+        mapped.push({ ...note, time, ...(note.endTime !== undefined ? { endTime: Math.min(targetEnd!, timeAtBeat(beats, beatPosition(beats, time, chart.bpm) + span, chart.bpm)) } : {}) });
       }
-      if (mapped.length < sourceNotes.length * 0.85) continue;
+      if (!articulationSupported || mapped.length < sourceNotes.length * 0.85) continue;
+      const targetNotes = notes.filter(note => note.time >= target.start - 0.025 && note.time < target.end - 0.025);
+      if (targetNotes.some(note => !mapped.some(copy => Math.abs(copy.time - note.time) < 0.055))) continue;
+      const targetHolds = targetNotes.filter(note => note.type === 'hold');
+      if (targetHolds.some(hold => !mapped.some(note => note.type === 'hold' && Math.abs(note.time - hold.time) < 0.055))) continue;
       const candidate = [...notes.filter(note => note.time < target.start - 0.025 || note.time >= target.end - 0.025), ...mapped].sort((a, b) => a.time - b.time || a.lane - b.lane);
       if (!isPlayableChart(candidate, maxFingers, chart.duration)) continue;
       notes = candidate; repetition.reused++; repetition.notesReused += mapped.length;

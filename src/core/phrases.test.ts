@@ -3,6 +3,15 @@ import type { Analysis, Chart, Note } from '../types';
 import { reusePhraseTemplates, tonalWarpCost } from './phrases';
 import { beatPosition } from './rhythm';
 
+function addSustainEvidence(analysis: Analysis, starts: number[]) {
+  analysis.tonalEnergy = analysis.chroma!.map((pitch, frame) => {
+    const time = frame * analysis.chromaStep!, active = starts.some(start => time >= start && time < start + 0.8);
+    const values = pitch.map(value => value * 0.1); values[11] = active ? 1 : 0;
+    if (active) { const mixed = [...pitch]; mixed[11] = 0.8; const norm = Math.hypot(...mixed); analysis.chroma![frame] = mixed.map(value => value / norm); }
+    return values;
+  });
+}
+
 function fixture(differentMelody = false) {
   const anchor = 0.2, length = 4, step = 0.05, duration = 13.3;
   const onsets = Array.from({ length: 24 }, (_, i) => ({ time: anchor + i * 0.5 + (i >= 8 ? [0.005, -0.004, 0.006, 0][i % 4] : 0), strength: 0.8, band: i % 8 % 3 }));
@@ -13,6 +22,7 @@ function fixture(differentMelody = false) {
     return Array.from({ length: 12 }, (_, k) => k === pitch ? 1 : 0);
   });
   const analysis: Analysis = { duration, bpm: 120, confidence: 1, fingerprint: 'phrases', onsets, energy: Array(300).fill(0.7), energyStep: step, waveform: [], chroma, chromaStep: step };
+  addSustainEvidence(analysis, [2, 10, 18].map(index => onsets[index].time));
   const types = ['tap', 'left', 'hold', 'tap', 'right', 'tap', 'up', 'tap'] as const;
   const notes: Note[] = onsets.map((onset, i) => ({ id: i, time: onset.time, lane: i < 8 ? i % 4 : 3 - i % 4, type: i < 8 ? types[i % 8] : 'tap', ...(i === 2 ? { endTime: onset.time + 0.65 } : {}) }));
   const chart: Chart = { version: 2, fingerprint: 'phrases', difficulty: 'three', duration, bpm: 120, notes };
@@ -50,6 +60,7 @@ describe('similar phrases reuse playable key templates', () => {
       const index = Math.max(0, Math.floor(beatPosition(beats, i * 0.05, 120))) % 8;
       const pitch = [0, 4, 7, 4, 0, 5, 9, 5][index]; return Array.from({ length: 12 }, (_, k) => k === pitch ? 1 : 0);
     });
+    addSustainEvidence(analysis, [analysis.onsets[2].time, analysis.onsets[10].time]);
     chart.notes = chart.notes.slice(0, 16).map((note, i) => ({ ...note, time: analysis.onsets[i].time, ...(i === 2 ? { endTime: analysis.onsets[i].time + 0.65 } : {}) }));
     const output = reusePhraseTemplates(analysis, chart, 3);
     expect(output.repetition?.reused).toBeGreaterThan(0);
@@ -73,6 +84,12 @@ describe('similar phrases reuse playable key templates', () => {
   it('does not treat identical drum timing as an identical melody', () => {
     const { analysis, chart } = fixture(true);
     expect(reusePhraseTemplates(analysis, chart, 3).repetition?.reused).toBe(0);
+  });
+  it('does not copy a source hold into a target without sustained tonal evidence', () => {
+    const { analysis, chart } = fixture();
+    analysis.tonalEnergy = undefined;
+    const output = reusePhraseTemplates(analysis, chart, 3);
+    expect(output.notes[10].type).toBe('tap'); expect(output.notes[18].type).toBe('tap');
   });
 
   it('requires tonal evidence and falls back safely without chroma', () => {

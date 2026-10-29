@@ -1,0 +1,9 @@
+# Install CPU torch/torchaudio 2.9.1 first using the official PyTorch CPU index.
+beat-this @ git+https://github.com/CPJKU/beat_this.git@b95c8ab0c58c2d9fcfd40508ae8dffbc05ac4f5c
+torch==2.9.1
+torchaudio==2.9.1
+numpy==2.5.4
+onnx==1.23.2
+onnxruntime==1.31.1
+einops==0.8.2
+rotary-embedding-torch==0.9.1

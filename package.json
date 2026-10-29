@@ -4,7 +4,9 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "predev": "node scripts/prepare-runtime.mjs",
     "dev": "vite --host 127.0.0.1",
+    "prebuild": "node scripts/prepare-runtime.mjs",
     "build": "tsc -b && vite build",
     "preview": "vite preview --host 127.0.0.1",
     "test": "vitest run"
@@ -15,6 +17,7 @@
     "fft.js": "^4.0.4",
     "lucide-react": "^0.468.0",
     "motion": "^14.7.1",
+    "onnxruntime-web": "1.31.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

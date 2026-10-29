@@ -6,6 +6,12 @@ const attacks = (times: number[]): Onset[] => times.map((time, i) => ({ time, st
 const median = (values: number[]) => [...values].sort((a, b) => a - b)[Math.floor(values.length / 2)];
 
 describe('continuous beat tracking in audio time', () => {
+  it('keeps confidence and beat times invariant to a common change in input strength', () => {
+    const events = attacks(Array.from({length:32},(_,i)=>1+i*0.5));
+    const loud = trackBeats(events,18,120), quiet = trackBeats(events.map(event=>({...event,strength:event.strength*0.1})),18,120);
+    expect(quiet.beats).toEqual(loud.beats);
+    expect(quiet.confidence).toBeCloseTo(loud.confidence,10);
+  });
   it('tracks 120 BPM after leading silence with supported four-beat accents', () => {
     const times = Array.from({ length: 32 }, (_, i) => 1.2 + i * 0.5), rhythm = trackBeats(attacks(times), 18, 120);
     expect(rhythm.beats[0]).toBeGreaterThanOrEqual(1.15);

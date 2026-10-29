@@ -4,17 +4,28 @@ import { analyzeAudio } from '../src/core/analysis';
 import { countTypes, DIFFICULTIES, generateChart } from '../src/core/chart';
 import { isPlayableChart, peakFingers } from '../src/core/chart-constraints';
 import { validateFingering } from '../src/core/fingering';
+import fs from 'node:fs';
+import * as ort from 'onnxruntime-web/wasm';
+import model from '../src/core/beat-model-config.json';
+import { beatSpectrogram } from '../src/core/beat-features';
+import { runBeatModel } from '../src/core/beat-inference';
+import { applyBeatRecognition } from '../src/core/recognition';
 
 // Optional private fixture: never copy the user's song into the repository.
 const audioPath = process.env.BEATFALL_TEST_AUDIO;
 describe.skipIf(!audioPath)('local real-song analysis', () => {
-  it('decodes a local song and produces conflict-free charts at all difficulties', () => {
+  it('runs local WASM recognition and produces conflict-free charts at all difficulties', async () => {
     const decoded = spawnSync('ffmpeg', ['-v', 'error', '-i', audioPath!, '-f', 'f32le', '-ac', '1', '-ar', '22050', 'pipe:1'], { maxBuffer: 64 * 1024 * 1024, windowsHide: true });
     expect(decoded.status, decoded.stderr.toString()).toBe(0);
     const bytes = decoded.stdout;
     const samples = new Float32Array(bytes.length / 4);
     for (let i = 0; i < samples.length; i++) samples[i] = bytes.readFloatLE(i * 4);
-    const analysis = analyzeAudio(samples, 22050);
+    ort.env.wasm.numThreads = 1;
+    const session = await ort.InferenceSession.create(new Uint8Array(fs.readFileSync(`public/models/${model.file}`)), { executionProviders: ['wasm'], graphOptimizationLevel: 'all' });
+    let analysis;
+    try { analysis = applyBeatRecognition(analyzeAudio(samples, 22050), await runBeatModel(session, beatSpectrogram(samples))); }
+    finally { await session.release(); }
+    expect(analysis.recognition?.engine).toBe('beat-this');
     expect(analysis.duration).toBeGreaterThan(2); expect(analysis.duration).toBeLessThanOrEqual(300);
     const reports = [];
     for (const difficulty of ['one', 'two', 'three', 'four'] as const) {
@@ -38,5 +49,5 @@ describe.skipIf(!audioPath)('local real-song analysis', () => {
     }
     const sections = analysis.pulse?.sections || [];
     console.log(JSON.stringify({ duration: analysis.duration, bpm: analysis.bpm, confidence: analysis.confidence, onsets: analysis.onsets.length, pulse: analysis.pulse?.onsets.length, sourceSections: sections.reduce((counts, section) => { counts[section.band] = (counts[section.band] || 0) + 1; return counts; }, {} as Record<string, number>), sourceChanges: sections.filter((section, i) => i > 0 && section.band !== sections[i - 1].band).length, beats: analysis.rhythm?.beats.length, beatConfidence: analysis.rhythm?.confidence, reports }, null, 2));
-  }, 30000);
+  }, 120000);
 });
