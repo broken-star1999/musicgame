@@ -66,6 +66,10 @@ Web Audio 解码原始音频，播放仍使用原始解码缓冲。分析副本�
 
 音符位置由目标时间和 `AudioContext.currentTime` 直接计算。屏幕匀速与透视推进共享判定时刻；后者使位移相对当地轨道宽度保持恒定。Pointer Events 以起手轨道跟踪每根手指，整条可见轨道可操作。暂停、切后台、旋转或触点取消冻结音乐并清理触点，恢复前倒计时。
 
+`audio-transport.ts` 的本局时钟为已保存歌曲位置加当前播放段的 AudioContext 时间差。暂停同步保存位置、停止并断开本局 source，不依赖全局 context.suspend；恢复从原 offset 重建 source，开场负时间保留剩余提前量。音频自然结束后时钟仍推进至结算余量，stop 幂等且退出后的 pause/resume/unlock 无全局副作用。旧 source 的 ended 事件不会清理新 source。
+
+`game-recovery.ts` 每局一个实例，每次恢复有独立 generation 和 AbortController；点击内立即调用 context.resume 解锁声音，但本局歌曲保持冻结，成功后才倒计时 3 秒。暂停、重启、退出、隐藏和音频中断作废旧 attempt；所有异步成功/错误均检查归属，不通过 mutable ref 操作替换后的局。恢复声音及最终恢复播放各有 8 秒超时，失效回调直接退出，不用全局 suspend 补偿。App 初次启动同样检查 serial、track/chart 身份、可见性及最新就绪状态，换歌/重编时取消旧启动。系统音频中断仍需真实 Android/iPhone 测试，桌面模拟不能证明平台所有事件顺序。
+
 分析和编谱分别在 Worker 中执行，切歌、模式切换、取消和重新生成终止旧任务。开始前核对歌曲指纹、指法和 BPM。版本 7 记录 `generator: signal | beat-this`，成绩按生成版本、识别路径、歌曲、指法、BPM 及自动/手动参考网格区分，保留旧成绩但不混比。
 
 ## 验证、边界和来源

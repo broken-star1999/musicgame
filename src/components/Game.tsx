@@ -10,13 +10,15 @@ import { drawGame } from './renderer';
 import { stageLayout } from '../core/layout';
 import { canvasPoint, readGameViewport } from '../core/viewport';
 import { HitFeedback } from '../core/haptics';
+import { GameRecovery } from '../core/game-recovery';
 import './game-layout.css';
 
 type Props = { track: Track; chart: Chart; settings: Settings; autoplay: boolean; onExit: () => void; onFinish: (result: Result) => void };
 type Finger = { lane: number; x: number; y: number; moved: boolean; hold?: NoteState };
 export function Game({ track, chart, settings, autoplay, onExit, onFinish }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const engineRef = useRef(new JudgmentEngine(chart, autoplay));
+  const [initialEngine] = useState(() => new JudgmentEngine(chart, autoplay));
+  const engineRef = useRef(initialEngine);
   const transportRef = useRef<Transport | null>(null);
   const fingers = useRef(new Map<number, Finger>());
   const pausedRef = useRef(false), countdownRef = useRef<number | null>(null);
@@ -26,17 +28,27 @@ export function Game({ track, chart, settings, autoplay, onExit, onFinish }: Pro
   const [audioError, setAudioError] = useState('');
   const [hud, setHud] = useState({ score: 0, accuracy: 100, combo: 0, progress: 0 });
   const pauseRef = useRef<() => void>(() => {});
-  const mounted = useRef(true), timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const recoveryRef = useRef<GameRecovery | null>(null);
   const [restarting, setRestarting] = useState(0);
   const feedbackRef = useRef<HitFeedback | null>(null);
 
   useEffect(() => {
-    mounted.current = true;
     const canvas = canvasRef.current!;
     const feedback = new HitFeedback(settings.vibration && !autoplay); feedbackRef.current = feedback;
     const engine = new JudgmentEngine(chart, autoplay, hit => feedback.hit(hit)); engineRef.current = engine;
     const transport = new Transport(track.buffer, settings.volume); transportRef.current = transport;
     pausedRef.current = false; setPaused(false); setCountdown(null); countdownRef.current = null;
+    setAudioError(''); setHud({ score: 0, accuracy: 100, combo: 0, progress: 0 });
+    const recovery = new GameRecovery(transport, {
+      countdown: value => { countdownRef.current = value; setCountdown(value); },
+      ready: () => {
+        engine.resumeHolds(transport.time() - settings.offset / 1000);
+        pausedRef.current = false; setPaused(false);
+      },
+      error: message => { engine.suspendHolds(); clearFingers(); setAudioError(message); },
+      interrupted: () => pauseRef.current(),
+    }, () => !document.hidden);
+    recoveryRef.current = recovery;
     const ctx = canvas.getContext('2d')!;
     let raf = 0, ended = false, lastHud = 0;
     const resize = () => {
@@ -69,10 +81,12 @@ export function Game({ track, chart, settings, autoplay, onExit, onFinish }: Pro
       raf = requestAnimationFrame(animate);
     };
     raf = requestAnimationFrame(animate);
-    audioContext().resume().catch(() => { setAudioError('声音未能启动，请点击恢复声音。'); pauseRef.current(); });
+    if (audioContext().state !== 'running') { pauseRef.current(); setAudioError('声音未能启动，请点击继续恢复。'); }
     return () => {
-      mounted.current = false; ended = true; cancelAnimationFrame(raf); observer.disconnect(); transport.stop();
-      clearTimeout(timer.current); fingers.current.clear();
+      recovery.dispose(); if (recoveryRef.current === recovery) recoveryRef.current = null;
+      ended = true; cancelAnimationFrame(raf); observer.disconnect(); transport.stop();
+      if (transportRef.current === transport) transportRef.current = null;
+      clearFingers();
       feedback.stop();
     };
   }, [track, chart, settings, autoplay, onFinish, restarting]);
@@ -84,11 +98,12 @@ export function Game({ track, chart, settings, autoplay, onExit, onFinish }: Pro
   }
   function pauseGame() {
     if (!transportRef.current) return;
-    clearTimeout(timer.current); setCountdown(null); countdownRef.current = null;
+    recoveryRef.current?.cancel(); setCountdown(null); countdownRef.current = null;
     if (!pausedRef.current) {
       pausedRef.current = true; setPaused(true);
-      transportRef.current.pause().catch(() => setAudioError('音频被系统中断，请点击继续重试。'));
     }
+    const transport = transportRef.current;
+    transport.pause().catch(() => { if (transportRef.current === transport) setAudioError('音频被系统中断，请点击继续重试。'); });
     engineRef.current.suspendHolds(); clearFingers();
     feedbackRef.current?.stop();
   }
@@ -103,7 +118,7 @@ export function Game({ track, chart, settings, autoplay, onExit, onFinish }: Pro
     };
     const visibility = () => { if (document.hidden) pauseRef.current(); };
     const audioState = () => {
-      if (audioContext().state !== 'running' && !pausedRef.current) {
+      if (audioContext().state !== 'running' && (!pausedRef.current || countdownRef.current !== null)) {
         pauseRef.current(); setAudioError('音频被系统暂停，点击继续恢复。');
       }
     };
@@ -125,27 +140,13 @@ export function Game({ track, chart, settings, autoplay, onExit, onFinish }: Pro
     };
   }, []);
 
-  async function resumeGame() {
-    if (countdownRef.current !== null) return;
-    setAudioError('');
-    let remaining = 3; countdownRef.current = remaining; setCountdown(remaining);
-    const tick = () => {
-      if (!mounted.current || document.hidden) { pauseGame(); return; }
-      remaining--;
-      if (remaining > 0) { countdownRef.current = remaining; setCountdown(remaining); timer.current = setTimeout(tick, 1000); }
-      else {
-        transportRef.current?.resume().then(() => {
-          if (!mounted.current || document.hidden || countdownRef.current === null) { transportRef.current?.pause(); return; }
-          engineRef.current.resumeHolds(transportRef.current!.time() - settings.offset / 1000);
-          pausedRef.current = false; setPaused(false); countdownRef.current = null; setCountdown(null);
-        }).catch(() => { setAudioError('声音恢复失败，请再次点击继续。'); countdownRef.current = null; setCountdown(null); });
-      }
-    };
-    timer.current = setTimeout(tick, 1000);
+  function resumeGame() {
+    if (!pausedRef.current || countdownRef.current !== null) return;
+    setAudioError(''); void recoveryRef.current?.start();
   }
 
   const pointerDown = (event: React.PointerEvent<HTMLCanvasElement>) => {
-    if (autoplay || (pausedRef.current && countdownRef.current === null)) return;
+    if (autoplay || (pausedRef.current && (countdownRef.current === null || countdownRef.current === 0))) return;
     event.preventDefault();
     const canvas = event.currentTarget;
     const point = canvasPoint(event.clientX, event.clientY, canvas.getBoundingClientRect(), canvas.clientWidth, canvas.clientHeight, viewportRef.current.rotated);
@@ -202,12 +203,12 @@ export function Game({ track, chart, settings, autoplay, onExit, onFinish }: Pro
     {paused && <div className={`game-overlay ${countdown !== null ? 'resuming' : ''}`}>
       <div className="pause-card">
         <span className="eyebrow">{countdown !== null ? 'GET READY' : 'TAKE A BREATH'}</span>
-        <h2>{countdown !== null ? countdown : '节拍暂停'}</h2>
-        <p>{countdown !== null ? '如有未结束的长按，现在按住原轨道继续。' : '准备好了，就回到音乐里。'}</p>
+        <h2>{countdown === 0 ? '恢复声音' : countdown !== null ? countdown : '节拍暂停'}</h2>
+        <p>{countdown === 0 ? '正在连接音频，请稍候。' : countdown !== null ? '如有未结束的长按，现在按住原轨道继续。' : '准备好了，就回到音乐里。'}</p>
         {audioError && <p role="alert" className="error-text">{audioError}</p>}
         {countdown === null && <div className="pause-actions">
           <button className="primary-button" onClick={resumeGame}><Play size={17} /> 继续演奏</button>
-          <button className="secondary-button" onClick={() => { clearTimeout(timer.current); clearFingers(); setRestarting(n => n + 1); }}><RotateCcw size={16} /> 重新开始</button>
+          <button className="secondary-button" onClick={() => { recoveryRef.current?.cancel(); clearFingers(); setRestarting(n => n + 1); }}><RotateCcw size={16} /> 重新开始</button>
           <button className="text-button" onClick={onExit}><ArrowLeft size={15} /> 返回演奏台</button>
         </div>}
       </div>

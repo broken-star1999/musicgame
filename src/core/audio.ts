@@ -3,6 +3,7 @@ import { checkAudioAbort, waitForAudio, yieldAudio } from './audio-work';
 import type { AudioWorkOptions } from './audio-work';
 export { audioContext } from './audio-context';
 export { decodeFile } from './audio-decode';
+export { Transport } from './audio-transport';
 
 export const SAMPLE_RATE = 22050;
 function writeMono(buffer: AudioBuffer, output: Float32Array, from: number, to: number, ratio: number, origin = 0): void {
@@ -74,29 +75,6 @@ export async function prepareMono(buffer: AudioBuffer, options: AudioWorkOptions
     if (to < length) await yieldAudio(signal);
   }
   checkAudioAbort(signal); return output;
-}
-
-export class Transport {
-  private source: AudioBufferSourceNode;
-  private gain: GainNode;
-  private startTime: number;
-  private stopped = false;
-  constructor(buffer: AudioBuffer, volume: number, lead = 2.5) {
-    const ctx = audioContext();
-    this.source = ctx.createBufferSource(); this.source.buffer = buffer;
-    this.gain = ctx.createGain(); this.gain.gain.value = volume;
-    this.source.connect(this.gain); this.gain.connect(ctx.destination);
-    this.startTime = ctx.currentTime + lead;
-    this.source.start(this.startTime);
-  }
-  time() { return audioContext().currentTime - this.startTime; }
-  async pause() { await audioContext().suspend(); }
-  async resume() { await audioContext().resume(); }
-  stop() {
-    if (this.stopped) return;
-    this.stopped = true;
-    this.source.stop(); this.source.disconnect(); this.gain.disconnect();
-  }
 }
 
 // An original, deterministic 128 BPM synth loop; no downloaded music or assets.
