@@ -76,7 +76,7 @@ Web Audio 解码原始音频，播放仍使用原始解码缓冲。分析副本�
 
 增强 Worker 先发送完整 `baseline`，完成时只发送实际改变的 `bpm/confidence/rhythm/pulse/recognition` patch；主线程按白名单合并，复用原 `energy/waveform/chroma/tonalEnergy/onsets/candidates`。缺省或 undefined 保留字段，null 清理可选字段；没有 baseline 的 patch 明确报错。资源失败回轻量只需 recognition 更新，普通轻量路径仍只发一次完整 done。取消、立即轻量、45 秒无响应恢复和迟到守卫覆盖这两条完成路径。
 
-内置原创演示曲由独立 `demo.worker.ts` 合成，传回 44.1 kHz、2,066,085 个 Float32 样本的 transferable buffer；主线程创建 AudioBuffer 并复制一次，不执行复杂波形合成。30 秒总超时不随 progress 延长，取消、超时或出错均终止 Worker，无主线程重算 fallback。同步 `createDemo` 仍直接填充 AudioBuffer，供旧接口和确定性对照；三个完整 PCM 路径均与旧值匹配。
+内置原创演示曲由独立 `demo.worker.ts` 合成，传回 44.1 kHz、2,066,085 个 Float32 样本的 transferable buffer；主线程创建 AudioBuffer 并复制一次，不执行复杂波形合成。30 秒总超时不随 progress 延长，取消、超时或出错均终止 Worker，无主线程重算 fallback。同步 `createDemo` 仍直接填充 AudioBuffer，供旧接口和确定性对照；纯函数、同步及 Worker 三条路径均在同一运行时对冻结的旧函数做全 PCM 逐字节比较。Math 的超越函数结果可能随运行时/平台不同，本机 PCM 哈希仅为测量记录。
 
 菜单 Preview 使用最多 30 FPS 的时间驱动绘制。可见性、交叉状态、系统减少动画及 App 的 busy/compiling/help/result/starting 共同决定运行状态；停止时取消 RAF 并冻结预览时间，恢复时重置 anchor。相同画布尺寸的 ResizeObserver 回调不重复绘制。数据或速度变化才重建预览；这不改游戏音频时钟及判定。
 

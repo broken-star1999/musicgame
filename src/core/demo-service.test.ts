@@ -1,3 +1,4 @@
+import { Buffer } from 'node:buffer';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { DEMO_FRAMES, DEMO_SAMPLE_RATE } from './demo-synthesis';
 import type { DemoResponse } from './demo.worker';
@@ -13,7 +14,12 @@ class FakeWorker {
 }
 let createDemoAsync: typeof import('./demo-service')['createDemoAsync'];
 let provider: ReturnType<typeof vi.fn>, createBuffer: ReturnType<typeof vi.fn>;
-const done = (): DemoResponse => ({ type: 'done', sampleRate: DEMO_SAMPLE_RATE, samples: new Float32Array(DEMO_FRAMES) });
+// Lifecycle/copy tests need valid dimensions and nonzero markers, not synthesis.
+const done = (): DemoResponse => {
+  const samples = new Float32Array(DEMO_FRAMES);
+  samples[0] = 0.25; samples[123] = 0.5; samples[Math.floor(DEMO_FRAMES / 2)] = -0.125; samples[DEMO_FRAMES - 1] = -0.25;
+  return { type: 'done', sampleRate: DEMO_SAMPLE_RATE, samples };
+};
 
 beforeEach(async () => {
   vi.resetModules(); instances.length = 0; vi.stubGlobal('Worker', FakeWorker);
@@ -35,12 +41,15 @@ describe('cancellable worker demo synthesis', () => {
     worker.emit({ type: 'progress', value: 0.5, stage: '正在合成乐段' });
     expect(progress).toHaveBeenLastCalledWith(0.5, '正在合成乐段');
     const message = done(); if (message.type !== 'done') throw new Error('fixture');
-    message.samples[123] = 0.5; message.samples[DEMO_FRAMES - 1] = -0.25;
     worker.emit(message);
     const buffer = await loading;
     expect(createBuffer).toHaveBeenCalledExactlyOnceWith(1, DEMO_FRAMES, DEMO_SAMPLE_RATE);
-    expect(buffer.getChannelData(0)).not.toBe(message.samples);
-    expect(buffer.getChannelData(0)[123]).toBe(0.5); expect(buffer.getChannelData(0).at(-1)).toBe(-0.25);
+    const actual = buffer.getChannelData(0), expected = message.samples;
+    // Vitest's toBe eagerly deep-compares unequal references for hints, even
+    // with .not. Keep its matcher away from two million float elements.
+    expect(actual === expected).toBe(false);
+    expect(Buffer.from(actual.buffer, actual.byteOffset, actual.byteLength)
+      .equals(Buffer.from(expected.buffer, expected.byteOffset, expected.byteLength))).toBe(true);
     expect(worker.terminate).toHaveBeenCalledOnce(); expect(vi.getTimerCount()).toBe(0);
     expect(worker.onmessage).toBeNull(); expect(worker.onerror).toBeNull();
   });

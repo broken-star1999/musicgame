@@ -104,7 +104,9 @@
     "rate": 44100,
     "frames": 2066085,
     "pcmSha256": "36a3f9421d456dfa9829efa25223785da2d90963699d2352522a30d791cf5aaf",
-    "threeCompletePathsMatch": true
+    "threeCompletePathsMatch": true,
+    "comparisonScope": "Same runtime, full PCM bytes versus frozen e122c16 implementation",
+    "pcmHashScope": "Historical Windows x64 Node24 measurement only; not a cross-runtime golden"
   },
   "analysisTransfer": {
     "song": "九万字 - 黄诗扶",
