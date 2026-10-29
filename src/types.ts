@@ -61,5 +61,14 @@ export interface Result {
   autoplay: boolean;
 }
 export interface Track { name: string; artist: string; buffer: AudioBuffer; analysis: Analysis; demo: boolean }
+/** Omitted/undefined fields keep the baseline value. Explicit null removes an
+ * optional result field; required numeric fields cannot be cleared. */
+export interface AnalysisPatch {
+  bpm?: number;
+  confidence?: number;
+  rhythm?: Rhythm | null;
+  pulse?: Analysis['pulse'] | null;
+  recognition?: Analysis['recognition'] | null;
+}
 export type WorkerRequest = { samples: Float32Array; sampleRate: number; assetBase: string; recognitionMode?: RecognitionMode };
-export type WorkerResponse = { type: 'progress'; value: number; stage: string } | { type: 'baseline'; analysis: Analysis } | { type: 'done'; analysis: Analysis } | { type: 'error'; message: string };
+export type WorkerResponse = { type: 'progress'; value: number; stage: string } | { type: 'baseline'; analysis: Analysis } | { type: 'patch'; patch: AnalysisPatch } | { type: 'done'; analysis: Analysis } | { type: 'error'; message: string };

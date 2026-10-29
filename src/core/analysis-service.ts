@@ -1,5 +1,6 @@
 import type { Analysis, RecognitionMode, WorkerRequest, WorkerResponse } from '../types';
 import { ANALYSIS_STALL_MS, basicAnalysis } from './analysis-fallback';
+import { mergeAnalysisPatch } from './analysis-result';
 
 /** The watchdog lives on the page, outside the WASM worker. A blocked worker
  * cannot prevent this timeout or discard the already finished signal result. */
@@ -20,6 +21,13 @@ export function analyzeMusic(samples: Float32Array, recognitionMode: Recognition
       const message = event.data; arm();
       if (message.type === 'progress') progress(message.value, message.stage);
       else if (message.type === 'baseline') { baseline = message.analysis; if (preferBasic) useBasic(); }
+      else if (message.type === 'patch') {
+        if (!baseline) finish(() => reject(new Error('增强分析结果缺少基础数据，请重新识别。')));
+        else try {
+          const analysis = mergeAnalysisPatch(baseline, message.patch);
+          finish(() => resolve(analysis));
+        } catch { recover('增强分析结果无效，请重新识别'); }
+      }
       else if (message.type === 'done') finish(() => resolve(message.analysis));
       else recover(message.message);
     };

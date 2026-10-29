@@ -7,6 +7,7 @@
 | 要求 | 当前实现与证据 | 状态 |
 | --- | --- | --- |
 | 本地导入、原创演示曲、生成进度、取消与更换歌曲 | `App.tsx`、`audio-decode.ts`、`analysis-service.ts`；五种真实编码导入及六类拒绝/恢复场景见 QA_REPORT | 已验证桌面浏览器 |
+| 手机加载负担、演示合成取消、增强数据复用、后台预览停止 | Demo Worker、Analysis patch、轻量 Motion、Preview 运行状态；实际歌曲四档等价及节流对照见 MOBILE_PERFORMANCE | 已验证桌面模拟；真机耗时/总内存待测 |
 | 单指、二指、三指、四指，均使用四条轨道 | `chart.ts`、`finger-modes.test.ts`、`fingering.test.ts`；单指无同时操作、长按占用计入总手指预算、四档确定性及路线回放 | 已验证参考手指模型；个人手感待真机 |
 | 速度、音量、−300～+300 ms 偏移、震动、BPM 修正 | App 设置；浏览器键盘改变控件、刷新保留、无效 BPM 可恢复及 128 BPM 重编 | 已验证；实际耳机延迟仍需个人校准 |
 | 默认横向页面、竖屏自动侧转、安全区与角落全屏 | `LandscapeViewport.tsx`、`FullscreenButton.tsx`、`viewport.test.ts`；实际全屏进入/退出、拒绝/缺失回退、390×844 菜单可操作 | 已验证桌面模拟；手机浏览器限制已披露 |
@@ -45,7 +46,7 @@ GTZAN 的逐曲平均 ±70 ms 节拍 F1 为 0.8427：21 段改善、4 段持平�
 
 ## 构建与部署
 
-- 常规 `npm test`：278 项通过，1 项私有歌曲测试默认跳过。生产构建和模型/WASM 哈希校验通过。自动演示落点音另有 7 项桌面浏览器检查，默认关闭；用于人工对照，不证明谱面识别准确。
+- 常规 `npm test`：325 项通过，1 项私有歌曲测试默认跳过。生产构建和模型/WASM 哈希校验通过。自动演示落点音另有 7 项桌面浏览器检查，默认关闭；用于人工对照，不证明谱面识别准确。
 - `package-lock.json`、README、ALGORITHM、QA_REPORT、第三方许可、模型许可均在仓库。
 - GitHub Pages 工作流在 main 推送后执行 `npm ci`、测试和构建，再发布 `dist`。最新具体提交与成功工作流以仓库 Actions 为准；不把旧提交的通过状态当成新提交已部署。
 - `edgeone.json` 声明 `npm ci`、`npm run build`、`dist`，并采用[官方配置文档](https://pages.edgeone.ai/document/edgeone-json)列出的预装 `22.11.0`；Vite 相对路径兼容 `/musicgame/` 及根目录。腾讯端账号连接和正式部署尚未办理，原计划明确允许后续提供目标账号后进行。

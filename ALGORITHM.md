@@ -74,6 +74,12 @@ Web Audio 解码原始音频，播放仍使用原始解码缓冲。分析副本�
 
 分析和编谱分别在 Worker 中执行，切歌、模式切换、取消和重新生成终止旧任务。开始前核对歌曲指纹、指法和 BPM。解码后准备/分析报错时也清除当前歌曲引用，防止保留失败曲目的 PCM 或在切换识别模式时重跑失败音频。版本 7 记录 `generator: signal | beat-this`，成绩按生成版本、判定规则版本、识别路径、歌曲、指法、BPM 及自动/手动参考网格区分，保留旧成绩但不混比。
 
+增强 Worker 先发送完整 `baseline`，完成时只发送实际改变的 `bpm/confidence/rhythm/pulse/recognition` patch；主线程按白名单合并，复用原 `energy/waveform/chroma/tonalEnergy/onsets/candidates`。缺省或 undefined 保留字段，null 清理可选字段；没有 baseline 的 patch 明确报错。资源失败回轻量只需 recognition 更新，普通轻量路径仍只发一次完整 done。取消、立即轻量、45 秒无响应恢复和迟到守卫覆盖这两条完成路径。
+
+内置原创演示曲由独立 `demo.worker.ts` 合成，传回 44.1 kHz、2,066,085 个 Float32 样本的 transferable buffer；主线程创建 AudioBuffer 并复制一次，不执行复杂波形合成。30 秒总超时不随 progress 延长，取消、超时或出错均终止 Worker，无主线程重算 fallback。同步 `createDemo` 仍直接填充 AudioBuffer，供旧接口和确定性对照；三个完整 PCM 路径均与旧值匹配。
+
+菜单 Preview 使用最多 30 FPS 的时间驱动绘制。可见性、交叉状态、系统减少动画及 App 的 busy/compiling/help/result/starting 共同决定运行状态；停止时取消 RAF 并冻结预览时间，恢复时重置 anchor。相同画布尺寸的 ResizeObserver 回调不重复绘制。数据或速度变化才重建预览；这不改游戏音频时钟及判定。
+
 判定规则版本 `JUDGMENT_VERSION=2`：±45/90/140 ms 窗口用于单点、滑动阈值时刻及长按起点。长按尾部持到目标时刻自动 Perfect，提前松手为 Miss，`1e-9` 秒容差只处理浮点边界，不提供早松得分宽限。首尾仍为等权单位，提前松手中断连击且之后 update/release 不会重复记分。修复前的 90 ms 早松 Perfect 不再沿用；最佳成绩键增加独立的 `j2` 命名空间，编谱及模型版本仍为 7。存储只读写 0～100 万有限整数分数，错误值按 0 处理，不主动清除历史记录；无法读取旧最佳时跳过写入，避免覆盖未知的有效成绩。
 
 ## 验证、边界和来源

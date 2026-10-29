@@ -1,0 +1,246 @@
+{
+  "date": "2026-10-30",
+  "protocol": {
+    "browser": "156.0.4314.42",
+    "viewport": [
+      844,
+      390
+    ],
+    "deviceScaleFactor": 2,
+    "hasTouch": true,
+    "cpuThrottle": 6,
+    "mode": "actual enhanced ONNX/WASM on original demo",
+    "baselineCommit": "e122c16c25c4fa8748b0950e270d65b61ea26846",
+    "network": "local static assets, fresh isolated browser; all published baseline chunks present",
+    "runPolicy": "one validated baseline and final-build run; illustrative measurements, not statistical speed claims"
+  },
+  "baseline": {
+    "bundle": {
+      "name": "index-3X69QPgJ.js",
+      "bytes": 444439,
+      "gzipBytes": 143631,
+      "sha256": "a78cc18b92bfc7edff4d56592ddadc168b4be919f054a498a338336107e0ba2e"
+    },
+    "firstPreviewDrawMs": 3247.5,
+    "readyMs": 10053.299999952316,
+    "longestMainThreadTaskMs": 2772,
+    "mainThreadTasks": [
+      {
+        "start": 169.29999995231628,
+        "duration": 154
+      },
+      {
+        "start": 324.5,
+        "duration": 92
+      },
+      {
+        "start": 461.89999985694885,
+        "duration": 2772
+      },
+      {
+        "start": 3325.2999999523163,
+        "duration": 73
+      }
+    ],
+    "actualRecognition": "增强",
+    "actualSource": [
+      "增强节拍识别 · 已在本机完成",
+      "检测到 98 个候选拍点 · 局部速度约 127–128 BPM"
+    ],
+    "previewDrawsPer1200ms": {
+      "visible": 290,
+      "offscreen": 289,
+      "restored": 282,
+      "reducedMotion": 289,
+      "hidden": 289,
+      "returned": 288
+    },
+    "pageErrors": []
+  },
+  "candidate": {
+    "bundle": {
+      "name": "index-BvcCRHvE.js",
+      "bytes": 397498,
+      "gzipBytes": 129336,
+      "sha256": "b029d23fc52518c6c9ac19e078f1a9afb579f731020c54ee514422cc0e7d9e93"
+    },
+    "firstPreviewDrawMs": 1404.2000000476837,
+    "readyMs": 8647.200000047684,
+    "longestMainThreadTaskMs": 1026,
+    "mainThreadTasks": [
+      {
+        "start": 153,
+        "duration": 127
+      },
+      {
+        "start": 280.60000014305115,
+        "duration": 77
+      },
+      {
+        "start": 399.2999999523163,
+        "duration": 1026
+      },
+      {
+        "start": 1961.7999999523163,
+        "duration": 82
+      }
+    ],
+    "actualRecognition": "增强",
+    "actualSource": [
+      "增强节拍识别 · 已在本机完成",
+      "检测到 98 个候选拍点 · 局部速度约 127–128 BPM"
+    ],
+    "previewDrawsPer1200ms": {
+      "visible": 36,
+      "offscreen": 0,
+      "restored": 35,
+      "reducedMotion": 0,
+      "hidden": 0,
+      "returned": 35
+    },
+    "pageErrors": []
+  },
+  "synthesis": {
+    "rate": 44100,
+    "frames": 2066085,
+    "pcmSha256": "36a3f9421d456dfa9829efa25223785da2d90963699d2352522a30d791cf5aaf",
+    "threeCompletePathsMatch": true
+  },
+  "analysisTransfer": {
+    "song": "九万字 - 黄诗扶",
+    "privateLocalOnly": true,
+    "baselineCount": 1,
+    "patchCount": 1,
+    "fullDoneCount": 0,
+    "baselineJsonCharacters": 2459044,
+    "previousEnhancedFullJsonCharacters": 2496876,
+    "patchJsonCharacters": 89009,
+    "patchKeys": [
+      "confidence",
+      "rhythm",
+      "pulse",
+      "recognition"
+    ],
+    "featureArrayReferencesReused": {
+      "energy": true,
+      "waveform": true,
+      "chroma": true,
+      "tonalEnergy": true,
+      "onsets": true,
+      "candidates": true
+    },
+    "baselineElements": {
+      "energy": 4630,
+      "waveform": 160,
+      "onsets": 701,
+      "candidates": 2328,
+      "chroma": {
+        "rows": 4630,
+        "values": 55560
+      },
+      "tonalEnergy": {
+        "rows": 4630,
+        "values": 55560
+      }
+    },
+    "charts": [
+      {
+        "mode": "one",
+        "notes": 366,
+        "oldNotes": 366,
+        "fingerprintMatches": true,
+        "bpmMatches": true,
+        "durationMatches": true,
+        "notesExactlyEqual": true,
+        "wholeChartExactlyEqual": true,
+        "generator": "beat-this",
+        "checked": true
+      },
+      {
+        "mode": "two",
+        "notes": 461,
+        "oldNotes": 461,
+        "fingerprintMatches": true,
+        "bpmMatches": true,
+        "durationMatches": true,
+        "notesExactlyEqual": true,
+        "wholeChartExactlyEqual": true,
+        "generator": "beat-this",
+        "checked": true
+      },
+      {
+        "mode": "three",
+        "notes": 661,
+        "oldNotes": 661,
+        "fingerprintMatches": true,
+        "bpmMatches": true,
+        "durationMatches": true,
+        "notesExactlyEqual": true,
+        "wholeChartExactlyEqual": true,
+        "generator": "beat-this",
+        "checked": true
+      },
+      {
+        "mode": "four",
+        "notes": 783,
+        "oldNotes": 783,
+        "fingerprintMatches": true,
+        "bpmMatches": true,
+        "durationMatches": true,
+        "notesExactlyEqual": true,
+        "wholeChartExactlyEqual": true,
+        "generator": "beat-this",
+        "checked": true
+      }
+    ],
+    "blockedModelFallback": {
+      "patchJsonCharacters": 112,
+      "patchKeys": [
+        "recognition"
+      ],
+      "reused": {
+        "arrays": {
+          "energy": true,
+          "waveform": true,
+          "chroma": true,
+          "tonalEnergy": true,
+          "onsets": true,
+          "candidates": true
+        },
+        "rhythm": true,
+        "pulse": true
+      },
+      "sameChartAsLightweight": true,
+      "startEnabled": true
+    },
+    "onlySameOriginGetRequests": true,
+    "originalReferenceUnchanged": true
+  },
+  "mobileUi": {
+    "legacyApiInjection": true,
+    "status": "passed",
+    "checks": [
+      "hung real Demo Worker cancels and terminates; a replacement WAV remains selected after retiring/releasing its old request",
+      "Demo Worker constructor failure is visible and local WAV import recovers",
+      "Only the demo-specific deadline was accelerated; timeout terminates its Worker and local WAV import recovers",
+      "Legacy addListener/removeListener path keeps the page usable; native media emulation stops and restores preview draws",
+      "Help overlay stops background preview; closing it restores rendering",
+      "Real six-second synthetic WAV finishes autoplay; result overlay stops preview, close resumes, and autoplay does not save a score",
+      "Current dist uses correct script/CSS MIME; no page errors, external requests, uploads, or model/runtime downloads"
+    ],
+    "pageErrors": [],
+    "caveat": {
+      "browser": "Real installed Microsoft Edge, headless Chromium, touch-capable 844x390 viewport; not a physical phone or Safari.",
+      "audio": "Only original generated demo and local synthetic six-second browser-clicks.wav; native Web Audio remains in use.",
+      "faults": "Only demo Worker construction/request dispatch, the demo-specific 30000ms timeout, and MediaQueryList listener availability are instrumented.",
+      "time": "Timeout scenario shortens only the demo synthesis deadline to 750ms; game/audio clocks and recovery timers are unchanged.",
+      "input": "Playwright locators click existing controls and set the real file input. No fake chart, game API, pointer event, or worker result."
+    }
+  },
+  "limitations": [
+    "No physical Android or iPhone was tested.",
+    "Desktop CPU throttling and headless display cadence do not establish real phone FPS, energy usage, network latency or total RAM.",
+    "JSON character counts describe serialization examples, not measured heap or network bytes.",
+    "Model weights, analysis, chart generation and game judgment rules were not changed."
+  ]
+}
