@@ -2,6 +2,8 @@
 
 [逐曲报告](gtzan-30-v7.json) 记录真实运行的 ONNX/WASM 模型、前处理、节拍解码与四档编谱，包含模型/源码/输入 PCM 哈希。对照为 `4878ef958cbdd837e6697284e34fa67fb5bc9506` 的版本 6。
 
+该记录对应版本 7 初始发布提交 `0b8d88641aac09d84a84d5127ebd7a5002799f44`。后续的模型下载进度、超时与线程恢复修复未改变推理及编谱算法；源码哈希按产生报告时的提交解释。
+
 样本在 10 类风格中各固定取 `00000`、`00007`、`00019`，共约 15 分钟。人工标注使用 [Beat This! annotations](https://github.com/CPJKU/beat_this_annotations) 的 `fd9fcc0896cb78730bae735102c8753ef3a3badd`（v1.1 修正版）。音频来自 [GTZAN / Marsyas 数据](https://huggingface.co/datasets/marsyas/gtzan)，只作本地验证，不随本项目分发。
 
 Beat This! 的训练排除 GTZAN；但这些 30 段用于本次开发和参数比较，**不是盲测，也不是全 GTZAN 的官方成绩**。没有用模型自己的预测当作节拍真值。

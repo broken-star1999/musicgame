@@ -62,4 +62,4 @@ export interface Result {
 }
 export interface Track { name: string; artist: string; buffer: AudioBuffer; analysis: Analysis; demo: boolean }
 export type WorkerRequest = { samples: Float32Array; sampleRate: number; assetBase: string; recognitionMode?: RecognitionMode };
-export type WorkerResponse = { type: 'progress'; value: number; stage: string } | { type: 'done'; analysis: Analysis } | { type: 'error'; message: string };
+export type WorkerResponse = { type: 'progress'; value: number; stage: string } | { type: 'baseline'; analysis: Analysis } | { type: 'done'; analysis: Analysis } | { type: 'error'; message: string };

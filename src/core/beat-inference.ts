@@ -3,6 +3,8 @@ import config from './beat-model-config.json';
 import { beatChunks, beatSpectrogram } from './beat-features';
 import wasmBinaryUrl from 'onnxruntime-web/ort-wasm-simd-threaded.wasm?url';
 import wasmLoaderUrl from 'onnxruntime-web/ort-wasm-simd-threaded.mjs?url';
+import runtime from './beat-runtime-config.json';
+import { downloadBeatAsset } from './beat-resources';
 
 type Progress = (value: number, stage: string) => void;
 
@@ -28,22 +30,23 @@ export async function runBeatModel(session: ort.InferenceSession, features: Retu
 /** All URLs refer to static assets on this application's own origin.
  * Audio and features never enter a network request. */
 export async function inferBeatLogits(samples: Float32Array, assetBase: string, progress?: Progress): Promise<Float32Array> {
-  progress?.(0, `正在准备本地节拍模型（首次约 ${Math.ceil(config.bytes / 1048576)} MB）`);
+  const started = performance.now();
+  const download = (url: string | URL, asset: { bytes: number; sha256: string }, label: string, from: number, span: number) => downloadBeatAsset(url, {
+    ...asset, label, totalTimeoutMs: Math.max(1, 90000 - (performance.now() - started)),
+    progress: (received, total) => progress?.(from + received / total * span, `下载${label} ${received < 1e6 ? `${(received / 1e3).toFixed(0)} KB` : `${(received / 1e6).toFixed(1)} MB`} / ${(total / 1e6).toFixed(1)} MB`),
+  });
   ort.env.wasm.numThreads = 1;
   ort.env.wasm.proxy = false;
+  ort.env.wasm.initTimeout = 45000;
   ort.env.wasm.wasmPaths = { wasm: new URL(wasmBinaryUrl, import.meta.url).href, mjs: new URL(wasmLoaderUrl, import.meta.url).href };
-  const response = await fetch(new URL(`models/${config.file}`, assetBase));
-  if (!response.ok) throw new Error(`节拍模型加载失败（${response.status}）`);
-  const model = new Uint8Array(await response.arrayBuffer());
-  if (model.byteLength !== config.bytes) throw new Error('节拍模型文件不完整，请重新加载');
-  if (globalThis.crypto?.subtle) {
-    const hash = await crypto.subtle.digest('SHA-256', model);
-    if (Array.from(new Uint8Array(hash), value => value.toString(16).padStart(2, '0')).join('') !== config.sha256) throw new Error('节拍模型校验失败，请重新加载');
-  }
-  progress?.(0.06, '正在启动本地节拍识别');
+  const model = await download(new URL(`models/${config.file}`, assetBase), config, '节拍模型', 0, 0.28);
+  const binary = await download(new URL(wasmBinaryUrl, import.meta.url), runtime, '运行组件', 0.28, 0.30);
+  ort.env.wasm.wasmBinary = binary;
+  progress?.(0.60, '正在启动识别引擎（首次需要编译）');
   const session = await ort.InferenceSession.create(model, { executionProviders: ['wasm'], graphOptimizationLevel: 'all' });
   try {
-    const features = beatSpectrogram(samples, value => progress?.(0.1 + value * 0.12, '正在提取模型所需的声音特征'));
-    return await runBeatModel(session, features, (done, total) => progress?.(0.22 + done / total * 0.78, `正在识别整曲拍点 ${done}/${total}`));
+    const features = beatSpectrogram(samples, value => progress?.(0.68 + value * 0.10, '正在提取音乐特征'));
+    progress?.(0.78, '正在识别第一段音乐拍点');
+    return await runBeatModel(session, features, (done, total) => progress?.(0.78 + done / total * 0.22, `正在识别整曲拍点 ${done}/${total}`));
   } finally { await session.release(); }
 }

@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, AudioLines, Check, ChevronRight, CircleHelp, Disc3, Headphones, LoaderCircle, Music2, Play, Plus, Radio, RotateCcw, Settings2, ShieldCheck, SlidersHorizontal, Sparkles, Trophy, Upload, Volume2, X, Zap } from 'lucide-react';
-import type { Analysis, Chart, Difficulty, RecognitionMode, Result, Settings, Track, WorkerResponse } from './types';
-import { audioContext, createDemo, decodeFile, prepareMono, SAMPLE_RATE } from './core/audio';
+import type { Chart, Difficulty, RecognitionMode, Result, Settings, Track } from './types';
+import { audioContext, createDemo, decodeFile, prepareMono } from './core/audio';
+import { analyzeMusic } from './core/analysis-service';
 import { countTypes, DIFFICULTIES } from './core/chart';
 import { compileChart } from './core/chart-service';
 import { peakFingers } from './core/chart-constraints';
@@ -13,23 +14,6 @@ import './styles.css';
 
 const timeLabel = (seconds: number) => `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`;
 const formatScore = (score: number) => score.toLocaleString('en-US');
-
-function analyze(samples: Float32Array, recognitionMode: RecognitionMode, onProgress: (n: number, text: string) => void, setCancel: (fn: () => void) => void): Promise<Analysis> {
-  return new Promise((resolve, reject) => {
-    const worker = new Worker(new URL('./core/analysis.worker.ts', import.meta.url), { type: 'module' });
-    let finished = false;
-    const finish = (action: () => void) => { if (finished) return; finished = true; worker.terminate(); action(); };
-    setCancel(() => finish(() => reject(new DOMException('Analysis cancelled', 'AbortError'))));
-    worker.onmessage = (event: MessageEvent<WorkerResponse>) => {
-      const message = event.data;
-      if (message.type === 'progress') onProgress(message.value, message.stage);
-      else if (message.type === 'done') finish(() => resolve(message.analysis));
-      else finish(() => reject(new Error(message.message)));
-    };
-    worker.onerror = () => finish(() => reject(new Error('分析线程启动失败，请刷新页面后重试。')));
-    worker.postMessage({ samples, sampleRate: SAMPLE_RATE, recognitionMode, assetBase: new URL('./', document.baseURI).href }, [samples.buffer]);
-  });
-}
 
 function Brand() { return <a className="brand" href="./" aria-label="节拍坠落首页"><span className="brand-mark"><i /><i /><i /><i /></span><span>BEATFALL<span className="brand-cn">节拍坠落</span></span></a>; }
 
@@ -44,6 +28,7 @@ export default function App() {
   const [result, setResult] = useState<Result | null>(null), [help, setHelp] = useState(false), [advanced, setAdvanced] = useState(false);
   const [dragging, setDragging] = useState(false), [best, setBest] = useState(0);
   const fileInput = useRef<HTMLInputElement>(null), serial = useRef(0), abort = useRef<(() => void) | null>(null);
+  const useBasic = useRef<(() => void) | null>(null);
   const [chart, setChart] = useState<Chart | null>(null), [compiling, setCompiling] = useState(false), [chartRevision, setChartRevision] = useState(0);
   const [compileProgress, setCompileProgress] = useState({ value: 0, stage: '' });
   const cancelCompilation = useRef<() => void>(() => {});
@@ -82,9 +67,9 @@ export default function App() {
     return () => { active = false; job.cancel(); cancelCompilation.current = () => {}; };
   }, [track, settings.difficulty, bpmOverride, chartRevision]);
 
-  const cancel = useCallback(() => { serial.current++; abort.current?.(); abort.current = null; setBusy(false); setStage(''); }, []);
+  const cancel = useCallback(() => { serial.current++; abort.current?.(); abort.current = null; useBasic.current = null; setBusy(false); setStage(''); }, []);
   const load = useCallback(async (file?: File, reuse?: Pick<Track, 'name' | 'artist' | 'buffer' | 'demo'>) => {
-    const id = ++serial.current; abort.current?.(); abort.current = null;
+    const id = ++serial.current; abort.current?.(); abort.current = null; useBasic.current = null;
     if (file) songSource.current = null;
     setTrack(null); setBpm(''); setBpmOverride(undefined); setError(''); setBusy(true); setProgress(0); setStage(file ? '正在解码你的音乐' : '正在合成演示曲'); setResult(null);
     try {
@@ -94,13 +79,15 @@ export default function App() {
       setStage('正在准备音频分析');
       const samples = await prepareMono(buffer);
       if (id !== serial.current) return;
-      const analysis = await analyze(samples, recognitionMode.current, (n, text) => { if (id === serial.current) { setProgress(n); setStage(text); } }, fn => { abort.current = fn; });
+      const job = analyzeMusic(samples, recognitionMode.current, new URL('./', document.baseURI).href, (n, text) => { if (id === serial.current) { setProgress(n); setStage(text); } });
+      abort.current = job.cancel; useBasic.current = job.useBasic;
+      const analysis = await job.promise;
       if (id !== serial.current) return;
       setTrack({ name: reuse?.name || (file ? file.name.replace(/\.[^.]+$/, '') : 'Neon Afterglow'), artist: reuse?.artist || (file ? '本地导入 · 仅在此设备处理' : 'BEATFALL ORIGINAL · 内置演示曲'), buffer, analysis, demo: reuse?.demo ?? !file });
       setBpm(String(analysis.bpm));
     } catch (err) {
       if (id === serial.current && !(err instanceof DOMException && err.name === 'AbortError')) setError(err instanceof Error ? err.message : '音频处理失败，请重试。');
-    } finally { if (id === serial.current) { setBusy(false); abort.current = null; } }
+    } finally { if (id === serial.current) { setBusy(false); abort.current = null; useBasic.current = null; } }
   }, []);
 
   useEffect(() => { void load(); return () => { serial.current++; abort.current?.(); }; }, [load]);
@@ -110,6 +97,7 @@ export default function App() {
   const changeRecognition = (mode: RecognitionMode) => {
     if (mode === recognitionMode.current) return;
     recognitionMode.current = mode; update('recognition', mode);
+    if (mode === 'basic' && busy && useBasic.current) { useBasic.current(); return; }
     if (songSource.current) void load(undefined, songSource.current);
   };
   const finish = useCallback((value: Result) => { saveBest(scoreKey, value); setBest(bestScore(scoreKey)); setGame(null); setResult(value); }, [scoreKey]);
@@ -135,6 +123,7 @@ export default function App() {
           <div className="section-label"><span><span className="step-number">01</span> 选择你的音乐</span><Music2 size={15} /></div>
           <div className="recognition-choice"><span>节拍识别</span><div role="group" aria-label="节拍识别方式">{(['enhanced', 'basic'] as const).map(mode => <button key={mode} type="button" aria-pressed={settings.recognition === mode} onClick={() => changeRecognition(mode)}>{mode === 'enhanced' ? '增强' : '轻量'}</button>)}</div></div>
           <p className="recognition-detail">{settings.recognition === 'enhanced' ? '浏览器本机运行模型，首次下载约 24 MB 资源。' : '直接分析声音起点，无需下载和运行模型。'}</p>
+          {busy && settings.recognition === 'enhanced' && <button type="button" className="text-button" onClick={() => changeRecognition('basic')}>立即用轻量继续</button>}
           <input ref={fileInput} id="audio-file" className="sr-only" type="file" accept=".mp3,.wav,.m4a,.ogg,.flac,audio/mpeg,audio/wav,audio/mp4,audio/ogg,audio/flac" onChange={e => { const file = e.target.files?.[0]; if (file) void load(file); e.target.value = ''; }} />
           <button className={`upload-zone ${dragging ? 'is-dragging' : ''}`} onClick={() => fileInput.current?.click()} onDragOver={e => { e.preventDefault(); setDragging(true); }} onDragLeave={() => setDragging(false)} onDrop={e => { e.preventDefault(); setDragging(false); const file = e.dataTransfer.files[0]; if (file) void load(file); }}><span className="upload-icon"><Upload size={19} /></span><strong>点击上传，或拖入音频</strong><span>MP3 / WAV / M4A / OGG / FLAC</span><small>最大 50 MB · 5 分钟以内</small><Plus className="upload-plus" size={12} /></button>
           {busy ? <div className="analysis-progress" role="status" aria-live="polite"><div><LoaderCircle className="spin" size={15} /><span>{stage}</span><button onClick={cancel} aria-label="取消分析"><X size={14} /></button></div><div className="progress-track"><i style={{ width: `${Math.max(4, progress * 100)}%` }} /></div><small>{Math.round(progress * 100)}% · 音频仅在本地处理</small></div> : track ? <div className="selected-track"><div className="album-art"><AudioLines size={25} /><i /><i /></div><div className="track-meta"><strong title={track.name}>{track.name}</strong><span>{track.demo ? '内置演示曲' : '本地音乐'} <i>·</i> {timeLabel(track.analysis.duration)}</span></div><span className="track-ready"><Check size={13} /></span></div> : <button className="demo-load" onClick={() => void load()}><Disc3 size={18} /><span>没有音乐？试试内置演示曲</span><ChevronRight size={14} /></button>}
