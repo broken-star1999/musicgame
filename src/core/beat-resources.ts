@@ -2,13 +2,21 @@ export class BeatResourceError extends Error {
   constructor(message: string) { super(message); this.name = 'BeatResourceError'; }
 }
 
-interface DownloadOptions {
+export interface DownloadOptions {
   label: string;
   bytes: number;
   sha256: string;
   progress?: (received: number, total: number) => void;
   idleTimeoutMs?: number;
   totalTimeoutMs?: number;
+}
+
+export async function verifyBeatAsset(data: Uint8Array, options: Pick<DownloadOptions, 'label' | 'bytes' | 'sha256'>): Promise<void> {
+  if (data.byteLength !== options.bytes) throw new BeatResourceError(`${options.label}文件大小不符`);
+  if (globalThis.crypto?.subtle) {
+    const hash = await crypto.subtle.digest('SHA-256', data);
+    if (Array.from(new Uint8Array(hash), value => value.toString(16).padStart(2, '0')).join('') !== options.sha256) throw new BeatResourceError(`${options.label}校验失败`);
+  }
 }
 
 /** Fetch and stream the decoded body, so gzip Content-Length never produces
@@ -45,10 +53,7 @@ export async function downloadBeatAsset(url: string | URL, options: DownloadOpti
       }
     }
     if (received !== options.bytes) throw new BeatResourceError(`${options.label}下载不完整`);
-    if (globalThis.crypto?.subtle) {
-      const hash = await crypto.subtle.digest('SHA-256', data);
-      if (Array.from(new Uint8Array(hash), value => value.toString(16).padStart(2, '0')).join('') !== options.sha256) throw new BeatResourceError(`${options.label}校验失败`);
-    }
+    await verifyBeatAsset(data, options);
     completed = true; return data;
   };
   try { return await Promise.race([download(), timeout]); }
