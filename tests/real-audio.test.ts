@@ -21,6 +21,7 @@ describe.skipIf(!audioPath)('local real-song analysis', () => {
       const chart = generateChart(analysis, difficulty), lastEnd = [-100, -100, -100, -100];
       expect(chart.notes.length).toBeGreaterThan(20);
       for (const note of chart.notes) {
+        expect(Math.min(...(analysis.pulse?.onsets ?? analysis.onsets).map(onset => Math.abs(onset.time - note.time)))).toBeLessThanOrEqual(0.0181);
         expect(note.time - lastEnd[note.lane]).toBeGreaterThanOrEqual(0.09);
         expect(note.endTime || note.time).toBeLessThan(chart.duration);
         lastEnd[note.lane] = note.endTime || note.time;
@@ -35,6 +36,7 @@ describe.skipIf(!audioPath)('local real-song analysis', () => {
       expect(peakFingers(chart.notes)).toBeLessThanOrEqual(DIFFICULTIES[difficulty].max);
       reports.push({ difficulty, notes: chart.notes.length, fingerLimit: chart.fingerLimit, fingerPeak: peakFingers(chart.notes), types: countTypes(chart), repetition: chart.repetition, fingering: chart.fingering, patterns: chart.patterns });
     }
-    console.log(JSON.stringify({ duration: analysis.duration, bpm: analysis.bpm, confidence: analysis.confidence, onsets: analysis.onsets.length, beats: analysis.rhythm?.beats.length, beatConfidence: analysis.rhythm?.confidence, reports }, null, 2));
+    const sections = analysis.pulse?.sections || [];
+    console.log(JSON.stringify({ duration: analysis.duration, bpm: analysis.bpm, confidence: analysis.confidence, onsets: analysis.onsets.length, pulse: analysis.pulse?.onsets.length, sourceSections: sections.reduce((counts, section) => { counts[section.band] = (counts[section.band] || 0) + 1; return counts; }, {} as Record<string, number>), sourceChanges: sections.filter((section, i) => i > 0 && section.band !== sections[i - 1].band).length, beats: analysis.rhythm?.beats.length, beatConfidence: analysis.rhythm?.confidence, reports }, null, 2));
   }, 30000);
 });

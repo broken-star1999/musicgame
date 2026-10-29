@@ -54,5 +54,5 @@ export function phraseSwipe(analysis: Analysis, time: number, phase: number): No
   const centroid = (values: number[]) => values.reduce((sum, value, k) => sum + value * k, 0) / Math.max(1e-6, values.reduce((a, b) => a + b, 0));
   const movement = before && after ? centroid(after) - centroid(before) : 0;
   if (movement > 0.7 || Math.round(phase * 2) % 7 === 0) return 'up';
-  return movement < -0.5 || Math.round(phase * 2) % 2 === 0 ? 'left' : 'right';
+  return movement < -0.5 || Math.round(phase) % 2 === 0 ? 'left' : 'right';
 }

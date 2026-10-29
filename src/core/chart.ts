@@ -26,10 +26,11 @@ export function generateChart(analysis: Analysis, difficulty: Difficulty, bpmOve
   progress?.(0.12, '正在按连续拍点组织乐句');
   const notes: Note[] = [], busyUntil = [-10, -10, -10, -10], fingerUntil = [-10, -10, -10, -10];
   let lastTime = -10, previousLane = -1;
-  const strengthSorted = analysis.onsets.map(x => x.strength).sort((a, b) => a - b);
+  const sourceOnsets = analysis.pulse?.onsets ?? analysis.onsets;
+  const strengthSorted = sourceOnsets.map(x => x.strength).sort((a, b) => a - b);
   const threshold = Math.min(config.threshold, (strengthSorted[Math.floor(strengthSorted.length * 0.75)] || config.threshold) * 0.55);
   const noteTime = (onset: Analysis['onsets'][number]) => bpmOverride !== undefined || (analysis.rhythm?.confidence ?? 1) >= 0.45 ? snapToBeat(onset.time, beats, bpm) : onset.time;
-  const selected = selectMusicalOnsets(analysis.onsets.filter(onset => onset.time <= analysis.duration - 0.18), config.gap, threshold, noteTime);
+  const selected = selectMusicalOnsets(sourceOnsets.filter(onset => onset.time <= analysis.duration - 0.18), config.gap, threshold, noteTime);
   // Motif progression and repetition compare the same retained musical layer,
   // rather than letting rejected ornaments change every subsequent lane.
   const musicalAnalysis = { ...analysis, onsets: selected };
@@ -59,7 +60,14 @@ export function generateChart(analysis: Analysis, difficulty: Difficulty, bpmOve
     const lane = candidates[0];
     let type: NoteType = 'tap';
     let endTime: number | undefined;
-    const sustain = sustainedEnd(analysis, time, beat);
+    let sustain = sustainedEnd(analysis, time, beat);
+    if (analysis.pulse && config.max === 1 && sustain !== undefined) {
+      // A sustained accompaniment must not turn a short drum attack into a
+      // long hold that hides all following beats, especially in single-finger.
+      const next = selected[i + 1] ? noteTime(selected[i + 1]) : analysis.duration;
+      sustain = Math.min(sustain, next - 0.2);
+      if (sustain - time < Math.max(0.5, beat)) sustain = undefined;
+    }
     const phraseStart = Math.round(pattern.phase * 2) % 8 === 0;
     if (sustain !== undefined && (phraseStart || random() < 0.18) && time + 0.5 < analysis.duration - 0.2) {
       type = 'hold';
@@ -87,7 +95,7 @@ export function generateChart(analysis: Analysis, difficulty: Difficulty, bpmOve
   notes.sort((a, b) => a.time - b.time || a.lane - b.lane);
   notes.forEach((note, i) => { note.id = i; });
   progress?.(0.48, '正在匹配相似乐句与按键模板');
-  const chart = reusePhraseTemplates(bpmOverride === undefined ? musicalAnalysis : { ...musicalAnalysis, rhythm: undefined }, { version: 5, fingerprint: analysis.fingerprint, difficulty, fingerLimit: config.max, duration: analysis.duration, bpm, notes }, config.max);
+  const chart = reusePhraseTemplates(bpmOverride === undefined ? musicalAnalysis : { ...musicalAnalysis, rhythm: undefined }, { version: 6, fingerprint: analysis.fingerprint, difficulty, fingerLimit: config.max, duration: analysis.duration, bpm, notes }, config.max);
   progress?.(0.72, '正在规划整段指法与移动路线');
   const plan = planFingering(chart.notes, config.max);
   const checked = validateFingering(plan.notes, config.max, chart.duration);

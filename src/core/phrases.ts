@@ -1,8 +1,9 @@
 import type { Analysis, Chart, Note, Onset } from '../types';
 import { isPlayableChart } from './chart-constraints';
 import { beatPosition, chartBeats, timeAtBeat } from './rhythm';
+import { sustainedEnd } from './patterns';
 
-interface Phrase { start: number; end: number; onsets: Onset[]; phases: number[]; pitches: number[][] }
+interface Phrase { start: number; end: number; onsets: Onset[]; phases: number[]; pitches: number[][]; sustainSupport: number }
 const PHRASE_BEATS = 8;
 const SAMPLES = 32;
 const MAX_TEMPLATES = 128;
@@ -23,6 +24,9 @@ export function tonalWarpCost(a: number[][], b: number[][]): number {
 
 function similarity(a: Phrase, b: Phrase, tolerance: number, allowWarp: () => boolean): Map<number, number> | null {
   if (a.onsets.length < 4 || b.onsets.length < 4) return null;
+  // Same pitch classes and attacks can accompany very different articulation:
+  // a short bass pattern must not overwrite a sustained pad's hold vocabulary.
+  if (Math.abs(a.sustainSupport - b.sustainSupport) > 0.3) return null;
   if (Math.min(a.onsets.length, b.onsets.length) / Math.max(a.onsets.length, b.onsets.length) < 0.85) return null;
   let tonal = 0, tonalCount = 0, weak = 0;
   for (let i = 0; i < SAMPLES; i++) {
@@ -62,6 +66,11 @@ export function reusePhraseTemplates(analysis: Analysis, chart: Chart, maxFinger
   const repetition = { detected: 0, reused: 0, notesReused: 0, phraseBeats: PHRASE_BEATS };
   if (!analysis.chroma?.length || !analysis.chromaStep || !analysis.onsets.length) return { ...chart, repetition };
   const beats = chartBeats(analysis, chart.bpm === analysis.bpm ? undefined : chart.bpm);
+  const sustainEvidence = new Map(analysis.onsets.map(onset => {
+    const position = beatPosition(beats, onset.time, chart.bpm);
+    const beat = timeAtBeat(beats, position + 1, chart.bpm) - onset.time;
+    return [onset, sustainedEnd(analysis, onset.time, beat) !== undefined] as const;
+  }));
   // Candidate starts follow real attacks, so an intro/pickup or a small BPM
   // estimation error cannot shift all later phrases off the comparison grid.
   const starts = analysis.onsets.filter(onset => timeAtBeat(beats, beatPosition(beats, onset.time, chart.bpm) + PHRASE_BEATS, chart.bpm) <= analysis.duration && onset.strength >= 0.055);
@@ -77,7 +86,7 @@ export function reusePhraseTemplates(analysis: Analysis, chart: Chart, maxFinger
       const norm = Math.hypot(...values); return values.map(value => norm > 1e-8 ? value / norm : 0);
     });
     const onsets = analysis.onsets.filter(onset => onset.time >= start - 1e-6 && onset.time < end - 1e-6 && onset.strength >= 0.055);
-    return { start, end, pitches, onsets, phases: onsets.map(onset => beatPosition(beats, onset.time, chart.bpm) - startBeat) };
+    return { start, end, pitches, onsets, phases: onsets.map(onset => beatPosition(beats, onset.time, chart.bpm) - startBeat), sustainSupport: onsets.filter(onset => sustainEvidence.get(onset)).length / Math.max(1, onsets.length) };
   });
   let notes = chart.notes;
   const canonical: number[] = []; let candidatesSeen = 0, warpBudget = 512;

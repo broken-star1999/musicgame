@@ -3,6 +3,7 @@ export type ScrollMode = 'perspective' | 'screen';
 export type NoteType = 'tap' | 'hold' | 'left' | 'right' | 'up';
 export type Grade = 'perfect' | 'great' | 'good' | 'miss';
 export interface Onset { time: number; strength: number; band: number }
+export interface RhythmSection { start: number; end: number; band: 'low' | 'mid' | 'high' | 'mixed'; support: number }
 export interface Rhythm {
   beats: number[];
   tempo: { time: number; bpm: number }[];
@@ -22,6 +23,7 @@ export interface Analysis {
   chroma?: number[][];
   chromaStep?: number;
   rhythm?: Rhythm;
+  pulse?: { onsets: Onset[]; sections: RhythmSection[] };
 }
 export interface Note {
   id: number;
@@ -34,7 +36,7 @@ export interface Note {
   pattern?: string;
 }
 export interface Chart {
-  version: 1 | 2 | 3 | 4 | 5;
+  version: 1 | 2 | 3 | 4 | 5 | 6;
   fingerprint: string;
   difficulty: Difficulty;
   duration: number;

@@ -20,6 +20,18 @@ function fixture(differentMelody = false) {
 }
 
 describe('similar phrases reuse playable key templates', () => {
+  it('does not replace a sustained section with short-note templates just because pitch and attacks match', () => {
+    const { analysis, chart } = fixture();
+    analysis.chroma = analysis.chroma!.map(() => [1, ...Array(11).fill(0)]);
+    analysis.energy = analysis.energy.map((_, i) => {
+      const time = i * 0.05;
+      return time < 4.2 ? ((time - 0.2 + 100) % 0.5 < 0.2 ? 0.7 : 0.03) : 0.7;
+    });
+    chart.notes = chart.notes.map(note => ({ ...note, type: 'tap', endTime: undefined }));
+    chart.notes[10] = { ...chart.notes[10], type: 'hold', endTime: chart.notes[10].time + 0.65 };
+    const output = reusePhraseTemplates(analysis, chart, 3);
+    expect(output.notes.find(note => Math.abs(note.time - chart.notes[10].time) < 0.02)?.type).toBe('hold');
+  });
   it('aligns a slightly stretched tonal sequence without treating an unrelated melody as a match', () => {
     const vector = (pitch: number) => Array.from({ length: 12 }, (_, k) => k === pitch ? 1 : 0);
     const source = Array.from({ length: 32 }, (_, i) => vector([0, 4, 7, 5][Math.floor(i / 8)]));

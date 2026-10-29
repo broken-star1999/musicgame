@@ -2,6 +2,7 @@ import type { Analysis, Onset } from '../types';
 import FFT from 'fft.js';
 import { trackBeats } from './rhythm';
 import { extractChroma } from './chroma';
+import { followRhythmSource } from './rhythm-source';
 
 export function fingerprint(samples: Float32Array): string {
   let hash = 2166136261;
@@ -47,6 +48,8 @@ export function analyzeAudio(samples: Float32Array, sampleRate: number, progress
   const frames = Math.max(0, Math.floor((samples.length - n) / hop) + 1);
   if (!frames) throw new Error('音频太短，请选择至少 2 秒的音乐。');
   const flux = new Float64Array(frames), rms = new Float64Array(frames), bands = new Uint8Array(frames);
+  const bandEnvelopes = Array.from({ length: 3 }, () => new Float64Array(frames));
+  const bandMax = [0, 0, 0];
   const transform = new FFT(n), input = new Float64Array(n), spectrum = transform.createComplexArray();
   const previous = new Float64Array(n / 2), current = new Float64Array(n / 2);
   const window = Float64Array.from({ length: n }, (_, i) => 0.5 - 0.5 * Math.cos(2 * Math.PI * i / (n - 1)));
@@ -76,6 +79,10 @@ export function analyzeAudio(samples: Float32Array, sampleRate: number, progress
     previous.set(current);
     // Equalize the number of bins so the high band does not dominate all songs.
     bandFlux[0] *= 3; bandFlux[1] *= 1.3; bandFlux[2] *= 0.65;
+    for (let band = 0; band < 3; band++) {
+      bandEnvelopes[band][f] = bandFlux[band];
+      bandMax[band] = Math.max(bandMax[band], bandFlux[band]);
+    }
     flux[f] = bandFlux[0] + bandFlux[1] + bandFlux[2];
     // Keep the unsuppressed amplitude reference: reducing the noise floor must
     // not automatically amplify weaker residual fluctuations into extra notes.
@@ -97,12 +104,29 @@ export function analyzeAudio(samples: Float32Array, sampleRate: number, progress
     if (last && time - last.time < 0.085) { if (onset.strength > last.strength) onsets[onsets.length - 1] = onset; }
     else onsets.push(onset);
   }
-  if (onsets.length < 3) throw new Error('没有找到足够的声音起点，试试鼓点更清楚的音乐。');
-  const tempo = estimateTempo(onsets);
+  const streams = bandEnvelopes.map((envelope, band) => {
+    const events: Onset[] = [];
+    const reference = Math.max(maxFlux * 0.03, bandMax[band]);
+    for (let f = 1; f < frames - 2; f++) {
+      if (envelope[f] < envelope[f - 1] || envelope[f] <= envelope[f + 1] || rms[f] < Math.max(0.0008, maxRms * 0.025)) continue;
+      const local = Array.from(envelope.slice(Math.max(0, f - 20), Math.min(frames, f + 16))).sort((a, b) => a - b);
+      if (envelope[f] < local[Math.floor(local.length / 2)] * 1.8 + reference * 0.035 || envelope[f] < Math.max(reference * 0.09, maxFlux * 0.012)) continue;
+      const event = { time: Math.max(0, (f * hop + n * 0.22) / sampleRate), strength: envelope[f] / reference, band };
+      const last = events.at(-1);
+      if (last && event.time - last.time < 0.085) { if (event.strength > last.strength) events[events.length - 1] = event; }
+      else events.push(event);
+    }
+    return events;
+  });
+  progress?.(0.82, '正在选择各乐段稳定的节奏主线');
+  const pulse = followRhythmSource(streams, onsets, samples.length / sampleRate);
+  if (pulse.onsets.length < 3 && onsets.length < 3) throw new Error('没有找到足够的声音起点，试试鼓点更清楚的音乐。');
+  const musicalOnsets = pulse.onsets.length >= 3 ? pulse.onsets : onsets;
+  const tempo = estimateTempo(musicalOnsets);
   progress?.(0.83, '正在提取乐句音高与持续声音特征');
   const chroma = extractChroma(samples, sampleRate, hop, rms);
   progress?.(0.86, '正在跟踪连续拍点与局部速度');
-  const rhythm = trackBeats(onsets, samples.length / sampleRate, tempo.bpm);
+  const rhythm = trackBeats(musicalOnsets, samples.length / sampleRate, tempo.bpm);
   const energy: number[] = [];
   for (let i = 0; i < frames; i += 5) energy.push(rms[i] / maxRms);
   const waveform: number[] = [];
@@ -114,5 +138,5 @@ export function analyzeAudio(samples: Float32Array, sampleRate: number, progress
   }
   const maxWave = Math.max(...waveform, 0.0001);
   progress?.(1, '谱面分析完成');
-  return { duration: samples.length / sampleRate, ...tempo, rhythm, onsets, energy, energyStep: hop * 5 / sampleRate, chroma, chromaStep: hop * 5 / sampleRate, waveform: waveform.map(x => x / maxWave), fingerprint: fingerprint(samples) };
+  return { duration: samples.length / sampleRate, ...tempo, rhythm, pulse: { ...pulse, onsets: musicalOnsets }, onsets, energy, energyStep: hop * 5 / sampleRate, chroma, chromaStep: hop * 5 / sampleRate, waveform: waveform.map(x => x / maxWave), fingerprint: fingerprint(samples) };
 }
