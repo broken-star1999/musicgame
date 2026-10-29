@@ -67,20 +67,21 @@ export default function App() {
     return () => { active = false; job.cancel(); cancelCompilation.current = () => {}; };
   }, [track, settings.difficulty, bpmOverride, chartRevision]);
 
-  const cancel = useCallback(() => { serial.current++; abort.current?.(); abort.current = null; useBasic.current = null; setBusy(false); setStage(''); }, []);
+  const cancel = useCallback(() => { serial.current++; abort.current?.(); abort.current = null; useBasic.current = null; songSource.current = null; setBusy(false); setStage(''); }, []);
   const load = useCallback(async (file?: File, reuse?: Pick<Track, 'name' | 'artist' | 'buffer' | 'demo'>) => {
     const id = ++serial.current; abort.current?.(); abort.current = null; useBasic.current = null;
+    const controller = new AbortController(); abort.current = () => controller.abort();
     if (file) songSource.current = null;
     setTrack(null); setBpm(''); setBpmOverride(undefined); setError(''); setBusy(true); setProgress(0); setStage(file ? '正在解码你的音乐' : '正在合成演示曲'); setResult(null);
     try {
-      const buffer = file ? await decodeFile(file) : reuse?.buffer || createDemo();
+      const buffer = file ? await decodeFile(file, { signal: controller.signal, progress: (n, text) => { if (id === serial.current) { setProgress(n * 0.08); setStage(text); } } }) : reuse?.buffer || createDemo();
       if (id !== serial.current) return;
       songSource.current = { buffer, name: reuse?.name || (file ? file.name.replace(/\.[^.]+$/, '') : 'Neon Afterglow'), artist: reuse?.artist || (file ? '本地导入 · 仅在此设备处理' : 'BEATFALL ORIGINAL'), demo: reuse?.demo ?? !file };
       setStage('正在准备音频分析');
-      const samples = await prepareMono(buffer);
+      const samples = await prepareMono(buffer, { signal: controller.signal, progress: (n, text) => { if (id === serial.current) { setProgress(0.08 + n * 0.12); setStage(text); } } });
       if (id !== serial.current) return;
-      const job = analyzeMusic(samples, recognitionMode.current, new URL('./', document.baseURI).href, (n, text) => { if (id === serial.current) { setProgress(n); setStage(text); } });
-      abort.current = job.cancel; useBasic.current = job.useBasic;
+      const job = analyzeMusic(samples, recognitionMode.current, new URL('./', document.baseURI).href, (n, text) => { if (id === serial.current) { setProgress(0.2 + n * 0.8); setStage(text); } });
+      abort.current = () => { controller.abort(); job.cancel(); }; useBasic.current = job.useBasic;
       const analysis = await job.promise;
       if (id !== serial.current) return;
       setTrack({ name: reuse?.name || (file ? file.name.replace(/\.[^.]+$/, '') : 'Neon Afterglow'), artist: reuse?.artist || (file ? '本地导入 · 仅在此设备处理' : 'BEATFALL ORIGINAL · 内置演示曲'), buffer, analysis, demo: reuse?.demo ?? !file });
@@ -97,6 +98,7 @@ export default function App() {
   const changeRecognition = (mode: RecognitionMode) => {
     if (mode === recognitionMode.current) return;
     recognitionMode.current = mode; update('recognition', mode);
+    if (busy && !useBasic.current) return;
     if (mode === 'basic' && busy && useBasic.current) { useBasic.current(); return; }
     if (songSource.current) void load(undefined, songSource.current);
   };
