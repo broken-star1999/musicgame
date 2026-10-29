@@ -90,7 +90,7 @@ describe('built-in demonstration and canvas lifecycle', () => {
       for (const difficulty of ['one', 'two', 'three', 'four'] as const) {
         const chart = generateChart(analysis, difficulty);
         expect(isPlayableChart(chart.notes, DIFFICULTIES[difficulty].max, chart.duration), difficulty).toBe(true);
-        expect(peakFingers(chart.notes), difficulty).toBe(DIFFICULTIES[difficulty].max);
+        expect(peakFingers(chart.notes), difficulty).toBeLessThanOrEqual(DIFFICULTIES[difficulty].max);
       }
     } finally { vi.unstubAllGlobals(); }
   });

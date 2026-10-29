@@ -48,7 +48,7 @@ export function analyzeAudio(samples: Float32Array, sampleRate: number, progress
   if (!frames) throw new Error('音频太短，请选择至少 2 秒的音乐。');
   const flux = new Float64Array(frames), rms = new Float64Array(frames), bands = new Uint8Array(frames);
   const transform = new FFT(n), input = new Float64Array(n), spectrum = transform.createComplexArray();
-  const previous = new Float64Array(n / 2);
+  const previous = new Float64Array(n / 2), current = new Float64Array(n / 2);
   const window = Float64Array.from({ length: n }, (_, i) => 0.5 - 0.5 * Math.cos(2 * Math.PI * i / (n - 1)));
   let maxRms = 0, maxFlux = 0;
   for (let f = 0; f < frames; f++) {
@@ -56,18 +56,30 @@ export function analyzeAudio(samples: Float32Array, sampleRate: number, progress
     for (let j = 0; j < n; j++) { const x = samples[f * hop + j]; input[j] = x * window[j]; square += x * x; }
     rms[f] = Math.sqrt(square / n); maxRms = Math.max(maxRms, rms[f]);
     transform.realTransform(spectrum, input);
-    const bandFlux = [0, 0, 0];
+    const bandFlux = [0, 0, 0], rawBandFlux = [0, 0, 0];
     for (let k = 1; k < n / 2; k++) {
       const amplitude = Math.hypot(spectrum[k * 2], spectrum[k * 2 + 1]);
-      const magnitude = Math.log1p(amplitude);
-      const difference = Math.max(0, magnitude - previous[k]);
-      const freq = k * sampleRate / n;
-      bandFlux[freq < 250 ? 0 : freq < 2500 ? 1 : 2] += difference;
-      previous[k] = magnitude;
+      current[k] = Math.log1p(amplitude);
     }
+    for (let k = 1; k < n / 2; k++) {
+      // Compare with nearby previous frequencies, not only the same FFT bin.
+      // A moving harmonic (vibrato/bend) is not necessarily a new attack.
+      const radius = Math.max(1, Math.round(k * 0.035));
+      let reference = previous[k];
+      for (let bin = Math.max(1, k - radius); bin <= Math.min(n / 2 - 1, k + radius); bin++) reference = Math.max(reference, previous[bin]);
+      const difference = Math.max(0, current[k] - reference);
+      const freq = k * sampleRate / n;
+      const band = freq < 250 ? 0 : freq < 2500 ? 1 : 2;
+      bandFlux[band] += difference;
+      rawBandFlux[band] += Math.max(0, current[k] - previous[k]);
+    }
+    previous.set(current);
     // Equalize the number of bins so the high band does not dominate all songs.
     bandFlux[0] *= 3; bandFlux[1] *= 1.3; bandFlux[2] *= 0.65;
-    flux[f] = bandFlux[0] + bandFlux[1] + bandFlux[2]; maxFlux = Math.max(maxFlux, flux[f]);
+    flux[f] = bandFlux[0] + bandFlux[1] + bandFlux[2];
+    // Keep the unsuppressed amplitude reference: reducing the noise floor must
+    // not automatically amplify weaker residual fluctuations into extra notes.
+    maxFlux = Math.max(maxFlux, rawBandFlux[0] * 3 + rawBandFlux[1] * 1.3 + rawBandFlux[2] * 0.65);
     bands[f] = bandFlux.indexOf(Math.max(...bandFlux));
     if (f % 256 === 0) progress?.(0.05 + f / frames * 0.72, '正在寻找声音起点');
   }

@@ -4,6 +4,7 @@ import { fingerReleaseTime } from './chart-constraints';
 import { beatPosition, chartBeats, snapToBeat, timeAtBeat } from './rhythm';
 import { phrasePattern, phraseSwipe, sustainedEnd } from './patterns';
 import { FINGER_MODEL, planFingering, validateFingering } from './fingering';
+import { selectMusicalOnsets } from './onset-selection';
 
 export const DIFFICULTIES = {
   one: { label: '单指', english: '1 FINGER', description: '单指轮换，无双押；长按期间不插入其他操作。', gap: 0.3, threshold: 0.23, swipe: 0.06, chord: 0, max: 1 },
@@ -26,28 +27,30 @@ export function generateChart(analysis: Analysis, difficulty: Difficulty, bpmOve
   const notes: Note[] = [], busyUntil = [-10, -10, -10, -10], fingerUntil = [-10, -10, -10, -10];
   let lastTime = -10, previousLane = -1;
   const strengthSorted = analysis.onsets.map(x => x.strength).sort((a, b) => a - b);
-  const threshold = Math.min(config.threshold, strengthSorted[Math.floor(strengthSorted.length * 0.45)] || config.threshold);
-  // Reserve a little breathing room before each phrase's strongest accent,
-  // so a four-finger mode can actually place four keys instead of perpetually
-  // finding one lane still recovering from the preceding fast note.
+  const threshold = Math.min(config.threshold, (strengthSorted[Math.floor(strengthSorted.length * 0.75)] || config.threshold) * 0.55);
+  const noteTime = (onset: Analysis['onsets'][number]) => bpmOverride !== undefined || (analysis.rhythm?.confidence ?? 1) >= 0.45 ? snapToBeat(onset.time, beats, bpm) : onset.time;
+  const selected = selectMusicalOnsets(analysis.onsets.filter(onset => onset.time <= analysis.duration - 0.18), config.gap, threshold, noteTime);
+  // Motif progression and repetition compare the same retained musical layer,
+  // rather than letting rejected ornaments change every subsequent lane.
+  const musicalAnalysis = { ...analysis, onsets: selected };
+  // Chords emphasize retained phrase accents within the available finger budget.
   const accents = new Map<number, number>();
-  if (config.max > 1) analysis.onsets.forEach((onset, index) => {
+  if (config.max > 1) selected.forEach((onset, index) => {
     if (onset.strength <= 0.38 || onset.time > analysis.duration - 0.18) return;
     const phrase = Math.floor(beatPosition(beats, onset.time, bpm) / 8), current = accents.get(phrase);
-    if (current === undefined || onset.strength > analysis.onsets[current].strength) accents.set(phrase, index);
+    if (current === undefined || onset.strength > selected[current].strength) accents.set(phrase, index);
   });
-  const chordAnchors = new Set(accents.values()), accentTimes = [...chordAnchors].map(index => analysis.onsets[index].time);
-  for (let i = 0; i < analysis.onsets.length; i++) {
-    const onset = analysis.onsets[i];
+  const chordAnchors = new Set(accents.values());
+  for (let i = 0; i < selected.length; i++) {
+    const onset = selected[i];
     if (onset.strength < threshold || onset.time > analysis.duration - 0.18) continue;
     // Preserve expressive attacks; only gently snap already-close subdivisions.
-    const time = bpmOverride !== undefined || (analysis.rhythm?.confidence ?? 1) >= 0.45 ? snapToBeat(onset.time, beats, bpm) : onset.time;
+    const time = noteTime(onset);
     const position = beatPosition(beats, time, bpm);
     const beat = timeAtBeat(beats, Math.floor(position) + 1, bpm) - timeAtBeat(beats, Math.floor(position), bpm);
-    const pattern = phrasePattern(analysis, beats, bpm, time, config.max, patternCache);
+    const pattern = phrasePattern(musicalAnalysis, beats, bpm, time, config.max, patternCache);
     const plannedChord = chordAnchors.has(i);
-    if (!plannedChord && accentTimes.some(at => at > time && at - time < 0.29)) continue;
-    if (time - lastTime < config.gap) continue;
+    if (time - lastTime < config.gap - 1e-6) continue;
     const active = fingerUntil.filter(x => x > time + 1e-6).length;
     if (active >= config.max) continue;
     const candidates = [0, 1, 2, 3].filter(l => busyUntil[l] <= time - 0.1)
@@ -84,7 +87,7 @@ export function generateChart(analysis: Analysis, difficulty: Difficulty, bpmOve
   notes.sort((a, b) => a.time - b.time || a.lane - b.lane);
   notes.forEach((note, i) => { note.id = i; });
   progress?.(0.48, '正在匹配相似乐句与按键模板');
-  const chart = reusePhraseTemplates(bpmOverride === undefined ? analysis : { ...analysis, rhythm: undefined }, { version: 4, fingerprint: analysis.fingerprint, difficulty, fingerLimit: config.max, duration: analysis.duration, bpm, notes }, config.max);
+  const chart = reusePhraseTemplates(bpmOverride === undefined ? musicalAnalysis : { ...musicalAnalysis, rhythm: undefined }, { version: 5, fingerprint: analysis.fingerprint, difficulty, fingerLimit: config.max, duration: analysis.duration, bpm, notes }, config.max);
   progress?.(0.72, '正在规划整段指法与移动路线');
   const plan = planFingering(chart.notes, config.max);
   const checked = validateFingering(plan.notes, config.max, chart.duration);

@@ -34,7 +34,7 @@ export interface Note {
   pattern?: string;
 }
 export interface Chart {
-  version: 1 | 2 | 3 | 4;
+  version: 1 | 2 | 3 | 4 | 5;
   fingerprint: string;
   difficulty: Difficulty;
   duration: number;
