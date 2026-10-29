@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ArrowLeft, Pause, Play, RotateCcw, Volume2 } from 'lucide-react';
+import { ArrowLeft, AudioLines, Pause, Play, RotateCcw, Volume2 } from 'lucide-react';
 import type { CSSProperties } from 'react';
 import { Transport, audioContext } from '../core/audio';
 import { JudgmentEngine, swipeDirection } from '../core/judgment';
@@ -11,6 +11,7 @@ import { stageLayout } from '../core/layout';
 import { canvasPoint, readGameViewport } from '../core/viewport';
 import { HitFeedback } from '../core/haptics';
 import { GameRecovery } from '../core/game-recovery';
+import { BeatCues } from '../core/beat-cues';
 import './game-layout.css';
 
 type Props = { track: Track; chart: Chart; settings: Settings; autoplay: boolean; onExit: () => void; onFinish: (result: Result) => void };
@@ -31,12 +32,16 @@ export function Game({ track, chart, settings, autoplay, onExit, onFinish }: Pro
   const recoveryRef = useRef<GameRecovery | null>(null);
   const [restarting, setRestarting] = useState(0);
   const feedbackRef = useRef<HitFeedback | null>(null);
+  const cueRef = useRef<BeatCues | null>(null), cueEnabled = useRef(false);
+  const [cueOn, setCueOn] = useState(false), [cueError, setCueError] = useState('');
 
   useEffect(() => {
     const canvas = canvasRef.current!;
     const feedback = new HitFeedback(settings.vibration && !autoplay); feedbackRef.current = feedback;
     const engine = new JudgmentEngine(chart, autoplay, hit => feedback.hit(hit)); engineRef.current = engine;
     const transport = new Transport(track.buffer, settings.volume); transportRef.current = transport;
+    const cues = autoplay ? new BeatCues(chart, settings.volume) : null;
+    cueRef.current = cues; cues?.setEnabled(cueEnabled.current); setCueError('');
     pausedRef.current = false; setPaused(false); setCountdown(null); countdownRef.current = null;
     setAudioError(''); setHud({ score: 0, accuracy: 100, combo: 0, progress: 0 });
     const recovery = new GameRecovery(transport, {
@@ -61,7 +66,11 @@ export function Game({ track, chart, settings, autoplay, onExit, onFinish }: Pro
       if (ended) return;
       const songTime = transport.time();
       const judgmentTime = songTime - settings.offset / 1000;
-      if (!pausedRef.current) engine.update(judgmentTime);
+      if (!pausedRef.current) {
+        engine.update(judgmentTime);
+        cues?.update(songTime, transport.audioTime(songTime));
+        if (cueEnabled.current && cues && !cues.isEnabled) { cueEnabled.current = false; setCueOn(false); setCueError('此设备暂时无法播放提示音'); }
+      }
       const width = canvas.clientWidth, height = canvas.clientHeight;
       const activeLanes = [...fingers.current.values()].map(f => f.lane);
       const energyIndex = Math.max(0, Math.floor(songTime / track.analysis.energyStep));
@@ -86,6 +95,7 @@ export function Game({ track, chart, settings, autoplay, onExit, onFinish }: Pro
       recovery.dispose(); if (recoveryRef.current === recovery) recoveryRef.current = null;
       ended = true; cancelAnimationFrame(raf); observer.disconnect(); transport.stop();
       if (transportRef.current === transport) transportRef.current = null;
+      cues?.dispose(); if (cueRef.current === cues) cueRef.current = null;
       clearFingers();
       feedback.stop();
     };
@@ -104,6 +114,7 @@ export function Game({ track, chart, settings, autoplay, onExit, onFinish }: Pro
     }
     const transport = transportRef.current;
     transport.pause().catch(() => { if (transportRef.current === transport) setAudioError('音频被系统中断，请点击继续重试。'); });
+    cueRef.current?.pause();
     engineRef.current.suspendHolds(); clearFingers();
     feedbackRef.current?.stop();
   }
@@ -143,6 +154,13 @@ export function Game({ track, chart, settings, autoplay, onExit, onFinish }: Pro
   function resumeGame() {
     if (!pausedRef.current || countdownRef.current !== null) return;
     setAudioError(''); void recoveryRef.current?.start();
+  }
+
+  function toggleCues() {
+    const enabled = !cueEnabled.current;
+    cueRef.current?.setEnabled(enabled);
+    cueEnabled.current = !!cueRef.current?.isEnabled;
+    setCueOn(cueEnabled.current); setCueError(enabled && !cueEnabled.current ? '此设备暂时无法播放提示音' : '');
   }
 
   const pointerDown = (event: React.PointerEvent<HTMLCanvasElement>) => {
@@ -194,12 +212,13 @@ export function Game({ track, chart, settings, autoplay, onExit, onFinish }: Pro
     <header className="game-hud">
       <button className="icon-button" aria-label="暂停游戏" onClick={pauseGame}><Pause size={19} /></button>
       <div className="game-song"><strong>{track.name}</strong><span>{DIFFICULTIES[chart.difficulty].label} <i>·</i> {chart.bpm} BPM {autoplay && ' · AUTO'}</span></div>
+      {autoplay && <button type="button" className="cue-toggle" aria-label={cueOn ? '关闭落点提示音' : '开启落点提示音'} aria-pressed={cueOn} title="用短提示音标记音符起点，方便试听踩点" onClick={toggleCues}><AudioLines size={15} /><span>落点音</span></button>}
       <div className="hud-stat"><span>ACCURACY</span><strong>{hud.accuracy.toFixed(2)}<small>%</small></strong></div>
       <div className="hud-stat score"><span>SCORE</span><strong>{String(hud.score).padStart(7, '0')}</strong></div>
     </header>
     <div className="combo-counter"><strong>{hud.combo > 1 ? hud.combo : ''}</strong>{hud.combo > 1 && <span>COMBO</span>}</div>
     <canvas ref={canvasRef} className="game-canvas" aria-label="四轨音游，可在对应轨道整列点击或长按；音符到达双线框下沿时判定，箭头音符按方向滑动" onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerUp} onPointerCancel={() => pauseGame()} onLostPointerCapture={e => { if (fingers.current.has(e.pointerId)) pauseGame(); }} />
-    <div className="game-footer"><span><Volume2 size={12} /> {viewport.rotated && '已自动横向 · '}{autoplay ? '自动演示 · 不记录成绩' : '整轨可触 · 双线下沿踩点'}</span><span>BEATFALL <i>LIVE SESSION</i></span></div>
+    <div className="game-footer"><span role={cueError ? 'status' : undefined}><Volume2 size={12} /> {cueError || <>{viewport.rotated && '已自动横向 · '}{autoplay ? `自动演示 · ${cueOn ? '落点音已开启 · ' : ''}不记录成绩` : '整轨可触 · 双线下沿踩点'}</>}</span><span>BEATFALL <i>LIVE SESSION</i></span></div>
     {paused && <div className={`game-overlay ${countdown !== null ? 'resuming' : ''}`}>
       <div className="pause-card">
         <span className="eyebrow">{countdown !== null ? 'GET READY' : 'TAKE A BREATH'}</span>

@@ -45,7 +45,7 @@ GTZAN 的逐曲平均 ±70 ms 节拍 F1 为 0.8427：21 段改善、4 段持平�
 
 ## 构建与部署
 
-- 常规 `npm test`：259 项通过，1 项私有歌曲测试默认跳过。生产构建和模型/WASM 哈希校验通过。
+- 常规 `npm test`：278 项通过，1 项私有歌曲测试默认跳过。生产构建和模型/WASM 哈希校验通过。自动演示落点音另有 7 项桌面浏览器检查，默认关闭；用于人工对照，不证明谱面识别准确。
 - `package-lock.json`、README、ALGORITHM、QA_REPORT、第三方许可、模型许可均在仓库。
 - GitHub Pages 工作流在 main 推送后执行 `npm ci`、测试和构建，再发布 `dist`。最新具体提交与成功工作流以仓库 Actions 为准；不把旧提交的通过状态当成新提交已部署。
 - `edgeone.json` 声明 `npm ci`、`npm run build`、`dist`，并采用[官方配置文档](https://pages.edgeone.ai/document/edgeone-json)列出的预装 `22.11.0`；Vite 相对路径兼容 `/musicgame/` 及根目录。腾讯端账号连接和正式部署尚未办理，原计划明确允许后续提供目标账号后进行。

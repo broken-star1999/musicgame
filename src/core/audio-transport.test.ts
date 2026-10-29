@@ -25,6 +25,16 @@ beforeEach(async () => {
 afterEach(() => { vi.doUnmock('./audio-context'); });
 
 describe('independent pauseable song transport', () => {
+  it('maps song times back to the exact current audio timeline across pause and resume', async () => {
+    const transport = new Transport(buffer, 1);
+    expect(transport.audioTime(1)).toBe(103.5);
+    context.currentTime = 104; expect(transport.audioTime(transport.time())).toBe(context.currentTime);
+    await transport.pause(); expect(transport.audioTime(2)).toBeUndefined();
+    context.currentTime = 150; await transport.resume();
+    expect(transport.audioTime(2)).toBe(150.5);
+    context.currentTime = 151; expect(transport.audioTime(transport.time())).toBe(context.currentTime);
+    transport.stop(); expect(transport.audioTime(2)).toBeUndefined();
+  });
   it('captures one context and schedules the initial lead on its timeline', () => {
     const transport = new Transport(buffer, 0.6);
     expect(provider).toHaveBeenCalledOnce(); expect(transport.time()).toBe(-2.5);

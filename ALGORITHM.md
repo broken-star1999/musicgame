@@ -68,6 +68,8 @@ Web Audio 解码原始音频，播放仍使用原始解码缓冲。分析副本�
 
 `audio-transport.ts` 的本局时钟为已保存歌曲位置加当前播放段的 AudioContext 时间差。暂停同步保存位置、停止并断开本局 source，不依赖全局 context.suspend；恢复从原 offset 重建 source，开场负时间保留剩余提前量。音频自然结束后时钟仍推进至结算余量，stop 幂等且退出后的 pause/resume/unlock 无全局副作用。旧 source 的 ended 事件不会清理新 source。
 
+`beat-cues.ts` 仅在自动演示中提供默认关闭的可选听觉诊断。按谱面实际音符头排序去重，提前 120 ms 用本局映射的 AudioContext 目标时刻调度 1600 Hz、22 ms 的短正弦音；同刻多押只响一次，长按尾部不响。增益峰值为音乐音量的 0.055 倍，音量 0 不建节点。提示音按原歌曲时间调度，不叠加判定偏移。暂停、关闭、退出、回退 seek 或时间映射变化时清理预调度节点，丢帧不补响过去的音符，最多保留 16 个活动节点。API 失败自动关停提示音并显示状态，不中断音乐和判定；它不调用全局 suspend/resume，不记录成绩，也不能证明谱面质量。
+
 `game-recovery.ts` 每局一个实例，每次恢复有独立 generation 和 AbortController；点击内立即调用 context.resume 解锁声音，但本局歌曲保持冻结，成功后才倒计时 3 秒。暂停、重启、退出、隐藏和音频中断作废旧 attempt；所有异步成功/错误均检查归属，不通过 mutable ref 操作替换后的局。恢复声音及最终恢复播放各有 8 秒超时，失效回调直接退出，不用全局 suspend 补偿。App 初次启动同样检查 serial、track/chart 身份、可见性及最新就绪状态，换歌/重编时取消旧启动。系统音频中断仍需真实 Android/iPhone 测试，桌面模拟不能证明平台所有事件顺序。
 
 分析和编谱分别在 Worker 中执行，切歌、模式切换、取消和重新生成终止旧任务。开始前核对歌曲指纹、指法和 BPM。解码后准备/分析报错时也清除当前歌曲引用，防止保留失败曲目的 PCM 或在切换识别模式时重跑失败音频。版本 7 记录 `generator: signal | beat-this`，成绩按生成版本、判定规则版本、识别路径、歌曲、指法、BPM 及自动/手动参考网格区分，保留旧成绩但不混比。
@@ -77,6 +79,8 @@ Web Audio 解码原始音频，播放仍使用原始解码缓冲。分析副本�
 ## 验证、边界和来源
 
 实测与可复现方法见 [QA_REPORT.md](QA_REPORT.md)、[benchmarks/README.md](benchmarks/README.md)。30 段 GTZAN 开发比较包含退步样本；整体提升不能保证每首曲目都更准。复杂切分、弱节拍、半速/倍速歧义和主旋律跟随仍有局限。没有实现人声分离、主旋律转录或歌词对齐，也不训练人工音游谱面生成模型。
+
+后续阶段审计区分了模型晚段偏离、抽拍相位和异常相邻间隔三类问题；固定相位与局部中位拍长两个原型均未通过开发或另选 30 段留出验证，未进入生产。协议、退步样本、数据来源和复核方法见 [质量诊断](benchmarks/QUALITY_AUDIT.md)。全局模型支持度不是经校准的拍点正确概率。
 
 - [Beat This! 官方代码、权重和推理说明](https://github.com/CPJKU/beat_this)
 - [ONNX Runtime Web 部署](https://onnxruntime.ai/docs/tutorials/web/deploy.html)

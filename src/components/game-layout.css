@@ -1,4 +1,20 @@
 /* These rules use the logical game size, including a portrait-locked browser. */
+.cue-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  flex-shrink: 0;
+  padding: 7px 9px;
+  background: #141c2a;
+  border: 1px solid #354358;
+  border-radius: 6px;
+  color: #93a6bd;
+  font-size: 10px;
+  cursor: pointer;
+}
+.cue-toggle[aria-pressed='true'] { color: #d2efb6; border-color: #b4d98b88; background: #243122; }
+.game-screen[data-compact='true'] .cue-toggle { padding: 5px 7px; font-size: 9px; gap: 4px; }
 .game-screen[data-layout] {
   --game-hud-height: 70px;
   --game-footer-height: 27px;

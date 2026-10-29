@@ -21,6 +21,11 @@ export class Transport {
 
   time(): number { return this.position + (this.playing ? this.context.currentTime - this.anchor : 0); }
 
+  /** Exact inverse of the current song clock, for short scheduled preview cues. */
+  audioTime(songTime: number): number | undefined {
+    return this.playing && !this.stopped ? this.anchor + songTime - this.position : undefined;
+  }
+
   private releaseSource(): void {
     const source = this.source; this.source = undefined;
     if (!source) return;
