@@ -1,5 +1,6 @@
 import type { Chart, Grade, Note, NoteType, Result } from '../types';
 
+export const JUDGMENT_VERSION = 2;
 export const WINDOWS = { perfect: 0.045, great: 0.09, good: 0.14 };
 export const WEIGHTS: Record<Grade, number> = { perfect: 1, great: 0.75, good: 0.4, miss: 0 };
 export function gradeFor(delta: number): Grade {
@@ -63,7 +64,9 @@ export class JudgmentEngine {
   }
   release(state: NoteState | undefined, time: number) {
     if (!state || !state.held || state.tail !== undefined) return;
-    this.record(state, time >= state.note.endTime! - WINDOWS.great ? 'perfect' : 'miss', time, true);
+    // A hold must reach its tail; the head's timing windows do not grant an
+    // early-release bonus. Only ignore floating-point noise at the endpoint.
+    this.record(state, time + 1e-9 >= state.note.endTime! ? 'perfect' : 'miss', time, true);
   }
   update(time: number) {
     if (this.autoplay) {
