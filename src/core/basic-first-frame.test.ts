@@ -78,17 +78,24 @@ describe('signal onset detection at the start of a file', () => {
     const select = vi.spyOn(source, 'followRhythmSource'), track = vi.spyOn(clock, 'trackBeats');
     const analysis = analyzeAudio(drums(Array.from({ length: 20 }, (_, i) => i * 0.5)), RATE);
     expect(select).toHaveBeenCalledTimes(1); expect(track).toHaveBeenCalledTimes(1);
-    const [streams, mixed] = select.mock.calls[0], chosen = select.mock.results[0].value;
+    const [streams, mixed] = select.mock.calls[0], chosen = select.mock.results[0].value as ReturnType<typeof source.followRhythmSource>;
     expect([...mixed, ...streams.flat()].every(event => !event.boundary && event.time > 0.05)).toBe(true);
     expect(mixed).toEqual(analysis.onsets.filter(event => !event.boundary));
-    expect(track.mock.calls[0][0]).toBe(chosen.onsets);
+    const clockOnsets = track.mock.calls[0][0];
+    // The clock combines measured mixed/selected attacks on copies. Boundary
+    // cues cannot support it, and salience gains cannot modify the detector.
+    expect(clockOnsets).not.toBe(chosen.onsets);
+    expect(clockOnsets.every(event => !event.boundary)).toBe(true);
+    expect(clockOnsets.every(event => [...mixed, ...chosen.onsets].some(original => original.time === event.time && original.band === event.band))).toBe(true);
+    expect(mixed.every(original => clockOnsets.some(event => event.time === original.time && event.band === original.band && event.strength >= original.strength))).toBe(true);
+    expect(chosen.onsets.every(original => clockOnsets.some(event => Math.abs(event.time - original.time) <= .05 && event.strength >= original.strength))).toBe(true);
     expect(analysis.rhythm).toBe(track.mock.results[0].value);
     const tempo = estimateTempo(chosen.onsets);
     expect({ bpm: analysis.bpm, confidence: analysis.confidence }).toEqual(tempo);
     const openingBand = chosen.sections[0].band;
     const expected = openingBand === 'mixed' ? analysis.onsets.find(event => event.boundary)
       : analysis.candidates!.find(event => event.boundary && !analysis.onsets.includes(event) && event.band === ['low', 'mid', 'high'].indexOf(openingBand));
-    expect(analysis.pulse!.onsets[0]).toBe(expected);
+    expect(analysis.pulse!.onsets[0]).toStrictEqual(expected);
     expect(analysis.pulse!.onsets[0].role).toBeUndefined();
     expect(analysis.pulse!.onsets.filter(event => !event.boundary).map(({ role: _role, ...event }) => event)).toEqual(chosen.onsets);
   });

@@ -1,5 +1,7 @@
 # 节拍坠落 / Beatfall
 
+当前开发分支包含未发布的版本11 DSP候选，用于回归和真实浏览器验证。它仍有已知音乐相位退步，尚未通过发布要求；线上页面和`main`继续使用稳定版本10。详细正负结果见[算法验证记录](benchmarks/PHASE_SOURCE_EVIDENCE.md)。
+
 手机横屏四轨音游。导入自己的音乐，在浏览器内识别节拍与声音起点并自动编谱；在对应轨道任意高度点击、长按，或按箭头左滑、右滑、上滑。
 
 [在线试玩](https://broken-star1999.github.io/musicgame/) · [GitHub 仓库](https://github.com/broken-star1999/musicgame)

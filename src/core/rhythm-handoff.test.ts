@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Onset } from '../types';
 import { analyzeAudio } from './analysis';
+import { generateChart } from './chart';
 import { followRhythmSource, periodicSupport } from './rhythm-source';
 
 function regular(start: number, period: number, end: number, band: number, strength = 1): Onset[] {
@@ -113,8 +114,16 @@ describe('measured rhythm source handoffs', () => {
     const analysis = analyzeAudio(samples, rate), pulse = analysis.pulse!.onsets;
     expect(analysis.bpm).toBe(120);
     expect(drums.every(drum => pulse.some(onset => Math.abs(onset.time - drum.time) <= 0.05))).toBe(true);
-    expect(pulse.every(onset => drums.some(drum => Math.abs(onset.time - drum.time) <= 0.05))).toBe(true);
+    // Mixed-voice evidence may also retain the independently scheduled lead.
+    // The low-finger game must keep the original drum phase throughout.
+    expect(pulse.every(onset => [...drums, ...competing].some(event => Math.abs(onset.time - event.time) <= 0.05))).toBe(true);
     expect(pulse.every(onset => analysis.candidates!.some(candidate => candidate.time === onset.time
       && candidate.band === onset.band && candidate.strength === onset.strength))).toBe(true);
+    const single = generateChart(analysis, 'one');
+    expect(single.notes).toHaveLength(drums.length);
+    expect(drums.every(drum => single.notes.some(note => Math.abs(note.time - drum.time) <= .05))).toBe(true);
+    expect(single.notes.every(note => drums.some(drum => Math.abs(note.time - drum.time) <= .05))).toBe(true);
+    const four = generateChart(analysis, 'four');
+    expect(four.notes.some(note => competing.some(event => Math.abs(note.time - event.time) <= .05))).toBe(true);
   });
 });
