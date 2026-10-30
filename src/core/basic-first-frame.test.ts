@@ -82,6 +82,8 @@ describe('signal onset detection at the start of a file', () => {
     expect([...mixed, ...streams.flat()].every(event => !event.boundary && event.time > 0.05)).toBe(true);
     expect(mixed).toEqual(analysis.onsets.filter(event => !event.boundary));
     const clockOnsets = track.mock.calls[0][0];
+    expect(track.mock.calls[0][3]).toBe(chosen.onsets);
+    expect(track.mock.calls[0][3]!.every(event=>!event.boundary && event.role===undefined)).toBe(true);
     // The clock combines measured mixed/selected attacks on copies. Boundary
     // cues cannot support it, and salience gains cannot modify the detector.
     expect(clockOnsets).not.toBe(chosen.onsets);

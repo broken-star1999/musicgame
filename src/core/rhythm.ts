@@ -5,11 +5,11 @@ import type { Analysis, Onset, Rhythm } from '../types';
 const STEP = 0.01;
 /** Onset-envelope autocorrelation + a tempo-continuity dynamic program.
  * All positions are in recording time; the grid never creates chart notes. */
-export function trackBeats(onsets: Onset[], duration: number, bpm: number): Rhythm {
+export function trackBeats(onsets: Onset[], duration: number, bpm: number, sourceOnsets?: Onset[]): Rhythm {
     if (onsets.length < 4)
         return { beats: [], tempo: [], confidence: 0, downbeats: [], meterConfidence: 0 };
     const investigation = investigateTempo(onsets, duration, bpm);
-    const projected = gateClockEvidence(onsets, investigation.blocks);
+    const projected = gateClockEvidence(onsets, investigation.blocks, sourceOnsets);
     const frames = Math.ceil(duration / STEP) + 1, envelope = new Float64Array(frames);
     const reference = Math.max(1e-8, ...onsets.map(onset => onset.strength));
     for (const onset of projected) {

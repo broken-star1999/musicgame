@@ -173,7 +173,7 @@ export function analyzeAudio(samples: Float32Array, sampleRate: number, progress
     progress?.(0.83, '正在提取乐句音高与持续声音特征');
     const { chroma, tonalEnergy } = extractTonalFeatures(samples, sampleRate, hop, rms);
     progress?.(0.86, '正在跟踪连续拍点与局部速度');
-    const rhythm = trackBeats(reinforceCoincidentOnsets(mergeClockOnsets(onsets, musicalOnsets), streams, 'weighted'), samples.length / sampleRate, tempo.bpm);
+    const rhythm = trackBeats(reinforceCoincidentOnsets(mergeClockOnsets(onsets, musicalOnsets), streams, 'weighted'), samples.length / sampleRate, tempo.bpm, musicalOnsets);
     const energy: number[] = [];
     for (let i = 0; i < frames; i += 5)
         energy.push(rms[i] / maxRms);
