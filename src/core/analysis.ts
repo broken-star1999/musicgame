@@ -3,6 +3,7 @@ import FFT from 'fft.js';
 import { trackBeats } from './rhythm';
 import { extractTonalFeatures } from './chroma';
 import { followRhythmSource } from './rhythm-source';
+import { annotateSignalEvents } from './signal-events';
 
 export function fingerprint(samples: Float32Array): string {
   let hash = 2166136261;
@@ -93,25 +94,31 @@ export function analyzeAudio(samples: Float32Array, sampleRate: number, progress
   if (maxRms < 0.0005 || maxFlux < 0.001) throw new Error('这段音频接近静音，没有检测到可用的节奏。');
   progress?.(0.8, '正在估计节拍');
   const onsets: Onset[] = [];
-  for (let f = 1; f < frames - 2; f++) {
-    if (flux[f] < flux[f - 1] || flux[f] <= flux[f + 1] || rms[f] < Math.max(0.0008, maxRms * 0.025)) continue;
+  let boundaryOnset: Onset | undefined;
+  for (let f = 0; f < frames - 2; f++) {
+    if ((f > 0 && flux[f] < flux[f - 1]) || flux[f] <= flux[f + 1] || rms[f] < Math.max(0.0008, maxRms * 0.025)) continue;
     const local = Array.from(flux.slice(Math.max(0, f - 20), Math.min(frames, f + 16))).sort((a, b) => a - b);
     const median = local[Math.floor(local.length / 2)];
     if (flux[f] < median * 1.65 + maxFlux * 0.018 || flux[f] < maxFlux * 0.035) continue;
     const time = Math.max(0, (f * hop + n * 0.22) / sampleRate);
     const onset = { time, strength: flux[f] / maxFlux, band: bands[f] };
+    // No previous frame exists at f0. Preserve this left-censored candidate,
+    // but isolate it before deduplication so it cannot replace a regular peak.
+    if (f === 0) { boundaryOnset = { ...onset, boundary: true }; continue; }
     const last = onsets[onsets.length - 1];
     if (last && time - last.time < 0.085) { if (onset.strength > last.strength) onsets[onsets.length - 1] = onset; }
     else onsets.push(onset);
   }
+  const boundaryStreams: (Onset | undefined)[] = [];
   const streams = bandEnvelopes.map((envelope, band) => {
     const events: Onset[] = [];
     const reference = Math.max(maxFlux * 0.03, bandMax[band]);
-    for (let f = 1; f < frames - 2; f++) {
-      if (envelope[f] < envelope[f - 1] || envelope[f] <= envelope[f + 1] || rms[f] < Math.max(0.0008, maxRms * 0.025)) continue;
+    for (let f = 0; f < frames - 2; f++) {
+      if ((f > 0 && envelope[f] < envelope[f - 1]) || envelope[f] <= envelope[f + 1] || rms[f] < Math.max(0.0008, maxRms * 0.025)) continue;
       const local = Array.from(envelope.slice(Math.max(0, f - 20), Math.min(frames, f + 16))).sort((a, b) => a - b);
       if (envelope[f] < local[Math.floor(local.length / 2)] * 1.8 + reference * 0.035 || envelope[f] < Math.max(reference * 0.09, maxFlux * 0.012)) continue;
       const event = { time: Math.max(0, (f * hop + n * 0.22) / sampleRate), strength: envelope[f] / reference, band };
+      if (f === 0) { boundaryStreams[band] = { ...event, boundary: true }; continue; }
       const last = events.at(-1);
       if (last && event.time - last.time < 0.04) { if (event.strength > last.strength) events[events.length - 1] = event; }
       else events.push(event);
@@ -138,6 +145,13 @@ export function analyzeAudio(samples: Float32Array, sampleRate: number, progress
   }
   const maxWave = Math.max(...waveform, 0.0001);
   progress?.(1, '谱面分析完成');
-  const candidates = [...onsets, ...streams.flat()].sort((a, b) => a.time - b.time);
-  return { duration: samples.length / sampleRate, ...tempo, rhythm, pulse: { ...pulse, onsets: musicalOnsets }, candidates, onsets, energy, energyStep: hop * 5 / sampleRate, chroma, tonalEnergy, chromaStep: hop * 5 / sampleRate, waveform: waveform.map(x => x / maxWave), fingerprint: fingerprint(samples) };
+  // Inference above uses exactly the regular f1+ evidence. Restore only the
+  // selected opening source's possible boundary cue after its clock is fixed.
+  const openingBand = pulse.sections[0]?.band;
+  const boundary = openingBand === 'mixed' ? boundaryOnset : boundaryStreams[['low', 'mid', 'high'].indexOf(openingBand)];
+  const pulseOnsets = boundary && !musicalOnsets.some(event => Math.abs(event.time - boundary.time) <= 0.085)
+    ? [boundary, ...musicalOnsets] : musicalOnsets;
+  const rawOnsets = boundaryOnset ? [boundaryOnset, ...onsets] : onsets;
+  const candidates = [...rawOnsets, ...streams.flat(), ...boundaryStreams.flatMap(event => event ? [event] : [])].sort((a, b) => a.time - b.time);
+  return annotateSignalEvents({ duration: samples.length / sampleRate, ...tempo, rhythm, pulse: { ...pulse, onsets: pulseOnsets }, candidates, onsets: rawOnsets, energy, energyStep: hop * 5 / sampleRate, chroma, tonalEnergy, chromaStep: hop * 5 / sampleRate, waveform: waveform.map(x => x / maxWave), fingerprint: fingerprint(samples) });
 }

@@ -6,6 +6,7 @@ import { phrasePattern, phraseSwipe, sustainedEnd } from './patterns';
 import { FINGER_MODEL, planFingering, validateFingering } from './fingering';
 import { selectMusicalOnsets } from './onset-selection';
 import { musicalEvents } from './musical-events';
+import { annotateSignalEvents } from './signal-events';
 
 export const DIFFICULTIES = {
   one: { label: '单指', english: '1 FINGER', description: '单指轮换，无双押；长按期间不插入其他操作。', gap: 0.3, threshold: 0.23, swipeBeats: 8, holdBeats: 4, max: 1 },
@@ -21,13 +22,23 @@ export function generateChart(analysis: Analysis, difficulty: Difficulty, bpmOve
   progress?.(0.12, '正在按连续拍点组织乐句');
   const notes: Note[] = [], busyUntil = [-10, -10, -10, -10], fingerUntil = [-10, -10, -10, -10];
   let lastTime = -10, previousLane = -1, lastSwipe = -Infinity, lastHold = -Infinity;
-  const events = bpmOverride !== undefined && analysis.recognition?.engine === 'beat-this'
-    ? musicalEvents(analysis, { beats, tempo: [], confidence: 0, downbeats: [], meterConfidence: 0 })
-    : analysis.pulse?.onsets ?? analysis.onsets;
+  const directions = ['left', 'right', 'up'] as const;
+  const swipeUse = { left: 0, right: 0, up: 0 };
+  let events = analysis.pulse?.onsets ?? analysis.onsets;
+  if (bpmOverride !== undefined) {
+    const reference = { beats, tempo: [], confidence: 0, downbeats: [], meterConfidence: 0 };
+    if (analysis.recognition?.engine === 'beat-this') events = musicalEvents(analysis, reference);
+    else if (analysis.pulse) {
+      // A fixed manual reference replaces automatic roles, including roles
+      // that no longer match. It never adds an attack from a different band.
+      const raw = analysis.pulse.onsets.map(event => { const copy = { ...event }; delete copy.role; return copy; });
+      events = annotateSignalEvents({ ...analysis, rhythm: reference, pulse: { ...analysis.pulse, onsets: raw } }).pulse!.onsets;
+    }
+  }
   const sourceOnsets = events.filter(onset => !onset.role || onset.role === 'beat' || (config.max >= 2 && onset.role === 'half') || (config.max >= 3 && onset.role === 'quarter') || config.max === 4);
   const strengthSorted = sourceOnsets.map(x => x.strength).sort((a, b) => a - b);
   const threshold = Math.min(config.threshold, (strengthSorted[Math.floor(strengthSorted.length * 0.75)] || config.threshold) * 0.55);
-  const noteTime = (onset: Analysis['onsets'][number]) => onset.role ? onset.time : bpmOverride !== undefined || (analysis.rhythm?.confidence ?? 1) >= 0.45 ? snapToBeat(onset.time, beats, bpm) : onset.time;
+  const noteTime = (onset: Analysis['onsets'][number]) => onset.role || onset.boundary ? onset.time : bpmOverride !== undefined || (analysis.rhythm?.confidence ?? 1) >= 0.45 ? snapToBeat(onset.time, beats, bpm) : onset.time;
   const selected = selectMusicalOnsets(sourceOnsets.filter(onset => onset.time <= analysis.duration - 0.18), config.gap, threshold, noteTime);
   // Motif progression and repetition compare the same retained musical layer,
   // rather than letting rejected ornaments change every subsequent lane.
@@ -73,7 +84,12 @@ export function generateChart(analysis: Analysis, difficulty: Difficulty, bpmOve
     } else if (onset.strength >= Math.max(0.38, threshold * 1.5) && position - lastSwipe >= config.swipeBeats
       && (pattern.phase >= 5.5 || onset.strength >= 0.75)
       && onset.strength >= (selected[i - 1]?.strength ?? 0) && onset.strength >= (selected[i + 1]?.strength ?? 0)) {
-      type = phraseSwipe(analysis, time, pattern.phase);
+      const preferred = phraseSwipe(analysis, time, pattern.phase);
+      const least = Math.min(swipeUse.left, swipeUse.right, swipeUse.up);
+      // Direction is choreography on an already chosen accent. Keep variety
+      // without adding notes or moving them away from the music.
+      type = swipeUse[preferred] === least ? preferred : directions.find(direction => swipeUse[direction] === least)!;
+      swipeUse[type]++;
       lastSwipe = position;
     }
     const note: Note = { id: notes.length, lane, time, type, strength: onset.strength, pattern: pattern.name, ...(endTime ? { endTime } : {}) };
@@ -96,7 +112,7 @@ export function generateChart(analysis: Analysis, difficulty: Difficulty, bpmOve
   notes.sort((a, b) => a.time - b.time || a.lane - b.lane);
   notes.forEach((note, i) => { note.id = i; });
   progress?.(0.48, '正在匹配相似乐句与按键模板');
-  const chart = reusePhraseTemplates(bpmOverride === undefined ? musicalAnalysis : { ...musicalAnalysis, rhythm: undefined }, { version: 7, generator: analysis.recognition?.engine ?? 'signal', fingerprint: analysis.fingerprint, difficulty, fingerLimit: config.max, duration: analysis.duration, bpm, notes }, config.max);
+  const chart = reusePhraseTemplates(bpmOverride === undefined ? musicalAnalysis : { ...musicalAnalysis, rhythm: undefined }, { version: 8, generator: analysis.recognition?.engine ?? 'signal', fingerprint: analysis.fingerprint, difficulty, fingerLimit: config.max, duration: analysis.duration, bpm, notes }, config.max);
   progress?.(0.72, '正在规划整段指法与移动路线');
   const plan = planFingering(chart.notes, config.max);
   const checked = validateFingering(plan.notes, config.max, chart.duration);

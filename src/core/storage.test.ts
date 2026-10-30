@@ -67,10 +67,63 @@ describe('best scores respect the normalized game score contract', () => {
 });
 
 describe('settings recover from damaged or unavailable browser storage', () => {
-  it('roundtrips all supported settings without changing their values', () => {
-    storage();
-    const settings: Settings = { difficulty: 'four', speed: 8.5, scrollMode: 'screen', volume: 0.35, offset: -125, vibration: false, recognition: 'basic' };
-    saveSettings(settings); expect(loadSettings()).toEqual(settings);
+  it('starts new users on basic recognition without writing settings or touching best scores', () => {
+    const { entries, setItem } = storage(); entries.set(scoreKey, '900000');
+    expect(DEFAULT_SETTINGS.recognition).toBe('basic');
+    expect(loadSettings()).toEqual({ ...DEFAULT_SETTINGS, recognition: 'basic' });
+    expect(setItem).not.toHaveBeenCalled(); expect(entries.get(scoreKey)).toBe('900000');
+  });
+
+  it.each(['basic', 'enhanced'] as const)('roundtrips a current-version %s preference and writes its preference marker', recognition => {
+    const { entries } = storage();
+    const settings: Settings = { difficulty: 'four', speed: 8.5, scrollMode: 'screen', volume: 0.35, offset: -125, vibration: false, recognition };
+    saveSettings(settings);
+    expect(JSON.parse(entries.get('beatfall:settings')!)).toEqual({ ...settings, recognitionPreferenceVersion: 1 });
+    expect(loadSettings()).toEqual(settings);
+    expect(settings).not.toHaveProperty('recognitionPreferenceVersion');
+  });
+
+  it('migrates a legacy enhanced value to basic while retaining all other settings and best scores', () => {
+    const { entries, setItem } = storage(); entries.set(scoreKey, '900000');
+    entries.set('beatfall:settings', JSON.stringify({ difficulty: 'normal', speed: 7.5, scrollMode: 'screen', volume: 0.45, offset: 20, vibration: false, recognition: 'enhanced' }));
+    expect(loadSettings()).toEqual({ difficulty: 'three', speed: 7.5, scrollMode: 'screen', volume: 0.45, offset: 20, vibration: false, recognition: 'basic' });
+    expect(bestScore('test-song')).toBe(900000); expect(setItem).not.toHaveBeenCalled();
+  });
+
+  it('restores a stored model choice only when its current version marker is present', () => {
+    const { entries } = storage();
+    const settings: Settings = { difficulty: 'one', speed: 7.5, scrollMode: 'screen', volume: 0.45, offset: 20, vibration: false, recognition: 'enhanced' };
+    entries.set('beatfall:settings', JSON.stringify({ ...settings, recognitionPreferenceVersion: 1 }));
+    expect(loadSettings()).toEqual(settings);
+  });
+
+  it('allows a new deliberate model choice to persist after the one-time legacy migration', () => {
+    const { entries } = storage();
+    entries.set('beatfall:settings', JSON.stringify({ ...DEFAULT_SETTINGS, recognition: 'enhanced' }));
+    const migrated = loadSettings(); expect(migrated.recognition).toBe('basic');
+    saveSettings(migrated); expect(loadSettings().recognition).toBe('basic');
+    saveSettings({ ...migrated, recognition: 'enhanced' });
+    expect(loadSettings().recognition).toBe('enhanced');
+  });
+
+  it.each([0, 2, '1', null, true, [], {}])('does not restore a model choice from an invalid preference version %j', recognitionPreferenceVersion => {
+    const { entries } = storage();
+    entries.set('beatfall:settings', JSON.stringify({ ...DEFAULT_SETTINGS, speed: 7.5, recognition: 'enhanced', recognitionPreferenceVersion }));
+    expect(loadSettings()).toEqual({ ...DEFAULT_SETTINGS, speed: 7.5, recognition: 'basic' });
+  });
+
+  it('defaults a missing recognition field to basic while retaining legacy settings and scores', () => {
+    const { entries, setItem } = storage(); entries.set(scoreKey, '900000');
+    entries.set('beatfall:settings', JSON.stringify({ difficulty: 'normal', speed: 7.5, scrollMode: 'screen', volume: 0.45, offset: 20, vibration: false }));
+    expect(loadSettings()).toEqual({ difficulty: 'three', speed: 7.5, scrollMode: 'screen', volume: 0.45, offset: 20, vibration: false, recognition: 'basic' });
+    expect(bestScore('test-song')).toBe(900000); expect(setItem).not.toHaveBeenCalled();
+  });
+
+  it.each([null, false, 4, '', 'unknown', [], {}])('defaults invalid recognition %j to basic without resetting other settings', recognition => {
+    const { entries, setItem } = storage();
+    entries.set('beatfall:settings', JSON.stringify({ difficulty: 'one', speed: 7.5, scrollMode: 'screen', volume: 0.45, offset: 20, vibration: false, recognition, recognitionPreferenceVersion: 1 }));
+    expect(loadSettings()).toEqual({ difficulty: 'one', speed: 7.5, scrollMode: 'screen', volume: 0.45, offset: 20, vibration: false, recognition: 'basic' });
+    expect(setItem).not.toHaveBeenCalled();
   });
 
   it.each(['{broken', 'null', '[]', 'true', '42', '"wrong shape"'])('recovers defaults from malformed settings %s', stored => {
@@ -105,5 +158,11 @@ describe('settings recover from damaged or unavailable browser storage', () => {
     expect(loadSettings()).toEqual(DEFAULT_SETTINGS);
     setItem.mockImplementation(() => { throw new DOMException('Blocked', 'SecurityError'); });
     expect(() => saveSettings(DEFAULT_SETTINGS)).not.toThrow();
+  });
+
+  it('uses basic defaults and tolerates writes when browser storage is entirely unavailable', () => {
+    vi.stubGlobal('localStorage', undefined);
+    expect(loadSettings()).toEqual({ ...DEFAULT_SETTINGS, recognition: 'basic' });
+    expect(() => saveSettings({ ...DEFAULT_SETTINGS, recognition: 'enhanced' })).not.toThrow();
   });
 });

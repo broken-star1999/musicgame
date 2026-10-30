@@ -1,4 +1,4 @@
-import type { Analysis, NoteType } from '../types';
+import type { Analysis } from '../types';
 import { beatPosition, timeAtBeat } from './rhythm';
 
 const MOTIFS = [
@@ -71,7 +71,7 @@ export function sustainedEnd(analysis: Analysis, time: number, beat: number): nu
 
 /** Gestures are phrase choreography. Pitch classes are circular and cannot
  * establish ascending/descending melody or octave motion. */
-export function phraseSwipe(_analysis: Analysis, _time: number, phase: number): NoteType {
+export function phraseSwipe(_analysis: Analysis, _time: number, phase: number): 'left' | 'right' | 'up' {
   if (Math.round(phase * 2) % 7 === 0) return 'up';
   return Math.round(phase) % 2 === 0 ? 'left' : 'right';
 }

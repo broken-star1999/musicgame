@@ -3,7 +3,7 @@ export type ScrollMode = 'perspective' | 'screen';
 export type NoteType = 'tap' | 'hold' | 'left' | 'right' | 'up';
 export type Grade = 'perfect' | 'great' | 'good' | 'miss';
 export type RecognitionMode = 'enhanced' | 'basic';
-export interface Onset { time: number; strength: number; band: number; attack?: number; role?: 'beat' | 'half' | 'quarter' | 'free' }
+export interface Onset { time: number; strength: number; band: number; attack?: number; boundary?: true; role?: 'beat' | 'half' | 'quarter' | 'free' }
 export interface RhythmSection { start: number; end: number; band: 'low' | 'mid' | 'high' | 'mixed'; support: number }
 export interface Rhythm {
   beats: number[];
@@ -40,7 +40,7 @@ export interface Note {
   pattern?: string;
 }
 export interface Chart {
-  version: 1 | 2 | 3 | 4 | 5 | 6 | 7;
+  version: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
   generator?: 'beat-this' | 'signal';
   fingerprint: string;
   difficulty: Difficulty;

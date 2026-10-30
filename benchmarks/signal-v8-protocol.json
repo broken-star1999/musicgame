@@ -1,0 +1,100 @@
+{
+  "schema": 1,
+  "state": "frozen",
+  "parentFinalFreeze": true,
+  "frozenAt": "2026-10-30T00:55:41.253Z",
+  "runId": "signal-final-2-17-31",
+  "evaluatorSha256": "f17c42903abb051a3224dcec37a22470b67e96fe387c0d8f5d06a62fec4ade44",
+  "baselineCommit": "27649b3811a084890b8968e2e7a4149df14eb3cb",
+  "baselineSourceSha256": {
+    "src/core/analysis-fallback.ts": "9ed038ba70cfab88bb1b9489a2dfad9c89afc183c4290d46df02acc0792a1a46",
+    "src/core/analysis.ts": "b430d5be709be0c6c524507a162cdfc5e235413ad616b178f5393771a76232d3",
+    "src/core/chart-constraints.ts": "35e4f304aed8eb2dfe49bb4dbae6d7b7db7b5deea34732a96dc7df05aeec1736",
+    "src/core/chart.ts": "caca9268c7f9afa8bb78d7e3a4b796c7a62ae2389854afeb045048b5e35334fa",
+    "src/core/chroma.ts": "4172510959a332bfeff4970964dd5c8ad2a696d1725bbd1496481d8d82f84ded",
+    "src/core/fingering.ts": "797d6bc08a44163a261e4e02c22fe8ea4e57eff67bfd5fdc9a5d938b2b23d83e",
+    "src/core/musical-events.ts": "36f53c453ac460ceb46f5a0ea6185812f813970e24ab5a304cef2b2721758883",
+    "src/core/onset-selection.ts": "00a59956b5a27c49d78f6e8cb76fa1aa2bdde5d364d57a2815716a4b096c917f",
+    "src/core/patterns.ts": "88d580e3a346cf58f5ae13d43635c6fc07e34ccd2cc3d7f9e18e21253803fda2",
+    "src/core/phrases.ts": "8d9029820b333c3f699cecf9998c950294f50d0fe72751cc3fd13b871c5dfc89",
+    "src/core/rhythm-source.ts": "2b489a5c02907ccb13ed40299f88db18f39f2ccfa014b781e672a9a555c2a157",
+    "src/core/rhythm.ts": "476f8a8f1d2a34d39a6dc3cb12ded9e295e9f9284f1bff56dfe2e71f3799b9bd",
+    "src/types.ts": "79a7e84d43be6c45cf55e29f5a343393e5fbfad4aed3f6c2d719ac2604fac9eb"
+  },
+  "candidateSourceSha256": {
+    "src/core/analysis-fallback.ts": "34410f957e644ca0fd2281145ccbefb4967b9a2d220bc9c3cad373dbd730c296",
+    "src/core/analysis.ts": "e20d5c52e505e8f08ff23fd3fb50d4527d3893b8e782f8ea32c66bb239a5ae63",
+    "src/core/chart-constraints.ts": "35e4f304aed8eb2dfe49bb4dbae6d7b7db7b5deea34732a96dc7df05aeec1736",
+    "src/core/chart.ts": "5a436002cc1f9cc1992f4541083c172395750a8ee47a793abc39cc6d5cd3d05b",
+    "src/core/chroma.ts": "4172510959a332bfeff4970964dd5c8ad2a696d1725bbd1496481d8d82f84ded",
+    "src/core/fingering.ts": "797d6bc08a44163a261e4e02c22fe8ea4e57eff67bfd5fdc9a5d938b2b23d83e",
+    "src/core/musical-events.ts": "36f53c453ac460ceb46f5a0ea6185812f813970e24ab5a304cef2b2721758883",
+    "src/core/onset-selection.ts": "00a59956b5a27c49d78f6e8cb76fa1aa2bdde5d364d57a2815716a4b096c917f",
+    "src/core/patterns.ts": "10966f254c5e5025ff8acd12986fa3218daa6e0467e75313768ce9833fe34ffc",
+    "src/core/phrases.ts": "8d9029820b333c3f699cecf9998c950294f50d0fe72751cc3fd13b871c5dfc89",
+    "src/core/rhythm-source.ts": "fb535280ab680aed096cfac4e5a26ebdec65738cd70181346ad52f6149262529",
+    "src/core/rhythm.ts": "8ebbba4b5bcc0309a78ae6f7c7e076bffb718c2886300a2e6ad04b3dbee96c19",
+    "src/core/signal-events.ts": "cfab9dd27bcd2d5a3daecce3ec4cf084e6897e5e72538ed3179d078ce6518c13",
+    "src/types.ts": "fc78900363974b2058885d2c94835aa20f124c08dd3cd573a14f12347003277a"
+  },
+  "cohort": {
+    "label": "final-2-17-31",
+    "genres": [
+      "blues",
+      "classical",
+      "country",
+      "disco",
+      "hiphop",
+      "jazz",
+      "metal",
+      "pop",
+      "reggae",
+      "rock"
+    ],
+    "indices": [
+      2,
+      17,
+      31
+    ],
+    "selectionProtocolSha256": "6e1e43ef36e049f912cc5bb9f61b8836a54663937a5842f5f1bc3da9e4143d96",
+    "inputFingerprintSha256": "70a07fa13da8cc4145f05a71ec6bc5506dc655eded4b1f9282c81303754118a5"
+  },
+  "inputSources": {
+    "dataset": "https://huggingface.co/datasets/sanchit-gandhi/gtzan/tree/4bd857132cb0e731bef3ec68558e7acc0a85f144",
+    "originalDataset": "https://huggingface.co/datasets/marsyas/gtzan/tree/d2146561ecc7df707d9e6b8318885fe6a39668a2",
+    "annotations": "https://github.com/CPJKU/beat_this_annotations/tree/fd9fcc0896cb78730bae735102c8753ef3a3badd/gtzan/annotations/beats",
+    "preparation": "scripts/prepare-beat-benchmark.py; 22050Hz mono f32le; original reference JSON preserved"
+  },
+  "noModels": true,
+  "noPerTrackParameters": true,
+  "sampleRate": 22050,
+  "referenceBoundary": "finite numeric reference times with 0 <= time <= pcmFloat32Frames / sampleRate; inclusive; raw inputs remain unchanged",
+  "onsetToleranceSeconds": 0.02,
+  "matcher": "distinct nearest; 70ms and 50ms; no leading-time trim; predicted events are not clipped",
+  "bootstrap": {
+    "seed": 20261030,
+    "replicates": 10000,
+    "strata": "genre",
+    "confidence": 0.95,
+    "unit": "paired clip within genre",
+    "limitation": "Descriptive uncertainty for this fixed, small systematic subset; not proof of song/artist/population independence or musical quality."
+  },
+  "gate": {
+    "averaging": "macro across exactly 30 clips; absolute metric deltas",
+    "epsilon": 1e-9,
+    "head70MinGain": 0.02,
+    "head50F1MinDelta": 0,
+    "head50PrecisionMinDelta": 0,
+    "head50RecallMinDelta": 0,
+    "head70CILowerExclusive": 0,
+    "pulseRecallMinDelta": -0.005,
+    "clockF1MinDelta": -0.005,
+    "fourFingerPerClipActualHeadCountMinRatio": 0.95,
+    "fourFingerRetentionDefinition": "deduplicated note heads within own measured candidates +/-20ms; after count / V7 count per clip; V7 zero requires a nonempty valid after chart",
+    "allFourModesValidAndDeterministic": true,
+    "originalV7HeadMatchingIsDiagnosticOnly": true
+  },
+  "interpretation": "Single-finger head F1 measures primary-beat selection compatibility only. Four-finger measured-onset head counts, V7 onset identities retained, source-path changes, density and validity are separate. Higher F1 is not a full musical-quality claim; never alter this gate after seeing final results.",
+  "candidateRule": "Preserve V7 global Viterbi; guard only actual handoffs with supported period and phase memory; isolate boundary before regular peak dedup and inference, restore selected opening source only, never anchor/snap or classify boundary; classify existing selected DSP attacks with at least three measured beat bindings; manual BPM is explicit and reversible; retain deterministic finger planning and all four modes.",
+  "validationBeforeFreeze": "397 source tests passed, 1 private-song test skipped; TypeScript and Vite production build passed; final unseen data has not been analyzed."
+}

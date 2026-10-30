@@ -9,17 +9,17 @@ self.onmessage = async (event: MessageEvent<WorkerRequest>) => {
   try {
     const analysis = analyzeAudio(event.data.samples, event.data.sampleRate, (value, stage) => send({ type: 'progress', value: value * 0.3, stage }));
     let completion: Extract<WorkerResponse, { type: 'done' | 'patch' }>;
-    if (event.data.recognitionMode === 'basic') completion = { type: 'done', analysis: basicAnalysis(analysis) };
+    if (event.data.recognitionMode !== 'enhanced') completion = { type: 'done', analysis: basicAnalysis(analysis) };
     else {
       send({ type: 'baseline', analysis });
       let result: Analysis;
       try {
-        send({ type: 'progress', value: 0.3, stage: '正在加载增强识别组件' });
+        send({ type: 'progress', value: 0.3, stage: '正在加载模型辅助组件' });
         const { inferBeatLogits } = await import('./beat-inference');
         const logits = await inferBeatLogits(event.data.samples, event.data.assetBase, (value, stage) => send({ type: 'progress', value: 0.3 + value * 0.66, stage }));
         result = applyBeatRecognition(analysis, logits);
       } catch (error) {
-        const reason = error instanceof Error && error.name === 'BeatResourceError' ? error.message : '增强节拍模型未能启动或完成识别';
+        const reason = error instanceof Error && error.name === 'BeatResourceError' ? error.message : '辅助节拍模型未能启动或完成识别';
         result = basicAnalysis(analysis, reason);
       }
       completion = { type: 'patch', patch: makeAnalysisPatch(analysis, result) };

@@ -1,6 +1,7 @@
 import type { Difficulty, Result, Settings } from '../types';
 
-export const DEFAULT_SETTINGS: Settings = { difficulty: 'two', speed: 5, scrollMode: 'perspective', volume: 0.75, offset: 0, vibration: true, recognition: 'enhanced' };
+const RECOGNITION_PREFERENCE_VERSION = 1;
+export const DEFAULT_SETTINGS: Settings = { difficulty: 'two', speed: 5, scrollMode: 'perspective', volume: 0.75, offset: 0, vibration: true, recognition: 'basic' };
 export function loadSettings(): Settings {
   try {
     const v = JSON.parse(localStorage.getItem('beatfall:settings') || '{}');
@@ -9,14 +10,15 @@ export function loadSettings(): Settings {
       difficulty: ['one', 'two', 'three', 'four'].includes(v.difficulty) ? v.difficulty : ['easy', 'normal', 'hard'].includes(v.difficulty) ? legacy[v.difficulty] : 'two',
       scrollMode: v.scrollMode === 'screen' ? 'screen' : 'perspective',
       vibration: v.vibration !== false,
-      recognition: v.recognition === 'basic' ? 'basic' : 'enhanced',
+      // Older releases persisted their model default; only restore a new deliberate choice.
+      recognition: v.recognitionPreferenceVersion === RECOGNITION_PREFERENCE_VERSION && v.recognition === 'enhanced' ? 'enhanced' : 'basic',
       speed: typeof v.speed === 'number' && Number.isFinite(v.speed) ? Math.max(2, Math.min(10, v.speed)) : 5,
       volume: typeof v.volume === 'number' && Number.isFinite(v.volume) ? Math.max(0, Math.min(1, v.volume)) : 0.75,
       offset: typeof v.offset === 'number' && Number.isFinite(v.offset) ? Math.max(-300, Math.min(300, v.offset)) : 0,
     };
   } catch { return { ...DEFAULT_SETTINGS }; }
 }
-export function saveSettings(settings: Settings) { try { localStorage.setItem('beatfall:settings', JSON.stringify(settings)); } catch { /* Storage can be disabled in private browsing. */ } }
+export function saveSettings(settings: Settings) { try { localStorage.setItem('beatfall:settings', JSON.stringify({ ...settings, recognitionPreferenceVersion: RECOGNITION_PREFERENCE_VERSION })); } catch { /* Storage can be disabled in private browsing. */ } }
 function validScore(value: number): boolean { return Number.isInteger(value) && value >= 0 && value <= 1_000_000; }
 function readBest(key: string): number {
   const value = Number(localStorage.getItem(`beatfall:best:${key}`));

@@ -4,6 +4,8 @@ import type { Analysis, Onset } from '../types';
 
 const attacks = (times: number[]): Onset[] => times.map((time, i) => ({ time, strength: i % 4 === 0 ? 1 : 0.7, band: i % 4 === 0 ? 0 : 1 }));
 const median = (values: number[]) => [...values].sort((a, b) => a - b)[Math.floor(values.length / 2)];
+const emptyAnalysis: Analysis = { duration: 4, bpm: 120, confidence: 0, onsets: [], energy: [], energyStep: 0.05, waveform: [], fingerprint: 'boundary-grid' };
+const reference = (beats: number[], confidence: number) => ({ beats, confidence, tempo: [], downbeats: [], meterConfidence: 0 });
 
 describe('continuous beat tracking in audio time', () => {
   it('keeps confidence and beat times invariant to a common change in input strength', () => {
@@ -55,5 +57,53 @@ describe('continuous beat tracking in audio time', () => {
   it('uses a conservative tempo reference when the tracked pulse is uncertain', () => {
     const analysis = { duration: 4, bpm: 120, onsets: attacks([1, 1.5, 2]), rhythm: { beats: [1, 1.7, 2.6], confidence: 0.2 } } as Analysis;
     expect(chartBeats(analysis).slice(0, 3)).toEqual([1, 1.5, 2]);
+  });
+
+  it('anchors a low-confidence grid to the first regular pulse, excluding an unclassified boundary', () => {
+    const boundary: Onset = { time: 0.01, strength: 1, band: 0, boundary: true };
+    const analysis: Analysis = { ...emptyAnalysis, onsets: [boundary, ...attacks([0.4, 0.9])],
+      pulse: { onsets: [boundary, ...attacks([0.75, 1.25])], sections: [] },
+      rhythm: reference([0.1, 0.7, 1.4], 0.2) };
+    expect(chartBeats(analysis).slice(0, 3)).toEqual([0.75, 1.25, 1.75]);
+  });
+
+  it.each([false, true])('uses regular raw evidence when pulse is absent or only boundary (pulse=%s)', hasPulse => {
+    const boundary: Onset = { time: 0.01, strength: 1, band: 0, boundary: true };
+    const analysis: Analysis = { ...emptyAnalysis, onsets: [boundary, ...attacks([0.4, 0.9])],
+      pulse: hasPulse ? { onsets: [boundary], sections: [] } : undefined };
+    expect(chartBeats(analysis).slice(0, 3)).toEqual([0.4, 0.9, 1.4]);
+  });
+
+  it('does not accept a boundary as beat-role evidence even if its metadata is already labeled', () => {
+    const boundary: Onset = { time: 0.01, strength: 1, band: 0, boundary: true, role: 'beat' };
+    const regular: Onset = { time: 1, strength: 0.2, band: 0, role: 'beat' };
+    const analysis: Analysis = { ...emptyAnalysis, onsets: [boundary, ...attacks([0.4, 1])],
+      pulse: { onsets: [boundary, ...attacks([0.75]), regular], sections: [] } };
+    expect(chartBeats(analysis).slice(0, 3)).toEqual([1, 1.5, 2]);
+  });
+
+  it('defaults to time zero when all available events are unconfirmed boundaries', () => {
+    const boundary: Onset = { time: 0.015, strength: 1, band: 0, boundary: true, role: 'beat' };
+    const analysis: Analysis = { ...emptyAnalysis, onsets: [boundary], pulse: { onsets: [boundary], sections: [] } };
+    expect(chartBeats(analysis).slice(0, 3)).toEqual([0, 0.5, 1]);
+  });
+
+  it('preserves a trusted automatic map exactly without reanchoring from boundary or regular cues', () => {
+    const boundary: Onset = { time: 0.01, strength: 1, band: 0, boundary: true };
+    const beats = [0.77, 1.28, 1.79];
+    const analysis: Analysis = { ...emptyAnalysis, onsets: [boundary, ...attacks([0.4, 0.9])],
+      pulse: { onsets: [boundary, ...attacks([0.4, 0.9])], sections: [] }, rhythm: reference(beats, 0.9) };
+    expect(chartBeats(analysis)).toBe(beats);
+  });
+
+  it('keeps the regular role anchor and explicit BPM when manually replacing a trusted map', () => {
+    const boundary: Onset = { time: 0.01, strength: 1, band: 0, boundary: true };
+    const regular: Onset = { time: 0.75, strength: 0.2, band: 0, role: 'beat' };
+    const analysis: Analysis = { ...emptyAnalysis, onsets: [boundary, ...attacks([0.4, 0.9])],
+      pulse: { onsets: [boundary, ...attacks([0.4]), regular], sections: [] },
+      rhythm: reference([0.2, 0.7, 1.2], 0.9) };
+    const before = structuredClone(analysis);
+    expect(chartBeats(analysis, 150).slice(0, 3)).toEqual([0.75, 1.15, 1.55]);
+    expect(analysis).toEqual(before);
   });
 });

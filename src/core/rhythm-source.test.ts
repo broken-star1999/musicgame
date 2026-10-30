@@ -40,11 +40,12 @@ describe('one coherent rhythm source across a recording', () => {
     expect(pulse.onsets).toEqual(mixed);
     expect(pulse.sections.every(section => section.band === 'mixed')).toBe(true);
   });
-  it('is deterministic and keeps a brief salience change from causing source chatter', () => {
+  it('is deterministic and keeps attack timing continuous through same-phase salience changes', () => {
     const low = regular(0), mid = regular(1).map(event => ({ ...event, strength: event.time >= 12 && event.time < 16 ? 1 : 0.55 }));
     const pulse = followRhythmSource([low, mid, []], [...low, ...mid].sort((a, b) => a.time - b.time), 32);
     expect(pulse).toEqual(followRhythmSource([low, mid, []], [...low, ...mid].sort((a, b) => a.time - b.time), 32));
     expect(new Set(pulse.sections.map(section => section.band)).size).toBe(1);
+    expect(pulse.onsets.map(event => event.time)).toEqual(low.map(event => event.time));
     pulse.onsets.forEach(event => expect([...low, ...mid]).toContain(event));
   });
   it('keeps clear following beats in one-finger mode even with continuous tonal accompaniment', () => {

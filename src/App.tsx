@@ -11,6 +11,7 @@ import { compileChart } from './core/chart-service';
 import { peakFingers } from './core/chart-constraints';
 import { JUDGMENT_VERSION } from './core/judgment';
 import { bestScore, loadSettings, saveBest, saveSettings } from './core/storage';
+import { resolveBpmReference } from './core/bpm-reference';
 import { Game } from './components/Game';
 import { NoteIcon, Preview } from './components/Preview';
 import './styles.css';
@@ -55,7 +56,7 @@ export default function App() {
     return values.length ? [Math.round(values[Math.floor(values.length * 0.1)]), Math.round(values[Math.floor(values.length * 0.9)])] : null;
   }, [track]);
   const rhythmSource = useMemo(() => {
-    if (track?.analysis.recognition?.engine === 'beat-this') return '增强节拍识别 · 已在本机完成';
+    if (track?.analysis.recognition?.engine === 'beat-this') return '模型辅助识别 · 已在本机完成';
     const sections = track?.analysis.pulse?.sections;
     if (!sections?.length) return '';
     const duration = { low: 0, mid: 0, high: 0, mixed: 0 };
@@ -150,9 +151,15 @@ export default function App() {
     }
   };
   const regenerate = () => {
-    const value = Number(bpm);
-    if (!Number.isFinite(value) || value < 30 || value > 300) { setError('BPM 请填写 30～300 之间的数值。'); return; }
-    invalidateStart(); setBpmOverride(value); setChartRevision(revision => revision + 1); setError('');
+    if (!track) return;
+    try {
+      const reference = resolveBpmReference(bpm, track.analysis.bpm);
+      invalidateStart(); setBpmOverride(reference); setChartRevision(revision => revision + 1); setError('');
+    } catch (error) { setError(error instanceof Error ? error.message : 'BPM 设置无效，请重试。'); }
+  };
+  const resetBpm = () => {
+    if (!track) return;
+    invalidateStart(); setBpmOverride(undefined); setBpm(String(track.analysis.bpm)); setChartRevision(revision => revision + 1); setError('');
   };
   if (game && track && chart) return <Game key={game.id} track={track} chart={chart} settings={settings} autoplay={game.autoplay} onExit={() => setGame(null)} onFinish={finish} />;
 
@@ -163,9 +170,9 @@ export default function App() {
       <div className="workspace">
         <aside className="control-panel">
           <div className="section-label"><span><span className="step-number">01</span> 选择你的音乐</span><Music2 size={15} /></div>
-          <div className="recognition-choice"><span>节拍识别</span><div role="group" aria-label="节拍识别方式">{(['enhanced', 'basic'] as const).map(mode => <button key={mode} type="button" aria-pressed={settings.recognition === mode} onClick={() => changeRecognition(mode)}>{mode === 'enhanced' ? '增强' : '轻量'}</button>)}</div></div>
+          <div className="recognition-choice"><span>节拍识别</span><div role="group" aria-label="节拍识别方式">{(['basic', 'enhanced'] as const).map(mode => <button key={mode} type="button" aria-pressed={settings.recognition === mode} onClick={() => changeRecognition(mode)}>{mode === 'basic' ? '纯算法' : '模型辅助'}</button>)}</div></div>
           <p className="recognition-detail">{settings.recognition === 'enhanced' ? '首次下载约 24 MB 识别组件，缓存后可在本机复用。' : '直接分析声音起点，无需下载和运行模型。'}</p>
-          {busy && settings.recognition === 'enhanced' && <button type="button" className="text-button" onClick={() => changeRecognition('basic')}>立即用轻量继续</button>}
+          {busy && settings.recognition === 'enhanced' && <button type="button" className="text-button" onClick={() => changeRecognition('basic')}>立即用纯算法继续</button>}
           <input ref={fileInput} id="audio-file" className="sr-only" type="file" accept=".mp3,.wav,.m4a,.ogg,.flac,audio/mpeg,audio/wav,audio/mp4,audio/ogg,audio/flac" onChange={e => { const file = e.target.files?.[0]; if (file) void load(file); e.target.value = ''; }} />
           <button className={`upload-zone ${dragging ? 'is-dragging' : ''}`} onClick={() => fileInput.current?.click()} onDragOver={e => { e.preventDefault(); setDragging(true); }} onDragLeave={() => setDragging(false)} onDrop={e => { e.preventDefault(); setDragging(false); const file = e.dataTransfer.files[0]; if (file) void load(file); }}><span className="upload-icon"><Upload size={19} /></span><strong>点击上传，或拖入音频</strong><span>MP3 / WAV / M4A / OGG / FLAC</span><small>最大 50 MB · 5 分钟以内</small><Plus className="upload-plus" size={12} /></button>
           {busy ? <div className="analysis-progress" role="status" aria-live="polite"><div><LoaderCircle className="spin" size={15} /><span>{stage}</span><button onClick={cancel} aria-label="取消分析"><X size={14} /></button></div><div className="progress-track"><i style={{ width: `${Math.max(4, progress * 100)}%` }} /></div><small>{Math.round(progress * 100)}% · 音频仅在本地处理</small></div> : track ? <div className="selected-track"><div className="album-art"><AudioLines size={25} /><i /><i /></div><div className="track-meta"><strong title={track.name}>{track.name}</strong><span>{track.demo ? '内置演示曲' : '本地音乐'} <i>·</i> {timeLabel(track.analysis.duration)}</span></div><span className="track-ready"><Check size={13} /></span></div> : <button className="demo-load" onClick={() => void load()}><Disc3 size={18} /><span>没有音乐？试试内置演示曲</span><ChevronRight size={14} /></button>}
@@ -177,7 +184,7 @@ export default function App() {
           <p className="difficulty-description">{DIFFICULTIES[settings.difficulty].description}</p>
           <label className="field-label scroll-label">下落方式<span>SCROLL STYLE</span></label><div className="scroll-selector" role="group" aria-label="下落方式"><button aria-pressed={settings.scrollMode === 'perspective'} className={settings.scrollMode === 'perspective' ? 'selected' : ''} onClick={() => update('scrollMode', 'perspective')}>透视推进</button><button aria-pressed={settings.scrollMode === 'screen'} className={settings.scrollMode === 'screen' ? 'selected' : ''} onClick={() => update('scrollMode', 'screen')}>屏幕匀速</button></div><p className="scroll-description">{settings.scrollMode === 'perspective' ? '随轨道变宽平滑加速，让靠近时的推进感保持连贯。' : '相同时间移动相同像素，适合偏好平直下落的手感。'}</p><div className="range-heading"><label htmlFor="speed">下落速度</label><span><b>{settings.speed.toFixed(1)}</b> ×</span></div><input id="speed" aria-label="下落速度" type="range" min="2" max="10" step="0.5" value={settings.speed} onChange={e => update('speed', +e.target.value)} style={{ '--range-fill': `${(settings.speed - 2) / 8 * 100}%` } as React.CSSProperties} /><div className="range-ends"><span>舒缓</span><span>疾速</span></div>
           <button className="advanced-toggle" aria-expanded={advanced} onClick={() => setAdvanced(!advanced)}><Settings2 size={14} /> 音量、震动与校准 <span>{advanced ? '−' : '+'}</span></button>
-          {advanced && <div className="advanced-settings"><div className="feedback-setting"><div><strong>击打震动</strong><small>{typeof navigator.vibrate === 'function' ? '击中音符时短震，依设备与浏览器支持。' : '此浏览器未提供震动功能，仍有击打光效。'}</small></div><button type="button" role="switch" aria-label="击打震动" aria-checked={settings.vibration} className={settings.vibration ? 'feedback-switch enabled' : 'feedback-switch'} onClick={() => update('vibration', !settings.vibration)}><i /></button></div><div className="range-heading"><label htmlFor="volume"><Volume2 size={13} /> 音乐音量</label><span>{Math.round(settings.volume * 100)}%</span></div><input id="volume" type="range" min="0" max="1" step="0.05" value={settings.volume} onChange={e => update('volume', +e.target.value)} /><div className="range-heading"><label htmlFor="offset">判定偏移</label><span>{settings.offset > 0 ? '+' : ''}{settings.offset} ms</span></div><input id="offset" type="range" min="-300" max="300" step="5" value={settings.offset} onChange={e => update('offset', +e.target.value)} /><p>正值让判定时刻更晚，负值更早。蓝牙耳机可在这里微调。</p><label htmlFor="bpm" className="field-label">节拍修正 <span>BPM</span></label><div className="bpm-input"><input id="bpm" type="number" min="30" max="300" step="1" value={bpm} onChange={e => setBpm(e.target.value)} disabled={!track} /><button onClick={regenerate} disabled={!track}><RotateCcw size={12} /> 重新生成</button></div><p>仅将接近节拍的音符对齐，保留原曲声音起点。</p></div>}
+          {advanced && <div className="advanced-settings"><div className="feedback-setting"><div><strong>击打震动</strong><small>{typeof navigator.vibrate === 'function' ? '击中音符时短震，依设备与浏览器支持。' : '此浏览器未提供震动功能，仍有击打光效。'}</small></div><button type="button" role="switch" aria-label="击打震动" aria-checked={settings.vibration} className={settings.vibration ? 'feedback-switch enabled' : 'feedback-switch'} onClick={() => update('vibration', !settings.vibration)}><i /></button></div><div className="range-heading"><label htmlFor="volume"><Volume2 size={13} /> 音乐音量</label><span>{Math.round(settings.volume * 100)}%</span></div><input id="volume" type="range" min="0" max="1" step="0.05" value={settings.volume} onChange={e => update('volume', +e.target.value)} /><div className="range-heading"><label htmlFor="offset">判定偏移</label><span>{settings.offset > 0 ? '+' : ''}{settings.offset} ms</span></div><input id="offset" type="range" min="-300" max="300" step="5" value={settings.offset} onChange={e => update('offset', +e.target.value)} /><p>正值让判定时刻更晚，负值更早。蓝牙耳机可在这里微调。</p><label htmlFor="bpm" className="field-label">BPM 手动参考 <span>BPM</span></label><div className="bpm-input"><input id="bpm" type="number" min="30" max="300" step="1" value={bpm} onChange={e => setBpm(e.target.value)} disabled={!track} /><button onClick={regenerate} disabled={!track}><RotateCcw size={12} /> 重新生成</button></div><p role="status">{bpmOverride === undefined ? '自动拍点参考' : `固定 ${bpmOverride} BPM 参考`}</p>{bpmOverride !== undefined && <button type="button" className="text-button" onClick={resetBpm}>恢复自动拍点</button>}<p>修改 BPM 后按固定速度参考重新编谱，仍使用原曲起音；音乐播放速度不变。</p></div>}
           <button className="primary-button start-button" aria-label="开始演奏" aria-busy={starting} disabled={starting || !chartReady || !chart?.notes.length} onClick={() => void start()}>{starting ? <LoaderCircle className="spin" size={17} /> : <Play size={17} fill="currentColor" />}<span>{starting ? '开始演奏 · 正在恢复声音' : '开始演奏'}</span><kbd>{starting ? 'WAIT' : 'PLAY'}</kbd></button><div className="start-caption" role={starting ? 'status' : undefined}><Headphones size={11} /> {starting ? '正在恢复声音，请稍候…' : <>默认横向显示 · {DIFFICULTIES[settings.difficulty].label}谱面</>}</div>
         </aside>
         <div className="stage-column"><fieldset disabled={starting} aria-busy={starting} aria-label="谱面预览与自动演示" style={{ border: 0, padding: 0, margin: 0, minWidth: 0 }}><Preview chart={chartReady ? chart : null} active={!busy && !compiling && !help && !result && !starting} speed={settings.speed} scrollMode={settings.scrollMode} onDemo={() => void start(true)} /></fieldset>
