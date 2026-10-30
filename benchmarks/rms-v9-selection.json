@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "purpose": "Prospective regression check for the isolated RMS mask fix; no tempo prototype included",
+  "baselineCommit": "46ae43b517f8895333092df30dcdd7e95fb1a65f",
+  "candidateRule": "Remove only whole-file maxRms*0.025 onset mask; retain absolute RMS 0.0008 and all spectral/local peak/source/tempo/role rules. Chart version9 separates scores.",
+  "indices": [6, 18, 33],
+  "genres": ["blues", "classical", "country", "disco", "hiphop", "jazz", "metal", "pop", "reggae", "rock"],
+  "audioRevision": "4bd857132cb0e731bef3ec68558e7acc0a85f144",
+  "referenceRevision": "fd9fcc0896cb78730bae735102c8753ef3a3badd",
+  "selectionBeforeAnyAlgorithmResult": true,
+  "replacementPolicy": "No automatic replacements. Stop before evaluation if any original filename or canonical PCM overlaps the observed ledger.",
+  "targetedEvidenceBeforeSelection": "Three real-PCM unit cases fail before and pass after: quiet drop, quiet lead, loud accent among quiet beats. Two unit sustained backgrounds and nine independently frozen QA background cases have no false tail heads. Existing120 are diagnostic only:119 head metrics unchanged,1 improves; one changed source has3 fewer four-finger actual heads and is reported.",
+  "interpretation": "A rare dynamics bug fix, not a universal beat-tracking improvement. New30 test nonregression; synthetic targeted recovery is the efficacy check. All negative results and density/source changes must be reported."
+}

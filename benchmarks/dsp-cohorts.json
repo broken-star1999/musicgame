@@ -1,0 +1,1316 @@
+{
+  "schema": 1,
+  "dataset": "gtzan",
+  "datasetRevision": "4bd857132cb0e731bef3ec68558e7acc0a85f144",
+  "canonicalPCM": "mono f32le 22050Hz",
+  "identityPolicy": "Original public dataset filename plus exact canonical PCM SHA256. All120 project clips below are observed; no song/artist independence claim.",
+  "sources": {
+    "audio": "https://huggingface.co/datasets/sanchit-gandhi/gtzan/tree/4bd857132cb0e731bef3ec68558e7acc0a85f144",
+    "references": "https://github.com/CPJKU/beat_this_annotations/tree/fd9fcc0896cb78730bae735102c8753ef3a3badd/gtzan/annotations/beats"
+  },
+  "cohorts": [
+    {
+      "cohortId": "gtzan-dev-0-7-19",
+      "indices": [
+        0,
+        7,
+        19
+      ],
+      "state": "observed",
+      "inputFingerprintSha256": "0e9d762b8a8c8fc8461d792272deabec2f55ccb3936266d61bc445ac11055941",
+      "metadataEvidenceSha256": "6dce424af1a5abf4c1fa13ab441070ac5d4aa9ae52e577cff8ad996c5a57a40b"
+    },
+    {
+      "cohortId": "gtzan-observed-3-11-23",
+      "indices": [
+        3,
+        11,
+        23
+      ],
+      "state": "observed",
+      "inputFingerprintSha256": "ecedc2b832d65c962db235a950e02a64a63563f43531b90a4fea6ad0d9b8a140",
+      "metadataEvidenceSha256": "9b337334b1c2d3024bb94a9fd19eeff23061fcf546d0bcd496b05f6aef23cc48"
+    },
+    {
+      "cohortId": "gtzan-observed-5-13-29",
+      "indices": [
+        5,
+        13,
+        29
+      ],
+      "state": "observed",
+      "inputFingerprintSha256": "3db0a83f43c84a8ed35360e463c68649e6533c6c97dfe6211037007756edde02",
+      "metadataEvidenceSha256": "113e1d0d4534df7c85cdbbc202a76c8e0a2eabcebf885659857e138cd2bc814c"
+    },
+    {
+      "cohortId": "gtzan-observed-2-17-31",
+      "indices": [
+        2,
+        17,
+        31
+      ],
+      "state": "observed",
+      "inputFingerprintSha256": "70a07fa13da8cc4145f05a71ec6bc5506dc655eded4b1f9282c81303754118a5",
+      "metadataEvidenceSha256": "d34b7d82ae8e3c4ead24203be523b12e166b94700388b8bf7ce544878d6cef6d"
+    }
+  ],
+  "clips": [
+    {
+      "clipId": "blues.00000.wav",
+      "pcmSha256": "fffc9c2e72df9844c7f26048c4774e7b3427423fc1a5fbddb4aba2362b45bbb7",
+      "rawReferenceSha256": "5b9df75c7b95bef5659cde34eacc431190a82c980480a39984bacaf6c49b7243",
+      "state": "observed",
+      "cohortId": "gtzan-dev-0-7-19",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "blues.00007.wav",
+      "pcmSha256": "d2b4cd072c295b2c6dfcb149a07467bbbe2b39b3e2419fad0ac252ce66f48f8a",
+      "rawReferenceSha256": "ed900ca0cd6ab74cc10a63e7f5758a352dee3d1bf7fbc74121e910a9a10836c9",
+      "state": "observed",
+      "cohortId": "gtzan-dev-0-7-19",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "blues.00019.wav",
+      "pcmSha256": "2506d33227b23c699ff11969e372b46970c623821edb1d0c14e6966bdc92126e",
+      "rawReferenceSha256": "65bd648d5f2aaff1f7566c130790b3f8623b9f1997bbc1cea4dcbc6abd198ece",
+      "state": "observed",
+      "cohortId": "gtzan-dev-0-7-19",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "classical.00000.wav",
+      "pcmSha256": "60373f3c55107792671e4acbf86fb267d432cd012fd1128e9b70ab8904d7a81a",
+      "rawReferenceSha256": "22b17947cda61499e52f58ad5050d0c91fb01561830868fdf0025344e68cbbed",
+      "state": "observed",
+      "cohortId": "gtzan-dev-0-7-19",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "classical.00007.wav",
+      "pcmSha256": "973fce55eebd8803895f5a29f1d16a0e9a72d7b324f59247f961bbccc9a91c1f",
+      "rawReferenceSha256": "3e327447af965673df96bd5b63a33dd15cc05a8623905b521b4480a9b1535cd5",
+      "state": "observed",
+      "cohortId": "gtzan-dev-0-7-19",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "classical.00019.wav",
+      "pcmSha256": "ce899d3d0cb4e000bbdabf2b87862b9fb70bb69fcfbde03590219cb1cf39bdf3",
+      "rawReferenceSha256": "c5468b3fa6d633c6fb186e9f1b21b257534b465299679fdb26401a0f37ac4bf2",
+      "state": "observed",
+      "cohortId": "gtzan-dev-0-7-19",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "country.00000.wav",
+      "pcmSha256": "04b4f73858beecc9a1ef7912e863c5e77746785f3a37ec765441f6db1bb7248a",
+      "rawReferenceSha256": "65156204ff248b5436085254455fb16c4829b7dfdbe0b69f8ffb1099eea8bae4",
+      "state": "observed",
+      "cohortId": "gtzan-dev-0-7-19",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "country.00007.wav",
+      "pcmSha256": "bf62e1b5c6d96ea803fc5e054a53c1a74daf9fc9cbeedf157d78d9b5f0711cfd",
+      "rawReferenceSha256": "6180a73f1be8ebedee319b239b44bd846a2f60313d860853beab1e0ec1e70da1",
+      "state": "observed",
+      "cohortId": "gtzan-dev-0-7-19",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "country.00019.wav",
+      "pcmSha256": "451791ad355ba21719586dc934f046b5dd9a7b5d4ce6e56a9a11dcba25067f94",
+      "rawReferenceSha256": "bcdc2774bcf82a1eed43693afd6a6e5566c2309c3c96184848855b552d47244c",
+      "state": "observed",
+      "cohortId": "gtzan-dev-0-7-19",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "disco.00000.wav",
+      "pcmSha256": "b70185dc9c8bd064cad892df7641447b6d5a0c7da7638aef13de8bc0bf6c9950",
+      "rawReferenceSha256": "c6dd6ea49df5faeab7804506048297bcdebb61d9087b9f564249df2bc910b723",
+      "state": "observed",
+      "cohortId": "gtzan-dev-0-7-19",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "disco.00007.wav",
+      "pcmSha256": "f9b3eb1fa98a4a15593f3fa22a5e13c727d3ba40e5bb2789990b9f5dd124d142",
+      "rawReferenceSha256": "12ba07723847d4ec513b391d4c9ca52e01f2e182ad09197d6f2174d62ce8e2d4",
+      "state": "observed",
+      "cohortId": "gtzan-dev-0-7-19",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "disco.00019.wav",
+      "pcmSha256": "cd9688a945a72558440189104dd99276dae5d76ad3a82096213b442e95f339d4",
+      "rawReferenceSha256": "b620ffeb3ea361dfa2341b604f801228f0ef259933a00762c2cbc7ef318890e3",
+      "state": "observed",
+      "cohortId": "gtzan-dev-0-7-19",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "hiphop.00000.wav",
+      "pcmSha256": "3bc38880651d3c2443fc77b9337f10f6cd65695a4efb9bc711f4f7bda3e7fb9a",
+      "rawReferenceSha256": "c0858859338a65d25b04e9627951efa41ae5cd71305002995632f9074a1f1f08",
+      "state": "observed",
+      "cohortId": "gtzan-dev-0-7-19",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "hiphop.00007.wav",
+      "pcmSha256": "3d847042d8b3bfc01fe2d281a825e094a70f306aa16423624f17fd58742a201d",
+      "rawReferenceSha256": "caab7dcfc5073961d5079d49b47a6870ac14aa61c1cc3a3b97cbb74fe46dc90a",
+      "state": "observed",
+      "cohortId": "gtzan-dev-0-7-19",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "hiphop.00019.wav",
+      "pcmSha256": "21a6a81d8e72064b5691b67229c3e17f69748a920777f158130a42ceb448d213",
+      "rawReferenceSha256": "7b402d77a2f5db1e3d70d32151a8b55f5b8181a739c961ffb8c963869ead3941",
+      "state": "observed",
+      "cohortId": "gtzan-dev-0-7-19",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "jazz.00000.wav",
+      "pcmSha256": "f3ef11269bfc249c6657f037e8436ca1a2dbfe2ceee95a3504065a06cf8b1fc0",
+      "rawReferenceSha256": "3821644172c3057ca61063152bf0c4926d7dc1f8846b9e44ed16c60f25de7e0b",
+      "state": "observed",
+      "cohortId": "gtzan-dev-0-7-19",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "jazz.00007.wav",
+      "pcmSha256": "80f82e68aaa0168ae31c1ffaa30b7b798b12dde5f337489ba18915796f1a7c6c",
+      "rawReferenceSha256": "8ca0dd58a89725dfe360a9d11175e822a15d5b6fc36ab5504ac2d9f70cd4ac82",
+      "state": "observed",
+      "cohortId": "gtzan-dev-0-7-19",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "jazz.00019.wav",
+      "pcmSha256": "cf51172c81b1f75b9ef6e2eacea93992496b9a610dc3e9c850e04c8fddf470dc",
+      "rawReferenceSha256": "0c902e2d6a870b6987ea9a4059b329e985ad9ee04dd259f21060992fb2e635cd",
+      "state": "observed",
+      "cohortId": "gtzan-dev-0-7-19",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "metal.00000.wav",
+      "pcmSha256": "14f4286a666da766627d66dfa4edcd583cec9f511fea114831aa590a7ac4f9f8",
+      "rawReferenceSha256": "738fae51490e187e7b12c424b7cb2a4e962daf6111e64e5fabdb5d6de2437606",
+      "state": "observed",
+      "cohortId": "gtzan-dev-0-7-19",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "metal.00007.wav",
+      "pcmSha256": "f34f0bee2b0de07791275432d1c89cad3828385a89024f316675c29de41c99de",
+      "rawReferenceSha256": "e1c2cfda46f7163e619f1c893a6d06710b160c8decc4ee5584a27ec283be0741",
+      "state": "observed",
+      "cohortId": "gtzan-dev-0-7-19",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "metal.00019.wav",
+      "pcmSha256": "f9914959f19cb2907c45235b1ddc3f7cbb055b7e4c56614fc65f6d0317f4a1a5",
+      "rawReferenceSha256": "7d30a915c7b37f0ad71f8aa6588479d841baf848adf32c778e28d6ba794e321c",
+      "state": "observed",
+      "cohortId": "gtzan-dev-0-7-19",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "pop.00000.wav",
+      "pcmSha256": "e57da14b6e70f122406c7b6e3e059dda74c42935647951dcad03c1df98e36fb9",
+      "rawReferenceSha256": "3b546dc04e08d51fefe0c561a6d00f54c6a3fbb05310162683d3528f8d4e3f40",
+      "state": "observed",
+      "cohortId": "gtzan-dev-0-7-19",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "pop.00007.wav",
+      "pcmSha256": "ae1f514141cd96b60c0bb7ea950bd0d76d25a9f2640978aa76830d82bf9bc516",
+      "rawReferenceSha256": "7f0497a1d9aad590dc2daff317f55193f7a7c7229e688fc8b66dea199c629439",
+      "state": "observed",
+      "cohortId": "gtzan-dev-0-7-19",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "pop.00019.wav",
+      "pcmSha256": "9b570a8e3b708f508700c08ea26f58ba3eb37791cb778d4c8c6b9e7e62ebd4c1",
+      "rawReferenceSha256": "83515cafeb66466cd4798537c3c8f1bdfc5f30ab4c9d310988426df3e7375899",
+      "state": "observed",
+      "cohortId": "gtzan-dev-0-7-19",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "reggae.00000.wav",
+      "pcmSha256": "583b13a6aee7027773301c655631edbda919d877011c38d69f046a812a50e4e5",
+      "rawReferenceSha256": "652bd16c2d212c222c39eb224b0606ae2e1c9d6bbd49d5d0396ab49e947fcc9a",
+      "state": "observed",
+      "cohortId": "gtzan-dev-0-7-19",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "reggae.00007.wav",
+      "pcmSha256": "104bbae555f9321bc603c25acf67be9fee2204ac27c7317cc81231e30b02b53a",
+      "rawReferenceSha256": "bd42fde585f9f1894b53038e28f962c834e01999370dd31411f91ff8ccdb307b",
+      "state": "observed",
+      "cohortId": "gtzan-dev-0-7-19",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "reggae.00019.wav",
+      "pcmSha256": "c27a5fe8593cc2c1a8c7d5f7df5499e2931ab07bfe1f6f4b19600d44b74fa886",
+      "rawReferenceSha256": "256a89e78407b2edebd296c3e140033911a43e73ffc57e3c3e9f261069e5828d",
+      "state": "observed",
+      "cohortId": "gtzan-dev-0-7-19",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "rock.00000.wav",
+      "pcmSha256": "1f70fc77150b49b9756db2a9b9d77d2c84a2d47658a89fa9d3fab71e1a878f7d",
+      "rawReferenceSha256": "5420f714febf0e8d69e0779c832fe48d555cf343e3692bf9ee2fae9c563ba53a",
+      "state": "observed",
+      "cohortId": "gtzan-dev-0-7-19",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "rock.00007.wav",
+      "pcmSha256": "4894363525fdbba4463f9588878976ee5283817f1e7a8f4ad914593ce7e3fa3d",
+      "rawReferenceSha256": "bdfe71aced67bf87c2482113e0efe08a7e0fca65b6a146f253db499be7226c22",
+      "state": "observed",
+      "cohortId": "gtzan-dev-0-7-19",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "rock.00019.wav",
+      "pcmSha256": "8d6f0dab966e1afe936c43e16dcd915b29ebf5aec588efb9d0d3b909760710f8",
+      "rawReferenceSha256": "9249dacc5f40158e3c9a256eff276231d26d98aa56039afb9cedd29c45780b6b",
+      "state": "observed",
+      "cohortId": "gtzan-dev-0-7-19",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "blues.00003.wav",
+      "pcmSha256": "dd190aee191ac888d94b130e50c47e9ea6a229bffb32504d05579fbcc251ee19",
+      "rawReferenceSha256": "08b83815f87aef0f7c8162f326885a35aa7eb48520bad7931686e3d1bfcbc0cd",
+      "state": "observed",
+      "cohortId": "gtzan-observed-3-11-23",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "blues.00011.wav",
+      "pcmSha256": "490d82c14e7d579fc32f67b0993589e2c81aea69d8638f26466c63b7b0aeb544",
+      "rawReferenceSha256": "795f6a173b6fc479989ab758d7f1731d60aaaa03b87717fa87bd81d7f526e3cb",
+      "state": "observed",
+      "cohortId": "gtzan-observed-3-11-23",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "blues.00023.wav",
+      "pcmSha256": "b50981c232869e333c6ceaaa5eba2545c55c220e38e40eb687854b075f396304",
+      "rawReferenceSha256": "8083500acbe483b11a780460153bdfcf053a834633e4a91a0cf10ec6f3e7dd19",
+      "state": "observed",
+      "cohortId": "gtzan-observed-3-11-23",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "classical.00003.wav",
+      "pcmSha256": "a28f6a80b8c9e58d1cbea4a97fdf804d1c94b9cee2f5d68776d49051c5ea37f2",
+      "rawReferenceSha256": "9087b6961c9f8cc707e0b506b362e74867616ae3e058700f637bdd274eecaf68",
+      "state": "observed",
+      "cohortId": "gtzan-observed-3-11-23",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "classical.00011.wav",
+      "pcmSha256": "fe88c13f09988d4dbbf0b523c9e63bd1744ce21cb990a3342a20d5b30a842394",
+      "rawReferenceSha256": "1c652df4d88b13e7ad5bf7d4e4ddbfa3802306763e2f8b6eca5957b0577e2835",
+      "state": "observed",
+      "cohortId": "gtzan-observed-3-11-23",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "classical.00023.wav",
+      "pcmSha256": "749da7fc68cc2385cfc5b11e54118d1d74a242c9b564b7f8922f1c1ae4604711",
+      "rawReferenceSha256": "7ae8fd5d3a92c65bb0de89c7f5d323f6ba41c6ac0de0b30c4073dc4069dc5d59",
+      "state": "observed",
+      "cohortId": "gtzan-observed-3-11-23",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "country.00003.wav",
+      "pcmSha256": "5512b2ca02dadfb12e3af36b53648fcfae97ff05457c9b09f0975ed14214c90e",
+      "rawReferenceSha256": "5512f1aa83b7d2ce26196a471f67d60649473b0790e33f7560f50f2b757aabfd",
+      "state": "observed",
+      "cohortId": "gtzan-observed-3-11-23",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "country.00011.wav",
+      "pcmSha256": "fedcc9a8ea9395ab58d18c10adce0331122643121678578d4d3ab1ad124f43f1",
+      "rawReferenceSha256": "09f07cad1df99f732451cfb106733554435db2f1d4a0144f236a241e661b6824",
+      "state": "observed",
+      "cohortId": "gtzan-observed-3-11-23",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "country.00023.wav",
+      "pcmSha256": "bec3a663c51be9090938142f7e5bcfb6f467c84781f6bb0e900a5b07d8f3c349",
+      "rawReferenceSha256": "37da944f5d69a949b2efc8de56e4cd815cd6ea8082a7362242e5f37463a8dd27",
+      "state": "observed",
+      "cohortId": "gtzan-observed-3-11-23",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "disco.00003.wav",
+      "pcmSha256": "764434d4d12e2a32fd7684c57927122b78b77770f494e6a1095943210231f8e4",
+      "rawReferenceSha256": "69c2b0c9178d8e4ce7a2b07e05ef66db7d4a492e911d647909f1270a23e8e042",
+      "state": "observed",
+      "cohortId": "gtzan-observed-3-11-23",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "disco.00011.wav",
+      "pcmSha256": "3991b5e6dc38b406e0488d3031c062de36fc7baf57b95c64259f3e24aa9effe7",
+      "rawReferenceSha256": "1c69c6a25f40130e25370e447df7384be85e018c683273083598d992d3733402",
+      "state": "observed",
+      "cohortId": "gtzan-observed-3-11-23",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "disco.00023.wav",
+      "pcmSha256": "4b8ce094f97b2c8f271409d7b2d91cd2f428dbb72d92184393803cf97d86d079",
+      "rawReferenceSha256": "ba8b6e221184c5b337c453e41256601fd108f56cd630bf06abbb1fd2e6b18365",
+      "state": "observed",
+      "cohortId": "gtzan-observed-3-11-23",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "hiphop.00003.wav",
+      "pcmSha256": "49bc9eff85aba036046dc9480a5250d0553f4d9a3a9c7ac235cbee7b207322d1",
+      "rawReferenceSha256": "a3432b84fe89c2614c92e3ef4e540cdd04c54861e362e697f58cf117da9c8b62",
+      "state": "observed",
+      "cohortId": "gtzan-observed-3-11-23",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "hiphop.00011.wav",
+      "pcmSha256": "85326f7f46f50d71c8698fca51ba10fc4c2f06527970d51e7a923148d252fd86",
+      "rawReferenceSha256": "1a6827a3319a63f7cc3fef3ea1002986544f6c7866777d0b6f283b9d6e9be0e6",
+      "state": "observed",
+      "cohortId": "gtzan-observed-3-11-23",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "hiphop.00023.wav",
+      "pcmSha256": "9b63f5eeb4c36f9645d339514dd09d04ef2261d86417c0900cd225dd2753a435",
+      "rawReferenceSha256": "f430daace925642991bd5786c22e4d9d8f10fff8b79e1d6a3b4efb0471be0405",
+      "state": "observed",
+      "cohortId": "gtzan-observed-3-11-23",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "jazz.00003.wav",
+      "pcmSha256": "517ea77c495546c0c017c30a0d0ac8cf624c3621cfc3391a1f70beb2bf35d818",
+      "rawReferenceSha256": "882d755076b7170713aea3b0bed44afe5abb6c35ce5b0c2a0039fa689ec31380",
+      "state": "observed",
+      "cohortId": "gtzan-observed-3-11-23",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "jazz.00011.wav",
+      "pcmSha256": "0d6670019024f32c4853d68e47bab37be512b20770054a03aaed1058db4b4aae",
+      "rawReferenceSha256": "f173bbe074523d60d1020f45897f0eefc56a6ec689452580aac13d8659052d13",
+      "state": "observed",
+      "cohortId": "gtzan-observed-3-11-23",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "jazz.00023.wav",
+      "pcmSha256": "3e596351640865788644e3044ec99522c1c00b215abb788f075a918174fb459c",
+      "rawReferenceSha256": "3f9ec5fbe89bf7b80342a0781974e3b828aa778af9c6728cf79cc3f18e757089",
+      "state": "observed",
+      "cohortId": "gtzan-observed-3-11-23",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "metal.00003.wav",
+      "pcmSha256": "9b5c9dfe7874510e38c5f91a4ac5a57e8feead48911c4294a1151797b9153f7c",
+      "rawReferenceSha256": "1e1236a0dc5054b47948aac7118521cb8ba1c64bac5022602b1c69cfda125106",
+      "state": "observed",
+      "cohortId": "gtzan-observed-3-11-23",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "metal.00011.wav",
+      "pcmSha256": "7055d93705dabf0f622f6f4ec269fd319a7a8a73621d6c717ae99bf0fe085cbf",
+      "rawReferenceSha256": "b8c1f6283a3cb6a25605a8527c5097bbb68af811d5027a0663fb595b500a6d79",
+      "state": "observed",
+      "cohortId": "gtzan-observed-3-11-23",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "metal.00023.wav",
+      "pcmSha256": "ef94d2ec01fc55fe6f9ee978d7175f364105ba4b0cc16a4c0be4ce594375acf3",
+      "rawReferenceSha256": "afa8d2a2641834bb7dc87da8eaf75b0019c0a063325ee24b844b54d6786879fa",
+      "state": "observed",
+      "cohortId": "gtzan-observed-3-11-23",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "pop.00003.wav",
+      "pcmSha256": "27880611daf1310209aa356f739c52f10e9f3d33bc0a4b9602c83508561e924d",
+      "rawReferenceSha256": "15a27eeb1d320599edfcebc944a568d97e75a2fd7a4ddaed15bbf8dfe2036509",
+      "state": "observed",
+      "cohortId": "gtzan-observed-3-11-23",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "pop.00011.wav",
+      "pcmSha256": "8b457d4cadb888a59a7b2dced5c7785fce6d7e1e272c2bc3832ceb0bb3507b53",
+      "rawReferenceSha256": "eb5ec5101b7c0f8c696ee2b679686b12bc37a452d4c2f7e77aa368d1e5a99277",
+      "state": "observed",
+      "cohortId": "gtzan-observed-3-11-23",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "pop.00023.wav",
+      "pcmSha256": "ee2f2c1b54d277dfe30aad64e257cb764593904adda8774ce9545e08da6b56fc",
+      "rawReferenceSha256": "ace52f5be78230a0b9c6ca6be6466e7c4e44214007ad242b9e1e6586958a7d61",
+      "state": "observed",
+      "cohortId": "gtzan-observed-3-11-23",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "reggae.00003.wav",
+      "pcmSha256": "eafec2762e88ee68490f332fdd6749072ee7769701f7f9fc4cb851ff22b469ba",
+      "rawReferenceSha256": "d49154a4d86ced1fd635cde4abe2b73cb409ec3542d0c23f40d73c047f4ebc9d",
+      "state": "observed",
+      "cohortId": "gtzan-observed-3-11-23",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "reggae.00011.wav",
+      "pcmSha256": "5d29f8b62b3b82d3bf7f49f2cff83bde85e7df6ebf879bfdee4e546e109155b3",
+      "rawReferenceSha256": "d221f79af352df21e30afdff3d005a869cb6986f4ed0b750d71069816a4e9473",
+      "state": "observed",
+      "cohortId": "gtzan-observed-3-11-23",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "reggae.00023.wav",
+      "pcmSha256": "3363f55647394284aa1221ae5ee64300f8aa9216357dce437351719ba2e4782a",
+      "rawReferenceSha256": "fcbe1de29c47f566018d372597a39699b183ae1412e1786df7e38f6338f604e1",
+      "state": "observed",
+      "cohortId": "gtzan-observed-3-11-23",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "rock.00003.wav",
+      "pcmSha256": "5887dbd583a59f5545ef3b17c21d41a5b4ee00be32af888913150debf47dd7d4",
+      "rawReferenceSha256": "ae2e730b3da6bfd9fca92c91e652ee213674702d88af356d53e18ca9829f5a2e",
+      "state": "observed",
+      "cohortId": "gtzan-observed-3-11-23",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "rock.00011.wav",
+      "pcmSha256": "95dc414c14e1b75a395835ca1bd9e49158466ee251f13b1e6fb3006cfe925b32",
+      "rawReferenceSha256": "613d66fffeb081d5a14d5c9e5980e214de660a32cdd861e999acf82a40369d37",
+      "state": "observed",
+      "cohortId": "gtzan-observed-3-11-23",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "rock.00023.wav",
+      "pcmSha256": "eb89fe308bfaf1a28843656b6822db2cc7e0fe82c38c333614fcb8ca8b51efa7",
+      "rawReferenceSha256": "eed1a1aae5b8de59523e6fe361c416ce1401e86c7a9f661cb1d8ac375dee1d6d",
+      "state": "observed",
+      "cohortId": "gtzan-observed-3-11-23",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "blues.00005.wav",
+      "pcmSha256": "69a93a122b7bf9986fb8183d791c0db6341a6daf73d732917ee3e888165fd414",
+      "rawReferenceSha256": "58c7fdb93b9315e9fdbb3acdcc64619f05927f1e0e3ed1049f848ab010a5eecf",
+      "state": "observed",
+      "cohortId": "gtzan-observed-5-13-29",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "blues.00013.wav",
+      "pcmSha256": "98cba274da4e4c92c6350b206d12ec8be7f36e6656f6f75a9f95e56ca98bfc67",
+      "rawReferenceSha256": "39ae7e939df5f6821fa6fec3ebcd85d8d2b66df9a4181bb3db382905cb13004d",
+      "state": "observed",
+      "cohortId": "gtzan-observed-5-13-29",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "blues.00029.wav",
+      "pcmSha256": "3b476c42b81a389cb918a1b774952d06d681a94efc4548de2bb2f88ccdcfdbb9",
+      "rawReferenceSha256": "278d2528ea4f66bec265a2c0ceeff14e923a0faba9bb44a44990bf3886e2d025",
+      "state": "observed",
+      "cohortId": "gtzan-observed-5-13-29",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "classical.00005.wav",
+      "pcmSha256": "6e4776394ec66904727196864c5d9e3f818bc777733c9435997a1197b846c597",
+      "rawReferenceSha256": "b9b6c4f2969856499c5c1db900a6c81072982fd1f83ff42e27195c7d2c2870c4",
+      "state": "observed",
+      "cohortId": "gtzan-observed-5-13-29",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "classical.00013.wav",
+      "pcmSha256": "3ee7465abbbc54b43315592a71bd9bc68c2b8caaed614340f0e914be3cefb348",
+      "rawReferenceSha256": "2490c5e8810b51af13d63048229fbd1140c89d8f3778b6d8491b4fdf9f2745f1",
+      "state": "observed",
+      "cohortId": "gtzan-observed-5-13-29",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "classical.00029.wav",
+      "pcmSha256": "93dc9fe9c2947faa286c554245ff64b2fec42ab5c7fe318108d14faf845c5cd2",
+      "rawReferenceSha256": "360e6e2b0f692d857dd552557b3c17b5d5452d482d5a773d3c6cec10297e8e03",
+      "state": "observed",
+      "cohortId": "gtzan-observed-5-13-29",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "country.00005.wav",
+      "pcmSha256": "6975822efd9ebe512900d52f4a742d1e42bb2717eb1cc46e45a2665b6ab873bc",
+      "rawReferenceSha256": "fbc91309563e1578bb56a9af6f6bdf04e557aa974710cf83595687feb698b3e6",
+      "state": "observed",
+      "cohortId": "gtzan-observed-5-13-29",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "country.00013.wav",
+      "pcmSha256": "968dd32655dd7449d332ca5852fd1b66cfcbf5594347fc2d031d8bb9e74c0d86",
+      "rawReferenceSha256": "ce93a2b8411785a16ffb9a7565b2b3147537593755c6aff5ad38d87446f00575",
+      "state": "observed",
+      "cohortId": "gtzan-observed-5-13-29",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "country.00029.wav",
+      "pcmSha256": "5ce5b41915a0e81485a35b7cf21193311762457dcb67841b2ad2042de967a620",
+      "rawReferenceSha256": "f36bc07cbd483b1f1af6c54d317bc89008749832ad8ecc81d90b76e7f1840f96",
+      "state": "observed",
+      "cohortId": "gtzan-observed-5-13-29",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "disco.00005.wav",
+      "pcmSha256": "1a526fc61df17facb6bdf811895414dc40fe4f106db045b37a6c027639739fc9",
+      "rawReferenceSha256": "7e92b25921b08bfc19f1d56df7ea47b0f8987cfaac34f37a001fb835ed79b9c0",
+      "state": "observed",
+      "cohortId": "gtzan-observed-5-13-29",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "disco.00013.wav",
+      "pcmSha256": "427f4ec7ae5d595bbefa4c8983634731b2541cbf011e51581a036835f2688b06",
+      "rawReferenceSha256": "08eca31e7f31098e38d17cc21d799cb1922e34a8b4d134721d8cefcaf66aa322",
+      "state": "observed",
+      "cohortId": "gtzan-observed-5-13-29",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "disco.00029.wav",
+      "pcmSha256": "d6e9d1ab5b91e2353125a295572692348606e00a97e05063862831ed0ce61664",
+      "rawReferenceSha256": "7d199c1a29cf52c5a0863b9390c0ab9eb2f5bc54f87b3ee9420975ab2b14f4d9",
+      "state": "observed",
+      "cohortId": "gtzan-observed-5-13-29",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "hiphop.00005.wav",
+      "pcmSha256": "437dd781f9b41d547bdbaf817b5f09d52a89e47d209bdda68ea0037286824bcf",
+      "rawReferenceSha256": "5dfa74d7fa1205d52075409ed5597b75a81fb5f7839754ca93b4b390cd17fd62",
+      "state": "observed",
+      "cohortId": "gtzan-observed-5-13-29",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "hiphop.00013.wav",
+      "pcmSha256": "e762fe4137c4ed1f41ab5e527c6ce99507c10aba4a00be488eaec66063840bca",
+      "rawReferenceSha256": "0ae3b45c986734c07a33c758292a880ab7d1279b6708a936a5da68b9404c1e0b",
+      "state": "observed",
+      "cohortId": "gtzan-observed-5-13-29",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "hiphop.00029.wav",
+      "pcmSha256": "50f50bfb21c0a0081a7a78ad14f5e3c7f01f54313752279e25a1154950f2e00b",
+      "rawReferenceSha256": "2316b6b5e754c62ba659ce69c1cc9c92cfb340a58b55a5541dd4f008fc0b0a13",
+      "state": "observed",
+      "cohortId": "gtzan-observed-5-13-29",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "jazz.00005.wav",
+      "pcmSha256": "dd7c9ffc98110e34de448ab7303c39d1a9c503bf0a047464f6d55472bf3ef724",
+      "rawReferenceSha256": "e6df9db4869f4647e5f04253890f2eaa4b55d835682f3c7f74bd676b1569da61",
+      "state": "observed",
+      "cohortId": "gtzan-observed-5-13-29",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "jazz.00013.wav",
+      "pcmSha256": "3bf317e4b46bdb7a0b74ee069011aeb303a72c0bbcd3b04b27f18ebefb8748e0",
+      "rawReferenceSha256": "ed956ab9e586a009d40fc2e55c7c35c427c8911c1a40fadd82b00bf00065204b",
+      "state": "observed",
+      "cohortId": "gtzan-observed-5-13-29",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "jazz.00029.wav",
+      "pcmSha256": "c559bd2b805d29a153919ba8e9331538c0ee5965bf759e70cfc66726006efa0c",
+      "rawReferenceSha256": "1cb850423edf7aecd1028186184b13207c36bad2cdc56ae10297f8e346bde1dd",
+      "state": "observed",
+      "cohortId": "gtzan-observed-5-13-29",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "metal.00005.wav",
+      "pcmSha256": "3222e2d05d9de9546d24e146a4009d4e28be108ad7458e98f8561768aa30fd73",
+      "rawReferenceSha256": "0db95313d2715e468be7c71e508d0b9b9c671c1e26a92dcdca00e34ed4b381d1",
+      "state": "observed",
+      "cohortId": "gtzan-observed-5-13-29",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "metal.00013.wav",
+      "pcmSha256": "f7664f05443789ff9b066a53db39c4fb8fbafff249ba4631b5af8a5704307032",
+      "rawReferenceSha256": "7acef204bc8e69a49152c86be594530eced70160f4a8e75166fcccf6724c331f",
+      "state": "observed",
+      "cohortId": "gtzan-observed-5-13-29",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "metal.00029.wav",
+      "pcmSha256": "ecf3459cee4c3e3f6ebab12e393d7d514a63d1a295681842980b542f2131ab35",
+      "rawReferenceSha256": "c7c45cf4a8e4d8373b435c9bd3e4f9cd349f2ced9d82c81d16c3f9a07ca94307",
+      "state": "observed",
+      "cohortId": "gtzan-observed-5-13-29",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "pop.00005.wav",
+      "pcmSha256": "c738bc750c891fead5fd619dc476d374057214f194a901713573d61524e0095a",
+      "rawReferenceSha256": "3e9efd8194935cce1818e2b8fd112e96b1f2b4064fa6ee25d144fa4699e885e0",
+      "state": "observed",
+      "cohortId": "gtzan-observed-5-13-29",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "pop.00013.wav",
+      "pcmSha256": "d369cf686d9569f6124da9d726701732f77b8dbb15a2a9c0e32de384948b6419",
+      "rawReferenceSha256": "cceaa7ae022fa0b1fe89edc7bd3bd9da4f5e56780702acdd2e3e6799a72fb842",
+      "state": "observed",
+      "cohortId": "gtzan-observed-5-13-29",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "pop.00029.wav",
+      "pcmSha256": "30c563692bfaa17ae8c9b86670ac838dfdeae345e66f56bfa8918a164a18845e",
+      "rawReferenceSha256": "070840b5f07967c21a98bd1ee25055520f80205a59efc576c3aba634df1eb698",
+      "state": "observed",
+      "cohortId": "gtzan-observed-5-13-29",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "reggae.00005.wav",
+      "pcmSha256": "bce4230cf9c75b31733e58cfb26e6c976354a6b5551032120d9f22c76336fa32",
+      "rawReferenceSha256": "b4018c5a736a8bb65a1407c3a1d7b345fe128847a561ce3ab7d704278f95cb8a",
+      "state": "observed",
+      "cohortId": "gtzan-observed-5-13-29",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "reggae.00013.wav",
+      "pcmSha256": "d2837bb493e979d218fcc712da314be74f4fd6ab587f1c0cd54c601da2e52286",
+      "rawReferenceSha256": "73c978ac9038dd56a8255dd8e44856ed79d0dcf5e59b2478498ee840739e5091",
+      "state": "observed",
+      "cohortId": "gtzan-observed-5-13-29",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "reggae.00029.wav",
+      "pcmSha256": "cd97498b8de48d82df656fb663caf82cacc21af1f5e1568517f7c8a51e06d814",
+      "rawReferenceSha256": "06e3033e139dd14a8eaa56c9f9cd8c66b3733cffea1f9383e8618df057f2a5ce",
+      "state": "observed",
+      "cohortId": "gtzan-observed-5-13-29",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "rock.00005.wav",
+      "pcmSha256": "06a51b23ff67a14c21ec8a05ba5d006bd2a3a4ba8da926ad7df0b1708e51312a",
+      "rawReferenceSha256": "deefdb7cb0f370fed786b8cc4c8e714cfe3a0e26d5c90ef5a52073227049842f",
+      "state": "observed",
+      "cohortId": "gtzan-observed-5-13-29",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "rock.00013.wav",
+      "pcmSha256": "1e56a035f2db3e6f13652c22cac99190ff9c4c1d192ede00e3c42b2c5dd0771a",
+      "rawReferenceSha256": "ba18e403a8be71ed15ca9106362cc33bb86fc5a6a2045a3cee1c7990249372e1",
+      "state": "observed",
+      "cohortId": "gtzan-observed-5-13-29",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "rock.00029.wav",
+      "pcmSha256": "63ffac1d82cfc44270b54198e0145b6f988cb0e5fffe37f1fec0d9d684983ac5",
+      "rawReferenceSha256": "0b7a31393ab98ab41126f1afc4c852f9166b34bd2d554d06a867bd179d0c648f",
+      "state": "observed",
+      "cohortId": "gtzan-observed-5-13-29",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "blues.00002.wav",
+      "pcmSha256": "2c7e3d6fb1deebf52aa62cd9a84ebe4c63d25734d0a2ec187ddead70f86fd96d",
+      "rawReferenceSha256": "731caffaca485819807bbafe2b52fa89d47dfbe14f09946c682ef9fbbd99415c",
+      "state": "observed",
+      "cohortId": "gtzan-observed-2-17-31",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "blues.00017.wav",
+      "pcmSha256": "ab502992b2becd0699a8871dfe86478077f6f05c4c40fbd1a2b9184b848b09d5",
+      "rawReferenceSha256": "cee8c1a196666f3d42ff0f44d2edc3d54f2ffe769235cb95cf0a753d92b0be66",
+      "state": "observed",
+      "cohortId": "gtzan-observed-2-17-31",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "blues.00031.wav",
+      "pcmSha256": "28317614f713955fe7011af545eee7e96e09768cdaeebe88143e8e5874df4820",
+      "rawReferenceSha256": "a8035c34962e6cffbcb1ef5068100f5d2797d024c03ed7bdb2412808a594a376",
+      "state": "observed",
+      "cohortId": "gtzan-observed-2-17-31",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "classical.00002.wav",
+      "pcmSha256": "d82676faa74872873ffad4507e7f642b0b3e1c733bf46bd9fd35fd1430441b99",
+      "rawReferenceSha256": "68708d2514501f347652af72d12141bbcf334c5ae9bd9544c9320c2245a9830c",
+      "state": "observed",
+      "cohortId": "gtzan-observed-2-17-31",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "classical.00017.wav",
+      "pcmSha256": "7ca769952b1defa483aa17270d13e203d9e285cd93baac85d9c368d6964f67cf",
+      "rawReferenceSha256": "9d9ee039028acc915764b191c870a9c4047db9f086f2df30a1a81fad011fd2de",
+      "state": "observed",
+      "cohortId": "gtzan-observed-2-17-31",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "classical.00031.wav",
+      "pcmSha256": "b219c51776566163609271513dbf0f59a4248ea4b2457461717896c64c2d511e",
+      "rawReferenceSha256": "b124f7402623866ee7ecf0b15e61b6f7c4f979832be7c2575da16674922cc3de",
+      "state": "observed",
+      "cohortId": "gtzan-observed-2-17-31",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "country.00002.wav",
+      "pcmSha256": "1df1e22a8aa328d1bc60f5e1023ad47d20689f3f731fb72e571f2c66e49388ec",
+      "rawReferenceSha256": "fdf99b91f19ca4ced509502a1d40d68c704173e7a715163687e84fc13a0cf08f",
+      "state": "observed",
+      "cohortId": "gtzan-observed-2-17-31",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "country.00017.wav",
+      "pcmSha256": "1fc4c37c26fc9787c0139ab087695a6243a68e6bf04187c300ac945b384baec9",
+      "rawReferenceSha256": "8804317dd45c06820e4edaf10a1931b13b2249395b80f8d1a391ae7a2a5708d0",
+      "state": "observed",
+      "cohortId": "gtzan-observed-2-17-31",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "country.00031.wav",
+      "pcmSha256": "29b829874fe6bef52b3874cbc8ebc8247ff1b5b8c7f0672272f41027210b868d",
+      "rawReferenceSha256": "77f995438b0b40caaaeb116d46d518f9ffc80c0390c728cb625dbfff911f0939",
+      "state": "observed",
+      "cohortId": "gtzan-observed-2-17-31",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "disco.00002.wav",
+      "pcmSha256": "0e569b4d2b7da9d440775a6f92dc989c8c84d1f02786540b5770713e19fbb0f8",
+      "rawReferenceSha256": "6b9d9a2a719019d435b84f60168fa88ae4e5fb15d94e67c52a793d7db39c7950",
+      "state": "observed",
+      "cohortId": "gtzan-observed-2-17-31",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "disco.00017.wav",
+      "pcmSha256": "a48269106ab4e2862f60d154fb55ed22934ee9679200cd04aaf127a8f9c23923",
+      "rawReferenceSha256": "c10536de9ddf138297e3986ad67df0e10647f1d363fdde3c019fb6732ebc6f23",
+      "state": "observed",
+      "cohortId": "gtzan-observed-2-17-31",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "disco.00031.wav",
+      "pcmSha256": "3ceb4f493e4bd24b1aa4e8a6c7eaabda02622fdccd3ceaa02275476cbbe2385f",
+      "rawReferenceSha256": "1a3b78382fe4dfbc212455935aec1d0d26f9c364894b20f419c7099e9925f79c",
+      "state": "observed",
+      "cohortId": "gtzan-observed-2-17-31",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "hiphop.00002.wav",
+      "pcmSha256": "b783533671eddc2d355ee8867116ebc9ef217286b0ad9efd4b0076488a6c8475",
+      "rawReferenceSha256": "b149e15af094d56e052ed0bff294f4aeca9e7b1bd8bf87746366bd933048fde9",
+      "state": "observed",
+      "cohortId": "gtzan-observed-2-17-31",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "hiphop.00017.wav",
+      "pcmSha256": "2f380e25e47d24ff854263c58383ce6d87a4d6e11641003b21a075da01107d39",
+      "rawReferenceSha256": "5f76b87127730a3c2308922201b2263648bc0d27aabb5444fe123f76f8ce3740",
+      "state": "observed",
+      "cohortId": "gtzan-observed-2-17-31",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "hiphop.00031.wav",
+      "pcmSha256": "57ac902fd012abc8e66e05c96d7f50e399ff00d69cf70103b7d733978e40b554",
+      "rawReferenceSha256": "94451045df8fd743e097fca5c03fb80f51a5e07f611806293262b9cce2e43369",
+      "state": "observed",
+      "cohortId": "gtzan-observed-2-17-31",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "jazz.00002.wav",
+      "pcmSha256": "4779ab7c00334ec8531d979a95e0c4c0cc68802be7c380ffcb29ac848879ba68",
+      "rawReferenceSha256": "c8c3fb13725d9c0a6d9de72d250319d5542ce17138383dcd7d1d3caf322cf8f0",
+      "state": "observed",
+      "cohortId": "gtzan-observed-2-17-31",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "jazz.00017.wav",
+      "pcmSha256": "5f375d83326d7b05ca6937c2c2e5654e6d306a695a32d57ed233d48d252e323e",
+      "rawReferenceSha256": "4186c41f69e4afcd6eab26033597d34158c9c30b847cd88edb441be0a3502994",
+      "state": "observed",
+      "cohortId": "gtzan-observed-2-17-31",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "jazz.00031.wav",
+      "pcmSha256": "59f0e4b60dbcce82efcf3a22a89a6b748a92d442f555de181adb3bddbde757d1",
+      "rawReferenceSha256": "3d4bddc37e5afdab08050e4c4b0cfdce70f0ff8db879d9ce58393906fdca6a7b",
+      "state": "observed",
+      "cohortId": "gtzan-observed-2-17-31",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "metal.00002.wav",
+      "pcmSha256": "ac98e8802a88a021b3f69aee222c84e83b0938224357d22da0f535acd64b31d6",
+      "rawReferenceSha256": "5d6d3e4a3ffaaf3759cfe5c207652580ddb945556ed0e50bfc465e3b04278397",
+      "state": "observed",
+      "cohortId": "gtzan-observed-2-17-31",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "metal.00017.wav",
+      "pcmSha256": "7e727dd6cb466235cb9735a9f1a12ca147511d3eb507e4a785e834b66ce002b0",
+      "rawReferenceSha256": "a5ada230f9fd02752133c07d4405830d05e2f77c8d6b4a7530ac11e19e6a22a0",
+      "state": "observed",
+      "cohortId": "gtzan-observed-2-17-31",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "metal.00031.wav",
+      "pcmSha256": "b8314a20ec6ecf4ab2b4ebece8dd54118c297472228db7d7931a35018a533275",
+      "rawReferenceSha256": "53817c64387aefc859878d28936c88946c49aba3ee1930fadc5c5c9c46c01667",
+      "state": "observed",
+      "cohortId": "gtzan-observed-2-17-31",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "pop.00002.wav",
+      "pcmSha256": "5a30dbaead0975c1abb68b38d6352175b57bd947cbe08c29b78dbf8c9f3c5f10",
+      "rawReferenceSha256": "673060a2045fd0897af6808b2145cbfb2bf8afa4a7375b3f93cbb36a57d3aabe",
+      "state": "observed",
+      "cohortId": "gtzan-observed-2-17-31",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "pop.00017.wav",
+      "pcmSha256": "f2ba96e7bca19a105d6b22e5c707d0cb441dcb52d671aea7c9c1394375e240e9",
+      "rawReferenceSha256": "d6e26996b5c1c5db8715b773525fe4d09e347e2b82c085388b8dcaa837d76797",
+      "state": "observed",
+      "cohortId": "gtzan-observed-2-17-31",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "pop.00031.wav",
+      "pcmSha256": "403ccd95373533fb7d5a6d74359f1255a9618df198e79a9043425be5e2accbfe",
+      "rawReferenceSha256": "a82d8a45a65c226787013c8f61a2eed41f26dc9bcc8a05e9e7966caf24ae6c21",
+      "state": "observed",
+      "cohortId": "gtzan-observed-2-17-31",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "reggae.00002.wav",
+      "pcmSha256": "86b857e70fd16cae18e3b3ef7eb1a514c46612e305fb1d99136ec01417d96594",
+      "rawReferenceSha256": "f4f85eb0b839e2ed68321f64173cb5f004854cff28fce3b62fbe18617e1c920d",
+      "state": "observed",
+      "cohortId": "gtzan-observed-2-17-31",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "reggae.00017.wav",
+      "pcmSha256": "53e904cf021f5c0414776df24f0ac3f61693624593cc609f81c06ea029713273",
+      "rawReferenceSha256": "75147bb7b6daeed0da8d67a3b18f3cbf00d910a3a7e4095e75eba5d22ea51a57",
+      "state": "observed",
+      "cohortId": "gtzan-observed-2-17-31",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "reggae.00031.wav",
+      "pcmSha256": "ca50d0f0576f58e8388f1b4bd906a2c78487cc495ef03871d4bffaf0647412f1",
+      "rawReferenceSha256": "f31713e0e518074e5b47bd09753b69748e9ce70ccb092d67715bad1bcc65b8c7",
+      "state": "observed",
+      "cohortId": "gtzan-observed-2-17-31",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "rock.00002.wav",
+      "pcmSha256": "eb1f51b1d7be3e3cd0f52e8532a86ea4e34f184411297d26510deac895ded0d4",
+      "rawReferenceSha256": "2a6228a9525613c953df91a48b4a8d76e6dff25821c12e7f6d0bf8f6a04d73d5",
+      "state": "observed",
+      "cohortId": "gtzan-observed-2-17-31",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "rock.00017.wav",
+      "pcmSha256": "e48deaccda24477e4905a815f571a4bad77a5a87e67d84be6e9fc9d848cc9416",
+      "rawReferenceSha256": "617a39d67d4f53f58f0c189005677854208122273a95500836b2d08b3c81a8f5",
+      "state": "observed",
+      "cohortId": "gtzan-observed-2-17-31",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "rock.00031.wav",
+      "pcmSha256": "af08de1898c11230b25134f5b423cb1019630c091a7b85a31815127fed5f0954",
+      "rawReferenceSha256": "d58bdda3436313a13b6f6b0586417fc1f7ec454405e5ffd5d2def37f45cfe338",
+      "state": "observed",
+      "cohortId": "gtzan-observed-2-17-31",
+      "observation": "Imported pre-existing observed project history; preparation-time zero-evaluation fields do not restore freshness."
+    },
+    {
+      "clipId": "blues.00006.wav",
+      "pcmSha256": "31819cc76ebd20c9d7fee5f05caf55718dedfc56b851bdcd8f30e095661cad89",
+      "rawReferenceSha256": "45726e9160ba6e0ed2c6e9cace988c91eda7f4113e9dd15fe1f85ab31fab0158",
+      "state": "observed",
+      "cohortId": "rms-v9-6-18-33",
+      "firstObservedRunId": "f48609a8-d8d2-4cee-adfb-900fbdf85072"
+    },
+    {
+      "clipId": "blues.00018.wav",
+      "pcmSha256": "a5c4af1cc29b5eb97e5551bb02006413d9da87319c9f6fc8c2e5fd736b6c4c88",
+      "rawReferenceSha256": "dc0edeea6ea41a1b4aec275039b85b3d36a2fa5d2f15c1967acd2bccfedd4ecb",
+      "state": "observed",
+      "cohortId": "rms-v9-6-18-33",
+      "firstObservedRunId": "f48609a8-d8d2-4cee-adfb-900fbdf85072"
+    },
+    {
+      "clipId": "blues.00033.wav",
+      "pcmSha256": "0299478939e7ff062a17f36eb3e98edd5b9623a1eefe079de7cebf5609c329d0",
+      "rawReferenceSha256": "e3fe96284e219b9860bf430d70becc321cb3fdd722579daea47de7b8bfbb700b",
+      "state": "observed",
+      "cohortId": "rms-v9-6-18-33",
+      "firstObservedRunId": "f48609a8-d8d2-4cee-adfb-900fbdf85072"
+    },
+    {
+      "clipId": "classical.00006.wav",
+      "pcmSha256": "266cee40c775218e8fcff53ea4ccdc8e179d8b2b79a265b57516221e0ec8b334",
+      "rawReferenceSha256": "c24e52f79f0f10668c2e09c9d13f76d4b55c4cb42716008b635a74626cbd0f40",
+      "state": "observed",
+      "cohortId": "rms-v9-6-18-33",
+      "firstObservedRunId": "f48609a8-d8d2-4cee-adfb-900fbdf85072"
+    },
+    {
+      "clipId": "classical.00018.wav",
+      "pcmSha256": "04589dbba478d03e1e0b9bbf807a15640e2d0a39d090c1d0feadc727625a960b",
+      "rawReferenceSha256": "3a8d09dafa79dd86caab4fec7b283525b86fe9f49039ae3460bbdacf213d8811",
+      "state": "observed",
+      "cohortId": "rms-v9-6-18-33",
+      "firstObservedRunId": "f48609a8-d8d2-4cee-adfb-900fbdf85072"
+    },
+    {
+      "clipId": "classical.00033.wav",
+      "pcmSha256": "762ceb227d4f8bef4e98fcfbcd075fff2d3ec425c318c142bafe6078a227cc17",
+      "rawReferenceSha256": "c847bde786ec75248bc08bf143352ff8d49dd823b1de162466dfe9a2f5a50152",
+      "state": "observed",
+      "cohortId": "rms-v9-6-18-33",
+      "firstObservedRunId": "f48609a8-d8d2-4cee-adfb-900fbdf85072"
+    },
+    {
+      "clipId": "country.00006.wav",
+      "pcmSha256": "3584e5d22c32b91621cfdcf188be37abbe7b1fbae2c0a3f9b75bc9b06d95ed93",
+      "rawReferenceSha256": "42df25d8e0f5fbe92c7c3272c01d53ac47fb34507816fa2669b67420bfaa0387",
+      "state": "observed",
+      "cohortId": "rms-v9-6-18-33",
+      "firstObservedRunId": "f48609a8-d8d2-4cee-adfb-900fbdf85072"
+    },
+    {
+      "clipId": "country.00018.wav",
+      "pcmSha256": "e894cd1fbabf01e7c82dce642d43819756637c03f632be45c684a1e7d5ab5228",
+      "rawReferenceSha256": "7b5418508351b9cddf883d043698c6de77cdf5247848ac95e46054f5f0e364a5",
+      "state": "observed",
+      "cohortId": "rms-v9-6-18-33",
+      "firstObservedRunId": "f48609a8-d8d2-4cee-adfb-900fbdf85072"
+    },
+    {
+      "clipId": "country.00033.wav",
+      "pcmSha256": "20cd2a8a17539110a353b01724539b7af823a05c2513ea9bf7f8ebacb4d83faa",
+      "rawReferenceSha256": "98b76179aac9748157974019fa7c872bfcc8b9cc27e26e777321b160c0e2da3e",
+      "state": "observed",
+      "cohortId": "rms-v9-6-18-33",
+      "firstObservedRunId": "f48609a8-d8d2-4cee-adfb-900fbdf85072"
+    },
+    {
+      "clipId": "disco.00006.wav",
+      "pcmSha256": "8e04c3abb108d7a9c136111998cf0bfa96dd119db45e5cf58d62bed77405b91c",
+      "rawReferenceSha256": "a424f77b6e381be323ed84f3766ac48d5a39d0bcf26347c3f00f6444d5341856",
+      "state": "observed",
+      "cohortId": "rms-v9-6-18-33",
+      "firstObservedRunId": "f48609a8-d8d2-4cee-adfb-900fbdf85072"
+    },
+    {
+      "clipId": "disco.00018.wav",
+      "pcmSha256": "48b37d1499ece81e697a90f6d2af518499768882e03fde6c03da8a2f68447631",
+      "rawReferenceSha256": "13d9d3fc4e40ae37953e0a0a95f276dbfc461e9b96678adb4237c64f4f7de3df",
+      "state": "observed",
+      "cohortId": "rms-v9-6-18-33",
+      "firstObservedRunId": "f48609a8-d8d2-4cee-adfb-900fbdf85072"
+    },
+    {
+      "clipId": "disco.00033.wav",
+      "pcmSha256": "a06270e32c9596180e7d55f0f92607868a9daf674a80af7607b0e20ab7bd1d53",
+      "rawReferenceSha256": "58e20a840adb63078e249635adaf7790d4955d74bf63d09f1abbdf7fdbf0e16c",
+      "state": "observed",
+      "cohortId": "rms-v9-6-18-33",
+      "firstObservedRunId": "f48609a8-d8d2-4cee-adfb-900fbdf85072"
+    },
+    {
+      "clipId": "hiphop.00006.wav",
+      "pcmSha256": "5c18bcb416e39ae59bbfc19585132d5ff90ecd5d5e998e69d3f1d5af5bbff1d4",
+      "rawReferenceSha256": "15dfbe80355631d038bf398fa93873584ea16e51817bba6d416a3b63e72e37cb",
+      "state": "observed",
+      "cohortId": "rms-v9-6-18-33",
+      "firstObservedRunId": "f48609a8-d8d2-4cee-adfb-900fbdf85072"
+    },
+    {
+      "clipId": "hiphop.00018.wav",
+      "pcmSha256": "eb91af0377ef83e28f3af9866a6632cbf3c25b9fec37c6efa8ace19d811d00c2",
+      "rawReferenceSha256": "71be599d714d87695e336769a79f145f8176b4f07ce4156d2fe5db52c3b47a14",
+      "state": "observed",
+      "cohortId": "rms-v9-6-18-33",
+      "firstObservedRunId": "f48609a8-d8d2-4cee-adfb-900fbdf85072"
+    },
+    {
+      "clipId": "hiphop.00033.wav",
+      "pcmSha256": "e9816ea4c8e4f974ec4921c771e827c9df24bc79e9b414495999b2a3014024b8",
+      "rawReferenceSha256": "86abe7b477373c96d84270412e6931e1c5d7ff248d240891834296974ab6cea1",
+      "state": "observed",
+      "cohortId": "rms-v9-6-18-33",
+      "firstObservedRunId": "f48609a8-d8d2-4cee-adfb-900fbdf85072"
+    },
+    {
+      "clipId": "jazz.00006.wav",
+      "pcmSha256": "bba892aa11c6a3f778ff5f3b21db1bd64e22ef80feb851f325a69bbf500c02a3",
+      "rawReferenceSha256": "700c74fbf6a6a64984e5e6bc524ee63cd72a76b2aaa596f8b5c3d3b62e8cb8f8",
+      "state": "observed",
+      "cohortId": "rms-v9-6-18-33",
+      "firstObservedRunId": "f48609a8-d8d2-4cee-adfb-900fbdf85072"
+    },
+    {
+      "clipId": "jazz.00018.wav",
+      "pcmSha256": "d9413307a4144b43752fbb42d368e9d05002dd1dec5aba66306c500e31ea6074",
+      "rawReferenceSha256": "71557ca81de86585331a5afcfe2c24d3e1f2c65f2f5a43b593b3d01f469d9025",
+      "state": "observed",
+      "cohortId": "rms-v9-6-18-33",
+      "firstObservedRunId": "f48609a8-d8d2-4cee-adfb-900fbdf85072"
+    },
+    {
+      "clipId": "jazz.00033.wav",
+      "pcmSha256": "f8c77ea2cb6b27a07d6f1dac951d968a3ffde956af67ea5f94d9244aa6390dbe",
+      "rawReferenceSha256": "43f3fec9e10bcc401dcc4217d67957197151f19cf4ebfdff5d3836fcbd7a7b23",
+      "state": "observed",
+      "cohortId": "rms-v9-6-18-33",
+      "firstObservedRunId": "f48609a8-d8d2-4cee-adfb-900fbdf85072"
+    },
+    {
+      "clipId": "metal.00006.wav",
+      "pcmSha256": "4d1af2573073a9f95df0c7a279738398fe785fdaa16b8329c2b38b416f019780",
+      "rawReferenceSha256": "8429f702e8a05533f831cb664cdf57634e3d5a320a34a9d81b2a6d2088c33e2e",
+      "state": "observed",
+      "cohortId": "rms-v9-6-18-33",
+      "firstObservedRunId": "f48609a8-d8d2-4cee-adfb-900fbdf85072"
+    },
+    {
+      "clipId": "metal.00018.wav",
+      "pcmSha256": "2706fa9642df7311585fb24ef4c0e8a76fa82d5e4e8610721efd29da7d12a589",
+      "rawReferenceSha256": "3dc5265769b0673005cc7f642e8058dd7705f4339137de2dec5246a6de388373",
+      "state": "observed",
+      "cohortId": "rms-v9-6-18-33",
+      "firstObservedRunId": "f48609a8-d8d2-4cee-adfb-900fbdf85072"
+    },
+    {
+      "clipId": "metal.00033.wav",
+      "pcmSha256": "1899d8fdb14b845667cdc7904b8a7d67a49e6daae58581c4f6cfd474f777dc51",
+      "rawReferenceSha256": "d9c5dd1b6af3e5a99bb92b37594bc101e3c5506d3b4a77c1a6ee3adea9be010c",
+      "state": "observed",
+      "cohortId": "rms-v9-6-18-33",
+      "firstObservedRunId": "f48609a8-d8d2-4cee-adfb-900fbdf85072"
+    },
+    {
+      "clipId": "pop.00006.wav",
+      "pcmSha256": "e70fc84c1c6f64953ccea97e15041959692053b53880d896ad800733bfd99aba",
+      "rawReferenceSha256": "e174a0878b791aeb19651deb5331fce02873e827c1d78dff96a177868445cb8a",
+      "state": "observed",
+      "cohortId": "rms-v9-6-18-33",
+      "firstObservedRunId": "f48609a8-d8d2-4cee-adfb-900fbdf85072"
+    },
+    {
+      "clipId": "pop.00018.wav",
+      "pcmSha256": "56c71b3363c6e3a37d28f25dd4a5a2178f8db005f0040c2cf081dd20a9158fb5",
+      "rawReferenceSha256": "3af81818fcc870d0fc60158296f8630f3571eb96276a6a2eb5fb30c196b02150",
+      "state": "observed",
+      "cohortId": "rms-v9-6-18-33",
+      "firstObservedRunId": "f48609a8-d8d2-4cee-adfb-900fbdf85072"
+    },
+    {
+      "clipId": "pop.00033.wav",
+      "pcmSha256": "04b62ab019cf44198df074f5e36c3bf2f393f34b74fd2afb0c373b3f155da9de",
+      "rawReferenceSha256": "56a77058ff0c4863b27299def1115ef179389d275c5ac80148aaa99ae322a613",
+      "state": "observed",
+      "cohortId": "rms-v9-6-18-33",
+      "firstObservedRunId": "f48609a8-d8d2-4cee-adfb-900fbdf85072"
+    },
+    {
+      "clipId": "reggae.00006.wav",
+      "pcmSha256": "95aae5aa4c42f2635deffd2ffbc0920fc0161f84aeebe49f075a91935491b9a3",
+      "rawReferenceSha256": "026ade4e061618712c538c4c31994bbb923591dc4738150de77c0bb928e4bb56",
+      "state": "observed",
+      "cohortId": "rms-v9-6-18-33",
+      "firstObservedRunId": "f48609a8-d8d2-4cee-adfb-900fbdf85072"
+    },
+    {
+      "clipId": "reggae.00018.wav",
+      "pcmSha256": "30c3360dc0efd9844ef7f6daa08f60b11f0ce0615d7e1e1f4a728fe66623ddd7",
+      "rawReferenceSha256": "116ca62d35ff75196db67c887efaba8250559249052fafffa61ffb723f3ef0c2",
+      "state": "observed",
+      "cohortId": "rms-v9-6-18-33",
+      "firstObservedRunId": "f48609a8-d8d2-4cee-adfb-900fbdf85072"
+    },
+    {
+      "clipId": "reggae.00033.wav",
+      "pcmSha256": "5d8f6debeb321e95a7d635104c993fc80bca7eed153681fd4384009f74a147e0",
+      "rawReferenceSha256": "3ba4723f7b0961f75af17604f189dff9f0d6fa75bb873a78ee39bf1baf1cd02c",
+      "state": "observed",
+      "cohortId": "rms-v9-6-18-33",
+      "firstObservedRunId": "f48609a8-d8d2-4cee-adfb-900fbdf85072"
+    },
+    {
+      "clipId": "rock.00006.wav",
+      "pcmSha256": "12792092958a320fe86d4d5f177262b41d9abe9fbf42af89099313defc5aa779",
+      "rawReferenceSha256": "5cc7f21d4829f36e8db38774dd6437cc6238108f2b235a203e56da43bcc407a7",
+      "state": "observed",
+      "cohortId": "rms-v9-6-18-33",
+      "firstObservedRunId": "f48609a8-d8d2-4cee-adfb-900fbdf85072"
+    },
+    {
+      "clipId": "rock.00018.wav",
+      "pcmSha256": "e75e522312367668e65a3becdf681c885a2e62ac0b17e39cb67ad02851c5ee10",
+      "rawReferenceSha256": "7ce75b920fbb58ced60089a0b48ea44da33d9ddd81042f736fefa19fb41074da",
+      "state": "observed",
+      "cohortId": "rms-v9-6-18-33",
+      "firstObservedRunId": "f48609a8-d8d2-4cee-adfb-900fbdf85072"
+    },
+    {
+      "clipId": "rock.00033.wav",
+      "pcmSha256": "61d5a02a9165c54d0f3315128891e154c68ba0c47ebc412be44bf359c3d8036a",
+      "rawReferenceSha256": "558579dbd7b9256208210fc3600f7399acfc4dbe13a617872101356ddee603a5",
+      "state": "observed",
+      "cohortId": "rms-v9-6-18-33",
+      "firstObservedRunId": "f48609a8-d8d2-4cee-adfb-900fbdf85072"
+    }
+  ],
+  "runs": [
+    {
+      "runId": "f48609a8-d8d2-4cee-adfb-900fbdf85072",
+      "mode": "final",
+      "state": "completed_observed",
+      "cohortId": "rms-v9-6-18-33",
+      "inputFingerprintSha256": "a56fd7984edcb51cea57e546ef053f14d74614a0887a93f920324e24e523b4ff",
+      "protocolSha256": "4193391afabe350e072c30b12053ecd6773f88dfe85a3755697618d158ba5466",
+      "baselineCommit": "46ae43b517f8895333092df30dcdd7e95fb1a65f",
+      "candidateSourceSha256": "ec984d14c5fa8b9e851fa341309522a82e290e406e5a27f29fda59772922723d",
+      "started": "2026-10-30T01:38:43.325Z",
+      "clipIds": [
+        "blues.00006.wav",
+        "blues.00018.wav",
+        "blues.00033.wav",
+        "classical.00006.wav",
+        "classical.00018.wav",
+        "classical.00033.wav",
+        "country.00006.wav",
+        "country.00018.wav",
+        "country.00033.wav",
+        "disco.00006.wav",
+        "disco.00018.wav",
+        "disco.00033.wav",
+        "hiphop.00006.wav",
+        "hiphop.00018.wav",
+        "hiphop.00033.wav",
+        "jazz.00006.wav",
+        "jazz.00018.wav",
+        "jazz.00033.wav",
+        "metal.00006.wav",
+        "metal.00018.wav",
+        "metal.00033.wav",
+        "pop.00006.wav",
+        "pop.00018.wav",
+        "pop.00033.wav",
+        "reggae.00006.wav",
+        "reggae.00018.wav",
+        "reggae.00033.wav",
+        "rock.00006.wav",
+        "rock.00018.wav",
+        "rock.00033.wav"
+      ],
+      "finished": "2026-10-30T01:39:03.621Z",
+      "reportSha256": "3c40aeeb41ee97bfcfd6cd1fd5ef8e8c3f0d90e0154d2378a72cb0f0d34873c6"
+    }
+  ],
+  "freezes": [
+    {
+      "protocolSha256": "4193391afabe350e072c30b12053ecd6773f88dfe85a3755697618d158ba5466",
+      "mode": "final",
+      "cohortId": "rms-v9-6-18-33",
+      "inputFingerprintSha256": "a56fd7984edcb51cea57e546ef053f14d74614a0887a93f920324e24e523b4ff",
+      "gateSha256": "13ce9f69d801a2f026596ad5663fbe9768beea54636d443e10fa9771647e0ebf",
+      "frozenAt": "2026-10-30T01:38:40.308Z"
+    }
+  ]
+}

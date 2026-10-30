@@ -1,0 +1,14 @@
+{
+  "constraints": [
+    {"metric":"head70F1","target":"macroDelta","operator":">=","value":0},
+    {"metric":"head50F1","target":"macroDelta","operator":">=","value":0},
+    {"metric":"clock70F1","target":"macroDelta","operator":">=","value":0},
+    {"metric":"clock50F1","target":"macroDelta","operator":">=","value":0},
+    {"metric":"pulse70Recall","target":"macroDelta","operator":">=","value":0},
+    {"metric":"pulse50Recall","target":"macroDelta","operator":">=","value":0},
+    {"metric":"head70F1","target":"perClipDeltaMin","operator":">=","value":-0.05},
+    {"metric":"clock70F1","target":"perClipDeltaMin","operator":">=","value":-0.05},
+    {"metric":"head70F1","target":"ciLow95","operator":">=","value":-0.005}
+  ],
+  "fourFingerMinCountRatio": 0.95
+}

@@ -95,8 +95,10 @@ export function analyzeAudio(samples: Float32Array, sampleRate: number, progress
   progress?.(0.8, '正在估计节拍');
   const onsets: Onset[] = [];
   let boundaryOnset: Onset | undefined;
+  // A loud passage elsewhere must not erase audible attacks in a quiet one.
+  // Keep the absolute RMS floor and the independent spectral/local-peak gates.
   for (let f = 0; f < frames - 2; f++) {
-    if ((f > 0 && flux[f] < flux[f - 1]) || flux[f] <= flux[f + 1] || rms[f] < Math.max(0.0008, maxRms * 0.025)) continue;
+    if ((f > 0 && flux[f] < flux[f - 1]) || flux[f] <= flux[f + 1] || rms[f] < 0.0008) continue;
     const local = Array.from(flux.slice(Math.max(0, f - 20), Math.min(frames, f + 16))).sort((a, b) => a - b);
     const median = local[Math.floor(local.length / 2)];
     if (flux[f] < median * 1.65 + maxFlux * 0.018 || flux[f] < maxFlux * 0.035) continue;
@@ -114,7 +116,7 @@ export function analyzeAudio(samples: Float32Array, sampleRate: number, progress
     const events: Onset[] = [];
     const reference = Math.max(maxFlux * 0.03, bandMax[band]);
     for (let f = 0; f < frames - 2; f++) {
-      if ((f > 0 && envelope[f] < envelope[f - 1]) || envelope[f] <= envelope[f + 1] || rms[f] < Math.max(0.0008, maxRms * 0.025)) continue;
+      if ((f > 0 && envelope[f] < envelope[f - 1]) || envelope[f] <= envelope[f + 1] || rms[f] < 0.0008) continue;
       const local = Array.from(envelope.slice(Math.max(0, f - 20), Math.min(frames, f + 16))).sort((a, b) => a - b);
       if (envelope[f] < local[Math.floor(local.length / 2)] * 1.8 + reference * 0.035 || envelope[f] < Math.max(reference * 0.09, maxFlux * 0.012)) continue;
       const event = { time: Math.max(0, (f * hop + n * 0.22) / sampleRate), strength: envelope[f] / reference, band };
