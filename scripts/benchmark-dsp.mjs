@@ -18,7 +18,7 @@ export const GENRES = ['blues', 'classical', 'country', 'disco', 'hiphop', 'jazz
 const SUPPORT = ['src/core/analysis-fallback.ts', 'src/core/chart.ts', 'src/core/chart-constraints.ts', 'src/core/fingering.ts'];
 const BOUNDARY = 'finite numeric references: 0 <= time <= PCM.frames/22050 inclusive; raw preserved; predictions not clipped';
 const BOOTSTRAP = { seed: 20261030, replicates: 10000, strata: 'genre', confidence: .95, unit: 'paired clip', method: 'paired within-genre percentile bootstrap; conditional on fixed ten genres' };
-const METRIC_PROFILE = { id: 'dsp-paired-v1', matching: 'distinct nearest in ascending reference order; each prediction used at most once; predictions are not clipped', tolerancesSeconds: [.05, .07], averaging: 'macro across all30 paired clips', epsilon: 1e-9, fourFinger: 'exact-time deduplicated heads within own measured candidates +/-20ms; baseline identity retention is diagnostic only; zero baseline count requires valid nonempty after chart when count gate enabled', uncertainty: 'Conditional fixed-systematic-subset description, not proof of song/artist/population independence.' };
+const METRIC_PROFILE = { id: 'dsp-paired-v2', matching: 'distinct nearest in ascending reference order; each prediction used at most once; predictions are not clipped', tolerancesSeconds: [.05, .07], averaging: 'macro across all30 paired clips; optional minimum per-genre mean delta over all ten complete genres', epsilon: 1e-9, fourFinger: 'exact-time deduplicated heads within own measured candidates +/-20ms; baseline identity retention is diagnostic only; zero baseline count requires valid nonempty after chart when count gate enabled', uncertainty: 'Conditional fixed-systematic-subset description, not proof of song/artist/population independence.' };
 const MODES = ['one', 'two', 'three', 'four'];
 export const METRICS = ['head', 'clock', 'pulse'].flatMap(stage => [50, 70].flatMap(ms => ['F1', 'Precision', 'Recall'].map(stat => stage + ms + stat)));
 export const sha = value => crypto.createHash('sha256').update(value).digest('hex');
@@ -101,7 +101,7 @@ export function validateGate(gate, mode) {
   if (!gate || Object.keys(gate).some(key => !['constraints', 'fourFingerMinCountRatio'].includes(key)) || !Array.isArray(gate.constraints)) fail('Gate must contain constraints and optional fourFingerMinCountRatio only');
   if (mode === 'final' && gate.constraints.length === 0) fail('Final requires an explicitly predeclared nonempty gate');
   for (const item of gate.constraints) {
-    if (!item || Object.keys(item).sort().join(',') !== 'metric,operator,target,value' || !METRICS.includes(item.metric) || !['macroDelta', 'ciLow95', 'perClipDeltaMin', 'afterMin'].includes(item.target) || !['>=', '>', '<=', '<'].includes(item.operator) || !Number.isFinite(item.value)) fail('Invalid registered metric gate constraint');
+    if (!item || Object.keys(item).sort().join(',') !== 'metric,operator,target,value' || !METRICS.includes(item.metric) || !['macroDelta', 'ciLow95', 'perClipDeltaMin', 'perGenreDeltaMin', 'afterMin'].includes(item.target) || !['>=', '>', '<=', '<'].includes(item.operator) || !Number.isFinite(item.value)) fail('Invalid registered metric gate constraint');
   }
   if (gate.fourFingerMinCountRatio !== undefined && (!Number.isFinite(gate.fourFingerMinCountRatio) || gate.fourFingerMinCountRatio < 0)) fail('Invalid four-finger count ratio');
 }
@@ -198,8 +198,13 @@ export function metricValues(data) {
 }
 export function gateResult(rows, confidence, gate) {
   const compare = (a, op, b) => op === '>=' ? a + 1e-9 >= b : op === '>' ? a > b : op === '<=' ? a - 1e-9 <= b : a < b;
+  const genreMinimum = metric => {
+    const groups = GENRES.map(genre => rows.filter(row => row.name.split('.')[0] === genre));
+    if (rows.length !== 30 || groups.some(group => group.length !== 3)) return NaN;
+    return Math.min(...groups.map(group => mean(group.map(row => row.deltas[metric]))));
+  };
   const constraints = gate.constraints.map(item => {
-    const actual = item.target === 'macroDelta' ? mean(rows.map(r => r.deltas[item.metric])) : item.target === 'ciLow95' ? confidence[item.metric].low95 : item.target === 'perClipDeltaMin' ? Math.min(...rows.map(r => r.deltas[item.metric])) : Math.min(...rows.map(r => r.variants.after.metrics[item.metric]));
+    const actual = item.target === 'macroDelta' ? mean(rows.map(r => r.deltas[item.metric])) : item.target === 'ciLow95' ? confidence[item.metric].low95 : item.target === 'perClipDeltaMin' ? Math.min(...rows.map(r => r.deltas[item.metric])) : item.target === 'perGenreDeltaMin' ? genreMinimum(item.metric) : Math.min(...rows.map(r => r.variants.after.metrics[item.metric]));
     return { ...item, actual, passed: Number.isFinite(actual) && compare(actual, item.operator, item.value) };
   });
   const allModesValid = rows.every(r => ['before', 'after'].every(v => MODES.every(m => r.variants[v].modes[m].valid)));
@@ -253,7 +258,7 @@ function parseArgs(argv) {
 }
 export async function main(argv = process.argv.slice(2)) {
   if (!argv.length || argv[0] === '--help') {
-    console.log('prepare --mode diagnostic|final --baseline-commit <40hex> --indices 0,7,19 --cohort-id <id> --selection-protocol <file> --input <folder> --output <draft.json> [--gate <json>] [--candidate-entry src/core/analysis.ts] [--registry benchmarks/dsp-cohorts.json]\nfreeze --protocol <draft.json> --input <folder> --output <frozen.json> [--registry ...]\nrun --protocol <frozen.json> --input <folder> --output <report.json> [--registry ...]\nrecover-lock --registry <ledger> --lock-token <exact stale lock SHA256>; only a dead process lock can be removed, never observation history.\nNo analysis in prepare/freeze. All120 historical GTZAN clips are observed. Final requires zero ID/PCM overlap; diagnostic may repeat observed clips. Install frozen package-lock dependencies with npm ci for reproduction.'); return;
+    console.log('prepare --mode diagnostic|final --baseline-commit <40hex> --indices 0,7,19 --cohort-id <id> --selection-protocol <file> --input <folder> --output <draft.json> [--gate <json>] [--candidate-entry src/core/analysis.ts] [--registry benchmarks/dsp-cohorts.json]\nfreeze --protocol <draft.json> --input <folder> --output <frozen.json> [--registry ...]\nrun --protocol <frozen.json> --input <folder> --output <report.json> [--registry ...]\nrecover-lock --registry <ledger> --lock-token <exact stale lock SHA256>; only a dead process lock can be removed, never observation history.\nNo analysis in prepare/freeze. GTZAN clips already registered in the persistent history are observed. Final requires zero ID/PCM overlap; diagnostic may repeat observed clips. Install frozen package-lock dependencies with npm ci for reproduction.'); return;
   }
   const { command, flags: f } = parseArgs([...argv]), registryFile = path.resolve(f.registry || path.join(ROOT, 'benchmarks/dsp-cohorts.json'));
   if (!['prepare', 'freeze', 'run', 'recover-lock'].includes(command)) fail('Expected prepare, freeze, run or recover-lock');

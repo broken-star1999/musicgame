@@ -105,6 +105,28 @@ test('gate is explicit and frozen; count ratio cannot be replaced by chord note 
   const result = gateResult(rows, { clock70F1: { low95: .02 } }, gate);
   assert.equal(result.constraints.every(x => x.passed), true); assert.equal(result.passed, false); assert.equal(result.fourFingerCount, false);
 });
+test('genre gate cannot hide one style regression behind gains elsewhere or missing clips', () => {
+  const gate = { constraints: [
+    { metric: 'head70F1', target: 'macroDelta', operator: '>=', value: .02 },
+    { metric: 'head70F1', target: 'perGenreDeltaMin', operator: '>=', value: -.03 },
+  ] };
+  validateGate(gate, 'final');
+  const makeRows = classicalDelta => GENRES.flatMap(genre => [0, 1, 2].map(index => {
+    const delta = genre === 'classical' ? classicalDelta : .1;
+    const modes = () => Object.fromEntries(['one', 'two', 'three', 'four'].map(mode => [mode, { valid: true, deterministic: true, notes: 10 }]));
+    return { name: genre + '.' + index, deltas: { head70F1: delta }, variants: { before: { modes: modes(), metrics: { head70F1: .5 } }, after: { modes: modes(), metrics: { head70F1: .5 + delta } } }, fourFinger: { beforeActualHeads: 10, actualHeadCountRatio: 1 } };
+  }));
+  const regression = gateResult(makeRows(-.04), {}, gate);
+  assert.equal(regression.constraints[0].passed, true);
+  assert.equal(regression.constraints[1].actual, -.04);
+  assert.equal(regression.passed, false);
+  assert.equal(gateResult(makeRows(-.02), {}, gate).passed, true);
+  const missing = makeRows(-.02).filter(row => !row.name.startsWith('classical.'));
+  assert.equal(gateResult(missing, {}, gate).passed, false);
+  const imbalanced = makeRows(-.02); imbalanced[3].name = 'blues.extra';
+  assert.equal(gateResult(imbalanced, {}, gate).passed, false);
+});
+
 test('CLI rejects ambiguous flags, mutable refs and invalid selections', async () => {
   assert.throws(() => validateCommit('main'), /40-hex/);
   assert.throws(() => validateSelection([1, 1, 2]), /distinct/);
