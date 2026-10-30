@@ -1,0 +1,19 @@
+diff --git a/src/core/rhythm.ts b/src/core/rhythm.ts
+index 9989475..0206c4c 100644
+--- a/src/core/rhythm.ts
++++ b/src/core/rhythm.ts
+@@ -9,7 +9,13 @@ export function trackBeats(onsets: Onset[], duration: number, bpm: number, sourc
+     if (onsets.length < 4)
+         return { beats: [], tempo: [], confidence: 0, downbeats: [], meterConfidence: 0 };
+     const investigation = investigateTempo(onsets, duration, bpm);
+-    const projected = gateClockEvidence(onsets, investigation.blocks, sourceOnsets);
++    const mixedProjected = gateClockEvidence(onsets, investigation.blocks, sourceOnsets);
++    const sourceInvestigation = sourceOnsets === undefined ? null : investigateTempo(sourceOnsets ?? onsets, duration, bpm);
++    const sourceProjected = sourceInvestigation ? gateClockEvidence(onsets, sourceInvestigation.blocks, sourceOnsets) : mixedProjected;
++    const projected = sourceOnsets === undefined ? mixedProjected : mixedProjected.map((event, index) => {
++        const strength = Math.min(event.strength, sourceProjected[index].strength);
++        return strength === event.strength ? event : { ...event, strength };
++    });
+     const frames = Math.ceil(duration / STEP) + 1, envelope = new Float64Array(frames);
+     const reference = Math.max(1e-8, ...onsets.map(onset => onset.strength));
+     for (const onset of projected) {

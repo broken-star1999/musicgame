@@ -1,0 +1,17 @@
+case,variant,mode,status,notes,uniqueHeads,valid,deterministic,chartSHA
+A,before,one,CHART,97,97,true,true,782f5dea9de90cb70c60e675183cd9216ef75cdd37fe546b29c76f454084ac0a
+A,before,two,CHART,119,109,true,true,e5052d999b49f5aecc44262393b6318babe08d238013d9ecce374aa392a44d29
+A,before,three,CHART,144,128,true,true,fa5828f810eb29c3afb357572bddcb4a36e4c2bc36b9edcb59ff68cef3610ee3
+A,before,four,CHART,175,157,true,true,235a82b0d831f3ab5f5c33663ebd56f45a8570e380c2c4a097dfb31f550afd6b
+A,after,one,CHART,161,161,true,true,63d6fd0bafb8777606eba24653cfefa5a7e6dbd5c4a3edf0ee0d966167d6932b
+A,after,two,CHART,218,212,true,true,07a53428a8dadf3ecf56bc0fe746760f8ef6c8193802b1b9bbe244f7da014333
+A,after,three,CHART,277,266,true,true,118a1ecafd3a773602da3f5af39a6b06a7d8e91a9286fcbdafed0e8bc415803b
+A,after,four,CHART,355,344,true,true,a172a0ee9d434ca0baaa9ea10f62dcf25e32bc73f1ff972e569a88a12c9b7fb7
+B,before,one,CHART,58,58,true,true,11a3e08fdc3639ac19b2d286bf1e50ad92e4d9edfc63a6b9a45f20750a77ff2d
+B,before,two,CHART,67,62,true,true,d9cfe089b4477849dd973a83e203510e35b2306401d94155d10d971b7bd984cc
+B,before,three,CHART,81,75,true,true,ac1d64f86b5ed0274bc2832fb756554351689a7e358aee52e450ddb69173f4d5
+B,before,four,CHART,89,82,true,true,c4226768a16de0f25fce524f86468d5aa8f6686e646ce29517e6c93d6a54d5e8
+B,after,one,CHART,79,79,true,true,a6b31e451573834760cd1dce5c2304e2f1b4e0764284f16180b2f40dce0bd48e
+B,after,two,CHART,102,97,true,true,fe6ef7508ac795b50537913859fa7a86073e4efccdb1ff56ff187bf786bbc243
+B,after,three,CHART,127,122,true,true,656f53ed0bfdd2e5c8748fa545f25ef28f67f6522a09f3e8a65bdecd6854fdb9
+B,after,four,CHART,131,125,true,true,494b0fe4349af331a1e71c3a1a8a792663b85c231a6ebaf98590025b9a3d020d
