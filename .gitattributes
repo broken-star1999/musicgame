@@ -3,3 +3,5 @@
 *.jpg binary
 *.woff binary
 *.woff2 binary
+# The frozen selection protocol hashes its original bytes, including CRLF.
+benchmarks/phase-v11-selection.json -text whitespace=cr-at-eol
