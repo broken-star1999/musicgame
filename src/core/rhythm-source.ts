@@ -67,6 +67,9 @@ export function followRhythmSource(streams: Onset[][], mixed: Onset[], duration:
       if (band < 3 && (events.length < 4 || support[band] < SUPPORT)) return -2;
       return band === 3 ? 0.36 + support[band] * 0.3 : support[band] * 0.85 + Math.min(1, levels[band] / maxLevel) * 0.12 + [0.04, 0.015, 0][band];
     });
+    // Let the empty mixed source represent the absence of supported attacks.
+    if (!local[3].length && score[3] === -10
+      && local.slice(0, 3).every((events, band) => !events.length || score[band] === -2)) score[3] = 0;
     emissions.push(score); supports.push(support);
   }
   const values = emissions.map(() => Array<number>(4).fill(-Infinity));

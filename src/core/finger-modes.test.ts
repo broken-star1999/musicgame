@@ -15,7 +15,7 @@ describe('finger difficulty matches the generated music chart', () => {
   it.each(['one', 'two', 'three', 'four'] as const)('generates a deterministic, beat-aligned %s chart within its finger budget', difficulty => {
     const chart = generateChart(analysis, difficulty), max = DIFFICULTIES[difficulty].max;
     expect(chart).toEqual(generateChart(analysis, difficulty));
-    expect(chart).toMatchObject({ version: 9, difficulty, fingerLimit: max, fingering: { checked: true } });
+    expect(chart).toMatchObject({ version: 10, difficulty, fingerLimit: max, fingering: { checked: true } });
     expect(isPlayableChart(chart.notes, max, chart.duration)).toBe(true);
     expect(peakFingers(chart.notes)).toBe(max);
     for (const n of chart.notes) expect(Math.min(...analysis.onsets.map(onset => Math.abs(onset.time - n.time)))).toBeLessThan(0.0251);

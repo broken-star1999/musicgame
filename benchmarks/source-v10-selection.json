@@ -1,0 +1,319 @@
+{
+  "schema": 1,
+  "created_utc": "2026-10-30T02:34:42.555536+00:00",
+  "created_before_download": true,
+  "selection_rule": "Root predeclared exact4/22/35 in each of10 genres before any acquisition or music algorithm; never substitute failures/duplicates.",
+  "purpose": "Data preparation only for an undecided null-source candidate; no candidate selection/gate/scoring yet; stays sealed unless independently authorized future frozen run.",
+  "dataset": "sanchit-gandhi/gtzan",
+  "dataset_revision": "4bd857132cb0e731bef3ec68558e7acc0a85f144",
+  "audioSource": "https://huggingface.co/datasets/sanchit-gandhi/gtzan/tree/4bd857132cb0e731bef3ec68558e7acc0a85f144",
+  "annotation_repository": "CPJKU/beat_this_annotations",
+  "annotation_revision": "fd9fcc0896cb78730bae735102c8753ef3a3badd",
+  "annotationSource": "https://github.com/CPJKU/beat_this_annotations/tree/fd9fcc0896cb78730bae735102c8753ef3a3badd/gtzan/annotations/beats",
+  "indices": [
+    4,
+    22,
+    35
+  ],
+  "genres": [
+    "blues",
+    "classical",
+    "country",
+    "disco",
+    "hiphop",
+    "jazz",
+    "metal",
+    "pop",
+    "reggae",
+    "rock"
+  ],
+  "selected_names": [
+    "blues.00004.wav",
+    "blues.00022.wav",
+    "blues.00035.wav",
+    "classical.00004.wav",
+    "classical.00022.wav",
+    "classical.00035.wav",
+    "country.00004.wav",
+    "country.00022.wav",
+    "country.00035.wav",
+    "disco.00004.wav",
+    "disco.00022.wav",
+    "disco.00035.wav",
+    "hiphop.00004.wav",
+    "hiphop.00022.wav",
+    "hiphop.00035.wav",
+    "jazz.00004.wav",
+    "jazz.00022.wav",
+    "jazz.00035.wav",
+    "metal.00004.wav",
+    "metal.00022.wav",
+    "metal.00035.wav",
+    "pop.00004.wav",
+    "pop.00022.wav",
+    "pop.00035.wav",
+    "reggae.00004.wav",
+    "reggae.00022.wav",
+    "reggae.00035.wav",
+    "rock.00004.wav",
+    "rock.00022.wav",
+    "rock.00035.wav"
+  ],
+  "observed_registry": "benchmarks/dsp-cohorts.json",
+  "observed_registry_sha256_before_acquisition": "361f98aafc7c7e2371ec1764bb77ba6b137965421e0af65dc057c214ed77c6c1",
+  "observed_registry_clip_count": 150,
+  "ledger_snapshot": "observed150-ledger.snapshot.json",
+  "reference_blob_identities_before_download": [
+    {
+      "clipId": "blues.00004.wav",
+      "upstreamPath": "gtzan/annotations/beats/gtzan_blues_00004.beats",
+      "sha256": "52d7f3a18bb431e7c3418d07493613b5cfad391f7cbd839d6ac9414ae8e9a510",
+      "localCheckoutBytes": 639,
+      "pinnedBytes": 572,
+      "normalizedLocalMatchesPinned": true
+    },
+    {
+      "clipId": "blues.00022.wav",
+      "upstreamPath": "gtzan/annotations/beats/gtzan_blues_00022.beats",
+      "sha256": "06d847b4660feda9b283d991fbaf81a2b91082bdb0eeb18a35b248b49634fcff",
+      "localCheckoutBytes": 469,
+      "pinnedBytes": 420,
+      "normalizedLocalMatchesPinned": true
+    },
+    {
+      "clipId": "blues.00035.wav",
+      "upstreamPath": "gtzan/annotations/beats/gtzan_blues_00035.beats",
+      "sha256": "5df8b491170607e6886dde2ce7dfba30890bb618536e5c040f5a09b5d3c00815",
+      "localCheckoutBytes": 624,
+      "pinnedBytes": 559,
+      "normalizedLocalMatchesPinned": true
+    },
+    {
+      "clipId": "classical.00004.wav",
+      "upstreamPath": "gtzan/annotations/beats/gtzan_classical_00004.beats",
+      "sha256": "52a18b4f5168dd075fe243d2ed7f54745aa6eb0a6d65f0b8002990ccf5efb02d",
+      "localCheckoutBytes": 772,
+      "pinnedBytes": 691,
+      "normalizedLocalMatchesPinned": true
+    },
+    {
+      "clipId": "classical.00022.wav",
+      "upstreamPath": "gtzan/annotations/beats/gtzan_classical_00022.beats",
+      "sha256": "cbcdb3978364f32b74ecfd97f971fdf5d73c884a63208d9887183765485e2aab",
+      "localCheckoutBytes": 477,
+      "pinnedBytes": 427,
+      "normalizedLocalMatchesPinned": true
+    },
+    {
+      "clipId": "classical.00035.wav",
+      "upstreamPath": "gtzan/annotations/beats/gtzan_classical_00035.beats",
+      "sha256": "64e6c7d49cab9d820baafa1de9c315d4b2e615b454c0242edfa868c0fc0d2db0",
+      "localCheckoutBytes": 715,
+      "pinnedBytes": 640,
+      "normalizedLocalMatchesPinned": true
+    },
+    {
+      "clipId": "country.00004.wav",
+      "upstreamPath": "gtzan/annotations/beats/gtzan_country_00004.beats",
+      "sha256": "2add95b6968a29012eb85b8c4b076ebaedd1f762d533d57a2cf9fd300684344c",
+      "localCheckoutBytes": 562,
+      "pinnedBytes": 503,
+      "normalizedLocalMatchesPinned": true
+    },
+    {
+      "clipId": "country.00022.wav",
+      "upstreamPath": "gtzan/annotations/beats/gtzan_country_00022.beats",
+      "sha256": "1c55f512746c708a4f717e044aba31f149209f74f2b3a1bf2e541681edac5b7a",
+      "localCheckoutBytes": 293,
+      "pinnedBytes": 262,
+      "normalizedLocalMatchesPinned": true
+    },
+    {
+      "clipId": "country.00035.wav",
+      "upstreamPath": "gtzan/annotations/beats/gtzan_country_00035.beats",
+      "sha256": "5496a8ebda7ef1cdca8fd9066f9aa8c5bff84aa378b47b2dc604dcb83ec1c008",
+      "localCheckoutBytes": 947,
+      "pinnedBytes": 848,
+      "normalizedLocalMatchesPinned": true
+    },
+    {
+      "clipId": "disco.00004.wav",
+      "upstreamPath": "gtzan/annotations/beats/gtzan_disco_00004.beats",
+      "sha256": "ba0479587bdbdc592cad0a8412a1c905bd802b2823f73d803bd5d94aea9c7bc7",
+      "localCheckoutBytes": 584,
+      "pinnedBytes": 523,
+      "normalizedLocalMatchesPinned": true
+    },
+    {
+      "clipId": "disco.00022.wav",
+      "upstreamPath": "gtzan/annotations/beats/gtzan_disco_00022.beats",
+      "sha256": "c66b00e9a5a3bb2fbf121425e7a22b98659b53cad284e9b8e1d2c10d1af29e2d",
+      "localCheckoutBytes": 572,
+      "pinnedBytes": 512,
+      "normalizedLocalMatchesPinned": true
+    },
+    {
+      "clipId": "disco.00035.wav",
+      "upstreamPath": "gtzan/annotations/beats/gtzan_disco_00035.beats",
+      "sha256": "df089d9ca6be52f4239758f0c209090d5b559a65185afb8eb1886eea483613fb",
+      "localCheckoutBytes": 586,
+      "pinnedBytes": 525,
+      "normalizedLocalMatchesPinned": true
+    },
+    {
+      "clipId": "hiphop.00004.wav",
+      "upstreamPath": "gtzan/annotations/beats/gtzan_hiphop_00004.beats",
+      "sha256": "c83ed52846e56ce5b1839d654b6be82d73c39119ad9508dc6be88ddd1ee8b4bf",
+      "localCheckoutBytes": 461,
+      "pinnedBytes": 413,
+      "normalizedLocalMatchesPinned": true
+    },
+    {
+      "clipId": "hiphop.00022.wav",
+      "upstreamPath": "gtzan/annotations/beats/gtzan_hiphop_00022.beats",
+      "sha256": "e96672e80659485f15de1921a21be17626ff4791e1421a30672596a02b3cdbd4",
+      "localCheckoutBytes": 480,
+      "pinnedBytes": 430,
+      "normalizedLocalMatchesPinned": true
+    },
+    {
+      "clipId": "hiphop.00035.wav",
+      "upstreamPath": "gtzan/annotations/beats/gtzan_hiphop_00035.beats",
+      "sha256": "34346ac621d1939fd84912001330c27c6490811f71321da677522689369d9d5f",
+      "localCheckoutBytes": 411,
+      "pinnedBytes": 368,
+      "normalizedLocalMatchesPinned": true
+    },
+    {
+      "clipId": "jazz.00004.wav",
+      "upstreamPath": "gtzan/annotations/beats/gtzan_jazz_00004.beats",
+      "sha256": "59d5ebfcd42d6d983f46fba914cd9a7203017bc1c7217d621c7df497b0a94f63",
+      "localCheckoutBytes": 298,
+      "pinnedBytes": 267,
+      "normalizedLocalMatchesPinned": true
+    },
+    {
+      "clipId": "jazz.00022.wav",
+      "upstreamPath": "gtzan/annotations/beats/gtzan_jazz_00022.beats",
+      "sha256": "79725143b8ea8a1ff855c36ad4f441e88a134fc4f77226d3e90898cfe3cc91e6",
+      "localCheckoutBytes": 612,
+      "pinnedBytes": 548,
+      "normalizedLocalMatchesPinned": true
+    },
+    {
+      "clipId": "jazz.00035.wav",
+      "upstreamPath": "gtzan/annotations/beats/gtzan_jazz_00035.beats",
+      "sha256": "706b56e2a2ee21b9e4195afffaf7d5b085b61940690512a792086d976ad9b973",
+      "localCheckoutBytes": 333,
+      "pinnedBytes": 298,
+      "normalizedLocalMatchesPinned": true
+    },
+    {
+      "clipId": "metal.00004.wav",
+      "upstreamPath": "gtzan/annotations/beats/gtzan_metal_00004.beats",
+      "sha256": "62ef68cbb29dedc1d90b7e019743f54ffd1048fcd50b9005199ebb99c1973ae1",
+      "localCheckoutBytes": 666,
+      "pinnedBytes": 597,
+      "normalizedLocalMatchesPinned": true
+    },
+    {
+      "clipId": "metal.00022.wav",
+      "upstreamPath": "gtzan/annotations/beats/gtzan_metal_00022.beats",
+      "sha256": "31db3b3a23936213ca1b2f578ea85c8ce199c121a5a6f4218f05a0855ecbe7ea",
+      "localCheckoutBytes": 659,
+      "pinnedBytes": 590,
+      "normalizedLocalMatchesPinned": true
+    },
+    {
+      "clipId": "metal.00035.wav",
+      "upstreamPath": "gtzan/annotations/beats/gtzan_metal_00035.beats",
+      "sha256": "7cee365d54022663137ec10c6cfaf0f3d32195d44c1bf8b9fc383ab6181fe23f",
+      "localCheckoutBytes": 574,
+      "pinnedBytes": 514,
+      "normalizedLocalMatchesPinned": true
+    },
+    {
+      "clipId": "pop.00004.wav",
+      "upstreamPath": "gtzan/annotations/beats/gtzan_pop_00004.beats",
+      "sha256": "5ede9116ebabcb792fb58ab38918b9a366f0f5ba6a78c296b59d3bcb7f6f331c",
+      "localCheckoutBytes": 386,
+      "pinnedBytes": 346,
+      "normalizedLocalMatchesPinned": true
+    },
+    {
+      "clipId": "pop.00022.wav",
+      "upstreamPath": "gtzan/annotations/beats/gtzan_pop_00022.beats",
+      "sha256": "8f5eb4f52b6e7b86ffc8b4eadf1fc47f241fc34dd0e7002aba1db3223bb5970d",
+      "localCheckoutBytes": 502,
+      "pinnedBytes": 450,
+      "normalizedLocalMatchesPinned": true
+    },
+    {
+      "clipId": "pop.00035.wav",
+      "upstreamPath": "gtzan/annotations/beats/gtzan_pop_00035.beats",
+      "sha256": "7197f13151e58cbfcfe7bf7b94da5d8a747045bcc3fa3a2ae8b6c3dbe0be981c",
+      "localCheckoutBytes": 515,
+      "pinnedBytes": 461,
+      "normalizedLocalMatchesPinned": true
+    },
+    {
+      "clipId": "reggae.00004.wav",
+      "upstreamPath": "gtzan/annotations/beats/gtzan_reggae_00004.beats",
+      "sha256": "8ed4744ef6186fdef1282276c524b10ee5a52c1974b385fe304b8463a3b5899f",
+      "localCheckoutBytes": 604,
+      "pinnedBytes": 541,
+      "normalizedLocalMatchesPinned": true
+    },
+    {
+      "clipId": "reggae.00022.wav",
+      "upstreamPath": "gtzan/annotations/beats/gtzan_reggae_00022.beats",
+      "sha256": "30ee62c41db8d699c9c05e6ddfb301299870f021e737fcec9fe91d2214dc3fef",
+      "localCheckoutBytes": 705,
+      "pinnedBytes": 631,
+      "normalizedLocalMatchesPinned": true
+    },
+    {
+      "clipId": "reggae.00035.wav",
+      "upstreamPath": "gtzan/annotations/beats/gtzan_reggae_00035.beats",
+      "sha256": "35440a177d669a30c65acd12c226df82f1e73e32585b2a0910727c6cec655a13",
+      "localCheckoutBytes": 776,
+      "pinnedBytes": 694,
+      "normalizedLocalMatchesPinned": true
+    },
+    {
+      "clipId": "rock.00004.wav",
+      "upstreamPath": "gtzan/annotations/beats/gtzan_rock_00004.beats",
+      "sha256": "fa8e15004aef503d100be12a2cba30db69ffc1127406d1aeb6827e8ee2074d87",
+      "localCheckoutBytes": 368,
+      "pinnedBytes": 329,
+      "normalizedLocalMatchesPinned": true
+    },
+    {
+      "clipId": "rock.00022.wav",
+      "upstreamPath": "gtzan/annotations/beats/gtzan_rock_00022.beats",
+      "sha256": "e17a084ded18ba44da5bc9799095404af18519c310f14ca1df00344176979b29",
+      "localCheckoutBytes": 955,
+      "pinnedBytes": 855,
+      "normalizedLocalMatchesPinned": true
+    },
+    {
+      "clipId": "rock.00035.wav",
+      "upstreamPath": "gtzan/annotations/beats/gtzan_rock_00035.beats",
+      "sha256": "17d642e228d209ff12cb9cccecf47ea73cccfcf3d6abf0d2ec58e3f9e9827dcf",
+      "localCheckoutBytes": 625,
+      "pinnedBytes": 559,
+      "normalizedLocalMatchesPinned": true
+    }
+  ],
+  "annotationBytes": "Copy exact pinned Git blob bytes; local WindowsCRLF checkout normalized equivalence checked before selection, not used for sourceSHA.",
+  "canonical_pcm": "mono f32le 22050Hz",
+  "canonical_command": "ffmpeg -v error -i <source.wav> -f f32le -ac 1 -ar 22050 -y <clip.audio.f32>",
+  "referenceBoundary": "Preserve original reference JSON and TSV; report finite/negative/ordered/after PCM.frames/22050 boundary partition; do not trim/replace/reference-retime.",
+  "duplicatePolicy": "Exact original clipID + decoded canonical PCM SHA against all150; also check within30. Preserve all failures/duplicates and block use; no replacement IDs.",
+  "algorithm_evaluations": 0,
+  "accuracy_inspected": false,
+  "sealed": true,
+  "public_ledger_updates": 0,
+  "independence_boundary": "Project-unobserved relative to150 ID/PCM records only; not proof of composition/performer independence or model-training novelty.",
+  "distribution": "All audio and full references only under ignored.qa; no redistribution or publication."
+}

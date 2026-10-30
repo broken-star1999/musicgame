@@ -112,11 +112,15 @@ export function generateChart(analysis: Analysis, difficulty: Difficulty, bpmOve
   notes.sort((a, b) => a.time - b.time || a.lane - b.lane);
   notes.forEach((note, i) => { note.id = i; });
   progress?.(0.48, '正在匹配相似乐句与按键模板');
-  const chart = reusePhraseTemplates(bpmOverride === undefined ? musicalAnalysis : { ...musicalAnalysis, rhythm: undefined }, { version: 9, generator: analysis.recognition?.engine ?? 'signal', fingerprint: analysis.fingerprint, difficulty, fingerLimit: config.max, duration: analysis.duration, bpm, notes }, config.max);
+  const chart = reusePhraseTemplates(bpmOverride === undefined ? musicalAnalysis : { ...musicalAnalysis, rhythm: undefined }, { version: 10, generator: analysis.recognition?.engine ?? 'signal', fingerprint: analysis.fingerprint, difficulty, fingerLimit: config.max, duration: analysis.duration, bpm, notes }, config.max);
   progress?.(0.72, '正在规划整段指法与移动路线');
   const plan = planFingering(chart.notes, config.max);
   const checked = validateFingering(plan.notes, config.max, chart.duration);
   if (!checked || !plan.notes.length) throw new Error('这段音乐暂时无法生成符合指法的谱面，请更换指法或歌曲重试。');
+  const boundaryTimes = new Set(events.filter(onset => onset.boundary).map(onset => onset.time));
+  if (plan.notes.every(note => boundaryTimes.has(note.time))) {
+    throw new Error('这段音乐在当前指法下没有足够清晰的起音，请更换指法或歌曲重试。');
+  }
   progress?.(1, '谱面与指法路线已检查');
   return { ...chart, notes: plan.notes, patterns: [...new Set(plan.notes.map(note => note.pattern).filter((name): name is string => !!name))], fingering: { checked, adjusted: plan.adjusted, omitted: plan.omitted, peakStrain: plan.peakStrain, model: FINGER_MODEL } };
 }

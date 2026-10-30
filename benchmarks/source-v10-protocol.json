@@ -1,0 +1,629 @@
+{
+  "schema": 1,
+  "state": "frozen",
+  "mode": "final",
+  "baselineCommit": "8d4dd2144ffde46b0d8f933f3facca02d53f0853",
+  "baselineEntry": "src/core/analysis.ts",
+  "candidateEntry": "src/core/analysis.ts",
+  "noModels": true,
+  "noPerClipParameters": true,
+  "sampleRate": 22050,
+  "referenceBoundary": "finite numeric references: 0 <= time <= PCM.frames/22050 inclusive; raw preserved; predictions not clipped",
+  "onsetToleranceSeconds": 0.02,
+  "metricProfile": {
+    "id": "dsp-paired-v1",
+    "matching": "distinct nearest in ascending reference order; each prediction used at most once; predictions are not clipped",
+    "tolerancesSeconds": [
+      0.05,
+      0.07
+    ],
+    "averaging": "macro across all30 paired clips",
+    "epsilon": 1e-9,
+    "fourFinger": "exact-time deduplicated heads within own measured candidates +/-20ms; baseline identity retention is diagnostic only; zero baseline count requires valid nonempty after chart when count gate enabled",
+    "uncertainty": "Conditional fixed-systematic-subset description, not proof of song/artist/population independence."
+  },
+  "bootstrap": {
+    "seed": 20261030,
+    "replicates": 10000,
+    "strata": "genre",
+    "confidence": 0.95,
+    "unit": "paired clip",
+    "method": "paired within-genre percentile bootstrap; conditional on fixed ten genres"
+  },
+  "environment": {
+    "evaluator": {
+      "scripts/benchmark-dsp.mjs": "c281d03332c9d2407ccef9f393bf75d74e548c674e04537df823217def8e68df",
+      "scripts/benchmark-signal.mjs": "f17c42903abb051a3224dcec37a22470b67e96fe387c0d8f5d06a62fec4ade44"
+    },
+    "packageLockSha256": "c1e04885facd755dd352e66ee357cecd952731189b4bfae5dc893e738430076a",
+    "node": "v24.22.1"
+  },
+  "registrySha256": "799d377446190bce5df7dac7297e341e4f3cc20c16cdf56695eac8f332a10905",
+  "cohort": {
+    "id": "source-v10-gtzan-4-22-35",
+    "indices": [
+      4,
+      22,
+      35
+    ],
+    "selectionProtocolSha256": "5b9000844b91879ebe70670bcc1604453f19f06b900cb14ce4fe1e4ae8de9d4c",
+    "clips": [
+      {
+        "clipId": "blues.00004.wav",
+        "pcmSha256": "0e7952b449fcdad7ca6f10dcfb97741afd14276a5aa9cfde4fcdfeb2ee6c14b5",
+        "rawReferenceSha256": "ed666aa13c6585fec4617756ba113928507e9f4bd31a42d913d34e6c30eee7ea",
+        "frames": 661794,
+        "references": {
+          "raw": 67,
+          "effective": 67,
+          "excluded": 0,
+          "reasons": {
+            "non_finite_or_non_numeric": 0,
+            "before_pcm_start": 0,
+            "after_pcm_end": 0
+          }
+        }
+      },
+      {
+        "clipId": "blues.00022.wav",
+        "pcmSha256": "b43b4021eba41c1d52c8212a2836253b8cbc545b6a21d9fffe43f6cc72427757",
+        "rawReferenceSha256": "2e30ebe27f4edaea6b532939e39edfceae8ac41a84bb4b1745f8ab2e16d44197",
+        "frames": 661794,
+        "references": {
+          "raw": 49,
+          "effective": 49,
+          "excluded": 0,
+          "reasons": {
+            "non_finite_or_non_numeric": 0,
+            "before_pcm_start": 0,
+            "after_pcm_end": 0
+          }
+        }
+      },
+      {
+        "clipId": "blues.00035.wav",
+        "pcmSha256": "f0a86ecfef39f1eb6a62ff4d2d2112b3d9971688ccdca288937bdcdb8df22f13",
+        "rawReferenceSha256": "4ec0cf0a084d93807eecb79cb45f3172594e609575941e66cadcf7550f0704b1",
+        "frames": 661794,
+        "references": {
+          "raw": 65,
+          "effective": 65,
+          "excluded": 0,
+          "reasons": {
+            "non_finite_or_non_numeric": 0,
+            "before_pcm_start": 0,
+            "after_pcm_end": 0
+          }
+        }
+      },
+      {
+        "clipId": "classical.00004.wav",
+        "pcmSha256": "1c38353bed5d3f40a12d180b228f57c001b0beeabb32a1468f86389819356251",
+        "rawReferenceSha256": "7017fc087b1c47ccd4607f4fd1d3561bec05d6b933858a67acad3e92b4e72e94",
+        "frames": 661794,
+        "references": {
+          "raw": 81,
+          "effective": 81,
+          "excluded": 0,
+          "reasons": {
+            "non_finite_or_non_numeric": 0,
+            "before_pcm_start": 0,
+            "after_pcm_end": 0
+          }
+        }
+      },
+      {
+        "clipId": "classical.00022.wav",
+        "pcmSha256": "f89c892b546e05a6b291d1b4e84e63f03bd54e9924552f06c522ede7a45e5c64",
+        "rawReferenceSha256": "6a2b8236c9ad8c00a659e345edcf8b313c7bfc28240b2e948b6788b011fb690f",
+        "frames": 661794,
+        "references": {
+          "raw": 50,
+          "effective": 50,
+          "excluded": 0,
+          "reasons": {
+            "non_finite_or_non_numeric": 0,
+            "before_pcm_start": 0,
+            "after_pcm_end": 0
+          }
+        }
+      },
+      {
+        "clipId": "classical.00035.wav",
+        "pcmSha256": "8ca8f27b427b0c02a7f54cb17e31a3726ea98072335b61b0d9ce07e4710a2702",
+        "rawReferenceSha256": "70bdcf9ca12e7e78393df32249a0837cd0e9b5d35d30809e1892ecd6d213aa10",
+        "frames": 661794,
+        "references": {
+          "raw": 75,
+          "effective": 75,
+          "excluded": 0,
+          "reasons": {
+            "non_finite_or_non_numeric": 0,
+            "before_pcm_start": 0,
+            "after_pcm_end": 0
+          }
+        }
+      },
+      {
+        "clipId": "country.00004.wav",
+        "pcmSha256": "49adb709872bad8022d3509acac6be54ae701e1dfa6df474a172f3266ad5c35e",
+        "rawReferenceSha256": "8839270fa93988c6d5e8317aa15c993806da70743cb0110a79188149587f5299",
+        "frames": 661408,
+        "references": {
+          "raw": 59,
+          "effective": 59,
+          "excluded": 0,
+          "reasons": {
+            "non_finite_or_non_numeric": 0,
+            "before_pcm_start": 0,
+            "after_pcm_end": 0
+          }
+        }
+      },
+      {
+        "clipId": "country.00022.wav",
+        "pcmSha256": "53a34e0c711077d06377950dec7eecfb62e3a2334597ea0ac3cefba1e35f5144",
+        "rawReferenceSha256": "29b4dfad1708c12e46ee546b7a681dd6976358a9ec701301f0ca9371ccef7bfd",
+        "frames": 661794,
+        "references": {
+          "raw": 31,
+          "effective": 31,
+          "excluded": 0,
+          "reasons": {
+            "non_finite_or_non_numeric": 0,
+            "before_pcm_start": 0,
+            "after_pcm_end": 0
+          }
+        }
+      },
+      {
+        "clipId": "country.00035.wav",
+        "pcmSha256": "d0338fe0cbdcd48c4a4e51b2f8d3e9f09c4448eacf22cfee861808744ea8dd17",
+        "rawReferenceSha256": "65bd9f9144c888115124788f9da74331902b4725c353677c14e3b49c2788d8cb",
+        "frames": 661794,
+        "references": {
+          "raw": 99,
+          "effective": 99,
+          "excluded": 0,
+          "reasons": {
+            "non_finite_or_non_numeric": 0,
+            "before_pcm_start": 0,
+            "after_pcm_end": 0
+          }
+        }
+      },
+      {
+        "clipId": "disco.00004.wav",
+        "pcmSha256": "48ee5df45ffc332425cb293fb2432a3d1f111be362f65de0121ee0aee4e298ce",
+        "rawReferenceSha256": "b4db06454c8086f8491919060fd59bd022fd9ba0dfe3993adafaeb40645ad53c",
+        "frames": 661794,
+        "references": {
+          "raw": 61,
+          "effective": 61,
+          "excluded": 0,
+          "reasons": {
+            "non_finite_or_non_numeric": 0,
+            "before_pcm_start": 0,
+            "after_pcm_end": 0
+          }
+        }
+      },
+      {
+        "clipId": "disco.00022.wav",
+        "pcmSha256": "a46e3c0b264727d99b4ee10202d153be8a70d338c1a6c120d9722291d4ea9970",
+        "rawReferenceSha256": "fdfa192b9be268e4b7cf2e5673c680793b99e57da73f35ad876fd3169da79c5a",
+        "frames": 661794,
+        "references": {
+          "raw": 60,
+          "effective": 60,
+          "excluded": 0,
+          "reasons": {
+            "non_finite_or_non_numeric": 0,
+            "before_pcm_start": 0,
+            "after_pcm_end": 0
+          }
+        }
+      },
+      {
+        "clipId": "disco.00035.wav",
+        "pcmSha256": "bd5006363ff76ebedc0bd608b1d89742d0c86f9b899c468afddd561f754ce8a0",
+        "rawReferenceSha256": "243570307c6669c57d186cb7edce36b6f87278948e9bd35ca5b849e27764f1c6",
+        "frames": 661794,
+        "references": {
+          "raw": 61,
+          "effective": 61,
+          "excluded": 0,
+          "reasons": {
+            "non_finite_or_non_numeric": 0,
+            "before_pcm_start": 0,
+            "after_pcm_end": 0
+          }
+        }
+      },
+      {
+        "clipId": "hiphop.00004.wav",
+        "pcmSha256": "f394e8885d882b1aa4d855b0033a55797befbc7368f57f661cd94338f81fbba0",
+        "rawReferenceSha256": "e70935864ce3bf4e3a9716991e2ab7102866b2a1317c65c53d1748140726a914",
+        "frames": 661504,
+        "references": {
+          "raw": 48,
+          "effective": 48,
+          "excluded": 0,
+          "reasons": {
+            "non_finite_or_non_numeric": 0,
+            "before_pcm_start": 0,
+            "after_pcm_end": 0
+          }
+        }
+      },
+      {
+        "clipId": "hiphop.00022.wav",
+        "pcmSha256": "d3c9981fe56c19cb40be497d9067634a425cc063dfc70c61b5f9ca5f6cd6017f",
+        "rawReferenceSha256": "02c30c9f5c3b567593aed5fa262d995e387d2498d68a165a3ed7c00e16d625c3",
+        "frames": 661794,
+        "references": {
+          "raw": 50,
+          "effective": 50,
+          "excluded": 0,
+          "reasons": {
+            "non_finite_or_non_numeric": 0,
+            "before_pcm_start": 0,
+            "after_pcm_end": 0
+          }
+        }
+      },
+      {
+        "clipId": "hiphop.00035.wav",
+        "pcmSha256": "f8b612f88469fb32f355e22440897df288b31ac9953b0c09857e5c37f69dd935",
+        "rawReferenceSha256": "a0a45ffb24d790544d28afe2165e4ca8c3c92351949d34d52c6bf24224262a38",
+        "frames": 668140,
+        "references": {
+          "raw": 43,
+          "effective": 43,
+          "excluded": 0,
+          "reasons": {
+            "non_finite_or_non_numeric": 0,
+            "before_pcm_start": 0,
+            "after_pcm_end": 0
+          }
+        }
+      },
+      {
+        "clipId": "jazz.00004.wav",
+        "pcmSha256": "8f7de2303f09c12651bc9f2fd8be5ff6fa092c347bb893fa63c813b35af7f02b",
+        "rawReferenceSha256": "4d79adaf0ad5f3a8a84bc43d36790fdd6f5d4c0c98ff104181cb9a423996d98a",
+        "frames": 661794,
+        "references": {
+          "raw": 31,
+          "effective": 31,
+          "excluded": 0,
+          "reasons": {
+            "non_finite_or_non_numeric": 0,
+            "before_pcm_start": 0,
+            "after_pcm_end": 0
+          }
+        }
+      },
+      {
+        "clipId": "jazz.00022.wav",
+        "pcmSha256": "f8643a12fcf5bd010b7fbc07295b79d865e802dbb79dcf3fb3e4e92b0bcb3802",
+        "rawReferenceSha256": "7b652c6be9bd22cb320af8236359752087b4313974e72c61d2ff2cd9af9891cc",
+        "frames": 661794,
+        "references": {
+          "raw": 64,
+          "effective": 64,
+          "excluded": 0,
+          "reasons": {
+            "non_finite_or_non_numeric": 0,
+            "before_pcm_start": 0,
+            "after_pcm_end": 0
+          }
+        }
+      },
+      {
+        "clipId": "jazz.00035.wav",
+        "pcmSha256": "01223d49aff83cdd3d7716502cf5b360882ebcecd566a19e92a2e485856c5283",
+        "rawReferenceSha256": "b2f0795b31992529f16b0e63c231ebeaec6f24f9a2dea06728a701d52513fa28",
+        "frames": 661794,
+        "references": {
+          "raw": 35,
+          "effective": 35,
+          "excluded": 0,
+          "reasons": {
+            "non_finite_or_non_numeric": 0,
+            "before_pcm_start": 0,
+            "after_pcm_end": 0
+          }
+        }
+      },
+      {
+        "clipId": "metal.00004.wav",
+        "pcmSha256": "6194a7d62b35e95d6ebdc30c529342da84eab33794157f3960c33180f7bb43d2",
+        "rawReferenceSha256": "7acef204bc8e69a49152c86be594530eced70160f4a8e75166fcccf6724c331f",
+        "frames": 661504,
+        "references": {
+          "raw": 69,
+          "effective": 69,
+          "excluded": 0,
+          "reasons": {
+            "non_finite_or_non_numeric": 0,
+            "before_pcm_start": 0,
+            "after_pcm_end": 0
+          }
+        }
+      },
+      {
+        "clipId": "metal.00022.wav",
+        "pcmSha256": "8cb41edf412ba54214ddd6a69ebcc52dbc4dac0d077d3bbc983893cb59c3be89",
+        "rawReferenceSha256": "a19f5012579c3741f1fe4b04ddbd6e79791359f0aa2203c92b2324ab78eb55da",
+        "frames": 661504,
+        "references": {
+          "raw": 69,
+          "effective": 69,
+          "excluded": 0,
+          "reasons": {
+            "non_finite_or_non_numeric": 0,
+            "before_pcm_start": 0,
+            "after_pcm_end": 0
+          }
+        }
+      },
+      {
+        "clipId": "metal.00035.wav",
+        "pcmSha256": "95af2d729001acdeff3d9c05217a1652449c188c3c674c6738cfd69269912ee0",
+        "rawReferenceSha256": "51c28573d24640ccb49ad0c83d9d40a14c64cf6ac6e5d675175f95d0f7d9b69e",
+        "frames": 661504,
+        "references": {
+          "raw": 60,
+          "effective": 60,
+          "excluded": 0,
+          "reasons": {
+            "non_finite_or_non_numeric": 0,
+            "before_pcm_start": 0,
+            "after_pcm_end": 0
+          }
+        }
+      },
+      {
+        "clipId": "pop.00004.wav",
+        "pcmSha256": "7eaabdb7acb345a78152a5326528d1e23dcc219e86da51408a8f8d9338c1ec7d",
+        "rawReferenceSha256": "4c0a68c90d2a8a67ae1a4da147bb833cc1755e531eef324ab68fcdf670d93e9a",
+        "frames": 661504,
+        "references": {
+          "raw": 40,
+          "effective": 40,
+          "excluded": 0,
+          "reasons": {
+            "non_finite_or_non_numeric": 0,
+            "before_pcm_start": 0,
+            "after_pcm_end": 0
+          }
+        }
+      },
+      {
+        "clipId": "pop.00022.wav",
+        "pcmSha256": "ba1ac6acfe323c32c4e9034638c1b635e2cbff2920ccbfc105e6a64f75b7acbd",
+        "rawReferenceSha256": "5dbf5f339d528b8876ee9f8956aa3b2f6bb52a232864eda55e8b9e3f9ec733f9",
+        "frames": 661504,
+        "references": {
+          "raw": 52,
+          "effective": 52,
+          "excluded": 0,
+          "reasons": {
+            "non_finite_or_non_numeric": 0,
+            "before_pcm_start": 0,
+            "after_pcm_end": 0
+          }
+        }
+      },
+      {
+        "clipId": "pop.00035.wav",
+        "pcmSha256": "0d28f939653b5e7eb2e7aa2aa1f45de83dd30e59627edf93b93e4a21f31e8b00",
+        "rawReferenceSha256": "ff7e59a0a3657e11334f5ea8653f4f5403b318021b9395b283e0158b8f9e3c20",
+        "frames": 661504,
+        "references": {
+          "raw": 54,
+          "effective": 54,
+          "excluded": 0,
+          "reasons": {
+            "non_finite_or_non_numeric": 0,
+            "before_pcm_start": 0,
+            "after_pcm_end": 0
+          }
+        }
+      },
+      {
+        "clipId": "reggae.00004.wav",
+        "pcmSha256": "1aed7d7c037e5cd97be91d83b3c266639413f8f21a7a60f17967a466859cba7b",
+        "rawReferenceSha256": "97e4a2709953a7cf3474d9b526478a7b68300a214eb1a0bd48657307ffdbbd9b",
+        "frames": 661794,
+        "references": {
+          "raw": 63,
+          "effective": 63,
+          "excluded": 0,
+          "reasons": {
+            "non_finite_or_non_numeric": 0,
+            "before_pcm_start": 0,
+            "after_pcm_end": 0
+          }
+        }
+      },
+      {
+        "clipId": "reggae.00022.wav",
+        "pcmSha256": "424f81c577e7d3742a54e8291d462122eaf7ba0f784fdbd50de6bf144abbc102",
+        "rawReferenceSha256": "7e426f6e0621a5a6ecae511f61af1a92dc62298bcc6f20a518000fed4294a1cf",
+        "frames": 661794,
+        "references": {
+          "raw": 74,
+          "effective": 74,
+          "excluded": 0,
+          "reasons": {
+            "non_finite_or_non_numeric": 0,
+            "before_pcm_start": 0,
+            "after_pcm_end": 0
+          }
+        }
+      },
+      {
+        "clipId": "reggae.00035.wav",
+        "pcmSha256": "ede62419adc2dea878315f82380faaeb1225d37a7b06e65b2d11ed0a921d16e9",
+        "rawReferenceSha256": "70467b442be303899c3fe9d6fd9d41527e352275310d70937fb7be5534ef3ec0",
+        "frames": 661794,
+        "references": {
+          "raw": 82,
+          "effective": 82,
+          "excluded": 0,
+          "reasons": {
+            "non_finite_or_non_numeric": 0,
+            "before_pcm_start": 0,
+            "after_pcm_end": 0
+          }
+        }
+      },
+      {
+        "clipId": "rock.00004.wav",
+        "pcmSha256": "7d9a4dcdce3181cafe8eef5983d0189bb0e41820391372e3b7adb78f84c5c686",
+        "rawReferenceSha256": "d1208e39c06606e1d8eec4212c451f4727f952dae0c8804007068623bfc0abb0",
+        "frames": 661794,
+        "references": {
+          "raw": 39,
+          "effective": 39,
+          "excluded": 0,
+          "reasons": {
+            "non_finite_or_non_numeric": 0,
+            "before_pcm_start": 0,
+            "after_pcm_end": 0
+          }
+        }
+      },
+      {
+        "clipId": "rock.00022.wav",
+        "pcmSha256": "3633a7eb90f3ecfc2bfebc9923d3b5d87129ee89f041c253e20c917fb4369efe",
+        "rawReferenceSha256": "92e72fa44ddda947caed684d7d155a2852e76bf245825cd090b99fb33b967ca8",
+        "frames": 661794,
+        "references": {
+          "raw": 100,
+          "effective": 100,
+          "excluded": 0,
+          "reasons": {
+            "non_finite_or_non_numeric": 0,
+            "before_pcm_start": 0,
+            "after_pcm_end": 0
+          }
+        }
+      },
+      {
+        "clipId": "rock.00035.wav",
+        "pcmSha256": "cc4f7d1ed6ee2df56d6bf83e8fa40db79655c5c45ecc44d65f26fc1a5d960af7",
+        "rawReferenceSha256": "a22e786d6ac5b9ccaba163511321d6497c1a10c039a8051fc3fe453729b87a1b",
+        "frames": 661794,
+        "references": {
+          "raw": 66,
+          "effective": 66,
+          "excluded": 0,
+          "reasons": {
+            "non_finite_or_non_numeric": 0,
+            "before_pcm_start": 0,
+            "after_pcm_end": 0
+          }
+        }
+      }
+    ],
+    "fingerprint": "92cef298d37b0502f433d537720b8433e25f21e859b3375d72e7ced68fb1fc31"
+  },
+  "gate": {
+    "constraints": [
+      {
+        "metric": "head70F1",
+        "target": "macroDelta",
+        "operator": ">=",
+        "value": 0
+      },
+      {
+        "metric": "head50F1",
+        "target": "macroDelta",
+        "operator": ">=",
+        "value": 0
+      },
+      {
+        "metric": "clock70F1",
+        "target": "macroDelta",
+        "operator": ">=",
+        "value": 0
+      },
+      {
+        "metric": "clock50F1",
+        "target": "macroDelta",
+        "operator": ">=",
+        "value": 0
+      },
+      {
+        "metric": "pulse70Recall",
+        "target": "macroDelta",
+        "operator": ">=",
+        "value": 0
+      },
+      {
+        "metric": "pulse50Recall",
+        "target": "macroDelta",
+        "operator": ">=",
+        "value": 0
+      },
+      {
+        "metric": "head70F1",
+        "target": "perClipDeltaMin",
+        "operator": ">=",
+        "value": -0.05
+      },
+      {
+        "metric": "clock70F1",
+        "target": "perClipDeltaMin",
+        "operator": ">=",
+        "value": -0.05
+      },
+      {
+        "metric": "head70F1",
+        "target": "ciLow95",
+        "operator": ">=",
+        "value": -0.005
+      }
+    ],
+    "fourFingerMinCountRatio": 0.95
+  },
+  "interpretation": "Beat-reference compatibility is not all-event musical accuracy. Conditional small-cohort CIs do not prove song/artist independence. Four-finger count, identities and source paths reported separately.",
+  "sourceHashes": {
+    "before": {
+      "src/core/analysis-fallback.ts": "34410f957e644ca0fd2281145ccbefb4967b9a2d220bc9c3cad373dbd730c296",
+      "src/core/analysis.ts": "3986f866d7182e9e123023ed1643503a28fda8c21a6f3d47aad4d68c69f59c65",
+      "src/core/chart-constraints.ts": "35e4f304aed8eb2dfe49bb4dbae6d7b7db7b5deea34732a96dc7df05aeec1736",
+      "src/core/chart.ts": "e54cfffda091b17f56a49c6b70e9712ff55fa8d8bc1e8c529ed366343f87945b",
+      "src/core/chroma.ts": "4172510959a332bfeff4970964dd5c8ad2a696d1725bbd1496481d8d82f84ded",
+      "src/core/fingering.ts": "797d6bc08a44163a261e4e02c22fe8ea4e57eff67bfd5fdc9a5d938b2b23d83e",
+      "src/core/musical-events.ts": "36f53c453ac460ceb46f5a0ea6185812f813970e24ab5a304cef2b2721758883",
+      "src/core/onset-selection.ts": "00a59956b5a27c49d78f6e8cb76fa1aa2bdde5d364d57a2815716a4b096c917f",
+      "src/core/patterns.ts": "10966f254c5e5025ff8acd12986fa3218daa6e0467e75313768ce9833fe34ffc",
+      "src/core/phrases.ts": "8d9029820b333c3f699cecf9998c950294f50d0fe72751cc3fd13b871c5dfc89",
+      "src/core/rhythm-source.ts": "fb535280ab680aed096cfac4e5a26ebdec65738cd70181346ad52f6149262529",
+      "src/core/rhythm.ts": "8ebbba4b5bcc0309a78ae6f7c7e076bffb718c2886300a2e6ad04b3dbee96c19",
+      "src/core/signal-events.ts": "cfab9dd27bcd2d5a3daecce3ec4cf084e6897e5e72538ed3179d078ce6518c13",
+      "src/types.ts": "4a8a29dce94a3c5aa90964836387e45aa7833b8d47b9a2a5d50a8f72126515ea"
+    },
+    "after": {
+      "src/core/analysis-fallback.ts": "34410f957e644ca0fd2281145ccbefb4967b9a2d220bc9c3cad373dbd730c296",
+      "src/core/analysis.ts": "3986f866d7182e9e123023ed1643503a28fda8c21a6f3d47aad4d68c69f59c65",
+      "src/core/chart-constraints.ts": "35e4f304aed8eb2dfe49bb4dbae6d7b7db7b5deea34732a96dc7df05aeec1736",
+      "src/core/chart.ts": "bc659b98b4bf8f6a9a24da8c6f7462ed284997f26a549317503c44905e67e4aa",
+      "src/core/chroma.ts": "4172510959a332bfeff4970964dd5c8ad2a696d1725bbd1496481d8d82f84ded",
+      "src/core/fingering.ts": "797d6bc08a44163a261e4e02c22fe8ea4e57eff67bfd5fdc9a5d938b2b23d83e",
+      "src/core/musical-events.ts": "36f53c453ac460ceb46f5a0ea6185812f813970e24ab5a304cef2b2721758883",
+      "src/core/onset-selection.ts": "00a59956b5a27c49d78f6e8cb76fa1aa2bdde5d364d57a2815716a4b096c917f",
+      "src/core/patterns.ts": "10966f254c5e5025ff8acd12986fa3218daa6e0467e75313768ce9833fe34ffc",
+      "src/core/phrases.ts": "8d9029820b333c3f699cecf9998c950294f50d0fe72751cc3fd13b871c5dfc89",
+      "src/core/rhythm-source.ts": "878fe191a23b67d36545b06fd41428df5832f3ac53db6fbc29cb44ebe51c5a90",
+      "src/core/rhythm.ts": "8ebbba4b5bcc0309a78ae6f7c7e076bffb718c2886300a2e6ad04b3dbee96c19",
+      "src/core/signal-events.ts": "cfab9dd27bcd2d5a3daecce3ec4cf084e6897e5e72538ed3179d078ce6518c13",
+      "src/types.ts": "b7248acb92534276f5d621f4d58508001767653ac2d9bac1d2122e9ee4f3be91"
+    }
+  },
+  "frozenAt": "2026-10-30T02:55:09.591Z"
+}
