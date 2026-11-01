@@ -4,28 +4,19 @@ import { analyzeAudio } from '../src/core/analysis';
 import { countTypes, DIFFICULTIES, generateChart } from '../src/core/chart';
 import { isPlayableChart, peakFingers } from '../src/core/chart-constraints';
 import { validateFingering } from '../src/core/fingering';
-import fs from 'node:fs';
-import * as ort from 'onnxruntime-web/wasm';
-import model from '../src/core/beat-model-config.json';
-import { beatSpectrogram } from '../src/core/beat-features';
-import { runBeatModel } from '../src/core/beat-inference';
-import { applyBeatRecognition } from '../src/core/recognition';
+import { basicAnalysis } from '../src/core/analysis-fallback';
 
 // Optional private fixture: never copy the user's song into the repository.
 const audioPath = process.env.BEATFALL_TEST_AUDIO;
 describe.skipIf(!audioPath)('local real-song analysis', () => {
-  it('runs local WASM recognition and produces conflict-free charts at all difficulties', async () => {
+  it('analyzes local audio with DSP and produces conflict-free charts at all difficulties', () => {
     const decoded = spawnSync('ffmpeg', ['-v', 'error', '-i', audioPath!, '-f', 'f32le', '-ac', '1', '-ar', '22050', 'pipe:1'], { maxBuffer: 64 * 1024 * 1024, windowsHide: true });
     expect(decoded.status, decoded.stderr.toString()).toBe(0);
     const bytes = decoded.stdout;
     const samples = new Float32Array(bytes.length / 4);
     for (let i = 0; i < samples.length; i++) samples[i] = bytes.readFloatLE(i * 4);
-    ort.env.wasm.numThreads = 1;
-    const session = await ort.InferenceSession.create(new Uint8Array(fs.readFileSync(`public/models/${model.file}`)), { executionProviders: ['wasm'], graphOptimizationLevel: 'all' });
-    let analysis;
-    try { analysis = applyBeatRecognition(analyzeAudio(samples, 22050), await runBeatModel(session, beatSpectrogram(samples))); }
-    finally { await session.release(); }
-    expect(analysis.recognition?.engine).toBe('beat-this');
+    const analysis = basicAnalysis(analyzeAudio(samples, 22050));
+    expect(analysis.recognition?.engine).toBe('signal');
     expect(analysis.duration).toBeGreaterThan(2); expect(analysis.duration).toBeLessThanOrEqual(300);
     const reports = [];
     for (const difficulty of ['one', 'two', 'three', 'four'] as const) {

@@ -1,0 +1,21 @@
+diff --git a/src/core/rhythm.ts b/src/core/rhythm.ts
+index 9989475..4cbc27b 100644
+--- a/src/core/rhythm.ts
++++ b/src/core/rhythm.ts
+@@ -9,6 +9,7 @@ export function trackBeats(onsets: Onset[], duration: number, bpm: number, sourc
+     if (onsets.length < 4)
+         return { beats: [], tempo: [], confidence: 0, downbeats: [], meterConfidence: 0 };
+     const investigation = investigateTempo(onsets, duration, bpm);
++    const periodInvestigation = investigateTempo(sourceOnsets ?? onsets, duration, bpm);
+     const projected = gateClockEvidence(onsets, investigation.blocks, sourceOnsets);
+     const frames = Math.ceil(duration / STEP) + 1, envelope = new Float64Array(frames);
+     const reference = Math.max(1e-8, ...onsets.map(onset => onset.strength));
+@@ -20,7 +21,7 @@ export function trackBeats(onsets: Onset[], duration: number, bpm: number, sourc
+     }
+     const base = 60 / bpm / STEP;
+     void base;
+-    const local = Float64Array.from(investigation.blocks, block => (block.preferredPeriod ?? block.rememberedPeriod ?? 60 / bpm) / STEP);
++    const local = Float64Array.from(periodInvestigation.blocks, block => (block.preferredPeriod ?? block.rememberedPeriod ?? 60 / bpm) / STEP);
+     const { path } = phaseDP({ envelope, local, duration, bpm, onsets });
+     // Trim unsupported lead/tail beats; retain continuity across rests inside a song.
+     while (path.length && path[0] * STEP < onsets[0].time - 0.08)

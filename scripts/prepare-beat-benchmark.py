@@ -1,4 +1,4 @@
-"""Prepare local GTZAN audio/manual annotations for the Node/WASM benchmark.
+"""Prepare local GTZAN audio/manual annotations for the signal-only Node benchmark.
 Requires FFmpeg on PATH. Does not download or redistribute copyrighted music.
 """
 import argparse

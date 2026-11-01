@@ -1,0 +1,123 @@
+diff --git a/src/core/chart.ts b/src/core/chart.ts
+index afa2711..a684871 100644
+--- a/src/core/chart.ts
++++ b/src/core/chart.ts
+@@ -39,7 +39,7 @@ export function generateChart(analysis: Analysis, difficulty: Difficulty, bpmOve
+   const strengthSorted = sourceOnsets.map(x => x.strength).sort((a, b) => a - b);
+   const threshold = Math.min(config.threshold, (strengthSorted[Math.floor(strengthSorted.length * 0.75)] || config.threshold) * 0.55);
+   const noteTime = (onset: Analysis['onsets'][number]) => onset.role || onset.boundary ? onset.time : bpmOverride !== undefined || (analysis.rhythm?.confidence ?? 1) >= 0.45 ? snapToBeat(onset.time, beats, bpm) : onset.time;
+-  const selected = selectMusicalOnsets(sourceOnsets.filter(onset => onset.time <= analysis.duration - 0.18), config.gap, threshold, noteTime);
++  const selected = selectMusicalOnsets(sourceOnsets.filter(onset => onset.time <= analysis.duration - 0.18), config.gap, threshold, noteTime, analysis.recognition?.engine === 'signal' ? 'salience' : 'roles');
+   // Motif progression and repetition compare the same retained musical layer,
+   // rather than letting rejected ornaments change every subsequent lane.
+   const musicalAnalysis = { ...analysis, onsets: selected };
+@@ -112,7 +112,7 @@ export function generateChart(analysis: Analysis, difficulty: Difficulty, bpmOve
+   notes.sort((a, b) => a.time - b.time || a.lane - b.lane);
+   notes.forEach((note, i) => { note.id = i; });
+   progress?.(0.48, '正在匹配相似乐句与按键模板');
+-  const chart = reusePhraseTemplates(bpmOverride === undefined ? musicalAnalysis : { ...musicalAnalysis, rhythm: undefined }, { version: 11, generator: analysis.recognition?.engine ?? 'signal', fingerprint: analysis.fingerprint, difficulty, fingerLimit: config.max, duration: analysis.duration, bpm, notes }, config.max);
++  const chart = reusePhraseTemplates(bpmOverride === undefined ? musicalAnalysis : { ...musicalAnalysis, rhythm: undefined }, { version: 12, generator: analysis.recognition?.engine ?? 'signal', fingerprint: analysis.fingerprint, difficulty, fingerLimit: config.max, duration: analysis.duration, bpm, notes }, config.max);
+   progress?.(0.72, '正在规划整段指法与移动路线');
+   const plan = planFingering(chart.notes, config.max);
+   const checked = validateFingering(plan.notes, config.max, chart.duration);
+diff --git a/src/core/finger-modes.test.ts b/src/core/finger-modes.test.ts
+index 5341c73..6e4855a 100644
+--- a/src/core/finger-modes.test.ts
++++ b/src/core/finger-modes.test.ts
+@@ -15,7 +15,7 @@ describe('finger difficulty matches the generated music chart', () => {
+   it.each(['one', 'two', 'three', 'four'] as const)('generates a deterministic, beat-aligned %s chart within its finger budget', difficulty => {
+     const chart = generateChart(analysis, difficulty), max = DIFFICULTIES[difficulty].max;
+     expect(chart).toEqual(generateChart(analysis, difficulty));
+-    expect(chart).toMatchObject({ version: 11, difficulty, fingerLimit: max, fingering: { checked: true } });
++    expect(chart).toMatchObject({ version: 12, difficulty, fingerLimit: max, fingering: { checked: true } });
+     expect(isPlayableChart(chart.notes, max, chart.duration)).toBe(true);
+     expect(peakFingers(chart.notes)).toBe(max);
+     for (const n of chart.notes) expect(Math.min(...analysis.onsets.map(onset => Math.abs(onset.time - n.time)))).toBeLessThan(0.0251);
+diff --git a/src/core/onset-selection.test.ts b/src/core/onset-selection.test.ts
+index a53ee7a..d74bc78 100644
+--- a/src/core/onset-selection.test.ts
++++ b/src/core/onset-selection.test.ts
+@@ -36,3 +36,45 @@ describe('salient musical attacks survive density reduction', () => {
+     selected.forEach((value, i) => { expect(events).toContain(value); if (i) expect(value.time - selected[i - 1].time).toBeGreaterThanOrEqual(0.23); });
+   });
+ });
++
++describe('signal salience selection', () => {
++  it('can retain one strong measured beat instead of two conflicting weak beats', () => {
++    const events: Onset[] = [
++      { ...onset(1, 0.2), role: 'beat' },
++      { ...onset(1.3, 1), role: 'beat' },
++      { ...onset(1.6, 0.2), role: 'beat' },
++    ];
++    const original = structuredClone(events);
++    expect(selectMusicalOnsets(events, 0.4, 0.1).map(event => event.time)).toEqual([1, 1.6]);
++    expect(selectMusicalOnsets(events, 0.4, 0.1, event => event.time, 'salience')).toEqual([events[1]]);
++    expect(events).toEqual(original);
++  });
++
++  it('uses the role backbone to break equal salience scores', () => {
++    const events: Onset[] = [{ ...onset(1, 0.5), role: 'half' }, { ...onset(1.1, 0.5), role: 'beat' }];
++    expect(selectMusicalOnsets(events, 0.3, 0.1, event => event.time, 'salience')).toEqual([events[1]]);
++  });
++
++  it('protects an eligible measured attack from a conflicting uncertain opening cue', () => {
++    const cue: Onset = { ...onset(0, 1), boundary: true };
++    const measured: Onset = { ...onset(0.2, 0.2), role: 'beat' };
++    expect(selectMusicalOnsets([cue, measured], 0.3, 0.1, event => event.time, 'salience')).toEqual([measured]);
++    const atGap = { ...measured, time: 0.3 };
++    expect(selectMusicalOnsets([cue, atGap], 0.3, 0.1, event => event.time, 'salience')).toEqual([cue, atGap]);
++    expect(selectMusicalOnsets([cue, onset(0.2, 0.01)], 0.3, 0.1, event => event.time, 'salience')).toEqual([cue]);
++  });
++
++  it('routes only explicit signal results to salience selection', () => {
++    const events: Onset[] = [
++      { ...onset(1, 0.2), role: 'beat' },
++      { ...onset(1.25, 1), role: 'beat' },
++      { ...onset(1.5, 0.2), role: 'beat' },
++    ];
++    const base: Analysis = { duration: 3, bpm: 120, confidence: 1, fingerprint: 'signal-salience-route', onsets: events, energy: [], energyStep: 0.05, waveform: [], rhythm: { beats: [1, 1.5, 2], tempo: [], confidence: 1, downbeats: [], meterConfidence: 0 } };
++    const original = structuredClone(base);
++    expect(generateChart({ ...base, recognition: { engine: 'signal' } }, 'one').notes.map(note => note.time)).toEqual([1.25]);
++    expect(generateChart(base, 'one').notes.map(note => note.time)).toEqual([1, 1.5]);
++    expect(generateChart({ ...base, recognition: { engine: 'beat-this' } }, 'one').notes.map(note => note.time)).toEqual([1, 1.5]);
++    expect(base).toEqual(original);
++  });
++});
+diff --git a/src/core/onset-selection.ts b/src/core/onset-selection.ts
+index 8815951..949cf9d 100644
+--- a/src/core/onset-selection.ts
++++ b/src/core/onset-selection.ts
+@@ -3,8 +3,9 @@ import type { Onset } from '../types';
+ /** Weighted interval scheduling: a quiet pickup must not evict a nearby accent.
+  * Squared salience makes one clear attack preferable to several weak artifacts.
+  * Only selects original recording times; it never invents or retimes an attack. */
+-export function selectMusicalOnsets(onsets: Onset[], gap: number, threshold: number, timing = (onset: Onset) => onset.time): Onset[] {
+-  const events = onsets.filter(onset => onset.strength >= threshold || onset.role === 'beat').sort((a, b) => a.time - b.time);
++export function selectMusicalOnsets(onsets: Onset[], gap: number, threshold: number, timing = (onset: Onset) => onset.time, policy: 'roles' | 'salience' = 'roles'): Onset[] {
++  const eligible = onsets.filter(onset => onset.strength >= threshold || onset.role === 'beat').sort((a, b) => a.time - b.time);
++  const events = policy === 'salience' ? eligible.filter(event => !event.boundary || !eligible.some(other => !other.boundary && Math.abs(timing(other) - timing(event)) < gap - 1e-6)) : eligible;
+   const times = events.map(timing);
+   const scores = new Float64Array(events.length + 1), previous = new Int32Array(events.length);
+   const take = new Uint8Array(events.length);
+@@ -27,7 +28,7 @@ export function selectMusicalOnsets(onsets: Onset[], gap: number, threshold: num
+       prefer = counts[rank][low] + Number(events[i].role === roles[rank]) - counts[rank][i];
+       if (prefer) break;
+     }
+-    const choose = prefer > 0 || (prefer === 0 && value > scores[i] + 1e-10);
++    const choose = policy === 'salience' ? value > scores[i] + 1e-10 || (Math.abs(value - scores[i]) <= 1e-10 && prefer > 0) : prefer > 0 || (prefer === 0 && value > scores[i] + 1e-10);
+     scores[i + 1] = choose ? value : scores[i]; take[i] = Number(choose);
+     roles.forEach((role, rank) => { counts[rank][i + 1] = choose ? counts[rank][low] + Number(events[i].role === role) : counts[rank][i]; });
+   }
+diff --git a/src/types.ts b/src/types.ts
+index dc239a4..cf0951e 100644
+--- a/src/types.ts
++++ b/src/types.ts
+@@ -40,7 +40,7 @@ export interface Note {
+   pattern?: string;
+ }
+ export interface Chart {
+-  version: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11;
++  version: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
+   generator?: 'beat-this' | 'signal';
+   fingerprint: string;
+   difficulty: Difficulty;

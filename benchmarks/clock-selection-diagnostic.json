@@ -1,0 +1,3776 @@
+{
+  "schema": 1,
+  "scope": "Existing-results export only; zero analyzer/optimizer/chart calls. All quality candidates rejected. Observed210 development and small controls are separate.",
+  "baselineCommit": "067e0501b6704a1895c44429fd5219fc14362b27",
+  "currentRuntime": {
+    "chartVersion": 11,
+    "sourceRestoredExactly067": true,
+    "rejectedDraftVersion12NeverReleased": true,
+    "rollbackEvidenceSHA": "44fca348afad9c4804a0b624b753e13ae5dd483f0dad8cfe368472b25b9ca9f5",
+    "rejectedDraftTestsOnly": {
+      "passed": 453,
+      "skipped": 1,
+      "failed": 0,
+      "buildPassed": true,
+      "notCurrentRestoredTestCount": true
+    },
+    "rootPostRollbackBuildEvidenceSHA": "2cf632904c10686f8fc1c4776c3f926d27a342642b9b35b698ef886938d0adc2",
+    "all24RuntimeSourceHashesExact067AtExport": true
+  },
+  "metrics": {
+    "primary18": "head/clock/pulse ×50/70ms ×F1/precision/recall",
+    "matching": "Original distinct-nearest, predictions untrimmed; finite reference within actual PCM duration only.",
+    "four": "Unique chart heads near own measured candidates±20ms, after/before count plus matched baseline identity±20ms; can include boundary cues, not physical rising-edge truth.",
+    "allModeHead": "Same reference-beat comparison per mode; dense subdivisions are not an authored-chart quality ground truth.",
+    "density": "Maximum unique heads in half-open4s windows beginning at a head."
+  },
+  "qualification": {
+    "sha256": "19b1377a6cde8002d962316330bb7f647ed7dfe145ef37c2de0c7eea687f5d65",
+    "artifact": "clock-selection-qualification-nov1.json",
+    "prospectiveBeforeQuality": true,
+    "new9_10_12Consumed": false,
+    "noASAPCalls": true
+  },
+  "cohorts": [
+    [
+      0,
+      7,
+      19
+    ],
+    [
+      3,
+      11,
+      23
+    ],
+    [
+      5,
+      13,
+      29
+    ],
+    [
+      2,
+      17,
+      31
+    ],
+    [
+      6,
+      18,
+      33
+    ],
+    [
+      4,
+      22,
+      35
+    ],
+    [
+      8,
+      21,
+      34
+    ]
+  ],
+  "observed210": {
+    "WS": {
+      "summarySHA": "439f33a499dc5c4bd1432cbde9d98f361556adf3253d83563d46bb21f5ff98b9",
+      "executionFreezeSHA": "63ec12d4eed071902a4182ac9e15aed9622a25e351daaff0bd26b7c6f7f86d11",
+      "tracks": 210,
+      "aggregate": {
+        "baseline": {
+          "head50F1": 0.633061864018825,
+          "head50Precision": 0.69880006305787,
+          "head50Recall": 0.606102455312106,
+          "head70F1": 0.6927436792043614,
+          "head70Precision": 0.7677891525319193,
+          "head70Recall": 0.661919078829408,
+          "clock50F1": 0.6541950921963211,
+          "clock50Precision": 0.6745215289392704,
+          "clock50Recall": 0.6631462542656215,
+          "clock70F1": 0.7235445138311928,
+          "clock70Precision": 0.7460183364605465,
+          "clock70Recall": 0.7339423205288196,
+          "pulse50F1": 0.5219400760144305,
+          "pulse50Precision": 0.4366854428068469,
+          "pulse50Recall": 0.7216822689534595,
+          "pulse70F1": 0.5731518633250181,
+          "pulse70Precision": 0.4809126807465696,
+          "pulse70Recall": 0.7901323145702065
+        },
+        "W": {
+          "head50F1": 0.6049197132917444,
+          "head50Precision": 0.6808896391434425,
+          "head50Recall": 0.5712089011283268,
+          "head70F1": 0.6624153041737424,
+          "head70Precision": 0.7488035775682325,
+          "head70Recall": 0.6239558687646853,
+          "clock50F1": 0.6150984660790729,
+          "clock50Precision": 0.6528667151620156,
+          "clock50Recall": 0.6064294650485637,
+          "clock70F1": 0.679775359657095,
+          "clock70Precision": 0.7233506503056834,
+          "clock70Recall": 0.6691933827993892,
+          "pulse50F1": 0.5156314459552342,
+          "pulse50Precision": 0.4388845345801648,
+          "pulse50Recall": 0.6967347941935882,
+          "pulse70F1": 0.5668452072715144,
+          "pulse70Precision": 0.4840900424133763,
+          "pulse70Recall": 0.763343071293994
+        },
+        "S": {
+          "head50F1": 0.5904328521346647,
+          "head50Precision": 0.666059200694069,
+          "head50Recall": 0.5564728034176342,
+          "head70F1": 0.646812586237359,
+          "head70Precision": 0.7325288042063741,
+          "head70Recall": 0.6081899134511113,
+          "clock50F1": 0.5986693888726542,
+          "clock50Precision": 0.6386652760957708,
+          "clock50Recall": 0.5887452705456327,
+          "clock70F1": 0.6628465942714898,
+          "clock70Precision": 0.7086478080579252,
+          "clock70Recall": 0.651015605964873,
+          "pulse50F1": 0.51533162274711,
+          "pulse50Precision": 0.439617813210662,
+          "pulse50Recall": 0.6946416233507455,
+          "pulse70F1": 0.5669746478130057,
+          "pulse70Precision": 0.4853203753843417,
+          "pulse70Recall": 0.7615648744890972
+        }
+      },
+      "comparisons": {
+        "W": {
+          "head50F1": {
+            "macroDelta": -0.028142150727080605,
+            "improved": 40,
+            "regressed": 82,
+            "unchanged": 88
+          },
+          "head50Precision": {
+            "macroDelta": -0.017910423914427466,
+            "improved": 52,
+            "regressed": 70,
+            "unchanged": 88
+          },
+          "head50Recall": {
+            "macroDelta": -0.03489355418377929,
+            "improved": 31,
+            "regressed": 84,
+            "unchanged": 95
+          },
+          "head70F1": {
+            "macroDelta": -0.030328375030619043,
+            "improved": 39,
+            "regressed": 78,
+            "unchanged": 93
+          },
+          "head70Precision": {
+            "macroDelta": -0.018985574963686778,
+            "improved": 46,
+            "regressed": 68,
+            "unchanged": 96
+          },
+          "head70Recall": {
+            "macroDelta": -0.03796321006472282,
+            "improved": 26,
+            "regressed": 79,
+            "unchanged": 105
+          },
+          "clock50F1": {
+            "macroDelta": -0.039096626117248665,
+            "improved": 61,
+            "regressed": 89,
+            "unchanged": 60
+          },
+          "clock50Precision": {
+            "macroDelta": -0.021654813777254936,
+            "improved": 67,
+            "regressed": 83,
+            "unchanged": 60
+          },
+          "clock50Recall": {
+            "macroDelta": -0.05671678921705815,
+            "improved": 46,
+            "regressed": 97,
+            "unchanged": 67
+          },
+          "clock70F1": {
+            "macroDelta": -0.04376915417409769,
+            "improved": 43,
+            "regressed": 86,
+            "unchanged": 81
+          },
+          "clock70Precision": {
+            "macroDelta": -0.022667686154863188,
+            "improved": 49,
+            "regressed": 76,
+            "unchanged": 85
+          },
+          "clock70Recall": {
+            "macroDelta": -0.06474893772942995,
+            "improved": 31,
+            "regressed": 91,
+            "unchanged": 88
+          },
+          "pulse50F1": {
+            "macroDelta": -0.006308630059196155,
+            "improved": 58,
+            "regressed": 75,
+            "unchanged": 77
+          },
+          "pulse50Precision": {
+            "macroDelta": 0.0021990917733180695,
+            "improved": 68,
+            "regressed": 65,
+            "unchanged": 77
+          },
+          "pulse50Recall": {
+            "macroDelta": -0.0249474747598714,
+            "improved": 11,
+            "regressed": 75,
+            "unchanged": 124
+          },
+          "pulse70F1": {
+            "macroDelta": -0.006306656053504039,
+            "improved": 51,
+            "regressed": 80,
+            "unchanged": 79
+          },
+          "pulse70Precision": {
+            "macroDelta": 0.0031773616668065636,
+            "improved": 72,
+            "regressed": 59,
+            "unchanged": 79
+          },
+          "pulse70Recall": {
+            "macroDelta": -0.026789243276212127,
+            "improved": 10,
+            "regressed": 77,
+            "unchanged": 123
+          }
+        },
+        "S": {
+          "head50F1": {
+            "macroDelta": -0.04262901188416058,
+            "improved": 45,
+            "regressed": 94,
+            "unchanged": 71
+          },
+          "head50Precision": {
+            "macroDelta": -0.03274086236380105,
+            "improved": 55,
+            "regressed": 84,
+            "unchanged": 71
+          },
+          "head50Recall": {
+            "macroDelta": -0.04962965189447164,
+            "improved": 37,
+            "regressed": 87,
+            "unchanged": 86
+          },
+          "head70F1": {
+            "macroDelta": -0.045931092967002575,
+            "improved": 44,
+            "regressed": 94,
+            "unchanged": 72
+          },
+          "head70Precision": {
+            "macroDelta": -0.03526034832554544,
+            "improved": 49,
+            "regressed": 86,
+            "unchanged": 75
+          },
+          "head70Recall": {
+            "macroDelta": -0.05372916537829703,
+            "improved": 32,
+            "regressed": 91,
+            "unchanged": 87
+          },
+          "clock50F1": {
+            "macroDelta": -0.05552570332366697,
+            "improved": 65,
+            "regressed": 106,
+            "unchanged": 39
+          },
+          "clock50Precision": {
+            "macroDelta": -0.035856252843499276,
+            "improved": 73,
+            "regressed": 98,
+            "unchanged": 39
+          },
+          "clock50Recall": {
+            "macroDelta": -0.07440098371998873,
+            "improved": 56,
+            "regressed": 107,
+            "unchanged": 47
+          },
+          "clock70F1": {
+            "macroDelta": -0.06069791955970288,
+            "improved": 51,
+            "regressed": 98,
+            "unchanged": 61
+          },
+          "clock70Precision": {
+            "macroDelta": -0.03737052840262121,
+            "improved": 59,
+            "regressed": 87,
+            "unchanged": 64
+          },
+          "clock70Recall": {
+            "macroDelta": -0.08292671456394642,
+            "improved": 39,
+            "regressed": 102,
+            "unchanged": 69
+          },
+          "pulse50F1": {
+            "macroDelta": -0.006608453267320621,
+            "improved": 62,
+            "regressed": 75,
+            "unchanged": 73
+          },
+          "pulse50Precision": {
+            "macroDelta": 0.002932370403815313,
+            "improved": 77,
+            "regressed": 60,
+            "unchanged": 73
+          },
+          "pulse50Recall": {
+            "macroDelta": -0.027040645602713777,
+            "improved": 11,
+            "regressed": 77,
+            "unchanged": 122
+          },
+          "pulse70F1": {
+            "macroDelta": -0.006177215512012698,
+            "improved": 58,
+            "regressed": 78,
+            "unchanged": 74
+          },
+          "pulse70Precision": {
+            "macroDelta": 0.0044076946377720905,
+            "improved": 81,
+            "regressed": 54,
+            "unchanged": 75
+          },
+          "pulse70Recall": {
+            "macroDelta": -0.028567440081109174,
+            "improved": 10,
+            "regressed": 81,
+            "unchanged": 119
+          }
+        },
+        "SminusW": {
+          "head50F1": {
+            "macroDelta": -0.01448686115708,
+            "improved": 46,
+            "regressed": 59,
+            "unchanged": 105
+          },
+          "head50Precision": {
+            "macroDelta": -0.014830438449373564,
+            "improved": 47,
+            "regressed": 58,
+            "unchanged": 105
+          },
+          "head50Recall": {
+            "macroDelta": -0.014736097710692371,
+            "improved": 39,
+            "regressed": 52,
+            "unchanged": 119
+          },
+          "head70F1": {
+            "macroDelta": -0.015602717936383558,
+            "improved": 43,
+            "regressed": 61,
+            "unchanged": 106
+          },
+          "head70Precision": {
+            "macroDelta": -0.016274773361858657,
+            "improved": 42,
+            "regressed": 62,
+            "unchanged": 106
+          },
+          "head70Recall": {
+            "macroDelta": -0.015765955313574217,
+            "improved": 36,
+            "regressed": 57,
+            "unchanged": 117
+          },
+          "clock50F1": {
+            "macroDelta": -0.016429077206418334,
+            "improved": 50,
+            "regressed": 66,
+            "unchanged": 94
+          },
+          "clock50Precision": {
+            "macroDelta": -0.014201439066244334,
+            "improved": 51,
+            "regressed": 65,
+            "unchanged": 94
+          },
+          "clock50Recall": {
+            "macroDelta": -0.017684194502930566,
+            "improved": 44,
+            "regressed": 66,
+            "unchanged": 100
+          },
+          "clock70F1": {
+            "macroDelta": -0.016928765385605175,
+            "improved": 50,
+            "regressed": 65,
+            "unchanged": 95
+          },
+          "clock70Precision": {
+            "macroDelta": -0.014702842247758023,
+            "improved": 53,
+            "regressed": 62,
+            "unchanged": 95
+          },
+          "clock70Recall": {
+            "macroDelta": -0.018177776834516404,
+            "improved": 45,
+            "regressed": 63,
+            "unchanged": 102
+          },
+          "pulse50F1": {
+            "macroDelta": -0.0002998232081244674,
+            "improved": 40,
+            "regressed": 39,
+            "unchanged": 131
+          },
+          "pulse50Precision": {
+            "macroDelta": 0.0007332786304972422,
+            "improved": 45,
+            "regressed": 35,
+            "unchanged": 130
+          },
+          "pulse50Recall": {
+            "macroDelta": -0.0020931708428423698,
+            "improved": 22,
+            "regressed": 29,
+            "unchanged": 159
+          },
+          "pulse70F1": {
+            "macroDelta": 0.0001294405414913409,
+            "improved": 44,
+            "regressed": 36,
+            "unchanged": 130
+          },
+          "pulse70Precision": {
+            "macroDelta": 0.0012303329709655298,
+            "improved": 49,
+            "regressed": 31,
+            "unchanged": 130
+          },
+          "pulse70Recall": {
+            "macroDelta": -0.0017781968048970476,
+            "improved": 24,
+            "regressed": 28,
+            "unchanged": 158
+          }
+        }
+      },
+      "genreMeans": [
+        {
+          "genre": "blues",
+          "tracks": 21,
+          "aggregate": {
+            "baseline": {
+              "head50F1": 0.5370263642227607,
+              "head50Precision": 0.5495010458739213,
+              "head50Recall": 0.5496204044025008,
+              "head70F1": 0.6376688350940822,
+              "head70Precision": 0.657631407811145,
+              "head70Recall": 0.6478600761211822,
+              "clock50F1": 0.5167129362858142,
+              "clock50Precision": 0.5067433610633495,
+              "clock50Recall": 0.5650715297556906,
+              "clock70F1": 0.630216260299524,
+              "clock70Precision": 0.6213723051969482,
+              "clock70Recall": 0.6844021209893209,
+              "pulse50F1": 0.45807927906818385,
+              "pulse50Precision": 0.3505726660937639,
+              "pulse50Recall": 0.6944981653432301,
+              "pulse70F1": 0.5383254247753356,
+              "pulse70Precision": 0.41371067376921794,
+              "pulse70Recall": 0.8112665913255842
+            },
+            "W": {
+              "head50F1": 0.5331996428090956,
+              "head50Precision": 0.5582899347884153,
+              "head50Recall": 0.525054777606217,
+              "head70F1": 0.6410076966901369,
+              "head70Precision": 0.67692634553984,
+              "head70Recall": 0.6270779217648342,
+              "clock50F1": 0.5226085759455513,
+              "clock50Precision": 0.5338218753952306,
+              "clock50Recall": 0.5316044244921558,
+              "clock70F1": 0.6302589764999944,
+              "clock70Precision": 0.6482109620019783,
+              "clock70Recall": 0.6367059577325905,
+              "pulse50F1": 0.4555568208508114,
+              "pulse50Precision": 0.35548157803417424,
+              "pulse50Recall": 0.664960671246997,
+              "pulse70F1": 0.5387417977410665,
+              "pulse70Precision": 0.422807463818916,
+              "pulse70Recall": 0.7810319449192958
+            },
+            "S": {
+              "head50F1": 0.516312728572771,
+              "head50Precision": 0.5404563819017831,
+              "head50Recall": 0.507672540202124,
+              "head70F1": 0.6199445756884338,
+              "head70Precision": 0.653324939861906,
+              "head70Recall": 0.6062167863809821,
+              "clock50F1": 0.4922962658625944,
+              "clock50Precision": 0.5012798011143064,
+              "clock50Recall": 0.5020564798492563,
+              "clock70F1": 0.59569461793425,
+              "clock70Precision": 0.6120006192011324,
+              "clock70Recall": 0.6023712271276265,
+              "pulse50F1": 0.45758970014882283,
+              "pulse50Precision": 0.3575764729165251,
+              "pulse50Recall": 0.6657625779534234,
+              "pulse70F1": 0.5410399006394728,
+              "pulse70Precision": 0.4252118748548866,
+              "pulse70Recall": 0.7818338516257222
+            }
+          }
+        },
+        {
+          "genre": "classical",
+          "tracks": 21,
+          "aggregate": {
+            "baseline": {
+              "head50F1": 0.3232943489195659,
+              "head50Precision": 0.5048158254478902,
+              "head50Recall": 0.2544199695640102,
+              "head70F1": 0.37188937078038603,
+              "head70Precision": 0.5841913891323215,
+              "head70Recall": 0.2919059040881069,
+              "clock50F1": 0.3939378092695076,
+              "clock50Precision": 0.43763026560840806,
+              "clock50Recall": 0.3789451780156671,
+              "clock70F1": 0.4790815842753409,
+              "clock70Precision": 0.5271533212847379,
+              "clock70Recall": 0.4656911678064655,
+              "pulse50F1": 0.353097549067095,
+              "pulse50Precision": 0.4056619184484626,
+              "pulse50Recall": 0.3589998007172635,
+              "pulse70F1": 0.403226675480755,
+              "pulse70Precision": 0.46512532274705715,
+              "pulse70Recall": 0.40812367256852916
+            },
+            "W": {
+              "head50F1": 0.3083869189521826,
+              "head50Precision": 0.4995936410318101,
+              "head50Recall": 0.2384559560605434,
+              "head70F1": 0.35220272728986135,
+              "head70Precision": 0.5749506739097636,
+              "head70Recall": 0.2711551594799545,
+              "clock50F1": 0.3705273086527968,
+              "clock50Precision": 0.4351325338360602,
+              "clock50Recall": 0.34105081267366255,
+              "clock70F1": 0.44542814373093076,
+              "clock70Precision": 0.521541670193424,
+              "clock70Recall": 0.41306151460326973,
+              "pulse50F1": 0.35071738142265885,
+              "pulse50Precision": 0.4148198076575075,
+              "pulse50Recall": 0.3430759598432117,
+              "pulse70F1": 0.3985997591331629,
+              "pulse70Precision": 0.4728361481906836,
+              "pulse70Recall": 0.3886106519148213
+            },
+            "S": {
+              "head50F1": 0.3018871460785515,
+              "head50Precision": 0.48754887233533917,
+              "head50Recall": 0.23176357121002733,
+              "head70F1": 0.340832693049371,
+              "head70Precision": 0.5558522505088489,
+              "head70Recall": 0.2604234116339019,
+              "clock50F1": 0.3653805214248811,
+              "clock50Precision": 0.44177689116493885,
+              "clock50Recall": 0.3310807414397131,
+              "clock70F1": 0.4391134183985511,
+              "clock70Precision": 0.5293167468825991,
+              "clock70Recall": 0.4012448071014141,
+              "pulse50F1": 0.3460524910709679,
+              "pulse50Precision": 0.4138885691907434,
+              "pulse50Recall": 0.3339257427252724,
+              "pulse70F1": 0.3956343222141117,
+              "pulse70Precision": 0.4741855695160052,
+              "pulse70Recall": 0.38085448068097766
+            }
+          }
+        },
+        {
+          "genre": "country",
+          "tracks": 21,
+          "aggregate": {
+            "baseline": {
+              "head50F1": 0.6910548774044583,
+              "head50Precision": 0.8057778937168026,
+              "head50Recall": 0.631605297638245,
+              "head70F1": 0.7533894467094553,
+              "head70Precision": 0.8730486981708917,
+              "head70Recall": 0.6916558403482689,
+              "clock50F1": 0.7266251708203522,
+              "clock50Precision": 0.7857167425287971,
+              "clock50Recall": 0.7207916875082855,
+              "clock70F1": 0.7964370773273566,
+              "clock70Precision": 0.8580786828282383,
+              "clock70Recall": 0.7913275357908232,
+              "pulse50F1": 0.6386814431687934,
+              "pulse50Precision": 0.5735803945423776,
+              "pulse50Recall": 0.7642851727691804,
+              "pulse70F1": 0.6926295389950606,
+              "pulse70Precision": 0.6195700007610137,
+              "pulse70Recall": 0.8334834637406113
+            },
+            "W": {
+              "head50F1": 0.6433115966682055,
+              "head50Precision": 0.7745012582110398,
+              "head50Recall": 0.5732454756024798,
+              "head70F1": 0.7055329961598316,
+              "head70Precision": 0.8426299450871169,
+              "head70Recall": 0.632355321743643,
+              "clock50F1": 0.6508806428137464,
+              "clock50Precision": 0.7360868359055248,
+              "clock50Recall": 0.6187295798523198,
+              "clock70F1": 0.7127189810025525,
+              "clock70Precision": 0.8022238462489623,
+              "clock70Recall": 0.6787054779719561,
+              "pulse50F1": 0.6289436126884657,
+              "pulse50Precision": 0.5814809159771276,
+              "pulse50Recall": 0.725866526051283,
+              "pulse70F1": 0.6832857696655716,
+              "pulse70Precision": 0.6291334561825097,
+              "pulse70Recall": 0.7932256478572678
+            },
+            "S": {
+              "head50F1": 0.6332413341519461,
+              "head50Precision": 0.7654682406221789,
+              "head50Recall": 0.5632806623093517,
+              "head70F1": 0.6967554351000415,
+              "head70Precision": 0.8351292623299106,
+              "head70Recall": 0.6235519486363453,
+              "clock50F1": 0.6320095378448217,
+              "clock50Precision": 0.7183233038077447,
+              "clock50Recall": 0.5994017470238694,
+              "clock70F1": 0.6958352635507061,
+              "clock70Precision": 0.7869739090658104,
+              "clock70Recall": 0.6610741062840962,
+              "pulse50F1": 0.6313904268088717,
+              "pulse50Precision": 0.5851029756311484,
+              "pulse50Recall": 0.7275052453960656,
+              "pulse70F1": 0.6855841566626273,
+              "pulse70Precision": 0.6325020626285712,
+              "pulse70Recall": 0.7948643672020503
+            }
+          }
+        },
+        {
+          "genre": "disco",
+          "tracks": 21,
+          "aggregate": {
+            "baseline": {
+              "head50F1": 0.868895829087038,
+              "head50Precision": 0.8909815860906891,
+              "head50Recall": 0.8546750930466578,
+              "head70F1": 0.9124544744639403,
+              "head70Precision": 0.9351458883021735,
+              "head70Recall": 0.897689756667508,
+              "clock50F1": 0.8833865684208343,
+              "clock50Precision": 0.8960344684701143,
+              "clock50Recall": 0.8777753117314027,
+              "clock70F1": 0.9255702494697676,
+              "clock70Precision": 0.9380713826950191,
+              "clock70Recall": 0.920111482339059,
+              "pulse50F1": 0.5666185181685242,
+              "pulse50Precision": 0.41807389045858867,
+              "pulse50Recall": 0.914178901403043,
+              "pulse70F1": 0.5986381988170474,
+              "pulse70Precision": 0.44157687900897374,
+              "pulse70Recall": 0.9665139886968465
+            },
+            "W": {
+              "head50F1": 0.8511788065113127,
+              "head50Precision": 0.8755940651027254,
+              "head50Recall": 0.835763626141114,
+              "head70F1": 0.8939721864807417,
+              "head70Precision": 0.9195974017010551,
+              "head70Recall": 0.8776934169474402,
+              "clock50F1": 0.8549438738438342,
+              "clock50Precision": 0.8729728720156041,
+              "clock50Recall": 0.8449584889939336,
+              "clock70F1": 0.8998609939795915,
+              "clock70Precision": 0.9184180615770665,
+              "clock70Recall": 0.8895216497591614,
+              "pulse50F1": 0.5670563781786653,
+              "pulse50Precision": 0.41987350807325363,
+              "pulse50Recall": 0.9088201424023667,
+              "pulse70F1": 0.5981791648047651,
+              "pulse70Precision": 0.44284300096657486,
+              "pulse70Recall": 0.9593144989829312
+            },
+            "S": {
+              "head50F1": 0.8442060680647534,
+              "head50Precision": 0.8691011178558383,
+              "head50Recall": 0.8288851931324204,
+              "head70F1": 0.886922243846009,
+              "head70Precision": 0.9123409162670215,
+              "head70Recall": 0.8712353621070571,
+              "clock50F1": 0.8488122162942988,
+              "clock50Precision": 0.8674617548267458,
+              "clock50Recall": 0.8385957119724271,
+              "clock70F1": 0.89344341737067,
+              "clock70Precision": 0.9126642195921433,
+              "clock70Recall": 0.8828761272792539,
+              "pulse50F1": 0.5679070671213358,
+              "pulse50Precision": 0.4203276744551988,
+              "pulse50Recall": 0.9111672800878503,
+              "pulse70F1": 0.5983118318057261,
+              "pulse70Precision": 0.44276362087679255,
+              "pulse70Recall": 0.9605542169563438
+            }
+          }
+        },
+        {
+          "genre": "hiphop",
+          "tracks": 21,
+          "aggregate": {
+            "baseline": {
+              "head50F1": 0.6735873308848754,
+              "head50Precision": 0.6892707779577447,
+              "head50Recall": 0.6622671197503527,
+              "head70F1": 0.7409133374739224,
+              "head70Precision": 0.7593190224203061,
+              "head70Recall": 0.7277947028277356,
+              "clock50F1": 0.6849750875253159,
+              "clock50Precision": 0.6796923998556055,
+              "clock50Recall": 0.697233591320846,
+              "clock70F1": 0.7607590334870489,
+              "clock70Precision": 0.7566347820505618,
+              "clock70Recall": 0.7728116020396727,
+              "pulse50F1": 0.45075802255619835,
+              "pulse50Precision": 0.3173802236391431,
+              "pulse50Recall": 0.8156919733663829,
+              "pulse70F1": 0.49160618893783625,
+              "pulse70Precision": 0.3465392623514174,
+              "pulse70Recall": 0.8893002835051738
+            },
+            "W": {
+              "head50F1": 0.6334574215755213,
+              "head50Precision": 0.6573416713575915,
+              "head50Recall": 0.6145212865739145,
+              "head70F1": 0.7008239474122374,
+              "head70Precision": 0.728280018597822,
+              "head70Recall": 0.6790487604690724,
+              "clock50F1": 0.6280004198709102,
+              "clock50Precision": 0.6394028659849715,
+              "clock50Recall": 0.6204602986454698,
+              "clock70F1": 0.7019369011579216,
+              "clock70Precision": 0.7147312302421699,
+              "clock70Recall": 0.6933174144749208,
+              "pulse50F1": 0.4517860041285854,
+              "pulse50Precision": 0.32179117864408174,
+              "pulse50Recall": 0.7926278583999775,
+              "pulse70F1": 0.49418525448529055,
+              "pulse70Precision": 0.3521115418214622,
+              "pulse70Recall": 0.8673468377218256
+            },
+            "S": {
+              "head50F1": 0.5729256497258731,
+              "head50Precision": 0.5948276705328204,
+              "head50Recall": 0.5556458399694687,
+              "head70F1": 0.6349009568417769,
+              "head70Precision": 0.6604104834630334,
+              "head70Recall": 0.6147928283370822,
+              "clock50F1": 0.5681726961702912,
+              "clock50Precision": 0.5805713039358453,
+              "clock50Recall": 0.5598049484959959,
+              "clock70F1": 0.6396734304940966,
+              "clock70Precision": 0.6538864528499447,
+              "clock70Recall": 0.6299366175575924,
+              "pulse50F1": 0.4513079282635199,
+              "pulse50Precision": 0.3214116660882793,
+              "pulse50Recall": 0.7926862150759811,
+              "pulse70F1": 0.49309287247050854,
+              "pulse70Precision": 0.3512867042450055,
+              "pulse70Recall": 0.8664131309057659
+            }
+          }
+        },
+        {
+          "genre": "jazz",
+          "tracks": 21,
+          "aggregate": {
+            "baseline": {
+              "head50F1": 0.3640601558767326,
+              "head50Precision": 0.42447933308642294,
+              "head50Recall": 0.3375410335240416,
+              "head70F1": 0.45370679195649105,
+              "head70Precision": 0.5282307933082121,
+              "head70Recall": 0.42117887715011537,
+              "clock50F1": 0.3500654194266757,
+              "clock50Precision": 0.37638664461429006,
+              "clock50Recall": 0.36379454358859964,
+              "clock70F1": 0.44765861395617873,
+              "clock70Precision": 0.47717649708727744,
+              "clock70Recall": 0.4683786431084635,
+              "pulse50F1": 0.45021021492302893,
+              "pulse50Precision": 0.3823845741936493,
+              "pulse50Recall": 0.5887712178300292,
+              "pulse70F1": 0.5430329949397854,
+              "pulse70Precision": 0.46139416402361355,
+              "pulse70Recall": 0.707415057619077
+            },
+            "W": {
+              "head50F1": 0.37843821061659455,
+              "head50Precision": 0.45808726040810094,
+              "head50Recall": 0.3382071162363433,
+              "head70F1": 0.46378992563973337,
+              "head70Precision": 0.5619517695471006,
+              "head70Recall": 0.4136571740325084,
+              "clock50F1": 0.37383862883036073,
+              "clock50Precision": 0.4121096901515725,
+              "clock50Recall": 0.36573455896945556,
+              "clock70F1": 0.4687802255812355,
+              "clock70Precision": 0.5181165315869178,
+              "clock70Recall": 0.45745136946066534,
+              "pulse50F1": 0.4471028603674198,
+              "pulse50Precision": 0.3901335194801898,
+              "pulse50Recall": 0.5601725831147659,
+              "pulse70F1": 0.5407201411377515,
+              "pulse70Precision": 0.47143368937911695,
+              "pulse70Recall": 0.6760353996051558
+            },
+            "S": {
+              "head50F1": 0.37033016404522484,
+              "head50Precision": 0.4481741894485517,
+              "head50Recall": 0.3307693536057586,
+              "head70F1": 0.4542358381046523,
+              "head70Precision": 0.5510725177937369,
+              "head70Recall": 0.4046291196532203,
+              "clock50F1": 0.3697934534697588,
+              "clock50Precision": 0.4061072537386062,
+              "clock50Recall": 0.36227662664147736,
+              "clock70F1": 0.4621881953175083,
+              "clock70Precision": 0.5088871589140884,
+              "clock70Recall": 0.4516578675880962,
+              "pulse50F1": 0.4461695699019156,
+              "pulse50Precision": 0.38887358012341394,
+              "pulse50Recall": 0.5585441752427437,
+              "pulse70F1": 0.5416041445206898,
+              "pulse70Precision": 0.4717886060126412,
+              "pulse70Recall": 0.676623822600971
+            }
+          }
+        },
+        {
+          "genre": "metal",
+          "tracks": 21,
+          "aggregate": {
+            "baseline": {
+              "head50F1": 0.5903200941637591,
+              "head50Precision": 0.6953379604909214,
+              "head50Recall": 0.5318207108294197,
+              "head70F1": 0.6550851847238571,
+              "head70Precision": 0.7760373840282414,
+              "head70Recall": 0.5885347300077048,
+              "clock50F1": 0.6450121312700468,
+              "clock50Precision": 0.6973415144382313,
+              "clock50Recall": 0.6178459161556319,
+              "clock70F1": 0.7089259018317148,
+              "clock70Precision": 0.7682464464666674,
+              "clock70Recall": 0.6778605270951589,
+              "pulse50F1": 0.5507709564837258,
+              "pulse50Precision": 0.4995607615192106,
+              "pulse50Recall": 0.6433876609886189,
+              "pulse70F1": 0.6139278608387855,
+              "pulse70Precision": 0.5550233153613826,
+              "pulse70Recall": 0.7231762747167313
+            },
+            "W": {
+              "head50F1": 0.5555737117327127,
+              "head50Precision": 0.689689956126195,
+              "head50Recall": 0.48423574866358265,
+              "head70F1": 0.6122578529345778,
+              "head70Precision": 0.7637902319649903,
+              "head70Recall": 0.5323864034180853,
+              "clock50F1": 0.5984290110960087,
+              "clock50Precision": 0.6828804863293166,
+              "clock50Recall": 0.5499247860053632,
+              "clock70F1": 0.6576094167067397,
+              "clock70Precision": 0.752782427542128,
+              "clock70Recall": 0.6027977781574906,
+              "pulse50F1": 0.5425984755990606,
+              "pulse50Precision": 0.5030981724456528,
+              "pulse50Recall": 0.616060955647241,
+              "pulse70F1": 0.6028451257007216,
+              "pulse70Precision": 0.5582884525021095,
+              "pulse70Recall": 0.6894776008212299
+            },
+            "S": {
+              "head50F1": 0.5530833640290502,
+              "head50Precision": 0.6871856037507406,
+              "head50Recall": 0.4818422587048915,
+              "head70F1": 0.61422885382917,
+              "head70Precision": 0.766699870714082,
+              "head70Recall": 0.5338744087290851,
+              "clock50F1": 0.5873227809343808,
+              "clock50Precision": 0.6728663516086308,
+              "clock50Recall": 0.5386320636292334,
+              "clock70F1": 0.6547793045533631,
+              "clock70Precision": 0.7511831401169138,
+              "clock70Recall": 0.5994715626398703,
+              "pulse50F1": 0.5447192010243027,
+              "pulse50Precision": 0.5069439528544633,
+              "pulse50Recall": 0.6159365060933644,
+              "pulse70F1": 0.6045850585802596,
+              "pulse70Precision": 0.5619077434528694,
+              "pulse70Recall": 0.688750378512682
+            }
+          }
+        },
+        {
+          "genre": "pop",
+          "tracks": 21,
+          "aggregate": {
+            "baseline": {
+              "head50F1": 0.768562529906839,
+              "head50Precision": 0.7619951205974237,
+              "head50Recall": 0.8009889235767744,
+              "head70F1": 0.7883461759961341,
+              "head70Precision": 0.7828843720491921,
+              "head70Recall": 0.8216477871959074,
+              "clock50F1": 0.7882641030763001,
+              "clock50Precision": 0.7545899136627274,
+              "clock50Recall": 0.8566527560488444,
+              "clock70F1": 0.8111214309067101,
+              "clock70Precision": 0.7768247469928142,
+              "clock70Recall": 0.8824747723995188,
+              "pulse50F1": 0.5267552317301989,
+              "pulse50Precision": 0.3943197847970944,
+              "pulse50Recall": 0.8264655720861608,
+              "pulse70F1": 0.5417938162146176,
+              "pulse70Precision": 0.4070551540548788,
+              "pulse70Recall": 0.8481376069312306
+            },
+            "W": {
+              "head50F1": 0.6833541927306326,
+              "head50Precision": 0.6723857492212447,
+              "head50Recall": 0.7220358501201549,
+              "head70F1": 0.7004493728571576,
+              "head70Precision": 0.6908750160757572,
+              "head70Recall": 0.7401355948536382,
+              "clock50F1": 0.6834277199949654,
+              "clock50Precision": 0.6546101911917946,
+              "clock50Recall": 0.7494925984834182,
+              "clock70F1": 0.7024839205469655,
+              "clock70Precision": 0.6738857531412968,
+              "clock70Recall": 0.7710992241553934,
+              "pulse50F1": 0.5095127710152587,
+              "pulse50Precision": 0.3849767034706761,
+              "pulse50Recall": 0.7900757814519063,
+              "pulse70F1": 0.5236972337571583,
+              "pulse70Precision": 0.3978324387199902,
+              "pulse70Recall": 0.8094948417904196
+            },
+            "S": {
+              "head50F1": 0.6656640826992118,
+              "head50Precision": 0.6588307307573493,
+              "head50Recall": 0.7006983628456266,
+              "head70F1": 0.6828457472060668,
+              "head70Precision": 0.6774778070908154,
+              "head70Recall": 0.7187981075791101,
+              "clock50F1": 0.6666643941577333,
+              "clock50Precision": 0.6409717145583751,
+              "clock50Recall": 0.7299504768327378,
+              "clock70F1": 0.6863242003181371,
+              "clock70Precision": 0.6604677350616692,
+              "clock70Recall": 0.7524496581085147,
+              "pulse50F1": 0.5050958925386819,
+              "pulse50Precision": 0.3823082172919799,
+              "pulse50Recall": 0.7820444193563515,
+              "pulse70F1": 0.5202076516109111,
+              "pulse70Precision": 0.39603573349001453,
+              "pulse70Recall": 0.8024352969932126
+            }
+          }
+        },
+        {
+          "genre": "reggae",
+          "tracks": 21,
+          "aggregate": {
+            "baseline": {
+              "head50F1": 0.8558869822810726,
+              "head50Precision": 0.9283230192401538,
+              "head50Recall": 0.8183814966628709,
+              "head70F1": 0.8822886061084306,
+              "head70Precision": 0.9567792276473726,
+              "head70Recall": 0.8436527766641394,
+              "clock50F1": 0.8562847967988237,
+              "clock50Precision": 0.9183764314944454,
+              "clock50Recall": 0.8251715662697767,
+              "clock70F1": 0.8866171772380473,
+              "clock70Precision": 0.9500763321496134,
+              "clock70Recall": 0.854826501551253,
+              "pulse50F1": 0.6609421532239759,
+              "pulse50Precision": 0.5207701214510109,
+              "pulse50Recall": 0.927140798378228,
+              "pulse70F1": 0.6840426418226003,
+              "pulse70Precision": 0.5393715257549266,
+              "pulse70Recall": 0.9582473711471644
+            },
+            "W": {
+              "head50F1": 0.8514066787010051,
+              "head50Precision": 0.9245214670411372,
+              "head50Recall": 0.8103776414036826,
+              "head70F1": 0.8782215663881536,
+              "head70Precision": 0.9533898534701017,
+              "head70Recall": 0.8359348049715487,
+              "clock50F1": 0.855232253782768,
+              "clock50Precision": 0.9238472004593972,
+              "clock50Recall": 0.817963500612668,
+              "clock70F1": 0.8821858255967627,
+              "clock70Precision": 0.9524272635201783,
+              "clock70Recall": 0.8440116716553505,
+              "pulse50F1": 0.6575555156874967,
+              "pulse50Precision": 0.5195232580695753,
+              "pulse50Recall": 0.9172902167276799,
+              "pulse70F1": 0.680435955125703,
+              "pulse70Precision": 0.5380050868595484,
+              "pulse70Recall": 0.9479058714799248
+            },
+            "S": {
+              "head50F1": 0.8512419296170421,
+              "head50Precision": 0.9240265929931963,
+              "head50Recall": 0.8106730449248926,
+              "head70F1": 0.8793973327086467,
+              "head70Precision": 0.9546560056091664,
+              "head70Recall": 0.8373472947162279,
+              "clock50F1": 0.8547393640450235,
+              "clock50Precision": 0.9238827311323179,
+              "clock50Recall": 0.817247426587446,
+              "clock70F1": 0.8831090278538137,
+              "clock70Precision": 0.9545950226871511,
+              "clock70Recall": 0.8443442172786106,
+              "pulse50F1": 0.6565449604424433,
+              "pulse50Precision": 0.5201303355475184,
+              "pulse50Recall": 0.9125196467958195,
+              "pulse70F1": 0.6800226508173203,
+              "pulse70Precision": 0.5391156992179391,
+              "pulse70Recall": 0.9439033507032103
+            }
+          }
+        },
+        {
+          "genre": "rock",
+          "tracks": 21,
+          "aggregate": {
+            "baseline": {
+              "head50F1": 0.6579301274411483,
+              "head50Precision": 0.7375180680767301,
+              "head50Recall": 0.6197045041261878,
+              "head70F1": 0.731694568736916,
+              "head70Precision": 0.8246233424493413,
+              "head70Recall": 0.6872703372234148,
+              "clock50F1": 0.6966868990695412,
+              "clock50Precision": 0.692703547656737,
+              "clock50Recall": 0.7281804622614719,
+              "clock70F1": 0.7890578095202402,
+              "clock70Precision": 0.7865488678535897,
+              "clock70Recall": 0.821538852168459,
+              "pulse50F1": 0.5634873917545791,
+              "pulse50Precision": 0.5045500929251655,
+              "pulse50Recall": 0.6834034266524592,
+              "pulse70F1": 0.6242952924283591,
+              "pulse70Precision": 0.5597605096332148,
+              "pulse70Recall": 0.7556588354511138
+            },
+            "W": {
+              "head50F1": 0.6108899526201819,
+              "head50Precision": 0.6988913881461649,
+              "head50Recall": 0.5701915328752358,
+              "head70F1": 0.6758947698849942,
+              "head70Precision": 0.7756445197887827,
+              "head70Recall": 0.6301141299661295,
+              "clock50F1": 0.6130962259597833,
+              "clock50Precision": 0.6378026003506841,
+              "clock50Recall": 0.624375601757188,
+              "clock70F1": 0.6964902117682585,
+              "clock70Precision": 0.7311687570027141,
+              "clock70Recall": 0.7052617700230963,
+              "pulse50F1": 0.5454846396139191,
+              "pulse50Precision": 0.4976667039494088,
+              "pulse50Recall": 0.648397247050453,
+              "pulse70F1": 0.6077618711639515,
+              "pulse70Precision": 0.5556091456928508,
+              "pulse70Recall": 0.7209874178470691
+            },
+            "S": {
+              "head50F1": 0.5954360543622202,
+              "head50Precision": 0.6849726067428916,
+              "head50Recall": 0.5534972072717824,
+              "head70F1": 0.658062185999422,
+              "head70Precision": 0.7583239884252221,
+              "head70Recall": 0.6110298667381003,
+              "clock50F1": 0.6015026585227575,
+              "clock50Precision": 0.6334116550702025,
+              "clock50Recall": 0.6084064829841724,
+              "clock70F1": 0.6783050669238043,
+              "clock70Precision": 0.7165030762078031,
+              "clock70Recall": 0.6847298686836555,
+              "pulse50F1": 0.5465389901502352,
+              "pulse50Precision": 0.4996146880073493,
+              "pulse50Recall": 0.6463244247805863,
+              "pulse70F1": 0.6096638888084291,
+              "pulse70Precision": 0.5584061395486916,
+              "pulse70Recall": 0.7194158487100346
+            }
+          }
+        }
+      ],
+      "physical": {
+        "uniqueVariantCharts": 2520,
+        "rawPairedCharts": 3360,
+        "allValidDeterministicAndRouteChecked": true
+      },
+      "four": {
+        "W": {
+          "countRatio": {
+            "available": 210,
+            "mean": 0.9599304812807681,
+            "min": 0.6086956521739131,
+            "max": 1.1666666666666667
+          },
+          "identity20": {
+            "available": 210,
+            "mean": 0.9249479174623116,
+            "min": 0.5568181818181818,
+            "max": 1
+          },
+          "countLossClips": 100,
+          "identityLossClips": 137
+        },
+        "S": {
+          "countRatio": {
+            "available": 210,
+            "mean": 0.9568816858860844,
+            "min": 0.6086956521739131,
+            "max": 1.1666666666666667
+          },
+          "identity20": {
+            "available": 210,
+            "mean": 0.9205328777610847,
+            "min": 0.5454545454545454,
+            "max": 1
+          },
+          "countLossClips": 108,
+          "identityLossClips": 148
+        }
+      },
+      "allBaselineObjectsExactBetweenArms": true,
+      "rejected": true
+    },
+    "R": {
+      "summarySHA": "d63b48327665b675a1eb63fcc7485afba1338786bfe4f6a2d4d92abe1c7219e7",
+      "executionFreezeSHA": "27b45d6510bcd045b15427f09b22252d780f833b5193125b570500f20e4d8a90",
+      "sidecarFreezeSHA": "c8f3c800840846b18d2004e97248d4551fdebc04f6423fd37b7e884359e6d584",
+      "inputPinSHA": "3e5f40e5fa3f3c4be6c2ebe9f55636a05e10c85b61e0e701fe56e1ed1ae415d1",
+      "tracks": 210,
+      "aggregate": {
+        "before": {
+          "head50F1": 0.6330618640188252,
+          "head50Precision": 0.6988000630578702,
+          "head50Recall": 0.6061024553121058,
+          "head70F1": 0.6927436792043614,
+          "head70Precision": 0.7677891525319195,
+          "head70Recall": 0.6619190788294079,
+          "clock50F1": 0.654195092196321,
+          "clock50Precision": 0.6745215289392703,
+          "clock50Recall": 0.6631462542656215,
+          "clock70F1": 0.7235445138311929,
+          "clock70Precision": 0.7460183364605467,
+          "clock70Recall": 0.7339423205288194,
+          "pulse50F1": 0.5219400760144308,
+          "pulse50Precision": 0.43668544280684635,
+          "pulse50Recall": 0.7216822689534594,
+          "pulse70F1": 0.5731518633250184,
+          "pulse70Precision": 0.4809126807465697,
+          "pulse70Recall": 0.7901323145702064
+        },
+        "after": {
+          "head50F1": 0.6288476811815358,
+          "head50Precision": 0.69439868718624,
+          "head50Recall": 0.6018567950187944,
+          "head70F1": 0.6876137220977727,
+          "head70Precision": 0.7623048250048606,
+          "head70Recall": 0.6568381150531567,
+          "clock50F1": 0.654195092196321,
+          "clock50Precision": 0.6745215289392703,
+          "clock50Recall": 0.6631462542656215,
+          "clock70F1": 0.7235445138311929,
+          "clock70Precision": 0.7460183364605467,
+          "clock70Recall": 0.7339423205288194,
+          "pulse50F1": 0.5219400760144308,
+          "pulse50Precision": 0.43668544280684635,
+          "pulse50Recall": 0.7216822689534594,
+          "pulse70F1": 0.5731518633250184,
+          "pulse70Precision": 0.4809126807465697,
+          "pulse70Recall": 0.7901323145702064
+        }
+      },
+      "delta": {
+        "head50F1": -0.004214182837289338,
+        "head50Precision": -0.004401375871630189,
+        "head50Recall": -0.004245660293311488,
+        "head70F1": -0.005129957106588634,
+        "head70Precision": -0.005484327527059053,
+        "head70Recall": -0.005080963776251071,
+        "clock50F1": 0,
+        "clock50Precision": 0,
+        "clock50Recall": 0,
+        "clock70F1": 0,
+        "clock70Precision": 0,
+        "clock70Recall": 0,
+        "pulse50F1": 0,
+        "pulse50Precision": 0,
+        "pulse50Recall": 0,
+        "pulse70F1": 0,
+        "pulse70Precision": 0,
+        "pulse70Recall": 0
+      },
+      "confidence": {
+        "head50F1": {
+          "mean": -0.004214182837289338,
+          "low95": -0.006744810329135468,
+          "high95": -0.0017999383977827309,
+          "seed": 20261030,
+          "replicates": 10000,
+          "method": "paired within-genre percentile bootstrap; conditional on the fixed ten genres"
+        },
+        "head50Precision": {
+          "mean": -0.004401375871630189,
+          "low95": -0.007428755622325589,
+          "high95": -0.0014599217590899774,
+          "seed": 20261030,
+          "replicates": 10000,
+          "method": "paired within-genre percentile bootstrap; conditional on the fixed ten genres"
+        },
+        "head50Recall": {
+          "mean": -0.004245660293311488,
+          "low95": -0.006578874643519646,
+          "high95": -0.002016244290083244,
+          "seed": 20261030,
+          "replicates": 10000,
+          "method": "paired within-genre percentile bootstrap; conditional on the fixed ten genres"
+        },
+        "head70F1": {
+          "mean": -0.005129957106588634,
+          "low95": -0.00800591835308868,
+          "high95": -0.002377577864749958,
+          "seed": 20261030,
+          "replicates": 10000,
+          "method": "paired within-genre percentile bootstrap; conditional on the fixed ten genres"
+        },
+        "head70Precision": {
+          "mean": -0.005484327527059053,
+          "low95": -0.008811868952751906,
+          "high95": -0.0022795330695428656,
+          "seed": 20261030,
+          "replicates": 10000,
+          "method": "paired within-genre percentile bootstrap; conditional on the fixed ten genres"
+        },
+        "head70Recall": {
+          "mean": -0.005080963776251071,
+          "low95": -0.007804872325004288,
+          "high95": -0.0024751936450851165,
+          "seed": 20261030,
+          "replicates": 10000,
+          "method": "paired within-genre percentile bootstrap; conditional on the fixed ten genres"
+        },
+        "clock50F1": {
+          "mean": 0,
+          "low95": 0,
+          "high95": 0,
+          "seed": 20261030,
+          "replicates": 10000,
+          "method": "paired within-genre percentile bootstrap; conditional on the fixed ten genres"
+        },
+        "clock50Precision": {
+          "mean": 0,
+          "low95": 0,
+          "high95": 0,
+          "seed": 20261030,
+          "replicates": 10000,
+          "method": "paired within-genre percentile bootstrap; conditional on the fixed ten genres"
+        },
+        "clock50Recall": {
+          "mean": 0,
+          "low95": 0,
+          "high95": 0,
+          "seed": 20261030,
+          "replicates": 10000,
+          "method": "paired within-genre percentile bootstrap; conditional on the fixed ten genres"
+        },
+        "clock70F1": {
+          "mean": 0,
+          "low95": 0,
+          "high95": 0,
+          "seed": 20261030,
+          "replicates": 10000,
+          "method": "paired within-genre percentile bootstrap; conditional on the fixed ten genres"
+        },
+        "clock70Precision": {
+          "mean": 0,
+          "low95": 0,
+          "high95": 0,
+          "seed": 20261030,
+          "replicates": 10000,
+          "method": "paired within-genre percentile bootstrap; conditional on the fixed ten genres"
+        },
+        "clock70Recall": {
+          "mean": 0,
+          "low95": 0,
+          "high95": 0,
+          "seed": 20261030,
+          "replicates": 10000,
+          "method": "paired within-genre percentile bootstrap; conditional on the fixed ten genres"
+        },
+        "pulse50F1": {
+          "mean": 0,
+          "low95": 0,
+          "high95": 0,
+          "seed": 20261030,
+          "replicates": 10000,
+          "method": "paired within-genre percentile bootstrap; conditional on the fixed ten genres"
+        },
+        "pulse50Precision": {
+          "mean": 0,
+          "low95": 0,
+          "high95": 0,
+          "seed": 20261030,
+          "replicates": 10000,
+          "method": "paired within-genre percentile bootstrap; conditional on the fixed ten genres"
+        },
+        "pulse50Recall": {
+          "mean": 0,
+          "low95": 0,
+          "high95": 0,
+          "seed": 20261030,
+          "replicates": 10000,
+          "method": "paired within-genre percentile bootstrap; conditional on the fixed ten genres"
+        },
+        "pulse70F1": {
+          "mean": 0,
+          "low95": 0,
+          "high95": 0,
+          "seed": 20261030,
+          "replicates": 10000,
+          "method": "paired within-genre percentile bootstrap; conditional on the fixed ten genres"
+        },
+        "pulse70Precision": {
+          "mean": 0,
+          "low95": 0,
+          "high95": 0,
+          "seed": 20261030,
+          "replicates": 10000,
+          "method": "paired within-genre percentile bootstrap; conditional on the fixed ten genres"
+        },
+        "pulse70Recall": {
+          "mean": 0,
+          "low95": 0,
+          "high95": 0,
+          "seed": 20261030,
+          "replicates": 10000,
+          "method": "paired within-genre percentile bootstrap; conditional on the fixed ten genres"
+        }
+      },
+      "genreMeans": {
+        "blues": {
+          "tracks": 21,
+          "before": {
+            "head50F1": 0.5370263642227607,
+            "head50Precision": 0.5495010458739215,
+            "head50Recall": 0.5496204044025008,
+            "head70F1": 0.6376688350940821,
+            "head70Precision": 0.6576314078111449,
+            "head70Recall": 0.6478600761211822,
+            "clock50F1": 0.5167129362858139,
+            "clock50Precision": 0.5067433610633495,
+            "clock50Recall": 0.5650715297556906,
+            "clock70F1": 0.630216260299524,
+            "clock70Precision": 0.6213723051969483,
+            "clock70Recall": 0.6844021209893209,
+            "pulse50F1": 0.4580792790681838,
+            "pulse50Precision": 0.3505726660937639,
+            "pulse50Recall": 0.6944981653432302,
+            "pulse70F1": 0.5383254247753357,
+            "pulse70Precision": 0.41371067376921794,
+            "pulse70Recall": 0.8112665913255845
+          },
+          "after": {
+            "head50F1": 0.5225206859845041,
+            "head50Precision": 0.5342081260457738,
+            "head50Recall": 0.5356924252777089,
+            "head70F1": 0.6183429284075236,
+            "head70Precision": 0.6372881561733,
+            "head70Recall": 0.6292623148438303,
+            "clock50F1": 0.5167129362858139,
+            "clock50Precision": 0.5067433610633495,
+            "clock50Recall": 0.5650715297556906,
+            "clock70F1": 0.630216260299524,
+            "clock70Precision": 0.6213723051969483,
+            "clock70Recall": 0.6844021209893209,
+            "pulse50F1": 0.4580792790681838,
+            "pulse50Precision": 0.3505726660937639,
+            "pulse50Recall": 0.6944981653432302,
+            "pulse70F1": 0.5383254247753357,
+            "pulse70Precision": 0.41371067376921794,
+            "pulse70Recall": 0.8112665913255845
+          },
+          "delta": {
+            "head50F1": -0.014505678238256728,
+            "head50Precision": -0.015292919828147566,
+            "head50Recall": -0.013927979124791944,
+            "head70F1": -0.019325906686558543,
+            "head70Precision": -0.020343251637845023,
+            "head70Recall": -0.018597761277352038,
+            "clock50F1": 0,
+            "clock50Precision": 0,
+            "clock50Recall": 0,
+            "clock70F1": 0,
+            "clock70Precision": 0,
+            "clock70Recall": 0,
+            "pulse50F1": 0,
+            "pulse50Precision": 0,
+            "pulse50Recall": 0,
+            "pulse70F1": 0,
+            "pulse70Precision": 0,
+            "pulse70Recall": 0
+          }
+        },
+        "classical": {
+          "tracks": 21,
+          "before": {
+            "head50F1": 0.32329434891956577,
+            "head50Precision": 0.5048158254478903,
+            "head50Recall": 0.2544199695640102,
+            "head70F1": 0.37188937078038614,
+            "head70Precision": 0.5841913891323215,
+            "head70Recall": 0.2919059040881069,
+            "clock50F1": 0.3939378092695075,
+            "clock50Precision": 0.43763026560840795,
+            "clock50Recall": 0.3789451780156671,
+            "clock70F1": 0.479081584275341,
+            "clock70Precision": 0.527153321284738,
+            "clock70Recall": 0.4656911678064656,
+            "pulse50F1": 0.35309754906709495,
+            "pulse50Precision": 0.4056619184484626,
+            "pulse50Recall": 0.3589998007172635,
+            "pulse70F1": 0.4032266754807549,
+            "pulse70Precision": 0.46512532274705715,
+            "pulse70Recall": 0.40812367256852927
+          },
+          "after": {
+            "head50F1": 0.3242314957806477,
+            "head50Precision": 0.5042505215179184,
+            "head50Recall": 0.25594956441870237,
+            "head70F1": 0.3727388613087214,
+            "head70Precision": 0.5832577187050612,
+            "head70Recall": 0.293435498942799,
+            "clock50F1": 0.3939378092695075,
+            "clock50Precision": 0.43763026560840795,
+            "clock50Recall": 0.3789451780156671,
+            "clock70F1": 0.479081584275341,
+            "clock70Precision": 0.527153321284738,
+            "clock70Recall": 0.4656911678064656,
+            "pulse50F1": 0.35309754906709495,
+            "pulse50Precision": 0.4056619184484626,
+            "pulse50Recall": 0.3589998007172635,
+            "pulse70F1": 0.4032266754807549,
+            "pulse70Precision": 0.46512532274705715,
+            "pulse70Recall": 0.40812367256852927
+          },
+          "delta": {
+            "head50F1": 0.0009371468610819116,
+            "head50Precision": -0.000565303929971918,
+            "head50Recall": 0.0015295948546921896,
+            "head70F1": 0.0008494905283353666,
+            "head70Precision": -0.0009336704272603266,
+            "head70Recall": 0.001529594854692186,
+            "clock50F1": 0,
+            "clock50Precision": 0,
+            "clock50Recall": 0,
+            "clock70F1": 0,
+            "clock70Precision": 0,
+            "clock70Recall": 0,
+            "pulse50F1": 0,
+            "pulse50Precision": 0,
+            "pulse50Recall": 0,
+            "pulse70F1": 0,
+            "pulse70Precision": 0,
+            "pulse70Recall": 0
+          }
+        },
+        "country": {
+          "tracks": 21,
+          "before": {
+            "head50F1": 0.6910548774044583,
+            "head50Precision": 0.8057778937168026,
+            "head50Recall": 0.631605297638245,
+            "head70F1": 0.7533894467094555,
+            "head70Precision": 0.8730486981708917,
+            "head70Recall": 0.6916558403482687,
+            "clock50F1": 0.7266251708203522,
+            "clock50Precision": 0.7857167425287971,
+            "clock50Recall": 0.7207916875082857,
+            "clock70F1": 0.7964370773273566,
+            "clock70Precision": 0.8580786828282383,
+            "clock70Recall": 0.7913275357908232,
+            "pulse50F1": 0.6386814431687933,
+            "pulse50Precision": 0.5735803945423777,
+            "pulse50Recall": 0.7642851727691804,
+            "pulse70F1": 0.6926295389950605,
+            "pulse70Precision": 0.6195700007610137,
+            "pulse70Recall": 0.8334834637406113
+          },
+          "after": {
+            "head50F1": 0.6880400026914704,
+            "head50Precision": 0.8027149189557147,
+            "head50Recall": 0.6286364316669181,
+            "head70F1": 0.7490518206737162,
+            "head70Precision": 0.8683436872850091,
+            "head70Recall": 0.6875795546648708,
+            "clock50F1": 0.7266251708203522,
+            "clock50Precision": 0.7857167425287971,
+            "clock50Recall": 0.7207916875082857,
+            "clock70F1": 0.7964370773273566,
+            "clock70Precision": 0.8580786828282383,
+            "clock70Recall": 0.7913275357908232,
+            "pulse50F1": 0.6386814431687933,
+            "pulse50Precision": 0.5735803945423777,
+            "pulse50Recall": 0.7642851727691804,
+            "pulse70F1": 0.6926295389950605,
+            "pulse70Precision": 0.6195700007610137,
+            "pulse70Recall": 0.8334834637406113
+          },
+          "delta": {
+            "head50F1": -0.0030148747129879207,
+            "head50Precision": -0.003062974761087969,
+            "head50Recall": -0.0029688659713270034,
+            "head70F1": -0.004337626035739241,
+            "head70Precision": -0.004705010885882715,
+            "head70Recall": -0.0040762856833978746,
+            "clock50F1": 0,
+            "clock50Precision": 0,
+            "clock50Recall": 0,
+            "clock70F1": 0,
+            "clock70Precision": 0,
+            "clock70Recall": 0,
+            "pulse50F1": 0,
+            "pulse50Precision": 0,
+            "pulse50Recall": 0,
+            "pulse70F1": 0,
+            "pulse70Precision": 0,
+            "pulse70Recall": 0
+          }
+        },
+        "disco": {
+          "tracks": 21,
+          "before": {
+            "head50F1": 0.8688958290870381,
+            "head50Precision": 0.8909815860906891,
+            "head50Recall": 0.8546750930466578,
+            "head70F1": 0.9124544744639406,
+            "head70Precision": 0.9351458883021733,
+            "head70Recall": 0.8976897566675079,
+            "clock50F1": 0.8833865684208345,
+            "clock50Precision": 0.8960344684701143,
+            "clock50Recall": 0.8777753117314027,
+            "clock70F1": 0.9255702494697676,
+            "clock70Precision": 0.9380713826950188,
+            "clock70Recall": 0.9201114823390588,
+            "pulse50F1": 0.566618518168524,
+            "pulse50Precision": 0.41807389045858867,
+            "pulse50Recall": 0.914178901403043,
+            "pulse70F1": 0.5986381988170475,
+            "pulse70Precision": 0.4415768790089737,
+            "pulse70Recall": 0.9665139886968463
+          },
+          "after": {
+            "head50F1": 0.8674510406453455,
+            "head50Precision": 0.8898328809946157,
+            "head50Recall": 0.853070158095837,
+            "head70F1": 0.911009686022248,
+            "head70Precision": 0.9339971832060998,
+            "head70Recall": 0.896084821716687,
+            "clock50F1": 0.8833865684208345,
+            "clock50Precision": 0.8960344684701143,
+            "clock50Recall": 0.8777753117314027,
+            "clock70F1": 0.9255702494697676,
+            "clock70Precision": 0.9380713826950188,
+            "clock70Recall": 0.9201114823390588,
+            "pulse50F1": 0.566618518168524,
+            "pulse50Precision": 0.41807389045858867,
+            "pulse50Recall": 0.914178901403043,
+            "pulse70F1": 0.5986381988170475,
+            "pulse70Precision": 0.4415768790089737,
+            "pulse70Recall": 0.9665139886968463
+          },
+          "delta": {
+            "head50F1": -0.0014447884416924667,
+            "head50Precision": -0.0011487050960735153,
+            "head50Recall": -0.0016049349508208475,
+            "head70F1": -0.0014447884416924693,
+            "head70Precision": -0.0011487050960735153,
+            "head70Recall": -0.0016049349508208475,
+            "clock50F1": 0,
+            "clock50Precision": 0,
+            "clock50Recall": 0,
+            "clock70F1": 0,
+            "clock70Precision": 0,
+            "clock70Recall": 0,
+            "pulse50F1": 0,
+            "pulse50Precision": 0,
+            "pulse50Recall": 0,
+            "pulse70F1": 0,
+            "pulse70Precision": 0,
+            "pulse70Recall": 0
+          }
+        },
+        "hiphop": {
+          "tracks": 21,
+          "before": {
+            "head50F1": 0.6735873308848753,
+            "head50Precision": 0.6892707779577448,
+            "head50Recall": 0.6622671197503526,
+            "head70F1": 0.7409133374739225,
+            "head70Precision": 0.7593190224203061,
+            "head70Recall": 0.7277947028277355,
+            "clock50F1": 0.6849750875253159,
+            "clock50Precision": 0.6796923998556055,
+            "clock50Recall": 0.697233591320846,
+            "clock70F1": 0.7607590334870489,
+            "clock70Precision": 0.7566347820505618,
+            "clock70Recall": 0.7728116020396725,
+            "pulse50F1": 0.4507580225561983,
+            "pulse50Precision": 0.31738022363914303,
+            "pulse50Recall": 0.8156919733663828,
+            "pulse70F1": 0.49160618893783614,
+            "pulse70Precision": 0.3465392623514174,
+            "pulse70Recall": 0.8893002835051738
+          },
+          "after": {
+            "head50F1": 0.6705621275746183,
+            "head50Precision": 0.6872081893143456,
+            "head50Recall": 0.6585814068731991,
+            "head70F1": 0.7370642794024984,
+            "head70Precision": 0.7565217971319347,
+            "head70Recall": 0.7232149656742051,
+            "clock50F1": 0.6849750875253159,
+            "clock50Precision": 0.6796923998556055,
+            "clock50Recall": 0.697233591320846,
+            "clock70F1": 0.7607590334870489,
+            "clock70Precision": 0.7566347820505618,
+            "clock70Recall": 0.7728116020396725,
+            "pulse50F1": 0.4507580225561983,
+            "pulse50Precision": 0.31738022363914303,
+            "pulse50Recall": 0.8156919733663828,
+            "pulse70F1": 0.49160618893783614,
+            "pulse70Precision": 0.3465392623514174,
+            "pulse70Recall": 0.8893002835051738
+          },
+          "delta": {
+            "head50F1": -0.0030252033102571027,
+            "head50Precision": -0.002062588643399029,
+            "head50Recall": -0.0036857128771533663,
+            "head70F1": -0.0038490580714240726,
+            "head70Precision": -0.002797225288371412,
+            "head70Recall": -0.004579737153530589,
+            "clock50F1": 0,
+            "clock50Precision": 0,
+            "clock50Recall": 0,
+            "clock70F1": 0,
+            "clock70Precision": 0,
+            "clock70Recall": 0,
+            "pulse50F1": 0,
+            "pulse50Precision": 0,
+            "pulse50Recall": 0,
+            "pulse70F1": 0,
+            "pulse70Precision": 0,
+            "pulse70Recall": 0
+          }
+        },
+        "jazz": {
+          "tracks": 21,
+          "before": {
+            "head50F1": 0.3640601558767327,
+            "head50Precision": 0.4244793330864229,
+            "head50Recall": 0.3375410335240416,
+            "head70F1": 0.4537067919564911,
+            "head70Precision": 0.5282307933082122,
+            "head70Recall": 0.42117887715011537,
+            "clock50F1": 0.3500654194266757,
+            "clock50Precision": 0.37638664461429006,
+            "clock50Recall": 0.3637945435885997,
+            "clock70F1": 0.4476586139561786,
+            "clock70Precision": 0.4771764970872776,
+            "clock70Recall": 0.46837864310846344,
+            "pulse50F1": 0.4502102149230288,
+            "pulse50Precision": 0.3823845741936494,
+            "pulse50Recall": 0.588771217830029,
+            "pulse70F1": 0.5430329949397856,
+            "pulse70Precision": 0.46139416402361355,
+            "pulse70Recall": 0.707415057619077
+          },
+          "after": {
+            "head50F1": 0.36517544601824814,
+            "head50Precision": 0.42786072671981307,
+            "head50Recall": 0.3377122961866641,
+            "head70F1": 0.4544906715077812,
+            "head70Precision": 0.5314772097848186,
+            "head70Recall": 0.4209632350508332,
+            "clock50F1": 0.3500654194266757,
+            "clock50Precision": 0.37638664461429006,
+            "clock50Recall": 0.3637945435885997,
+            "clock70F1": 0.4476586139561786,
+            "clock70Precision": 0.4771764970872776,
+            "clock70Recall": 0.46837864310846344,
+            "pulse50F1": 0.4502102149230288,
+            "pulse50Precision": 0.3823845741936494,
+            "pulse50Recall": 0.588771217830029,
+            "pulse70F1": 0.5430329949397856,
+            "pulse70Precision": 0.46139416402361355,
+            "pulse70Recall": 0.707415057619077
+          },
+          "delta": {
+            "head50F1": 0.0011152901415155039,
+            "head50Precision": 0.00338139363339014,
+            "head50Recall": 0.00017126266262264202,
+            "head70F1": 0.0007838795512902283,
+            "head70Precision": 0.003246416476606452,
+            "head70Recall": -0.00021564209928211562,
+            "clock50F1": 0,
+            "clock50Precision": 0,
+            "clock50Recall": 0,
+            "clock70F1": 0,
+            "clock70Precision": 0,
+            "clock70Recall": 0,
+            "pulse50F1": 0,
+            "pulse50Precision": 0,
+            "pulse50Recall": 0,
+            "pulse70F1": 0,
+            "pulse70Precision": 0,
+            "pulse70Recall": 0
+          }
+        },
+        "metal": {
+          "tracks": 21,
+          "before": {
+            "head50F1": 0.5903200941637591,
+            "head50Precision": 0.6953379604909214,
+            "head50Recall": 0.5318207108294197,
+            "head70F1": 0.6550851847238572,
+            "head70Precision": 0.7760373840282416,
+            "head70Recall": 0.5885347300077047,
+            "clock50F1": 0.6450121312700465,
+            "clock50Precision": 0.6973415144382311,
+            "clock50Recall": 0.6178459161556319,
+            "clock70F1": 0.7089259018317148,
+            "clock70Precision": 0.7682464464666675,
+            "clock70Recall": 0.6778605270951589,
+            "pulse50F1": 0.5507709564837256,
+            "pulse50Precision": 0.4995607615192106,
+            "pulse50Recall": 0.6433876609886188,
+            "pulse70F1": 0.6139278608387856,
+            "pulse70Precision": 0.5550233153613827,
+            "pulse70Recall": 0.7231762747167312
+          },
+          "after": {
+            "head50F1": 0.5863674300314355,
+            "head50Precision": 0.6889229335731167,
+            "head50Recall": 0.5285788391127773,
+            "head70F1": 0.6500268845215924,
+            "head70Precision": 0.767765669080479,
+            "head70Recall": 0.5844992074974114,
+            "clock50F1": 0.6450121312700465,
+            "clock50Precision": 0.6973415144382311,
+            "clock50Recall": 0.6178459161556319,
+            "clock70F1": 0.7089259018317148,
+            "clock70Precision": 0.7682464464666675,
+            "clock70Recall": 0.6778605270951589,
+            "pulse50F1": 0.5507709564837256,
+            "pulse50Precision": 0.4995607615192106,
+            "pulse50Recall": 0.6433876609886188,
+            "pulse70F1": 0.6139278608387856,
+            "pulse70Precision": 0.5550233153613827,
+            "pulse70Recall": 0.7231762747167312
+          },
+          "delta": {
+            "head50F1": -0.003952664132323659,
+            "head50Precision": -0.006415026917804706,
+            "head50Recall": -0.0032418717166426436,
+            "head70F1": -0.005058300202264849,
+            "head70Precision": -0.008271714947762479,
+            "head70Recall": -0.004035522510293439,
+            "clock50F1": 0,
+            "clock50Precision": 0,
+            "clock50Recall": 0,
+            "clock70F1": 0,
+            "clock70Precision": 0,
+            "clock70Recall": 0,
+            "pulse50F1": 0,
+            "pulse50Precision": 0,
+            "pulse50Recall": 0,
+            "pulse70F1": 0,
+            "pulse70Precision": 0,
+            "pulse70Recall": 0
+          }
+        },
+        "pop": {
+          "tracks": 21,
+          "before": {
+            "head50F1": 0.7685625299068393,
+            "head50Precision": 0.7619951205974235,
+            "head50Recall": 0.8009889235767746,
+            "head70F1": 0.7883461759961341,
+            "head70Precision": 0.7828843720491921,
+            "head70Recall": 0.8216477871959074,
+            "clock50F1": 0.7882641030762999,
+            "clock50Precision": 0.7545899136627275,
+            "clock50Recall": 0.8566527560488444,
+            "clock70F1": 0.8111214309067101,
+            "clock70Precision": 0.7768247469928142,
+            "clock70Recall": 0.882474772399519,
+            "pulse50F1": 0.5267552317301989,
+            "pulse50Precision": 0.39431978479709445,
+            "pulse50Recall": 0.8264655720861608,
+            "pulse70F1": 0.5417938162146174,
+            "pulse70Precision": 0.4070551540548789,
+            "pulse70Recall": 0.8481376069312306
+          },
+          "after": {
+            "head50F1": 0.7603926496485348,
+            "head50Precision": 0.7520465773644771,
+            "head50Recall": 0.7931660958641292,
+            "head70F1": 0.78017629573783,
+            "head70Precision": 0.772935828816246,
+            "head70Recall": 0.813824959483262,
+            "clock50F1": 0.7882641030762999,
+            "clock50Precision": 0.7545899136627275,
+            "clock50Recall": 0.8566527560488444,
+            "clock70F1": 0.8111214309067101,
+            "clock70Precision": 0.7768247469928142,
+            "clock70Recall": 0.882474772399519,
+            "pulse50F1": 0.5267552317301989,
+            "pulse50Precision": 0.39431978479709445,
+            "pulse50Recall": 0.8264655720861608,
+            "pulse70F1": 0.5417938162146174,
+            "pulse70Precision": 0.4070551540548789,
+            "pulse70Recall": 0.8481376069312306
+          },
+          "delta": {
+            "head50F1": -0.008169880258304184,
+            "head50Precision": -0.00994854323294633,
+            "head50Recall": -0.00782282771264534,
+            "head70F1": -0.00816988025830418,
+            "head70Precision": -0.00994854323294633,
+            "head70Recall": -0.007822827712645334,
+            "clock50F1": 0,
+            "clock50Precision": 0,
+            "clock50Recall": 0,
+            "clock70F1": 0,
+            "clock70Precision": 0,
+            "clock70Recall": 0,
+            "pulse50F1": 0,
+            "pulse50Precision": 0,
+            "pulse50Recall": 0,
+            "pulse70F1": 0,
+            "pulse70Precision": 0,
+            "pulse70Recall": 0
+          }
+        },
+        "reggae": {
+          "tracks": 21,
+          "before": {
+            "head50F1": 0.8558869822810725,
+            "head50Precision": 0.9283230192401538,
+            "head50Recall": 0.8183814966628705,
+            "head70F1": 0.8822886061084306,
+            "head70Precision": 0.9567792276473722,
+            "head70Recall": 0.8436527766641392,
+            "clock50F1": 0.8562847967988237,
+            "clock50Precision": 0.9183764314944456,
+            "clock50Recall": 0.8251715662697766,
+            "clock70F1": 0.8866171772380478,
+            "clock70Precision": 0.9500763321496135,
+            "clock70Recall": 0.854826501551253,
+            "pulse50F1": 0.6609421532239759,
+            "pulse50Precision": 0.520770121451011,
+            "pulse50Recall": 0.927140798378228,
+            "pulse70F1": 0.6840426418226002,
+            "pulse70Precision": 0.5393715257549268,
+            "pulse70Recall": 0.9582473711471642
+          },
+          "after": {
+            "head50F1": 0.8481799934010146,
+            "head50Precision": 0.9218623847458668,
+            "head50Recall": 0.8097149603158319,
+            "head70F1": 0.8746005782133052,
+            "head70Precision": 0.9503583639445423,
+            "head70Recall": 0.8349862403171006,
+            "clock50F1": 0.8562847967988237,
+            "clock50Precision": 0.9183764314944456,
+            "clock50Recall": 0.8251715662697766,
+            "clock70F1": 0.8866171772380478,
+            "clock70Precision": 0.9500763321496135,
+            "clock70Recall": 0.854826501551253,
+            "pulse50F1": 0.6609421532239759,
+            "pulse50Precision": 0.520770121451011,
+            "pulse50Recall": 0.927140798378228,
+            "pulse70F1": 0.6840426418226002,
+            "pulse70Precision": 0.5393715257549268,
+            "pulse70Recall": 0.9582473711471642
+          },
+          "delta": {
+            "head50F1": -0.00770698888005774,
+            "head50Precision": -0.0064606344942867355,
+            "head50Recall": -0.008666536347038614,
+            "head70F1": -0.0076880278951255284,
+            "head70Precision": -0.006420863702829878,
+            "head70Recall": -0.008666536347038617,
+            "clock50F1": 0,
+            "clock50Precision": 0,
+            "clock50Recall": 0,
+            "clock70F1": 0,
+            "clock70Precision": 0,
+            "clock70Recall": 0,
+            "pulse50F1": 0,
+            "pulse50Precision": 0,
+            "pulse50Recall": 0,
+            "pulse70F1": 0,
+            "pulse70Precision": 0,
+            "pulse70Recall": 0
+          }
+        },
+        "rock": {
+          "tracks": 21,
+          "before": {
+            "head50F1": 0.6579301274411484,
+            "head50Precision": 0.7375180680767303,
+            "head50Recall": 0.6197045041261877,
+            "head70F1": 0.7316945687369159,
+            "head70Precision": 0.8246233424493413,
+            "head70Recall": 0.6872703372234148,
+            "clock50F1": 0.6966868990695411,
+            "clock50Precision": 0.6927035476567371,
+            "clock50Recall": 0.7281804622614719,
+            "clock70F1": 0.7890578095202402,
+            "clock70Precision": 0.7865488678535895,
+            "clock70Recall": 0.8215388521684591,
+            "pulse50F1": 0.5634873917545792,
+            "pulse50Precision": 0.5045500929251655,
+            "pulse50Recall": 0.6834034266524591,
+            "pulse70F1": 0.6242952924283593,
+            "pulse70Precision": 0.5597605096332148,
+            "pulse70Recall": 0.7556588354511138
+          },
+          "after": {
+            "head50F1": 0.6555559400395373,
+            "head50Precision": 0.7350796126307559,
+            "head50Recall": 0.6174657723761778,
+            "head70F1": 0.7286352151825127,
+            "head70Precision": 0.821102635921116,
+            "head70Recall": 0.6845303523405727,
+            "clock50F1": 0.6966868990695411,
+            "clock50Precision": 0.6927035476567371,
+            "clock50Recall": 0.7281804622614719,
+            "clock70F1": 0.7890578095202402,
+            "clock70Precision": 0.7865488678535895,
+            "clock70Recall": 0.8215388521684591,
+            "pulse50F1": 0.5634873917545792,
+            "pulse50Precision": 0.5045500929251655,
+            "pulse50Recall": 0.6834034266524591,
+            "pulse70F1": 0.6242952924283593,
+            "pulse70Precision": 0.5597605096332148,
+            "pulse70Recall": 0.7556588354511138
+          },
+          "delta": {
+            "head50F1": -0.0023741874016110047,
+            "head50Precision": -0.002438455445974245,
+            "head50Recall": -0.0022387317500099434,
+            "head70F1": -0.003059353554403058,
+            "head70Precision": -0.003520706528225321,
+            "head70Recall": -0.002739984882842029,
+            "clock50F1": 0,
+            "clock50Precision": 0,
+            "clock50Recall": 0,
+            "clock70F1": 0,
+            "clock70Precision": 0,
+            "clock70Recall": 0,
+            "pulse50F1": 0,
+            "pulse50Precision": 0,
+            "pulse50Recall": 0,
+            "pulse70F1": 0,
+            "pulse70Precision": 0,
+            "pulse70Recall": 0
+          }
+        }
+      },
+      "modeAggregate": {
+        "one": {
+          "50f1": {
+            "before": 0.6330618640188252,
+            "after": 0.6288476811815358,
+            "delta": -0.004214182837289338,
+            "improved": 21,
+            "unchanged": 147,
+            "worse": 42
+          },
+          "50precision": {
+            "before": 0.6988000630578702,
+            "after": 0.69439868718624,
+            "delta": -0.004401375871630189,
+            "improved": 22,
+            "unchanged": 147,
+            "worse": 41
+          },
+          "50recall": {
+            "before": 0.6061024553121058,
+            "after": 0.6018567950187944,
+            "delta": -0.004245660293311488,
+            "improved": 18,
+            "unchanged": 152,
+            "worse": 40
+          },
+          "70f1": {
+            "before": 0.6927436792043614,
+            "after": 0.6876137220977727,
+            "delta": -0.005129957106588634,
+            "improved": 21,
+            "unchanged": 144,
+            "worse": 45
+          },
+          "70precision": {
+            "before": 0.7677891525319195,
+            "after": 0.7623048250048606,
+            "delta": -0.005484327527059053,
+            "improved": 21,
+            "unchanged": 144,
+            "worse": 45
+          },
+          "70recall": {
+            "before": 0.6619190788294079,
+            "after": 0.6568381150531567,
+            "delta": -0.005080963776251071,
+            "improved": 19,
+            "unchanged": 150,
+            "worse": 41
+          }
+        },
+        "two": {
+          "50f1": {
+            "before": 0.6073716903258487,
+            "after": 0.5850754283176574,
+            "delta": -0.02229626200819121,
+            "improved": 23,
+            "unchanged": 93,
+            "worse": 94
+          },
+          "50precision": {
+            "before": 0.6023959383828303,
+            "after": 0.5812879682980607,
+            "delta": -0.021107970084769553,
+            "improved": 23,
+            "unchanged": 93,
+            "worse": 94
+          },
+          "50recall": {
+            "before": 0.6499274002603593,
+            "after": 0.6258221078504167,
+            "delta": -0.02410529240994254,
+            "improved": 21,
+            "unchanged": 96,
+            "worse": 93
+          },
+          "70f1": {
+            "before": 0.6671187276162078,
+            "after": 0.6433704551810083,
+            "delta": -0.023748272435199676,
+            "improved": 24,
+            "unchanged": 91,
+            "worse": 95
+          },
+          "70precision": {
+            "before": 0.6641057098023632,
+            "after": 0.6416123514432828,
+            "delta": -0.022493358359080135,
+            "improved": 24,
+            "unchanged": 91,
+            "worse": 95
+          },
+          "70recall": {
+            "before": 0.7118931813606756,
+            "after": 0.6862510793235526,
+            "delta": -0.02564210203712308,
+            "improved": 22,
+            "unchanged": 96,
+            "worse": 92
+          }
+        },
+        "three": {
+          "50f1": {
+            "before": 0.5674579255816268,
+            "after": 0.5459827359609272,
+            "delta": -0.02147518962069943,
+            "improved": 17,
+            "unchanged": 84,
+            "worse": 109
+          },
+          "50precision": {
+            "before": 0.5180042308679156,
+            "after": 0.4985794637185792,
+            "delta": -0.019424767149336553,
+            "improved": 17,
+            "unchanged": 84,
+            "worse": 109
+          },
+          "50recall": {
+            "before": 0.6755442695579822,
+            "after": 0.6495154810122676,
+            "delta": -0.02602878854571459,
+            "improved": 16,
+            "unchanged": 90,
+            "worse": 104
+          },
+          "70f1": {
+            "before": 0.6252317974189298,
+            "after": 0.6022029429476353,
+            "delta": -0.02302885447129504,
+            "improved": 17,
+            "unchanged": 80,
+            "worse": 113
+          },
+          "70precision": {
+            "before": 0.5734235304954374,
+            "after": 0.5525552291150165,
+            "delta": -0.02086830138042057,
+            "improved": 17,
+            "unchanged": 80,
+            "worse": 113
+          },
+          "70recall": {
+            "before": 0.7415553753154261,
+            "after": 0.7137719010629411,
+            "delta": -0.027783474252484727,
+            "improved": 17,
+            "unchanged": 85,
+            "worse": 108
+          }
+        },
+        "four": {
+          "50f1": {
+            "before": 0.5254496070799191,
+            "after": 0.5236263833157616,
+            "delta": -0.00182322376415737,
+            "improved": 16,
+            "unchanged": 158,
+            "worse": 36
+          },
+          "50precision": {
+            "before": 0.4496602162074161,
+            "after": 0.44815021729199034,
+            "delta": -0.0015099989154257981,
+            "improved": 16,
+            "unchanged": 158,
+            "worse": 36
+          },
+          "50recall": {
+            "before": 0.6987324662152433,
+            "after": 0.6961994534879371,
+            "delta": -0.0025330127273064545,
+            "improved": 16,
+            "unchanged": 161,
+            "worse": 33
+          },
+          "70f1": {
+            "before": 0.579567472663181,
+            "after": 0.5778025140333828,
+            "delta": -0.0017649586297980757,
+            "improved": 12,
+            "unchanged": 164,
+            "worse": 34
+          },
+          "70precision": {
+            "before": 0.49814762509812005,
+            "after": 0.49666927315722936,
+            "delta": -0.0014783519408905778,
+            "improved": 12,
+            "unchanged": 164,
+            "worse": 34
+          },
+          "70recall": {
+            "before": 0.7679238007744488,
+            "after": 0.7655546201039096,
+            "delta": -0.0023691806705388413,
+            "improved": 12,
+            "unchanged": 168,
+            "worse": 30
+          }
+        }
+      },
+      "modesMeta": {
+        "one": {
+          "before": {
+            "charts": 210,
+            "totalNotes": 10153,
+            "totalHeads": 10153,
+            "totalHolds": 249,
+            "totalTails": 249,
+            "maxHeads4s": 13,
+            "maxFingers": 1
+          },
+          "after": {
+            "charts": 210,
+            "totalNotes": 10148,
+            "totalHeads": 10148,
+            "totalHolds": 254,
+            "totalTails": 254,
+            "maxHeads4s": 13,
+            "maxFingers": 1
+          }
+        },
+        "two": {
+          "before": {
+            "charts": 210,
+            "totalNotes": 13785,
+            "totalHeads": 13009,
+            "totalHolds": 1492,
+            "totalTails": 1492,
+            "maxHeads4s": 17,
+            "maxFingers": 2
+          },
+          "after": {
+            "charts": 210,
+            "totalNotes": 13762,
+            "totalHeads": 12972,
+            "totalHolds": 1460,
+            "totalTails": 1460,
+            "maxHeads4s": 17,
+            "maxFingers": 2
+          }
+        },
+        "three": {
+          "before": {
+            "charts": 210,
+            "totalNotes": 17314,
+            "totalHeads": 16037,
+            "totalHolds": 1879,
+            "totalTails": 1879,
+            "maxHeads4s": 22,
+            "maxFingers": 3
+          },
+          "after": {
+            "charts": 210,
+            "totalNotes": 17340,
+            "totalHeads": 16061,
+            "totalHolds": 1872,
+            "totalTails": 1872,
+            "maxHeads4s": 22,
+            "maxFingers": 3
+          }
+        },
+        "four": {
+          "before": {
+            "charts": 210,
+            "totalNotes": 21339,
+            "totalHeads": 19865,
+            "totalHolds": 2049,
+            "totalTails": 2049,
+            "maxHeads4s": 32,
+            "maxFingers": 4
+          },
+          "after": {
+            "charts": 210,
+            "totalNotes": 21341,
+            "totalHeads": 19870,
+            "totalHolds": 2045,
+            "totalTails": 2045,
+            "maxHeads4s": 32,
+            "maxFingers": 4
+          }
+        }
+      },
+      "head70Cases": {
+        "improved": 21,
+        "unchanged": 144,
+        "worse": 45
+      },
+      "primaryNegativeMetricRows": 254,
+      "allModeNegativeMetricRows": 1676,
+      "physical": {
+        "charts": 1680,
+        "allValid": true,
+        "allDeterministic": true,
+        "allRouteChecked": true,
+        "oneHoldConflicts": 0
+      },
+      "four": {
+        "minimumCountRatio": 0.9891304347826086,
+        "minimumIdentityRatio": 0.8846153846153846,
+        "beforeTotal": 19865,
+        "afterTotal": 19870
+      },
+      "directAnalysisAssertions": {
+        "fullAnalysisJSONBytePairs": 210,
+        "clockPairs": 210,
+        "pulsePairs": 210,
+        "sourcePathPairs": 210,
+        "rawCandidatePairs": 210,
+        "officialFullChartHashes": 1680,
+        "smallVersionOnlyMappings": 20
+      },
+      "baselineSourceHashes": {
+        "src/core/analysis.ts": "e3f33c635510cbaf2c7f8d07a2d35230eca1617c03045ab58837d82d5f77b7e7",
+        "src/core/signal-analysis.ts": "51ae75faeebee18a8c1f4a0e22e063d0067c0e5cd1f37fb8a5b045471682ce98",
+        "src/core/clock-evidence.ts": "128164a84bf29dc71667d9f82517dd0a595e6daf9b4045e69756c84e7e5b0c16",
+        "src/types.ts": "905bfa7448c1d96ba0d84bfac954498ca6f752352fcafc747b1ada35c2a6fe68",
+        "src/core/rhythm.ts": "7c47723914896cc56511fdf42f71c40132146787e8e00fdc1b55db0226250115",
+        "src/core/phase-gate.ts": "23f7a52d3a72076857868a8533995abaf0e009b16700514f3434ccb803901e01",
+        "src/core/tempo-families.ts": "b4181a948486c12a09ac81150b7bb6d095d3337768664d5ef5abb1889dd7920c",
+        "src/core/tempo-family-config.ts": "3036bb40ce762546651cad5a890c54809b9264df6f45311b7ba1ae98f178d13d",
+        "src/core/phase-dp.ts": "33165fa8deefc87d52c1b463a2dbd3ca08ecfad16e655b8fcfc365f839400ae6",
+        "src/core/phase-dp-types.ts": "737c54e98f9f614ed997a207624d1556b666df2fe40fbfb8d1f5532c1eae798f",
+        "src/core/phase-dp-kernel.ts": "d0575991cc06e5470bb7ad420c1324d2b2f06909bb20e7ac82017ec499a8f438",
+        "src/core/chroma.ts": "4172510959a332bfeff4970964dd5c8ad2a696d1725bbd1496481d8d82f84ded",
+        "src/core/rhythm-source.ts": "878fe191a23b67d36545b06fd41428df5832f3ac53db6fbc29cb44ebe51c5a90",
+        "src/core/signal-events.ts": "cfab9dd27bcd2d5a3daecce3ec4cf084e6897e5e72538ed3179d078ce6518c13",
+        "src/core/musical-events.ts": "a4b51ea2fbb794656cbfabcaab3edbbe485925398f2afd2ccd82e991d2e3e185",
+        "src/core/signal-binding.ts": "93c9e516abe08a08a0a43c54f01591e2bd6f8f33ad6291f20ec946ce60e8e36d",
+        "src/core/signal-pool.ts": "3d54e98503ada15b29f9018f2c23528bda98e2e8a30ad78cbc55272568c1855e",
+        "src/core/analysis-fallback.ts": "34410f957e644ca0fd2281145ccbefb4967b9a2d220bc9c3cad373dbd730c296",
+        "src/core/chart.ts": "7299a354b4ba4e652f2f6d43ed733dd330194540dabd7cc70b1578b6c8879c8e",
+        "src/core/phrases.ts": "8d9029820b333c3f699cecf9998c950294f50d0fe72751cc3fd13b871c5dfc89",
+        "src/core/chart-constraints.ts": "35e4f304aed8eb2dfe49bb4dbae6d7b7db7b5deea34732a96dc7df05aeec1736",
+        "src/core/patterns.ts": "10966f254c5e5025ff8acd12986fa3218daa6e0467e75313768ce9833fe34ffc",
+        "src/core/fingering.ts": "797d6bc08a44163a261e4e02c22fe8ea4e57eff67bfd5fdc9a5d938b2b23d83e",
+        "src/core/onset-selection.ts": "00a59956b5a27c49d78f6e8cb76fa1aa2bdde5d364d57a2815716a4b096c917f"
+      },
+      "actualExecutedSourceHashes": {
+        "src/core/analysis.ts": "e3f33c635510cbaf2c7f8d07a2d35230eca1617c03045ab58837d82d5f77b7e7",
+        "src/core/signal-analysis.ts": "51ae75faeebee18a8c1f4a0e22e063d0067c0e5cd1f37fb8a5b045471682ce98",
+        "src/core/clock-evidence.ts": "128164a84bf29dc71667d9f82517dd0a595e6daf9b4045e69756c84e7e5b0c16",
+        "src/types.ts": "a53593bb3371c9cd21a3a11c0ed6f0ca15a6dab953f69752c5418c16e412ded3",
+        "src/core/rhythm.ts": "7c47723914896cc56511fdf42f71c40132146787e8e00fdc1b55db0226250115",
+        "src/core/phase-gate.ts": "23f7a52d3a72076857868a8533995abaf0e009b16700514f3434ccb803901e01",
+        "src/core/tempo-families.ts": "b4181a948486c12a09ac81150b7bb6d095d3337768664d5ef5abb1889dd7920c",
+        "src/core/tempo-family-config.ts": "3036bb40ce762546651cad5a890c54809b9264df6f45311b7ba1ae98f178d13d",
+        "src/core/phase-dp.ts": "33165fa8deefc87d52c1b463a2dbd3ca08ecfad16e655b8fcfc365f839400ae6",
+        "src/core/phase-dp-types.ts": "737c54e98f9f614ed997a207624d1556b666df2fe40fbfb8d1f5532c1eae798f",
+        "src/core/phase-dp-kernel.ts": "d0575991cc06e5470bb7ad420c1324d2b2f06909bb20e7ac82017ec499a8f438",
+        "src/core/chroma.ts": "4172510959a332bfeff4970964dd5c8ad2a696d1725bbd1496481d8d82f84ded",
+        "src/core/rhythm-source.ts": "878fe191a23b67d36545b06fd41428df5832f3ac53db6fbc29cb44ebe51c5a90",
+        "src/core/signal-events.ts": "cfab9dd27bcd2d5a3daecce3ec4cf084e6897e5e72538ed3179d078ce6518c13",
+        "src/core/musical-events.ts": "a4b51ea2fbb794656cbfabcaab3edbbe485925398f2afd2ccd82e991d2e3e185",
+        "src/core/signal-binding.ts": "93c9e516abe08a08a0a43c54f01591e2bd6f8f33ad6291f20ec946ce60e8e36d",
+        "src/core/signal-pool.ts": "3d54e98503ada15b29f9018f2c23528bda98e2e8a30ad78cbc55272568c1855e",
+        "src/core/analysis-fallback.ts": "34410f957e644ca0fd2281145ccbefb4967b9a2d220bc9c3cad373dbd730c296",
+        "src/core/chart.ts": "4f7a773b5533ebf264ad3c91b3a3fd99828b88ddb3bbd417cec92f6f3d03c7e1",
+        "src/core/phrases.ts": "8d9029820b333c3f699cecf9998c950294f50d0fe72751cc3fd13b871c5dfc89",
+        "src/core/chart-constraints.ts": "35e4f304aed8eb2dfe49bb4dbae6d7b7db7b5deea34732a96dc7df05aeec1736",
+        "src/core/patterns.ts": "10966f254c5e5025ff8acd12986fa3218daa6e0467e75313768ce9833fe34ffc",
+        "src/core/fingering.ts": "797d6bc08a44163a261e4e02c22fe8ea4e57eff67bfd5fdc9a5d938b2b23d83e",
+        "src/core/onset-selection.ts": "7b26e3f855c527d778fdbab5908707e0a2e9ff1967bcf2fdb654d50cf00de9e7"
+      },
+      "developmentScreen": {
+        "rules": {
+          "minimumMacroHead70Gain": 0.01,
+          "minimumMacroHead50Gain": 0,
+          "analysisClockAndSourceMustBeExactBaseline": true,
+          "minimumGenreHead70Delta": -0.03,
+          "minimumClipHead70Delta": -0.15,
+          "minimumEveryClipFourMeasuredHeadCountRatio": 0.95,
+          "gateRationale": "R changes chart selection only. It must improve actual note heads, while all audio analysis and clock outputs remain exact rather than claiming a clock gain."
+        },
+        "checks": {
+          "head70Gain": false,
+          "head50NonDecrease": false,
+          "analysisClockSourceExact": true,
+          "worstGenre": true,
+          "worstClip": true,
+          "fourMeasuredCount": true,
+          "allModesPlayableDeterministicRouteChecked": true,
+          "primaryMinuteAndHandoffOneHead50And70NonDecrease": true
+        },
+        "passed": false,
+        "minimumGenreHead70Delta": -0.019325906686558543,
+        "minimumClipHead70Delta": -0.1080189651618223,
+        "interpretation": "R fails the prospectively fixed development gates. No fresh qualification is authorized by these results; no clock improvement is claimed."
+      },
+      "mainChartVersion12Unmapped": true,
+      "auxiliaryTopVersionOnlyMappings": 20,
+      "rejected": true
+    }
+  },
+  "smallStudies": {
+    "WS": {
+      "scope": {
+        "knownPCM": 36,
+        "previouslyObservedClips": 5,
+        "analyzedValidFixtures": 36,
+        "expectedNormalRejects": 5,
+        "broad210": true,
+        "not210Statistics": true
+      },
+      "freezeSHA": "07f32a80d02e74e309339f8e45d0fc177e7607c78724846b1bc4636abc659ef7",
+      "reportSHA": "ed0237c2bd81f0c48593700a0bc24a4558768a41bb5d4ccbafac85aa7a0951d6",
+      "summarySHA": "089fa1ddda8523cb8dfe9ce7cc1096d4dd368ae14c110fd4f373830478f5b72e",
+      "assertions": {
+        "traceAnalysisParity": 108,
+        "traceChartParity": 432,
+        "physical": 432,
+        "deterministic": 432,
+        "rawPhysicalInputs": 72,
+        "rawAnalysisFields": 72,
+        "seed": 72,
+        "membership": 72,
+        "weightReplay": 108,
+        "zeroBoundaryContext": 108,
+        "WSgatePreservesInput": 72,
+        "WSinvestigationParity": 36,
+        "WSlocalParity": 36
+      },
+      "statusCounts": {
+        "B": {
+          "ANALYZED": 36,
+          "SILENCE": 2,
+          "INSUFFICIENT_ONSETS": 3
+        },
+        "W": {
+          "ANALYZED": 36,
+          "SILENCE": 2,
+          "INSUFFICIENT_ONSETS": 3
+        },
+        "S": {
+          "ANALYZED": 36,
+          "SILENCE": 2,
+          "INSUFFICIENT_ONSETS": 3
+        }
+      },
+      "baselineSourceHashes": {
+        "src/core/analysis.ts": "e3f33c635510cbaf2c7f8d07a2d35230eca1617c03045ab58837d82d5f77b7e7",
+        "src/core/signal-analysis.ts": "51ae75faeebee18a8c1f4a0e22e063d0067c0e5cd1f37fb8a5b045471682ce98",
+        "src/core/clock-evidence.ts": "128164a84bf29dc71667d9f82517dd0a595e6daf9b4045e69756c84e7e5b0c16",
+        "src/types.ts": "905bfa7448c1d96ba0d84bfac954498ca6f752352fcafc747b1ada35c2a6fe68",
+        "src/core/rhythm.ts": "7c47723914896cc56511fdf42f71c40132146787e8e00fdc1b55db0226250115",
+        "src/core/phase-gate.ts": "23f7a52d3a72076857868a8533995abaf0e009b16700514f3434ccb803901e01",
+        "src/core/tempo-families.ts": "b4181a948486c12a09ac81150b7bb6d095d3337768664d5ef5abb1889dd7920c",
+        "src/core/tempo-family-config.ts": "3036bb40ce762546651cad5a890c54809b9264df6f45311b7ba1ae98f178d13d",
+        "src/core/phase-dp.ts": "33165fa8deefc87d52c1b463a2dbd3ca08ecfad16e655b8fcfc365f839400ae6",
+        "src/core/phase-dp-types.ts": "737c54e98f9f614ed997a207624d1556b666df2fe40fbfb8d1f5532c1eae798f",
+        "src/core/phase-dp-kernel.ts": "d0575991cc06e5470bb7ad420c1324d2b2f06909bb20e7ac82017ec499a8f438",
+        "src/core/chroma.ts": "4172510959a332bfeff4970964dd5c8ad2a696d1725bbd1496481d8d82f84ded",
+        "src/core/rhythm-source.ts": "878fe191a23b67d36545b06fd41428df5832f3ac53db6fbc29cb44ebe51c5a90",
+        "src/core/signal-events.ts": "cfab9dd27bcd2d5a3daecce3ec4cf084e6897e5e72538ed3179d078ce6518c13",
+        "src/core/musical-events.ts": "a4b51ea2fbb794656cbfabcaab3edbbe485925398f2afd2ccd82e991d2e3e185",
+        "src/core/signal-binding.ts": "93c9e516abe08a08a0a43c54f01591e2bd6f8f33ad6291f20ec946ce60e8e36d",
+        "src/core/signal-pool.ts": "3d54e98503ada15b29f9018f2c23528bda98e2e8a30ad78cbc55272568c1855e",
+        "src/core/analysis-fallback.ts": "34410f957e644ca0fd2281145ccbefb4967b9a2d220bc9c3cad373dbd730c296",
+        "src/core/chart.ts": "7299a354b4ba4e652f2f6d43ed733dd330194540dabd7cc70b1578b6c8879c8e",
+        "src/core/phrases.ts": "8d9029820b333c3f699cecf9998c950294f50d0fe72751cc3fd13b871c5dfc89",
+        "src/core/chart-constraints.ts": "35e4f304aed8eb2dfe49bb4dbae6d7b7db7b5deea34732a96dc7df05aeec1736",
+        "src/core/patterns.ts": "10966f254c5e5025ff8acd12986fa3218daa6e0467e75313768ce9833fe34ffc",
+        "src/core/fingering.ts": "797d6bc08a44163a261e4e02c22fe8ea4e57eff67bfd5fdc9a5d938b2b23d83e",
+        "src/core/onset-selection.ts": "00a59956b5a27c49d78f6e8cb76fa1aa2bdde5d364d57a2815716a4b096c917f"
+      },
+      "candidateSourceHashes": {
+        "W": {
+          "src/core/analysis.ts": "e3f33c635510cbaf2c7f8d07a2d35230eca1617c03045ab58837d82d5f77b7e7",
+          "src/core/signal-analysis.ts": "824c087ce3108f9bdbf1059a2dc7a29195d9534fce6fe6ff14ad910421e04f6f",
+          "src/core/clock-evidence.ts": "128164a84bf29dc71667d9f82517dd0a595e6daf9b4045e69756c84e7e5b0c16",
+          "src/types.ts": "905bfa7448c1d96ba0d84bfac954498ca6f752352fcafc747b1ada35c2a6fe68",
+          "src/core/rhythm.ts": "7c47723914896cc56511fdf42f71c40132146787e8e00fdc1b55db0226250115",
+          "src/core/phase-gate.ts": "23f7a52d3a72076857868a8533995abaf0e009b16700514f3434ccb803901e01",
+          "src/core/tempo-families.ts": "b4181a948486c12a09ac81150b7bb6d095d3337768664d5ef5abb1889dd7920c",
+          "src/core/tempo-family-config.ts": "3036bb40ce762546651cad5a890c54809b9264df6f45311b7ba1ae98f178d13d",
+          "src/core/phase-dp.ts": "33165fa8deefc87d52c1b463a2dbd3ca08ecfad16e655b8fcfc365f839400ae6",
+          "src/core/phase-dp-types.ts": "737c54e98f9f614ed997a207624d1556b666df2fe40fbfb8d1f5532c1eae798f",
+          "src/core/phase-dp-kernel.ts": "d0575991cc06e5470bb7ad420c1324d2b2f06909bb20e7ac82017ec499a8f438",
+          "src/core/chroma.ts": "4172510959a332bfeff4970964dd5c8ad2a696d1725bbd1496481d8d82f84ded",
+          "src/core/rhythm-source.ts": "878fe191a23b67d36545b06fd41428df5832f3ac53db6fbc29cb44ebe51c5a90",
+          "src/core/signal-events.ts": "cfab9dd27bcd2d5a3daecce3ec4cf084e6897e5e72538ed3179d078ce6518c13",
+          "src/core/musical-events.ts": "a4b51ea2fbb794656cbfabcaab3edbbe485925398f2afd2ccd82e991d2e3e185",
+          "src/core/signal-binding.ts": "93c9e516abe08a08a0a43c54f01591e2bd6f8f33ad6291f20ec946ce60e8e36d",
+          "src/core/signal-pool.ts": "3d54e98503ada15b29f9018f2c23528bda98e2e8a30ad78cbc55272568c1855e",
+          "src/core/analysis-fallback.ts": "34410f957e644ca0fd2281145ccbefb4967b9a2d220bc9c3cad373dbd730c296",
+          "src/core/chart.ts": "7299a354b4ba4e652f2f6d43ed733dd330194540dabd7cc70b1578b6c8879c8e",
+          "src/core/phrases.ts": "8d9029820b333c3f699cecf9998c950294f50d0fe72751cc3fd13b871c5dfc89",
+          "src/core/chart-constraints.ts": "35e4f304aed8eb2dfe49bb4dbae6d7b7db7b5deea34732a96dc7df05aeec1736",
+          "src/core/patterns.ts": "10966f254c5e5025ff8acd12986fa3218daa6e0467e75313768ce9833fe34ffc",
+          "src/core/fingering.ts": "797d6bc08a44163a261e4e02c22fe8ea4e57eff67bfd5fdc9a5d938b2b23d83e",
+          "src/core/onset-selection.ts": "00a59956b5a27c49d78f6e8cb76fa1aa2bdde5d364d57a2815716a4b096c917f"
+        },
+        "S": {
+          "src/core/analysis.ts": "e3f33c635510cbaf2c7f8d07a2d35230eca1617c03045ab58837d82d5f77b7e7",
+          "src/core/signal-analysis.ts": "2440a0cb6e77b910e952f92ca13c8e1adacc41e47fdcf97491c12d9341ae0e04",
+          "src/core/clock-evidence.ts": "128164a84bf29dc71667d9f82517dd0a595e6daf9b4045e69756c84e7e5b0c16",
+          "src/types.ts": "905bfa7448c1d96ba0d84bfac954498ca6f752352fcafc747b1ada35c2a6fe68",
+          "src/core/rhythm.ts": "7c47723914896cc56511fdf42f71c40132146787e8e00fdc1b55db0226250115",
+          "src/core/phase-gate.ts": "23f7a52d3a72076857868a8533995abaf0e009b16700514f3434ccb803901e01",
+          "src/core/tempo-families.ts": "b4181a948486c12a09ac81150b7bb6d095d3337768664d5ef5abb1889dd7920c",
+          "src/core/tempo-family-config.ts": "3036bb40ce762546651cad5a890c54809b9264df6f45311b7ba1ae98f178d13d",
+          "src/core/phase-dp.ts": "33165fa8deefc87d52c1b463a2dbd3ca08ecfad16e655b8fcfc365f839400ae6",
+          "src/core/phase-dp-types.ts": "737c54e98f9f614ed997a207624d1556b666df2fe40fbfb8d1f5532c1eae798f",
+          "src/core/phase-dp-kernel.ts": "d0575991cc06e5470bb7ad420c1324d2b2f06909bb20e7ac82017ec499a8f438",
+          "src/core/chroma.ts": "4172510959a332bfeff4970964dd5c8ad2a696d1725bbd1496481d8d82f84ded",
+          "src/core/rhythm-source.ts": "878fe191a23b67d36545b06fd41428df5832f3ac53db6fbc29cb44ebe51c5a90",
+          "src/core/signal-events.ts": "cfab9dd27bcd2d5a3daecce3ec4cf084e6897e5e72538ed3179d078ce6518c13",
+          "src/core/musical-events.ts": "a4b51ea2fbb794656cbfabcaab3edbbe485925398f2afd2ccd82e991d2e3e185",
+          "src/core/signal-binding.ts": "93c9e516abe08a08a0a43c54f01591e2bd6f8f33ad6291f20ec946ce60e8e36d",
+          "src/core/signal-pool.ts": "3d54e98503ada15b29f9018f2c23528bda98e2e8a30ad78cbc55272568c1855e",
+          "src/core/analysis-fallback.ts": "34410f957e644ca0fd2281145ccbefb4967b9a2d220bc9c3cad373dbd730c296",
+          "src/core/chart.ts": "7299a354b4ba4e652f2f6d43ed733dd330194540dabd7cc70b1578b6c8879c8e",
+          "src/core/phrases.ts": "8d9029820b333c3f699cecf9998c950294f50d0fe72751cc3fd13b871c5dfc89",
+          "src/core/chart-constraints.ts": "35e4f304aed8eb2dfe49bb4dbae6d7b7db7b5deea34732a96dc7df05aeec1736",
+          "src/core/patterns.ts": "10966f254c5e5025ff8acd12986fa3218daa6e0467e75313768ce9833fe34ffc",
+          "src/core/fingering.ts": "797d6bc08a44163a261e4e02c22fe8ea4e57eff67bfd5fdc9a5d938b2b23d83e",
+          "src/core/onset-selection.ts": "00a59956b5a27c49d78f6e8cb76fa1aa2bdde5d364d57a2815716a4b096c917f"
+        }
+      },
+      "traceSourceHashes": {
+        "B": {
+          "src/core/analysis.ts": "e3f33c635510cbaf2c7f8d07a2d35230eca1617c03045ab58837d82d5f77b7e7",
+          "src/core/signal-analysis.ts": "b8ccfc1c768fbb2fd2ab658cd9d2e305251f7ded2a319fd4daa24278ccdafb92",
+          "src/core/clock-evidence.ts": "128164a84bf29dc71667d9f82517dd0a595e6daf9b4045e69756c84e7e5b0c16",
+          "src/types.ts": "905bfa7448c1d96ba0d84bfac954498ca6f752352fcafc747b1ada35c2a6fe68",
+          "src/core/rhythm.ts": "4790ec7882a4504dbd1087a4ac18124021f11e87f4547dfca230039153e58ffc",
+          "src/core/phase-gate.ts": "23f7a52d3a72076857868a8533995abaf0e009b16700514f3434ccb803901e01",
+          "src/core/tempo-families.ts": "b4181a948486c12a09ac81150b7bb6d095d3337768664d5ef5abb1889dd7920c",
+          "src/core/tempo-family-config.ts": "3036bb40ce762546651cad5a890c54809b9264df6f45311b7ba1ae98f178d13d",
+          "src/core/phase-dp.ts": "33165fa8deefc87d52c1b463a2dbd3ca08ecfad16e655b8fcfc365f839400ae6",
+          "src/core/phase-dp-types.ts": "737c54e98f9f614ed997a207624d1556b666df2fe40fbfb8d1f5532c1eae798f",
+          "src/core/phase-dp-kernel.ts": "d0575991cc06e5470bb7ad420c1324d2b2f06909bb20e7ac82017ec499a8f438",
+          "src/core/chroma.ts": "4172510959a332bfeff4970964dd5c8ad2a696d1725bbd1496481d8d82f84ded",
+          "src/core/rhythm-source.ts": "878fe191a23b67d36545b06fd41428df5832f3ac53db6fbc29cb44ebe51c5a90",
+          "src/core/signal-events.ts": "cfab9dd27bcd2d5a3daecce3ec4cf084e6897e5e72538ed3179d078ce6518c13",
+          "src/core/musical-events.ts": "a4b51ea2fbb794656cbfabcaab3edbbe485925398f2afd2ccd82e991d2e3e185",
+          "src/core/signal-binding.ts": "93c9e516abe08a08a0a43c54f01591e2bd6f8f33ad6291f20ec946ce60e8e36d",
+          "src/core/signal-pool.ts": "3d54e98503ada15b29f9018f2c23528bda98e2e8a30ad78cbc55272568c1855e",
+          "src/core/analysis-fallback.ts": "34410f957e644ca0fd2281145ccbefb4967b9a2d220bc9c3cad373dbd730c296",
+          "src/core/chart.ts": "7299a354b4ba4e652f2f6d43ed733dd330194540dabd7cc70b1578b6c8879c8e",
+          "src/core/phrases.ts": "8d9029820b333c3f699cecf9998c950294f50d0fe72751cc3fd13b871c5dfc89",
+          "src/core/chart-constraints.ts": "35e4f304aed8eb2dfe49bb4dbae6d7b7db7b5deea34732a96dc7df05aeec1736",
+          "src/core/patterns.ts": "10966f254c5e5025ff8acd12986fa3218daa6e0467e75313768ce9833fe34ffc",
+          "src/core/fingering.ts": "797d6bc08a44163a261e4e02c22fe8ea4e57eff67bfd5fdc9a5d938b2b23d83e",
+          "src/core/onset-selection.ts": "00a59956b5a27c49d78f6e8cb76fa1aa2bdde5d364d57a2815716a4b096c917f"
+        },
+        "W": {
+          "src/core/analysis.ts": "e3f33c635510cbaf2c7f8d07a2d35230eca1617c03045ab58837d82d5f77b7e7",
+          "src/core/signal-analysis.ts": "38d2cf9245f8480efac8c69bff4c7601ea3403eaa1dba6c9ee9d731a7776a1c4",
+          "src/core/clock-evidence.ts": "128164a84bf29dc71667d9f82517dd0a595e6daf9b4045e69756c84e7e5b0c16",
+          "src/types.ts": "905bfa7448c1d96ba0d84bfac954498ca6f752352fcafc747b1ada35c2a6fe68",
+          "src/core/rhythm.ts": "4790ec7882a4504dbd1087a4ac18124021f11e87f4547dfca230039153e58ffc",
+          "src/core/phase-gate.ts": "23f7a52d3a72076857868a8533995abaf0e009b16700514f3434ccb803901e01",
+          "src/core/tempo-families.ts": "b4181a948486c12a09ac81150b7bb6d095d3337768664d5ef5abb1889dd7920c",
+          "src/core/tempo-family-config.ts": "3036bb40ce762546651cad5a890c54809b9264df6f45311b7ba1ae98f178d13d",
+          "src/core/phase-dp.ts": "33165fa8deefc87d52c1b463a2dbd3ca08ecfad16e655b8fcfc365f839400ae6",
+          "src/core/phase-dp-types.ts": "737c54e98f9f614ed997a207624d1556b666df2fe40fbfb8d1f5532c1eae798f",
+          "src/core/phase-dp-kernel.ts": "d0575991cc06e5470bb7ad420c1324d2b2f06909bb20e7ac82017ec499a8f438",
+          "src/core/chroma.ts": "4172510959a332bfeff4970964dd5c8ad2a696d1725bbd1496481d8d82f84ded",
+          "src/core/rhythm-source.ts": "878fe191a23b67d36545b06fd41428df5832f3ac53db6fbc29cb44ebe51c5a90",
+          "src/core/signal-events.ts": "cfab9dd27bcd2d5a3daecce3ec4cf084e6897e5e72538ed3179d078ce6518c13",
+          "src/core/musical-events.ts": "a4b51ea2fbb794656cbfabcaab3edbbe485925398f2afd2ccd82e991d2e3e185",
+          "src/core/signal-binding.ts": "93c9e516abe08a08a0a43c54f01591e2bd6f8f33ad6291f20ec946ce60e8e36d",
+          "src/core/signal-pool.ts": "3d54e98503ada15b29f9018f2c23528bda98e2e8a30ad78cbc55272568c1855e",
+          "src/core/analysis-fallback.ts": "34410f957e644ca0fd2281145ccbefb4967b9a2d220bc9c3cad373dbd730c296",
+          "src/core/chart.ts": "7299a354b4ba4e652f2f6d43ed733dd330194540dabd7cc70b1578b6c8879c8e",
+          "src/core/phrases.ts": "8d9029820b333c3f699cecf9998c950294f50d0fe72751cc3fd13b871c5dfc89",
+          "src/core/chart-constraints.ts": "35e4f304aed8eb2dfe49bb4dbae6d7b7db7b5deea34732a96dc7df05aeec1736",
+          "src/core/patterns.ts": "10966f254c5e5025ff8acd12986fa3218daa6e0467e75313768ce9833fe34ffc",
+          "src/core/fingering.ts": "797d6bc08a44163a261e4e02c22fe8ea4e57eff67bfd5fdc9a5d938b2b23d83e",
+          "src/core/onset-selection.ts": "00a59956b5a27c49d78f6e8cb76fa1aa2bdde5d364d57a2815716a4b096c917f"
+        },
+        "S": {
+          "src/core/analysis.ts": "e3f33c635510cbaf2c7f8d07a2d35230eca1617c03045ab58837d82d5f77b7e7",
+          "src/core/signal-analysis.ts": "fba349612b0b4c87856f993f0a3de49d9573b3c1ea7155e13556ec2f3c0e9daa",
+          "src/core/clock-evidence.ts": "128164a84bf29dc71667d9f82517dd0a595e6daf9b4045e69756c84e7e5b0c16",
+          "src/types.ts": "905bfa7448c1d96ba0d84bfac954498ca6f752352fcafc747b1ada35c2a6fe68",
+          "src/core/rhythm.ts": "4790ec7882a4504dbd1087a4ac18124021f11e87f4547dfca230039153e58ffc",
+          "src/core/phase-gate.ts": "23f7a52d3a72076857868a8533995abaf0e009b16700514f3434ccb803901e01",
+          "src/core/tempo-families.ts": "b4181a948486c12a09ac81150b7bb6d095d3337768664d5ef5abb1889dd7920c",
+          "src/core/tempo-family-config.ts": "3036bb40ce762546651cad5a890c54809b9264df6f45311b7ba1ae98f178d13d",
+          "src/core/phase-dp.ts": "33165fa8deefc87d52c1b463a2dbd3ca08ecfad16e655b8fcfc365f839400ae6",
+          "src/core/phase-dp-types.ts": "737c54e98f9f614ed997a207624d1556b666df2fe40fbfb8d1f5532c1eae798f",
+          "src/core/phase-dp-kernel.ts": "d0575991cc06e5470bb7ad420c1324d2b2f06909bb20e7ac82017ec499a8f438",
+          "src/core/chroma.ts": "4172510959a332bfeff4970964dd5c8ad2a696d1725bbd1496481d8d82f84ded",
+          "src/core/rhythm-source.ts": "878fe191a23b67d36545b06fd41428df5832f3ac53db6fbc29cb44ebe51c5a90",
+          "src/core/signal-events.ts": "cfab9dd27bcd2d5a3daecce3ec4cf084e6897e5e72538ed3179d078ce6518c13",
+          "src/core/musical-events.ts": "a4b51ea2fbb794656cbfabcaab3edbbe485925398f2afd2ccd82e991d2e3e185",
+          "src/core/signal-binding.ts": "93c9e516abe08a08a0a43c54f01591e2bd6f8f33ad6291f20ec946ce60e8e36d",
+          "src/core/signal-pool.ts": "3d54e98503ada15b29f9018f2c23528bda98e2e8a30ad78cbc55272568c1855e",
+          "src/core/analysis-fallback.ts": "34410f957e644ca0fd2281145ccbefb4967b9a2d220bc9c3cad373dbd730c296",
+          "src/core/chart.ts": "7299a354b4ba4e652f2f6d43ed733dd330194540dabd7cc70b1578b6c8879c8e",
+          "src/core/phrases.ts": "8d9029820b333c3f699cecf9998c950294f50d0fe72751cc3fd13b871c5dfc89",
+          "src/core/chart-constraints.ts": "35e4f304aed8eb2dfe49bb4dbae6d7b7db7b5deea34732a96dc7df05aeec1736",
+          "src/core/patterns.ts": "10966f254c5e5025ff8acd12986fa3218daa6e0467e75313768ce9833fe34ffc",
+          "src/core/fingering.ts": "797d6bc08a44163a261e4e02c22fe8ea4e57eff67bfd5fdc9a5d938b2b23d83e",
+          "src/core/onset-selection.ts": "00a59956b5a27c49d78f6e8cb76fa1aa2bdde5d364d57a2815716a4b096c917f"
+        }
+      }
+    },
+    "D": {
+      "scope": {
+        "knownPCM": 36,
+        "previouslyObservedClips": 5,
+        "analyzedValidFixtures": 36,
+        "expectedNormalRejects": 5,
+        "broad210": false,
+        "not210Statistics": true
+      },
+      "freezeSHA": "66ff0acb54ee4ad5261aa1b4a1b63de7ec371c8fcf2e7987392dc683865b0781",
+      "reportSHA": "3e07ebb1fbbe874ed8ca62f0bb81f6f40b277eee5a8792eeee0fa55460fedc6f",
+      "summarySHA": "4a320091769c5f75798b20b834ea7234f39697ca144d2a5aba978d960302f22e",
+      "assertions": {
+        "traceAnalysisParity": 72,
+        "traceChartParity": 288,
+        "physical": 288,
+        "deterministic": 288,
+        "rawPhysicalInputs": 36,
+        "rawAnalysisFields": 36,
+        "seed": 36,
+        "membership": 0,
+        "weightReplay": 72,
+        "zeroBoundaryContext": 72,
+        "WSgatePreservesInput": 0,
+        "WSinvestigationParity": 0,
+        "WSlocalParity": 0,
+        "commonClockEvidence": 36,
+        "objectiveRecomputed": 72
+      },
+      "statusCounts": {
+        "B": {
+          "ANALYZED": 36,
+          "SILENCE": 2,
+          "INSUFFICIENT_ONSETS": 3
+        },
+        "D": {
+          "ANALYZED": 36,
+          "SILENCE": 2,
+          "INSUFFICIENT_ONSETS": 3
+        }
+      },
+      "allModeF1NegativeEntries": 18,
+      "baselineSourceHashes": {
+        "src/core/analysis.ts": "e3f33c635510cbaf2c7f8d07a2d35230eca1617c03045ab58837d82d5f77b7e7",
+        "src/core/signal-analysis.ts": "51ae75faeebee18a8c1f4a0e22e063d0067c0e5cd1f37fb8a5b045471682ce98",
+        "src/core/clock-evidence.ts": "128164a84bf29dc71667d9f82517dd0a595e6daf9b4045e69756c84e7e5b0c16",
+        "src/types.ts": "905bfa7448c1d96ba0d84bfac954498ca6f752352fcafc747b1ada35c2a6fe68",
+        "src/core/rhythm.ts": "7c47723914896cc56511fdf42f71c40132146787e8e00fdc1b55db0226250115",
+        "src/core/phase-gate.ts": "23f7a52d3a72076857868a8533995abaf0e009b16700514f3434ccb803901e01",
+        "src/core/tempo-families.ts": "b4181a948486c12a09ac81150b7bb6d095d3337768664d5ef5abb1889dd7920c",
+        "src/core/tempo-family-config.ts": "3036bb40ce762546651cad5a890c54809b9264df6f45311b7ba1ae98f178d13d",
+        "src/core/phase-dp.ts": "33165fa8deefc87d52c1b463a2dbd3ca08ecfad16e655b8fcfc365f839400ae6",
+        "src/core/phase-dp-types.ts": "737c54e98f9f614ed997a207624d1556b666df2fe40fbfb8d1f5532c1eae798f",
+        "src/core/phase-dp-kernel.ts": "d0575991cc06e5470bb7ad420c1324d2b2f06909bb20e7ac82017ec499a8f438",
+        "src/core/chroma.ts": "4172510959a332bfeff4970964dd5c8ad2a696d1725bbd1496481d8d82f84ded",
+        "src/core/rhythm-source.ts": "878fe191a23b67d36545b06fd41428df5832f3ac53db6fbc29cb44ebe51c5a90",
+        "src/core/signal-events.ts": "cfab9dd27bcd2d5a3daecce3ec4cf084e6897e5e72538ed3179d078ce6518c13",
+        "src/core/musical-events.ts": "a4b51ea2fbb794656cbfabcaab3edbbe485925398f2afd2ccd82e991d2e3e185",
+        "src/core/signal-binding.ts": "93c9e516abe08a08a0a43c54f01591e2bd6f8f33ad6291f20ec946ce60e8e36d",
+        "src/core/signal-pool.ts": "3d54e98503ada15b29f9018f2c23528bda98e2e8a30ad78cbc55272568c1855e",
+        "src/core/analysis-fallback.ts": "34410f957e644ca0fd2281145ccbefb4967b9a2d220bc9c3cad373dbd730c296",
+        "src/core/chart.ts": "7299a354b4ba4e652f2f6d43ed733dd330194540dabd7cc70b1578b6c8879c8e",
+        "src/core/phrases.ts": "8d9029820b333c3f699cecf9998c950294f50d0fe72751cc3fd13b871c5dfc89",
+        "src/core/chart-constraints.ts": "35e4f304aed8eb2dfe49bb4dbae6d7b7db7b5deea34732a96dc7df05aeec1736",
+        "src/core/patterns.ts": "10966f254c5e5025ff8acd12986fa3218daa6e0467e75313768ce9833fe34ffc",
+        "src/core/fingering.ts": "797d6bc08a44163a261e4e02c22fe8ea4e57eff67bfd5fdc9a5d938b2b23d83e",
+        "src/core/onset-selection.ts": "00a59956b5a27c49d78f6e8cb76fa1aa2bdde5d364d57a2815716a4b096c917f"
+      },
+      "candidateSourceHashes": {
+        "D": {
+          "src/core/analysis.ts": "e3f33c635510cbaf2c7f8d07a2d35230eca1617c03045ab58837d82d5f77b7e7",
+          "src/core/signal-analysis.ts": "51ae75faeebee18a8c1f4a0e22e063d0067c0e5cd1f37fb8a5b045471682ce98",
+          "src/core/clock-evidence.ts": "128164a84bf29dc71667d9f82517dd0a595e6daf9b4045e69756c84e7e5b0c16",
+          "src/types.ts": "905bfa7448c1d96ba0d84bfac954498ca6f752352fcafc747b1ada35c2a6fe68",
+          "src/core/rhythm.ts": "7c47723914896cc56511fdf42f71c40132146787e8e00fdc1b55db0226250115",
+          "src/core/phase-gate.ts": "23f7a52d3a72076857868a8533995abaf0e009b16700514f3434ccb803901e01",
+          "src/core/tempo-families.ts": "b4181a948486c12a09ac81150b7bb6d095d3337768664d5ef5abb1889dd7920c",
+          "src/core/tempo-family-config.ts": "3036bb40ce762546651cad5a890c54809b9264df6f45311b7ba1ae98f178d13d",
+          "src/core/phase-dp.ts": "33165fa8deefc87d52c1b463a2dbd3ca08ecfad16e655b8fcfc365f839400ae6",
+          "src/core/phase-dp-types.ts": "737c54e98f9f614ed997a207624d1556b666df2fe40fbfb8d1f5532c1eae798f",
+          "src/core/phase-dp-kernel.ts": "0a647a56ea734216940109b1ee6cdbe1263b5ff256dce6b7ea8257be7734fd4d",
+          "src/core/chroma.ts": "4172510959a332bfeff4970964dd5c8ad2a696d1725bbd1496481d8d82f84ded",
+          "src/core/rhythm-source.ts": "878fe191a23b67d36545b06fd41428df5832f3ac53db6fbc29cb44ebe51c5a90",
+          "src/core/signal-events.ts": "cfab9dd27bcd2d5a3daecce3ec4cf084e6897e5e72538ed3179d078ce6518c13",
+          "src/core/musical-events.ts": "a4b51ea2fbb794656cbfabcaab3edbbe485925398f2afd2ccd82e991d2e3e185",
+          "src/core/signal-binding.ts": "93c9e516abe08a08a0a43c54f01591e2bd6f8f33ad6291f20ec946ce60e8e36d",
+          "src/core/signal-pool.ts": "3d54e98503ada15b29f9018f2c23528bda98e2e8a30ad78cbc55272568c1855e",
+          "src/core/analysis-fallback.ts": "34410f957e644ca0fd2281145ccbefb4967b9a2d220bc9c3cad373dbd730c296",
+          "src/core/chart.ts": "7299a354b4ba4e652f2f6d43ed733dd330194540dabd7cc70b1578b6c8879c8e",
+          "src/core/phrases.ts": "8d9029820b333c3f699cecf9998c950294f50d0fe72751cc3fd13b871c5dfc89",
+          "src/core/chart-constraints.ts": "35e4f304aed8eb2dfe49bb4dbae6d7b7db7b5deea34732a96dc7df05aeec1736",
+          "src/core/patterns.ts": "10966f254c5e5025ff8acd12986fa3218daa6e0467e75313768ce9833fe34ffc",
+          "src/core/fingering.ts": "797d6bc08a44163a261e4e02c22fe8ea4e57eff67bfd5fdc9a5d938b2b23d83e",
+          "src/core/onset-selection.ts": "00a59956b5a27c49d78f6e8cb76fa1aa2bdde5d364d57a2815716a4b096c917f"
+        }
+      },
+      "traceSourceHashes": {
+        "B": {
+          "src/core/analysis.ts": "e3f33c635510cbaf2c7f8d07a2d35230eca1617c03045ab58837d82d5f77b7e7",
+          "src/core/signal-analysis.ts": "b8ccfc1c768fbb2fd2ab658cd9d2e305251f7ded2a319fd4daa24278ccdafb92",
+          "src/core/clock-evidence.ts": "128164a84bf29dc71667d9f82517dd0a595e6daf9b4045e69756c84e7e5b0c16",
+          "src/types.ts": "905bfa7448c1d96ba0d84bfac954498ca6f752352fcafc747b1ada35c2a6fe68",
+          "src/core/rhythm.ts": "a3ada896702a5b35986d480217044622f938d371e4461140824ef12afd57b016",
+          "src/core/phase-gate.ts": "23f7a52d3a72076857868a8533995abaf0e009b16700514f3434ccb803901e01",
+          "src/core/tempo-families.ts": "b4181a948486c12a09ac81150b7bb6d095d3337768664d5ef5abb1889dd7920c",
+          "src/core/tempo-family-config.ts": "3036bb40ce762546651cad5a890c54809b9264df6f45311b7ba1ae98f178d13d",
+          "src/core/phase-dp.ts": "33165fa8deefc87d52c1b463a2dbd3ca08ecfad16e655b8fcfc365f839400ae6",
+          "src/core/phase-dp-types.ts": "737c54e98f9f614ed997a207624d1556b666df2fe40fbfb8d1f5532c1eae798f",
+          "src/core/phase-dp-kernel.ts": "d0575991cc06e5470bb7ad420c1324d2b2f06909bb20e7ac82017ec499a8f438",
+          "src/core/chroma.ts": "4172510959a332bfeff4970964dd5c8ad2a696d1725bbd1496481d8d82f84ded",
+          "src/core/rhythm-source.ts": "878fe191a23b67d36545b06fd41428df5832f3ac53db6fbc29cb44ebe51c5a90",
+          "src/core/signal-events.ts": "cfab9dd27bcd2d5a3daecce3ec4cf084e6897e5e72538ed3179d078ce6518c13",
+          "src/core/musical-events.ts": "a4b51ea2fbb794656cbfabcaab3edbbe485925398f2afd2ccd82e991d2e3e185",
+          "src/core/signal-binding.ts": "93c9e516abe08a08a0a43c54f01591e2bd6f8f33ad6291f20ec946ce60e8e36d",
+          "src/core/signal-pool.ts": "3d54e98503ada15b29f9018f2c23528bda98e2e8a30ad78cbc55272568c1855e",
+          "src/core/analysis-fallback.ts": "34410f957e644ca0fd2281145ccbefb4967b9a2d220bc9c3cad373dbd730c296",
+          "src/core/chart.ts": "7299a354b4ba4e652f2f6d43ed733dd330194540dabd7cc70b1578b6c8879c8e",
+          "src/core/phrases.ts": "8d9029820b333c3f699cecf9998c950294f50d0fe72751cc3fd13b871c5dfc89",
+          "src/core/chart-constraints.ts": "35e4f304aed8eb2dfe49bb4dbae6d7b7db7b5deea34732a96dc7df05aeec1736",
+          "src/core/patterns.ts": "10966f254c5e5025ff8acd12986fa3218daa6e0467e75313768ce9833fe34ffc",
+          "src/core/fingering.ts": "797d6bc08a44163a261e4e02c22fe8ea4e57eff67bfd5fdc9a5d938b2b23d83e",
+          "src/core/onset-selection.ts": "00a59956b5a27c49d78f6e8cb76fa1aa2bdde5d364d57a2815716a4b096c917f"
+        },
+        "D": {
+          "src/core/analysis.ts": "e3f33c635510cbaf2c7f8d07a2d35230eca1617c03045ab58837d82d5f77b7e7",
+          "src/core/signal-analysis.ts": "b8ccfc1c768fbb2fd2ab658cd9d2e305251f7ded2a319fd4daa24278ccdafb92",
+          "src/core/clock-evidence.ts": "128164a84bf29dc71667d9f82517dd0a595e6daf9b4045e69756c84e7e5b0c16",
+          "src/types.ts": "905bfa7448c1d96ba0d84bfac954498ca6f752352fcafc747b1ada35c2a6fe68",
+          "src/core/rhythm.ts": "a3ada896702a5b35986d480217044622f938d371e4461140824ef12afd57b016",
+          "src/core/phase-gate.ts": "23f7a52d3a72076857868a8533995abaf0e009b16700514f3434ccb803901e01",
+          "src/core/tempo-families.ts": "b4181a948486c12a09ac81150b7bb6d095d3337768664d5ef5abb1889dd7920c",
+          "src/core/tempo-family-config.ts": "3036bb40ce762546651cad5a890c54809b9264df6f45311b7ba1ae98f178d13d",
+          "src/core/phase-dp.ts": "33165fa8deefc87d52c1b463a2dbd3ca08ecfad16e655b8fcfc365f839400ae6",
+          "src/core/phase-dp-types.ts": "737c54e98f9f614ed997a207624d1556b666df2fe40fbfb8d1f5532c1eae798f",
+          "src/core/phase-dp-kernel.ts": "0a647a56ea734216940109b1ee6cdbe1263b5ff256dce6b7ea8257be7734fd4d",
+          "src/core/chroma.ts": "4172510959a332bfeff4970964dd5c8ad2a696d1725bbd1496481d8d82f84ded",
+          "src/core/rhythm-source.ts": "878fe191a23b67d36545b06fd41428df5832f3ac53db6fbc29cb44ebe51c5a90",
+          "src/core/signal-events.ts": "cfab9dd27bcd2d5a3daecce3ec4cf084e6897e5e72538ed3179d078ce6518c13",
+          "src/core/musical-events.ts": "a4b51ea2fbb794656cbfabcaab3edbbe485925398f2afd2ccd82e991d2e3e185",
+          "src/core/signal-binding.ts": "93c9e516abe08a08a0a43c54f01591e2bd6f8f33ad6291f20ec946ce60e8e36d",
+          "src/core/signal-pool.ts": "3d54e98503ada15b29f9018f2c23528bda98e2e8a30ad78cbc55272568c1855e",
+          "src/core/analysis-fallback.ts": "34410f957e644ca0fd2281145ccbefb4967b9a2d220bc9c3cad373dbd730c296",
+          "src/core/chart.ts": "7299a354b4ba4e652f2f6d43ed733dd330194540dabd7cc70b1578b6c8879c8e",
+          "src/core/phrases.ts": "8d9029820b333c3f699cecf9998c950294f50d0fe72751cc3fd13b871c5dfc89",
+          "src/core/chart-constraints.ts": "35e4f304aed8eb2dfe49bb4dbae6d7b7db7b5deea34732a96dc7df05aeec1736",
+          "src/core/patterns.ts": "10966f254c5e5025ff8acd12986fa3218daa6e0467e75313768ce9833fe34ffc",
+          "src/core/fingering.ts": "797d6bc08a44163a261e4e02c22fe8ea4e57eff67bfd5fdc9a5d938b2b23d83e",
+          "src/core/onset-selection.ts": "00a59956b5a27c49d78f6e8cb76fa1aa2bdde5d364d57a2815716a4b096c917f"
+        }
+      }
+    },
+    "L": {
+      "scope": {
+        "knownPCM": 36,
+        "previouslyObservedClips": 5,
+        "analyzedValidFixtures": 36,
+        "expectedNormalRejects": 5,
+        "broad210": false,
+        "not210Statistics": true
+      },
+      "freezeSHA": "073e5c46b5c1caa240c10cd5c45f4fc4198ce4de5d00d3674c4b56f641759518",
+      "reportSHA": "c3566c438a327ba12640e1e7c86b4b722db9b444a6a05f9fd1949dd075c16c05",
+      "summarySHA": "4e84c5f95f75cc2e127ce046786bb643192b391bf86e4a8c7d19df2bca792b31",
+      "assertions": {
+        "traceAnalysisParity": 72,
+        "traceChartParity": 288,
+        "physical": 288,
+        "deterministic": 288,
+        "rawPhysicalInputs": 36,
+        "rawAnalysisFields": 36,
+        "seed": 36,
+        "membership": 0,
+        "weightReplay": 72,
+        "zeroBoundaryContext": 72,
+        "WSgatePreservesInput": 0,
+        "WSinvestigationParity": 0,
+        "WSlocalParity": 0,
+        "commonEnvelope": 36,
+        "rawStockResult": 36
+      },
+      "statusCounts": {
+        "B": {
+          "ANALYZED": 36,
+          "SILENCE": 2,
+          "INSUFFICIENT_ONSETS": 3
+        },
+        "L": {
+          "ANALYZED": 36,
+          "SILENCE": 2,
+          "INSUFFICIENT_ONSETS": 3
+        }
+      },
+      "allModeF1NegativeEntries": 54,
+      "baselineSourceHashes": {
+        "src/core/clock-evidence.ts": "128164a84bf29dc71667d9f82517dd0a595e6daf9b4045e69756c84e7e5b0c16",
+        "src/core/phase-gate.ts": "23f7a52d3a72076857868a8533995abaf0e009b16700514f3434ccb803901e01",
+        "src/core/phase-dp-kernel.ts": "d0575991cc06e5470bb7ad420c1324d2b2f06909bb20e7ac82017ec499a8f438",
+        "src/core/phase-dp.ts": "33165fa8deefc87d52c1b463a2dbd3ca08ecfad16e655b8fcfc365f839400ae6",
+        "src/core/tempo-family-config.ts": "3036bb40ce762546651cad5a890c54809b9264df6f45311b7ba1ae98f178d13d",
+        "src/core/tempo-families.ts": "b4181a948486c12a09ac81150b7bb6d095d3337768664d5ef5abb1889dd7920c",
+        "src/core/rhythm.ts": "7c47723914896cc56511fdf42f71c40132146787e8e00fdc1b55db0226250115",
+        "src/core/chroma.ts": "4172510959a332bfeff4970964dd5c8ad2a696d1725bbd1496481d8d82f84ded",
+        "src/core/rhythm-source.ts": "878fe191a23b67d36545b06fd41428df5832f3ac53db6fbc29cb44ebe51c5a90",
+        "src/core/musical-events.ts": "a4b51ea2fbb794656cbfabcaab3edbbe485925398f2afd2ccd82e991d2e3e185",
+        "src/core/signal-events.ts": "cfab9dd27bcd2d5a3daecce3ec4cf084e6897e5e72538ed3179d078ce6518c13",
+        "src/core/signal-analysis.ts": "51ae75faeebee18a8c1f4a0e22e063d0067c0e5cd1f37fb8a5b045471682ce98",
+        "src/core/signal-pool.ts": "3d54e98503ada15b29f9018f2c23528bda98e2e8a30ad78cbc55272568c1855e",
+        "src/core/signal-binding.ts": "93c9e516abe08a08a0a43c54f01591e2bd6f8f33ad6291f20ec946ce60e8e36d",
+        "src/core/analysis.ts": "e3f33c635510cbaf2c7f8d07a2d35230eca1617c03045ab58837d82d5f77b7e7",
+        "src/core/analysis-fallback.ts": "34410f957e644ca0fd2281145ccbefb4967b9a2d220bc9c3cad373dbd730c296",
+        "src/core/chart-constraints.ts": "35e4f304aed8eb2dfe49bb4dbae6d7b7db7b5deea34732a96dc7df05aeec1736",
+        "src/core/patterns.ts": "10966f254c5e5025ff8acd12986fa3218daa6e0467e75313768ce9833fe34ffc",
+        "src/core/phrases.ts": "8d9029820b333c3f699cecf9998c950294f50d0fe72751cc3fd13b871c5dfc89",
+        "src/core/fingering.ts": "797d6bc08a44163a261e4e02c22fe8ea4e57eff67bfd5fdc9a5d938b2b23d83e",
+        "src/core/onset-selection.ts": "00a59956b5a27c49d78f6e8cb76fa1aa2bdde5d364d57a2815716a4b096c917f",
+        "src/core/chart.ts": "7299a354b4ba4e652f2f6d43ed733dd330194540dabd7cc70b1578b6c8879c8e",
+        "src/types.ts": "905bfa7448c1d96ba0d84bfac954498ca6f752352fcafc747b1ada35c2a6fe68",
+        "src/core/phase-dp-types.ts": "737c54e98f9f614ed997a207624d1556b666df2fe40fbfb8d1f5532c1eae798f"
+      },
+      "candidateSourceHashes": {
+        "L": {
+          "src/core/clock-evidence.ts": "128164a84bf29dc71667d9f82517dd0a595e6daf9b4045e69756c84e7e5b0c16",
+          "src/core/phase-gate.ts": "23f7a52d3a72076857868a8533995abaf0e009b16700514f3434ccb803901e01",
+          "src/core/tempo-family-config.ts": "3036bb40ce762546651cad5a890c54809b9264df6f45311b7ba1ae98f178d13d",
+          "src/core/tempo-families.ts": "b4181a948486c12a09ac81150b7bb6d095d3337768664d5ef5abb1889dd7920c",
+          "src/core/rhythm.ts": "e1e29ad398699e00e2f4c47ada13c9e331dbaa5b04e650d3d4fe93ab98640424",
+          "src/core/chroma.ts": "4172510959a332bfeff4970964dd5c8ad2a696d1725bbd1496481d8d82f84ded",
+          "src/core/rhythm-source.ts": "878fe191a23b67d36545b06fd41428df5832f3ac53db6fbc29cb44ebe51c5a90",
+          "src/core/musical-events.ts": "a4b51ea2fbb794656cbfabcaab3edbbe485925398f2afd2ccd82e991d2e3e185",
+          "src/core/signal-events.ts": "cfab9dd27bcd2d5a3daecce3ec4cf084e6897e5e72538ed3179d078ce6518c13",
+          "src/core/signal-analysis.ts": "51ae75faeebee18a8c1f4a0e22e063d0067c0e5cd1f37fb8a5b045471682ce98",
+          "src/core/signal-pool.ts": "3d54e98503ada15b29f9018f2c23528bda98e2e8a30ad78cbc55272568c1855e",
+          "src/core/signal-binding.ts": "93c9e516abe08a08a0a43c54f01591e2bd6f8f33ad6291f20ec946ce60e8e36d",
+          "src/core/analysis.ts": "e3f33c635510cbaf2c7f8d07a2d35230eca1617c03045ab58837d82d5f77b7e7",
+          "src/core/analysis-fallback.ts": "34410f957e644ca0fd2281145ccbefb4967b9a2d220bc9c3cad373dbd730c296",
+          "src/core/chart-constraints.ts": "35e4f304aed8eb2dfe49bb4dbae6d7b7db7b5deea34732a96dc7df05aeec1736",
+          "src/core/patterns.ts": "10966f254c5e5025ff8acd12986fa3218daa6e0467e75313768ce9833fe34ffc",
+          "src/core/phrases.ts": "8d9029820b333c3f699cecf9998c950294f50d0fe72751cc3fd13b871c5dfc89",
+          "src/core/fingering.ts": "797d6bc08a44163a261e4e02c22fe8ea4e57eff67bfd5fdc9a5d938b2b23d83e",
+          "src/core/onset-selection.ts": "00a59956b5a27c49d78f6e8cb76fa1aa2bdde5d364d57a2815716a4b096c917f",
+          "src/core/chart.ts": "7299a354b4ba4e652f2f6d43ed733dd330194540dabd7cc70b1578b6c8879c8e",
+          "src/types.ts": "905bfa7448c1d96ba0d84bfac954498ca6f752352fcafc747b1ada35c2a6fe68",
+          "src/core/phase-dp.ts": "33165fa8deefc87d52c1b463a2dbd3ca08ecfad16e655b8fcfc365f839400ae6",
+          "src/core/phase-dp-types.ts": "737c54e98f9f614ed997a207624d1556b666df2fe40fbfb8d1f5532c1eae798f",
+          "src/core/phase-dp-kernel.ts": "d0575991cc06e5470bb7ad420c1324d2b2f06909bb20e7ac82017ec499a8f438"
+        }
+      },
+      "traceSourceHashes": {
+        "B": {
+          "src/core/clock-evidence.ts": "128164a84bf29dc71667d9f82517dd0a595e6daf9b4045e69756c84e7e5b0c16",
+          "src/core/phase-gate.ts": "23f7a52d3a72076857868a8533995abaf0e009b16700514f3434ccb803901e01",
+          "src/core/phase-dp-kernel.ts": "d0575991cc06e5470bb7ad420c1324d2b2f06909bb20e7ac82017ec499a8f438",
+          "src/core/phase-dp.ts": "33165fa8deefc87d52c1b463a2dbd3ca08ecfad16e655b8fcfc365f839400ae6",
+          "src/core/tempo-family-config.ts": "3036bb40ce762546651cad5a890c54809b9264df6f45311b7ba1ae98f178d13d",
+          "src/core/tempo-families.ts": "b4181a948486c12a09ac81150b7bb6d095d3337768664d5ef5abb1889dd7920c",
+          "src/core/rhythm.ts": "4790ec7882a4504dbd1087a4ac18124021f11e87f4547dfca230039153e58ffc",
+          "src/core/chroma.ts": "4172510959a332bfeff4970964dd5c8ad2a696d1725bbd1496481d8d82f84ded",
+          "src/core/rhythm-source.ts": "878fe191a23b67d36545b06fd41428df5832f3ac53db6fbc29cb44ebe51c5a90",
+          "src/core/musical-events.ts": "a4b51ea2fbb794656cbfabcaab3edbbe485925398f2afd2ccd82e991d2e3e185",
+          "src/core/signal-events.ts": "cfab9dd27bcd2d5a3daecce3ec4cf084e6897e5e72538ed3179d078ce6518c13",
+          "src/core/signal-analysis.ts": "b8ccfc1c768fbb2fd2ab658cd9d2e305251f7ded2a319fd4daa24278ccdafb92",
+          "src/core/signal-pool.ts": "3d54e98503ada15b29f9018f2c23528bda98e2e8a30ad78cbc55272568c1855e",
+          "src/core/signal-binding.ts": "93c9e516abe08a08a0a43c54f01591e2bd6f8f33ad6291f20ec946ce60e8e36d",
+          "src/core/analysis.ts": "e3f33c635510cbaf2c7f8d07a2d35230eca1617c03045ab58837d82d5f77b7e7",
+          "src/core/analysis-fallback.ts": "34410f957e644ca0fd2281145ccbefb4967b9a2d220bc9c3cad373dbd730c296",
+          "src/core/chart-constraints.ts": "35e4f304aed8eb2dfe49bb4dbae6d7b7db7b5deea34732a96dc7df05aeec1736",
+          "src/core/patterns.ts": "10966f254c5e5025ff8acd12986fa3218daa6e0467e75313768ce9833fe34ffc",
+          "src/core/phrases.ts": "8d9029820b333c3f699cecf9998c950294f50d0fe72751cc3fd13b871c5dfc89",
+          "src/core/fingering.ts": "797d6bc08a44163a261e4e02c22fe8ea4e57eff67bfd5fdc9a5d938b2b23d83e",
+          "src/core/onset-selection.ts": "00a59956b5a27c49d78f6e8cb76fa1aa2bdde5d364d57a2815716a4b096c917f",
+          "src/core/chart.ts": "7299a354b4ba4e652f2f6d43ed733dd330194540dabd7cc70b1578b6c8879c8e",
+          "src/types.ts": "905bfa7448c1d96ba0d84bfac954498ca6f752352fcafc747b1ada35c2a6fe68",
+          "src/core/phase-dp-types.ts": "737c54e98f9f614ed997a207624d1556b666df2fe40fbfb8d1f5532c1eae798f"
+        },
+        "L": {
+          "src/core/clock-evidence.ts": "128164a84bf29dc71667d9f82517dd0a595e6daf9b4045e69756c84e7e5b0c16",
+          "src/core/phase-gate.ts": "23f7a52d3a72076857868a8533995abaf0e009b16700514f3434ccb803901e01",
+          "src/core/tempo-family-config.ts": "3036bb40ce762546651cad5a890c54809b9264df6f45311b7ba1ae98f178d13d",
+          "src/core/tempo-families.ts": "b4181a948486c12a09ac81150b7bb6d095d3337768664d5ef5abb1889dd7920c",
+          "src/core/rhythm.ts": "d565113000ca4b36397c66fa031c33bbb87d6ddb08051dc8d71b3705a7485759",
+          "src/core/chroma.ts": "4172510959a332bfeff4970964dd5c8ad2a696d1725bbd1496481d8d82f84ded",
+          "src/core/rhythm-source.ts": "878fe191a23b67d36545b06fd41428df5832f3ac53db6fbc29cb44ebe51c5a90",
+          "src/core/musical-events.ts": "a4b51ea2fbb794656cbfabcaab3edbbe485925398f2afd2ccd82e991d2e3e185",
+          "src/core/signal-events.ts": "cfab9dd27bcd2d5a3daecce3ec4cf084e6897e5e72538ed3179d078ce6518c13",
+          "src/core/signal-analysis.ts": "b8ccfc1c768fbb2fd2ab658cd9d2e305251f7ded2a319fd4daa24278ccdafb92",
+          "src/core/signal-pool.ts": "3d54e98503ada15b29f9018f2c23528bda98e2e8a30ad78cbc55272568c1855e",
+          "src/core/signal-binding.ts": "93c9e516abe08a08a0a43c54f01591e2bd6f8f33ad6291f20ec946ce60e8e36d",
+          "src/core/analysis.ts": "e3f33c635510cbaf2c7f8d07a2d35230eca1617c03045ab58837d82d5f77b7e7",
+          "src/core/analysis-fallback.ts": "34410f957e644ca0fd2281145ccbefb4967b9a2d220bc9c3cad373dbd730c296",
+          "src/core/chart-constraints.ts": "35e4f304aed8eb2dfe49bb4dbae6d7b7db7b5deea34732a96dc7df05aeec1736",
+          "src/core/patterns.ts": "10966f254c5e5025ff8acd12986fa3218daa6e0467e75313768ce9833fe34ffc",
+          "src/core/phrases.ts": "8d9029820b333c3f699cecf9998c950294f50d0fe72751cc3fd13b871c5dfc89",
+          "src/core/fingering.ts": "797d6bc08a44163a261e4e02c22fe8ea4e57eff67bfd5fdc9a5d938b2b23d83e",
+          "src/core/onset-selection.ts": "00a59956b5a27c49d78f6e8cb76fa1aa2bdde5d364d57a2815716a4b096c917f",
+          "src/core/chart.ts": "7299a354b4ba4e652f2f6d43ed733dd330194540dabd7cc70b1578b6c8879c8e",
+          "src/types.ts": "905bfa7448c1d96ba0d84bfac954498ca6f752352fcafc747b1ada35c2a6fe68",
+          "src/core/phase-dp.ts": "33165fa8deefc87d52c1b463a2dbd3ca08ecfad16e655b8fcfc365f839400ae6",
+          "src/core/phase-dp-types.ts": "737c54e98f9f614ed997a207624d1556b666df2fe40fbfb8d1f5532c1eae798f",
+          "src/core/phase-dp-kernel.ts": "d0575991cc06e5470bb7ad420c1324d2b2f06909bb20e7ac82017ec499a8f438"
+        }
+      }
+    },
+    "PULSE": {
+      "scope": {
+        "knownPCM": 36,
+        "previouslyObservedClips": 5,
+        "analyzedValidFixtures": 36,
+        "expectedNormalRejects": 5,
+        "broad210": false,
+        "not210Statistics": true
+      },
+      "freezeSHA": "21c9c99202083f9015238353f72c624b088d91c7c63ccb9bbbbb6ccc81a59522",
+      "reportSHA": "81e5716f71b164a061b5100aba79ce194b87cb6d6f863279a6999cec2c1537f1",
+      "summarySHA": "b6b2eba025439a3825ed1cfb3b864967676f6324e1424a23978c77a1abbad2dc",
+      "assertions": {
+        "stockTraceAnalysis": 72,
+        "stockTraceCharts": 288,
+        "deterministic": 288,
+        "physical": 288,
+        "baselineAnalysisGolden": 36,
+        "baselineChartGolden": 144,
+        "sourceAndPhysicalFields": 36,
+        "clockInputAndEnvelope": 36,
+        "boundaryExcluded": 72,
+        "legacyConfidence": 72,
+        "noFakeDpResult": 36
+      },
+      "statusCounts": {
+        "B": {
+          "ANALYZED": 36,
+          "SILENCE": 2,
+          "INSUFFICIENT_ONSETS": 3
+        },
+        "PULSE": {
+          "ANALYZED": 36,
+          "SILENCE": 2,
+          "INSUFFICIENT_ONSETS": 3
+        }
+      },
+      "allModeF1NegativeEntries": 29,
+      "baselineSourceHashes": {
+        "src/core/analysis.ts": "e3f33c635510cbaf2c7f8d07a2d35230eca1617c03045ab58837d82d5f77b7e7",
+        "src/core/signal-analysis.ts": "51ae75faeebee18a8c1f4a0e22e063d0067c0e5cd1f37fb8a5b045471682ce98",
+        "src/core/clock-evidence.ts": "128164a84bf29dc71667d9f82517dd0a595e6daf9b4045e69756c84e7e5b0c16",
+        "src/types.ts": "905bfa7448c1d96ba0d84bfac954498ca6f752352fcafc747b1ada35c2a6fe68",
+        "src/core/rhythm.ts": "7c47723914896cc56511fdf42f71c40132146787e8e00fdc1b55db0226250115",
+        "src/core/phase-gate.ts": "23f7a52d3a72076857868a8533995abaf0e009b16700514f3434ccb803901e01",
+        "src/core/tempo-families.ts": "b4181a948486c12a09ac81150b7bb6d095d3337768664d5ef5abb1889dd7920c",
+        "src/core/tempo-family-config.ts": "3036bb40ce762546651cad5a890c54809b9264df6f45311b7ba1ae98f178d13d",
+        "src/core/phase-dp.ts": "33165fa8deefc87d52c1b463a2dbd3ca08ecfad16e655b8fcfc365f839400ae6",
+        "src/core/phase-dp-types.ts": "737c54e98f9f614ed997a207624d1556b666df2fe40fbfb8d1f5532c1eae798f",
+        "src/core/phase-dp-kernel.ts": "d0575991cc06e5470bb7ad420c1324d2b2f06909bb20e7ac82017ec499a8f438",
+        "src/core/chroma.ts": "4172510959a332bfeff4970964dd5c8ad2a696d1725bbd1496481d8d82f84ded",
+        "src/core/rhythm-source.ts": "878fe191a23b67d36545b06fd41428df5832f3ac53db6fbc29cb44ebe51c5a90",
+        "src/core/signal-events.ts": "cfab9dd27bcd2d5a3daecce3ec4cf084e6897e5e72538ed3179d078ce6518c13",
+        "src/core/musical-events.ts": "a4b51ea2fbb794656cbfabcaab3edbbe485925398f2afd2ccd82e991d2e3e185",
+        "src/core/signal-binding.ts": "93c9e516abe08a08a0a43c54f01591e2bd6f8f33ad6291f20ec946ce60e8e36d",
+        "src/core/signal-pool.ts": "3d54e98503ada15b29f9018f2c23528bda98e2e8a30ad78cbc55272568c1855e",
+        "src/core/analysis-fallback.ts": "34410f957e644ca0fd2281145ccbefb4967b9a2d220bc9c3cad373dbd730c296",
+        "src/core/chart.ts": "7299a354b4ba4e652f2f6d43ed733dd330194540dabd7cc70b1578b6c8879c8e",
+        "src/core/phrases.ts": "8d9029820b333c3f699cecf9998c950294f50d0fe72751cc3fd13b871c5dfc89",
+        "src/core/chart-constraints.ts": "35e4f304aed8eb2dfe49bb4dbae6d7b7db7b5deea34732a96dc7df05aeec1736",
+        "src/core/patterns.ts": "10966f254c5e5025ff8acd12986fa3218daa6e0467e75313768ce9833fe34ffc",
+        "src/core/fingering.ts": "797d6bc08a44163a261e4e02c22fe8ea4e57eff67bfd5fdc9a5d938b2b23d83e",
+        "src/core/onset-selection.ts": "00a59956b5a27c49d78f6e8cb76fa1aa2bdde5d364d57a2815716a4b096c917f"
+      },
+      "candidateSourceHashes": {
+        "PULSE": {
+          "src/core/analysis.ts": "e3f33c635510cbaf2c7f8d07a2d35230eca1617c03045ab58837d82d5f77b7e7",
+          "src/core/signal-analysis.ts": "51ae75faeebee18a8c1f4a0e22e063d0067c0e5cd1f37fb8a5b045471682ce98",
+          "src/core/clock-evidence.ts": "128164a84bf29dc71667d9f82517dd0a595e6daf9b4045e69756c84e7e5b0c16",
+          "src/types.ts": "905bfa7448c1d96ba0d84bfac954498ca6f752352fcafc747b1ada35c2a6fe68",
+          "src/core/rhythm.ts": "5460d6e2db604070e672418e86f01a0c5addb2fccf58fc38b8da1db611c11cd8",
+          "src/core/phase-gate.ts": "23f7a52d3a72076857868a8533995abaf0e009b16700514f3434ccb803901e01",
+          "src/core/tempo-families.ts": "b4181a948486c12a09ac81150b7bb6d095d3337768664d5ef5abb1889dd7920c",
+          "src/core/tempo-family-config.ts": "3036bb40ce762546651cad5a890c54809b9264df6f45311b7ba1ae98f178d13d",
+          "src/core/local-pulse.ts": "946a456071e32c9654ea31dfd112579d0cb0efded33c43aef55d44abba724fbe",
+          "src/core/chroma.ts": "4172510959a332bfeff4970964dd5c8ad2a696d1725bbd1496481d8d82f84ded",
+          "src/core/rhythm-source.ts": "878fe191a23b67d36545b06fd41428df5832f3ac53db6fbc29cb44ebe51c5a90",
+          "src/core/signal-events.ts": "cfab9dd27bcd2d5a3daecce3ec4cf084e6897e5e72538ed3179d078ce6518c13",
+          "src/core/musical-events.ts": "a4b51ea2fbb794656cbfabcaab3edbbe485925398f2afd2ccd82e991d2e3e185",
+          "src/core/signal-binding.ts": "93c9e516abe08a08a0a43c54f01591e2bd6f8f33ad6291f20ec946ce60e8e36d",
+          "src/core/signal-pool.ts": "3d54e98503ada15b29f9018f2c23528bda98e2e8a30ad78cbc55272568c1855e",
+          "src/core/analysis-fallback.ts": "34410f957e644ca0fd2281145ccbefb4967b9a2d220bc9c3cad373dbd730c296",
+          "src/core/chart.ts": "7299a354b4ba4e652f2f6d43ed733dd330194540dabd7cc70b1578b6c8879c8e",
+          "src/core/phrases.ts": "8d9029820b333c3f699cecf9998c950294f50d0fe72751cc3fd13b871c5dfc89",
+          "src/core/chart-constraints.ts": "35e4f304aed8eb2dfe49bb4dbae6d7b7db7b5deea34732a96dc7df05aeec1736",
+          "src/core/patterns.ts": "10966f254c5e5025ff8acd12986fa3218daa6e0467e75313768ce9833fe34ffc",
+          "src/core/fingering.ts": "797d6bc08a44163a261e4e02c22fe8ea4e57eff67bfd5fdc9a5d938b2b23d83e",
+          "src/core/onset-selection.ts": "00a59956b5a27c49d78f6e8cb76fa1aa2bdde5d364d57a2815716a4b096c917f"
+        }
+      },
+      "traceSourceHashes": {
+        "B": {
+          "src/core/analysis.ts": "e3f33c635510cbaf2c7f8d07a2d35230eca1617c03045ab58837d82d5f77b7e7",
+          "src/core/signal-analysis.ts": "b8ccfc1c768fbb2fd2ab658cd9d2e305251f7ded2a319fd4daa24278ccdafb92",
+          "src/core/clock-evidence.ts": "128164a84bf29dc71667d9f82517dd0a595e6daf9b4045e69756c84e7e5b0c16",
+          "src/types.ts": "905bfa7448c1d96ba0d84bfac954498ca6f752352fcafc747b1ada35c2a6fe68",
+          "src/core/rhythm.ts": "ad63f5cabea305613395e95ac001ebc7bbe12f589e165aea09dd1de01bf9669b",
+          "src/core/phase-gate.ts": "23f7a52d3a72076857868a8533995abaf0e009b16700514f3434ccb803901e01",
+          "src/core/tempo-families.ts": "b4181a948486c12a09ac81150b7bb6d095d3337768664d5ef5abb1889dd7920c",
+          "src/core/tempo-family-config.ts": "3036bb40ce762546651cad5a890c54809b9264df6f45311b7ba1ae98f178d13d",
+          "src/core/phase-dp.ts": "33165fa8deefc87d52c1b463a2dbd3ca08ecfad16e655b8fcfc365f839400ae6",
+          "src/core/phase-dp-types.ts": "737c54e98f9f614ed997a207624d1556b666df2fe40fbfb8d1f5532c1eae798f",
+          "src/core/phase-dp-kernel.ts": "d0575991cc06e5470bb7ad420c1324d2b2f06909bb20e7ac82017ec499a8f438",
+          "src/core/chroma.ts": "4172510959a332bfeff4970964dd5c8ad2a696d1725bbd1496481d8d82f84ded",
+          "src/core/rhythm-source.ts": "878fe191a23b67d36545b06fd41428df5832f3ac53db6fbc29cb44ebe51c5a90",
+          "src/core/signal-events.ts": "cfab9dd27bcd2d5a3daecce3ec4cf084e6897e5e72538ed3179d078ce6518c13",
+          "src/core/musical-events.ts": "a4b51ea2fbb794656cbfabcaab3edbbe485925398f2afd2ccd82e991d2e3e185",
+          "src/core/signal-binding.ts": "93c9e516abe08a08a0a43c54f01591e2bd6f8f33ad6291f20ec946ce60e8e36d",
+          "src/core/signal-pool.ts": "3d54e98503ada15b29f9018f2c23528bda98e2e8a30ad78cbc55272568c1855e",
+          "src/core/analysis-fallback.ts": "34410f957e644ca0fd2281145ccbefb4967b9a2d220bc9c3cad373dbd730c296",
+          "src/core/chart.ts": "7299a354b4ba4e652f2f6d43ed733dd330194540dabd7cc70b1578b6c8879c8e",
+          "src/core/phrases.ts": "8d9029820b333c3f699cecf9998c950294f50d0fe72751cc3fd13b871c5dfc89",
+          "src/core/chart-constraints.ts": "35e4f304aed8eb2dfe49bb4dbae6d7b7db7b5deea34732a96dc7df05aeec1736",
+          "src/core/patterns.ts": "10966f254c5e5025ff8acd12986fa3218daa6e0467e75313768ce9833fe34ffc",
+          "src/core/fingering.ts": "797d6bc08a44163a261e4e02c22fe8ea4e57eff67bfd5fdc9a5d938b2b23d83e",
+          "src/core/onset-selection.ts": "00a59956b5a27c49d78f6e8cb76fa1aa2bdde5d364d57a2815716a4b096c917f"
+        },
+        "PULSE": {
+          "src/core/analysis.ts": "e3f33c635510cbaf2c7f8d07a2d35230eca1617c03045ab58837d82d5f77b7e7",
+          "src/core/signal-analysis.ts": "b8ccfc1c768fbb2fd2ab658cd9d2e305251f7ded2a319fd4daa24278ccdafb92",
+          "src/core/clock-evidence.ts": "128164a84bf29dc71667d9f82517dd0a595e6daf9b4045e69756c84e7e5b0c16",
+          "src/types.ts": "905bfa7448c1d96ba0d84bfac954498ca6f752352fcafc747b1ada35c2a6fe68",
+          "src/core/rhythm.ts": "e639bcfed76d2914acebf1475a33973a921bcf69cba57b7f9c519ce2cfd3477a",
+          "src/core/phase-gate.ts": "23f7a52d3a72076857868a8533995abaf0e009b16700514f3434ccb803901e01",
+          "src/core/tempo-families.ts": "b4181a948486c12a09ac81150b7bb6d095d3337768664d5ef5abb1889dd7920c",
+          "src/core/tempo-family-config.ts": "3036bb40ce762546651cad5a890c54809b9264df6f45311b7ba1ae98f178d13d",
+          "src/core/local-pulse.ts": "946a456071e32c9654ea31dfd112579d0cb0efded33c43aef55d44abba724fbe",
+          "src/core/chroma.ts": "4172510959a332bfeff4970964dd5c8ad2a696d1725bbd1496481d8d82f84ded",
+          "src/core/rhythm-source.ts": "878fe191a23b67d36545b06fd41428df5832f3ac53db6fbc29cb44ebe51c5a90",
+          "src/core/signal-events.ts": "cfab9dd27bcd2d5a3daecce3ec4cf084e6897e5e72538ed3179d078ce6518c13",
+          "src/core/musical-events.ts": "a4b51ea2fbb794656cbfabcaab3edbbe485925398f2afd2ccd82e991d2e3e185",
+          "src/core/signal-binding.ts": "93c9e516abe08a08a0a43c54f01591e2bd6f8f33ad6291f20ec946ce60e8e36d",
+          "src/core/signal-pool.ts": "3d54e98503ada15b29f9018f2c23528bda98e2e8a30ad78cbc55272568c1855e",
+          "src/core/analysis-fallback.ts": "34410f957e644ca0fd2281145ccbefb4967b9a2d220bc9c3cad373dbd730c296",
+          "src/core/chart.ts": "7299a354b4ba4e652f2f6d43ed733dd330194540dabd7cc70b1578b6c8879c8e",
+          "src/core/phrases.ts": "8d9029820b333c3f699cecf9998c950294f50d0fe72751cc3fd13b871c5dfc89",
+          "src/core/chart-constraints.ts": "35e4f304aed8eb2dfe49bb4dbae6d7b7db7b5deea34732a96dc7df05aeec1736",
+          "src/core/patterns.ts": "10966f254c5e5025ff8acd12986fa3218daa6e0467e75313768ce9833fe34ffc",
+          "src/core/fingering.ts": "797d6bc08a44163a261e4e02c22fe8ea4e57eff67bfd5fdc9a5d938b2b23d83e",
+          "src/core/onset-selection.ts": "00a59956b5a27c49d78f6e8cb76fa1aa2bdde5d364d57a2815716a4b096c917f"
+        }
+      }
+    },
+    "R": {
+      "scope": {
+        "knownPCM": 36,
+        "previouslyObservedClips": 5,
+        "analyzedValidFixtures": 36,
+        "expectedNormalRejects": 5,
+        "broad210": true,
+        "not210Statistics": true
+      },
+      "freezeSHA": "84d21991ed0b7987d7fd7c149eb7bd2bd2492ac44c834cba23c63c664293d73b",
+      "reportSHA": "065b34bf7dcc71e6c7af58817d6d3800c015771773a2e36e589363842173b5ce",
+      "summarySHA": "c79e7d55d7db5d5f03d3c8bc6bee8234c33654e917e9e27e932acfab8db2f348",
+      "assertions": {
+        "stockTraceAnalysis": 72,
+        "crossArmAnalysis": 36,
+        "stockTraceCharts": 288,
+        "deterministic": 288,
+        "physical": 288,
+        "sourceRoleFilterExact": 288,
+        "gapPolicyAndOriginalEvents": 288,
+        "signalRoute": 288,
+        "clockAndSourceExact": 36,
+        "boundaryCueCannotEvictEligibleRegular": 144,
+        "oneFingerHoldConflictChecks": 72
+      },
+      "statusCounts": {
+        "B": {
+          "ANALYZED": 36,
+          "SILENCE": 2,
+          "INSUFFICIENT_ONSETS": 3
+        },
+        "R": {
+          "ANALYZED": 36,
+          "SILENCE": 2,
+          "INSUFFICIENT_ONSETS": 3
+        }
+      },
+      "allModeF1NegativeEntries": 16,
+      "baselineSourceHashes": {
+        "src/core/clock-evidence.ts": "128164a84bf29dc71667d9f82517dd0a595e6daf9b4045e69756c84e7e5b0c16",
+        "src/core/phase-gate.ts": "23f7a52d3a72076857868a8533995abaf0e009b16700514f3434ccb803901e01",
+        "src/core/phase-dp-kernel.ts": "d0575991cc06e5470bb7ad420c1324d2b2f06909bb20e7ac82017ec499a8f438",
+        "src/core/phase-dp.ts": "33165fa8deefc87d52c1b463a2dbd3ca08ecfad16e655b8fcfc365f839400ae6",
+        "src/core/tempo-family-config.ts": "3036bb40ce762546651cad5a890c54809b9264df6f45311b7ba1ae98f178d13d",
+        "src/core/tempo-families.ts": "b4181a948486c12a09ac81150b7bb6d095d3337768664d5ef5abb1889dd7920c",
+        "src/core/rhythm.ts": "7c47723914896cc56511fdf42f71c40132146787e8e00fdc1b55db0226250115",
+        "src/core/chroma.ts": "4172510959a332bfeff4970964dd5c8ad2a696d1725bbd1496481d8d82f84ded",
+        "src/core/rhythm-source.ts": "878fe191a23b67d36545b06fd41428df5832f3ac53db6fbc29cb44ebe51c5a90",
+        "src/core/musical-events.ts": "a4b51ea2fbb794656cbfabcaab3edbbe485925398f2afd2ccd82e991d2e3e185",
+        "src/core/signal-events.ts": "cfab9dd27bcd2d5a3daecce3ec4cf084e6897e5e72538ed3179d078ce6518c13",
+        "src/core/signal-analysis.ts": "51ae75faeebee18a8c1f4a0e22e063d0067c0e5cd1f37fb8a5b045471682ce98",
+        "src/core/signal-pool.ts": "3d54e98503ada15b29f9018f2c23528bda98e2e8a30ad78cbc55272568c1855e",
+        "src/core/signal-binding.ts": "93c9e516abe08a08a0a43c54f01591e2bd6f8f33ad6291f20ec946ce60e8e36d",
+        "src/core/analysis.ts": "e3f33c635510cbaf2c7f8d07a2d35230eca1617c03045ab58837d82d5f77b7e7",
+        "src/core/analysis-fallback.ts": "34410f957e644ca0fd2281145ccbefb4967b9a2d220bc9c3cad373dbd730c296",
+        "src/core/chart-constraints.ts": "35e4f304aed8eb2dfe49bb4dbae6d7b7db7b5deea34732a96dc7df05aeec1736",
+        "src/core/patterns.ts": "10966f254c5e5025ff8acd12986fa3218daa6e0467e75313768ce9833fe34ffc",
+        "src/core/phrases.ts": "8d9029820b333c3f699cecf9998c950294f50d0fe72751cc3fd13b871c5dfc89",
+        "src/core/fingering.ts": "797d6bc08a44163a261e4e02c22fe8ea4e57eff67bfd5fdc9a5d938b2b23d83e",
+        "src/core/onset-selection.ts": "00a59956b5a27c49d78f6e8cb76fa1aa2bdde5d364d57a2815716a4b096c917f",
+        "src/core/chart.ts": "7299a354b4ba4e652f2f6d43ed733dd330194540dabd7cc70b1578b6c8879c8e",
+        "src/types.ts": "905bfa7448c1d96ba0d84bfac954498ca6f752352fcafc747b1ada35c2a6fe68",
+        "src/core/phase-dp-types.ts": "737c54e98f9f614ed997a207624d1556b666df2fe40fbfb8d1f5532c1eae798f"
+      },
+      "candidateSourceHashes": {
+        "R": {
+          "src/core/clock-evidence.ts": "128164a84bf29dc71667d9f82517dd0a595e6daf9b4045e69756c84e7e5b0c16",
+          "src/core/phase-gate.ts": "23f7a52d3a72076857868a8533995abaf0e009b16700514f3434ccb803901e01",
+          "src/core/phase-dp-kernel.ts": "d0575991cc06e5470bb7ad420c1324d2b2f06909bb20e7ac82017ec499a8f438",
+          "src/core/phase-dp.ts": "33165fa8deefc87d52c1b463a2dbd3ca08ecfad16e655b8fcfc365f839400ae6",
+          "src/core/tempo-family-config.ts": "3036bb40ce762546651cad5a890c54809b9264df6f45311b7ba1ae98f178d13d",
+          "src/core/tempo-families.ts": "b4181a948486c12a09ac81150b7bb6d095d3337768664d5ef5abb1889dd7920c",
+          "src/core/rhythm.ts": "7c47723914896cc56511fdf42f71c40132146787e8e00fdc1b55db0226250115",
+          "src/core/chroma.ts": "4172510959a332bfeff4970964dd5c8ad2a696d1725bbd1496481d8d82f84ded",
+          "src/core/rhythm-source.ts": "878fe191a23b67d36545b06fd41428df5832f3ac53db6fbc29cb44ebe51c5a90",
+          "src/core/musical-events.ts": "a4b51ea2fbb794656cbfabcaab3edbbe485925398f2afd2ccd82e991d2e3e185",
+          "src/core/signal-events.ts": "cfab9dd27bcd2d5a3daecce3ec4cf084e6897e5e72538ed3179d078ce6518c13",
+          "src/core/signal-analysis.ts": "51ae75faeebee18a8c1f4a0e22e063d0067c0e5cd1f37fb8a5b045471682ce98",
+          "src/core/signal-pool.ts": "3d54e98503ada15b29f9018f2c23528bda98e2e8a30ad78cbc55272568c1855e",
+          "src/core/signal-binding.ts": "93c9e516abe08a08a0a43c54f01591e2bd6f8f33ad6291f20ec946ce60e8e36d",
+          "src/core/analysis.ts": "e3f33c635510cbaf2c7f8d07a2d35230eca1617c03045ab58837d82d5f77b7e7",
+          "src/core/analysis-fallback.ts": "34410f957e644ca0fd2281145ccbefb4967b9a2d220bc9c3cad373dbd730c296",
+          "src/core/chart-constraints.ts": "35e4f304aed8eb2dfe49bb4dbae6d7b7db7b5deea34732a96dc7df05aeec1736",
+          "src/core/patterns.ts": "10966f254c5e5025ff8acd12986fa3218daa6e0467e75313768ce9833fe34ffc",
+          "src/core/phrases.ts": "8d9029820b333c3f699cecf9998c950294f50d0fe72751cc3fd13b871c5dfc89",
+          "src/core/fingering.ts": "797d6bc08a44163a261e4e02c22fe8ea4e57eff67bfd5fdc9a5d938b2b23d83e",
+          "src/core/onset-selection.ts": "7b26e3f855c527d778fdbab5908707e0a2e9ff1967bcf2fdb654d50cf00de9e7",
+          "src/core/chart.ts": "9bcd2028cd0afa64cd443744606933356878e416a6cb81ce8df49812a0950540",
+          "src/types.ts": "905bfa7448c1d96ba0d84bfac954498ca6f752352fcafc747b1ada35c2a6fe68",
+          "src/core/phase-dp-types.ts": "737c54e98f9f614ed997a207624d1556b666df2fe40fbfb8d1f5532c1eae798f"
+        }
+      },
+      "traceSourceHashes": {
+        "B": {
+          "src/core/clock-evidence.ts": "128164a84bf29dc71667d9f82517dd0a595e6daf9b4045e69756c84e7e5b0c16",
+          "src/core/phase-gate.ts": "23f7a52d3a72076857868a8533995abaf0e009b16700514f3434ccb803901e01",
+          "src/core/phase-dp-kernel.ts": "d0575991cc06e5470bb7ad420c1324d2b2f06909bb20e7ac82017ec499a8f438",
+          "src/core/phase-dp.ts": "33165fa8deefc87d52c1b463a2dbd3ca08ecfad16e655b8fcfc365f839400ae6",
+          "src/core/tempo-family-config.ts": "3036bb40ce762546651cad5a890c54809b9264df6f45311b7ba1ae98f178d13d",
+          "src/core/tempo-families.ts": "b4181a948486c12a09ac81150b7bb6d095d3337768664d5ef5abb1889dd7920c",
+          "src/core/rhythm.ts": "7c47723914896cc56511fdf42f71c40132146787e8e00fdc1b55db0226250115",
+          "src/core/chroma.ts": "4172510959a332bfeff4970964dd5c8ad2a696d1725bbd1496481d8d82f84ded",
+          "src/core/rhythm-source.ts": "878fe191a23b67d36545b06fd41428df5832f3ac53db6fbc29cb44ebe51c5a90",
+          "src/core/musical-events.ts": "a4b51ea2fbb794656cbfabcaab3edbbe485925398f2afd2ccd82e991d2e3e185",
+          "src/core/signal-events.ts": "cfab9dd27bcd2d5a3daecce3ec4cf084e6897e5e72538ed3179d078ce6518c13",
+          "src/core/signal-analysis.ts": "51ae75faeebee18a8c1f4a0e22e063d0067c0e5cd1f37fb8a5b045471682ce98",
+          "src/core/signal-pool.ts": "3d54e98503ada15b29f9018f2c23528bda98e2e8a30ad78cbc55272568c1855e",
+          "src/core/signal-binding.ts": "93c9e516abe08a08a0a43c54f01591e2bd6f8f33ad6291f20ec946ce60e8e36d",
+          "src/core/analysis.ts": "e3f33c635510cbaf2c7f8d07a2d35230eca1617c03045ab58837d82d5f77b7e7",
+          "src/core/analysis-fallback.ts": "34410f957e644ca0fd2281145ccbefb4967b9a2d220bc9c3cad373dbd730c296",
+          "src/core/chart-constraints.ts": "35e4f304aed8eb2dfe49bb4dbae6d7b7db7b5deea34732a96dc7df05aeec1736",
+          "src/core/patterns.ts": "10966f254c5e5025ff8acd12986fa3218daa6e0467e75313768ce9833fe34ffc",
+          "src/core/phrases.ts": "8d9029820b333c3f699cecf9998c950294f50d0fe72751cc3fd13b871c5dfc89",
+          "src/core/fingering.ts": "797d6bc08a44163a261e4e02c22fe8ea4e57eff67bfd5fdc9a5d938b2b23d83e",
+          "src/core/onset-selection.ts": "00a59956b5a27c49d78f6e8cb76fa1aa2bdde5d364d57a2815716a4b096c917f",
+          "src/core/chart.ts": "a9520c7ebb23f26027fe55172cff890690c8aa52627847e32818f19966ee3890",
+          "src/types.ts": "905bfa7448c1d96ba0d84bfac954498ca6f752352fcafc747b1ada35c2a6fe68",
+          "src/core/phase-dp-types.ts": "737c54e98f9f614ed997a207624d1556b666df2fe40fbfb8d1f5532c1eae798f"
+        },
+        "R": {
+          "src/core/clock-evidence.ts": "128164a84bf29dc71667d9f82517dd0a595e6daf9b4045e69756c84e7e5b0c16",
+          "src/core/phase-gate.ts": "23f7a52d3a72076857868a8533995abaf0e009b16700514f3434ccb803901e01",
+          "src/core/phase-dp-kernel.ts": "d0575991cc06e5470bb7ad420c1324d2b2f06909bb20e7ac82017ec499a8f438",
+          "src/core/phase-dp.ts": "33165fa8deefc87d52c1b463a2dbd3ca08ecfad16e655b8fcfc365f839400ae6",
+          "src/core/tempo-family-config.ts": "3036bb40ce762546651cad5a890c54809b9264df6f45311b7ba1ae98f178d13d",
+          "src/core/tempo-families.ts": "b4181a948486c12a09ac81150b7bb6d095d3337768664d5ef5abb1889dd7920c",
+          "src/core/rhythm.ts": "7c47723914896cc56511fdf42f71c40132146787e8e00fdc1b55db0226250115",
+          "src/core/chroma.ts": "4172510959a332bfeff4970964dd5c8ad2a696d1725bbd1496481d8d82f84ded",
+          "src/core/rhythm-source.ts": "878fe191a23b67d36545b06fd41428df5832f3ac53db6fbc29cb44ebe51c5a90",
+          "src/core/musical-events.ts": "a4b51ea2fbb794656cbfabcaab3edbbe485925398f2afd2ccd82e991d2e3e185",
+          "src/core/signal-events.ts": "cfab9dd27bcd2d5a3daecce3ec4cf084e6897e5e72538ed3179d078ce6518c13",
+          "src/core/signal-analysis.ts": "51ae75faeebee18a8c1f4a0e22e063d0067c0e5cd1f37fb8a5b045471682ce98",
+          "src/core/signal-pool.ts": "3d54e98503ada15b29f9018f2c23528bda98e2e8a30ad78cbc55272568c1855e",
+          "src/core/signal-binding.ts": "93c9e516abe08a08a0a43c54f01591e2bd6f8f33ad6291f20ec946ce60e8e36d",
+          "src/core/analysis.ts": "e3f33c635510cbaf2c7f8d07a2d35230eca1617c03045ab58837d82d5f77b7e7",
+          "src/core/analysis-fallback.ts": "34410f957e644ca0fd2281145ccbefb4967b9a2d220bc9c3cad373dbd730c296",
+          "src/core/chart-constraints.ts": "35e4f304aed8eb2dfe49bb4dbae6d7b7db7b5deea34732a96dc7df05aeec1736",
+          "src/core/patterns.ts": "10966f254c5e5025ff8acd12986fa3218daa6e0467e75313768ce9833fe34ffc",
+          "src/core/phrases.ts": "8d9029820b333c3f699cecf9998c950294f50d0fe72751cc3fd13b871c5dfc89",
+          "src/core/fingering.ts": "797d6bc08a44163a261e4e02c22fe8ea4e57eff67bfd5fdc9a5d938b2b23d83e",
+          "src/core/onset-selection.ts": "7b26e3f855c527d778fdbab5908707e0a2e9ff1967bcf2fdb654d50cf00de9e7",
+          "src/core/chart.ts": "037dd4a89005515655c21ec96bd1d2e2f72e23c6a3bc9fe9fd06f2a0353b5060",
+          "src/types.ts": "905bfa7448c1d96ba0d84bfac954498ca6f752352fcafc747b1ada35c2a6fe68",
+          "src/core/phase-dp-types.ts": "737c54e98f9f614ed997a207624d1556b666df2fe40fbfb8d1f5532c1eae798f"
+        }
+      }
+    }
+  },
+  "errorClassifications": [
+    {
+      "study": "WS",
+      "classification": "invalid_harness_excluded",
+      "unexpected": 27,
+      "reason": "Namespace spread replaced canonical analysis wrapper with raw signal analyzer; valid-v2 exports only CALLER. Candidate/parameters unchanged.",
+      "invalidReportSHA": "3be4c0b22d980217aefd38c30fd7460ee5299a502a8cf314e2a099b33f5090b2",
+      "validUnexpected": 0
+    },
+    {
+      "study": "D",
+      "classification": "valid_expected_audio_rejections",
+      "normalRejects": 5,
+      "validUnexpected": 0
+    },
+    {
+      "study": "L",
+      "classification": "valid_comparator_and_documentation_correction",
+      "normalRejects": 5,
+      "validUnexpected": 0,
+      "reason": "Initial notes confused upstream ODF-generation tests with cache equivalence; corrected documentation. Own raw/cache equivalence separate; source-only manifest0 predates later comparator calls.",
+      "correctionSHA": "0bf814bef87da87f6def1eb987f41a9677ffbd0dfba0eb7da79d215928510c9c"
+    },
+    {
+      "study": "PULSE",
+      "classification": "compile_preflight_failure_excluded",
+      "algorithmCallsBeforeRepair": 0,
+      "reason": "B trace temporary phase binding conflicted with original meter variable; v2 renamed temporary only. All49 stock files and fixed inputs unchanged.",
+      "invalidFreezeSHA": "d6e067bc265c6b6eda6e9a614a1365f34ed76fa44e0bd93ce36124abd784e35b",
+      "correctionSHA": "cf1269429ac59bd8bafed0dcacd225d8bb999b4609cb87197d93a013b70de9ca",
+      "normalRejects": 5,
+      "validUnexpected": 0
+    },
+    {
+      "study": "R-small",
+      "classification": "invalid_harness_excluded",
+      "unexpectedTypeErrors": 82,
+      "algorithmCallsBeforeRepair": 0,
+      "reason": "Holder.exports instead of holder.exports.api; valid-v2 changed only export binding/startup assertion/output paths.",
+      "invalidReportSHA": "db2700ba8a5b46f515d8148d4659b646940bf36e71dd999d61386bbe237ffde2",
+      "normalRejects": 5,
+      "validUnexpected": 0
+    },
+    {
+      "study": "R210",
+      "classification": "valid_diagnostic_with_postwrite_console_error",
+      "reason": "Summary and CSV written successfully; final console used wrong local variable. Console-only fix; no rerun/source/metric changes.",
+      "recordSHA": "f74f4d7b27465e87065f0712b5ba8e2c31bbcf8ace39b3b256a5cc912ca8a517",
+      "qualityGatePassed": false
+    }
+  ],
+  "libraryAudit": {
+    "name": "audiojs/beat",
+    "commit": "b7a294a5f7bbc9726f9119b9d3304ef569ef7c6a",
+    "manifestSHA": "abbada0ea8388284c14d55dcb873ec67a089d275f43e017c573c4144b99f9f89",
+    "files": {
+      "packages/beat-track/track.js": {
+        "sha256": "5936c629a4e4c0b7dcf76db5fb4888341eccad16f09223686ab13827d8cebea4",
+        "url": "https://github.com/audiojs/beat/blob/b7a294a5f7bbc9726f9119b9d3304ef569ef7c6a/packages/beat-track/track.js"
+      },
+      "packages/beat-track/index.d.ts": {
+        "sha256": "9b04d33b7e29b1eeeee6462954d8637097bd0f09ab442e80437c52647206cfe0",
+        "url": "https://github.com/audiojs/beat/blob/b7a294a5f7bbc9726f9119b9d3304ef569ef7c6a/packages/beat-track/index.d.ts"
+      },
+      "packages/beat-track/package.json": {
+        "sha256": "b2f1c1228a7caff324ce4489b27d6a8d0c486dcb50e5ce4c4dd62c3cca50c388",
+        "url": "https://github.com/audiojs/beat/blob/b7a294a5f7bbc9726f9119b9d3304ef569ef7c6a/packages/beat-track/package.json"
+      },
+      "packages/beat-tempo/comb.js": {
+        "sha256": "23a2928678044507b8d8edd72ddca41d0096df0678bce6d48504cb987503ff28",
+        "url": "https://github.com/audiojs/beat/blob/b7a294a5f7bbc9726f9119b9d3304ef569ef7c6a/packages/beat-tempo/comb.js"
+      },
+      "packages/onset/index.js": {
+        "sha256": "0e6eb286b39e31d8fdc6fb311c0350dca5274a1820b1953081de9ffc2ff0f136",
+        "url": "https://github.com/audiojs/beat/blob/b7a294a5f7bbc9726f9119b9d3304ef569ef7c6a/packages/onset/index.js"
+      },
+      "LICENSE": {
+        "sha256": "c1758346c2569f07a2dc88ad2396f5e8926ac9a36b51e0a49a23e7e12f99ffa6",
+        "url": "https://github.com/audiojs/beat/blob/b7a294a5f7bbc9726f9119b9d3304ef569ef7c6a/LICENSE"
+      },
+      "test.js": {
+        "sha256": "691ba74adece5e57168923aaa1563584906517da2a527caf69c5df25c504c2af",
+        "url": "https://github.com/audiojs/beat/blob/b7a294a5f7bbc9726f9119b9d3304ef569ef7c6a/test.js"
+      }
+    },
+    "license": "MIT text followed by Krishnized link; dependency notices preserved in private audit; no third-party source copied in this public export.",
+    "runtimeDependencies": {
+      "fourier-transform": "2.4.0",
+      "window-function": "3.0.1"
+    },
+    "comparator": "source-level cached-ODF only; not npm high-level PCM end-to-end",
+    "cacheSymbol": "Symbol.for('@audio/onset:odf')",
+    "options": {
+      "fs": 100,
+      "hopSize": 1,
+      "frameSize": 2,
+      "nFrames": "original envelope length",
+      "bpm": "omitted",
+      "minBpm": 60,
+      "maxBpm": 200,
+      "tightness": 680,
+      "candidates": 1
+    },
+    "confidence": "Actual beatTrack selected-frame raw ODF mass / total ODF mass; no fake1, not correctness probability; prefix extrapolation excluded from numerator.",
+    "output": "All stock beats retained, including backward prefix; interval-derived tempo; unknown downbeats[] and meterConfidence0.",
+    "noNeuralNetworkWeightsRemoteOrBackendInRuntime": true,
+    "adaptiveClaim": "One global combTempo targetPeriod; no local BPM trajectory or previous-lag state; do not call it a proven adaptive musical clock.",
+    "sourceAuditInitialZeroCallsIsHistorical": true,
+    "ownRawCacheEquivalence": "Separate subsequent comparator test, not upstream CI evidence.",
+    "observedOutputDiagnostics": [
+      {
+        "name": "country.00022",
+        "clockPredictions": 47,
+        "unsupported50": 10,
+        "unsupported70": 9,
+        "prefixBeforeFirstInput": 1,
+        "prefixUnsupported50": 0,
+        "invalidPhysicalClock": 0,
+        "stockBpm": 92,
+        "stockConfidence": 0.13258453666008688
+      },
+      {
+        "name": "hiphop.00013",
+        "clockPredictions": 52,
+        "unsupported50": 3,
+        "unsupported70": 3,
+        "prefixBeforeFirstInput": 1,
+        "prefixUnsupported50": 1,
+        "invalidPhysicalClock": 0,
+        "stockBpm": 102,
+        "stockConfidence": 0.10484247973236126
+      },
+      {
+        "name": "jazz.00035",
+        "clockPredictions": 36,
+        "unsupported50": 2,
+        "unsupported70": 2,
+        "prefixBeforeFirstInput": 1,
+        "prefixUnsupported50": 0,
+        "invalidPhysicalClock": 0,
+        "stockBpm": 71,
+        "stockConfidence": 0.12463696700616339
+      },
+      {
+        "name": "classical.00011",
+        "clockPredictions": 80,
+        "unsupported50": 69,
+        "unsupported70": 69,
+        "prefixBeforeFirstInput": 6,
+        "prefixUnsupported50": 5,
+        "invalidPhysicalClock": 0,
+        "stockBpm": 159,
+        "stockConfidence": 0.1492021433815432
+      },
+      {
+        "name": "disco.00031",
+        "clockPredictions": 62,
+        "unsupported50": 2,
+        "unsupported70": 2,
+        "prefixBeforeFirstInput": 1,
+        "prefixUnsupported50": 0,
+        "invalidPhysicalClock": 0,
+        "stockBpm": 123,
+        "stockConfidence": 0.17240238399056018
+      }
+    ],
+    "unitDiagnostics": [
+      {
+        "name": "steady-100",
+        "status": "CLOCK",
+        "clockPredictions": 93,
+        "bpm": 100,
+        "confidence": 0.2532773058368146,
+        "unsupported50": 1,
+        "prefixBeforeFirstInput": 1,
+        "clock50": {
+          "hits": 92,
+          "predicted": 93,
+          "reference": 92,
+          "precision": 0.989247311827957,
+          "recall": 1,
+          "f1": 0.9945945945945946
+        },
+        "clock70": {
+          "hits": 92,
+          "predicted": 93,
+          "reference": 92,
+          "precision": 0.989247311827957,
+          "recall": 1,
+          "f1": 0.9945945945945946
+        }
+      },
+      {
+        "name": "steady-100-prelude-plus6",
+        "status": "CLOCK",
+        "clockPredictions": 103,
+        "bpm": 100,
+        "confidence": 0.2532773058368146,
+        "unsupported50": 11,
+        "prefixBeforeFirstInput": 11,
+        "clock50": {
+          "hits": 92,
+          "predicted": 103,
+          "reference": 92,
+          "precision": 0.8932038834951457,
+          "recall": 1,
+          "f1": 0.9435897435897436
+        },
+        "clock70": {
+          "hits": 92,
+          "predicted": 103,
+          "reference": 92,
+          "precision": 0.8932038834951457,
+          "recall": 1,
+          "f1": 0.9435897435897436
+        }
+      },
+      {
+        "name": "step-100-180",
+        "status": "CLOCK",
+        "clockPredictions": 85,
+        "bpm": 90,
+        "confidence": 0.09639658654983242,
+        "unsupported50": 34,
+        "prefixBeforeFirstInput": 2,
+        "clock50": {
+          "hits": 51,
+          "predicted": 85,
+          "reference": 134,
+          "precision": 0.6,
+          "recall": 0.3805970149253731,
+          "f1": 0.4657534246575342
+        },
+        "clock70": {
+          "hits": 58,
+          "predicted": 85,
+          "reference": 134,
+          "precision": 0.6823529411764706,
+          "recall": 0.43283582089552236,
+          "f1": 0.5296803652968036
+        }
+      },
+      {
+        "name": "step-180-100",
+        "status": "CLOCK",
+        "clockPredictions": 168,
+        "bpm": 180,
+        "confidence": 0.16953239019722258,
+        "unsupported50": 85,
+        "prefixBeforeFirstInput": 2,
+        "clock50": {
+          "hits": 83,
+          "predicted": 168,
+          "reference": 124,
+          "precision": 0.49404761904761907,
+          "recall": 0.6693548387096774,
+          "f1": 0.5684931506849316
+        },
+        "clock70": {
+          "hits": 94,
+          "predicted": 168,
+          "reference": 124,
+          "precision": 0.5595238095238095,
+          "recall": 0.7580645161290323,
+          "f1": 0.6438356164383562
+        }
+      },
+      {
+        "name": "rest-100-restart",
+        "status": "CLOCK",
+        "clockPredictions": 94,
+        "bpm": 100,
+        "confidence": 0.25327730583681485,
+        "unsupported50": 23,
+        "prefixBeforeFirstInput": 1,
+        "clock50": {
+          "hits": 71,
+          "predicted": 94,
+          "reference": 71,
+          "precision": 0.7553191489361702,
+          "recall": 1,
+          "f1": 0.8606060606060606
+        },
+        "clock70": {
+          "hits": 71,
+          "predicted": 94,
+          "reference": 71,
+          "precision": 0.7553191489361702,
+          "recall": 1,
+          "f1": 0.8606060606060606
+        }
+      }
+    ],
+    "ownUnitsReportSHA": "d6c5f24ba61fbebac20c03bde26a3a1f19289d92a73bba353f7aa94cddca4426",
+    "stockRawCacheEquivalent": true
+  },
+  "bandAudit": {
+    "summarySHA": "a3208df9ee2b8201cdbba336a7e112449a7ad66efd32ae593d574bafc32c98ee",
+    "freezeSHA": "bb2461cad0975a167f44c54b2792798e96faaf1b810daac9c098ed4a7aa76557",
+    "calls": {
+      "analyzer": 0,
+      "optimizer": 0,
+      "chartGenerator": 0,
+      "newMusic": 0,
+      "fresh": 0,
+      "ASAP": 0,
+      "publicLedgerWriter": 0
+    },
+    "assertions": {
+      "cachedOriginalBParity": 5,
+      "unchangedBvsPULSEClockInputs": 5,
+      "unchangedPhysicalCandidates": 15,
+      "streamMultisetExact": 5
+    },
+    "artifact": "clock-selection-band-windows.csv",
+    "cases": [
+      {
+        "id": "country.00022",
+        "period": {
+          "bpm": 93,
+          "originalClock": {
+            "count": 63,
+            "mean": 0.47269841269841273,
+            "median": 0.34999999999999787,
+            "min": 0.29999999999999716,
+            "max": 0.6999999999999993
+          },
+          "truth": {
+            "count": 30,
+            "mean": 0.9687666666666667,
+            "median": 0.9725000000000001,
+            "min": 0.847999999999999,
+            "max": 1.006
+          }
+        },
+        "clocks": {
+          "B": {
+            "hits": 19,
+            "reference": 31,
+            "predicted": 64,
+            "f1": 0.4
+          },
+          "W": {
+            "hits": 21,
+            "reference": 31,
+            "predicted": 45,
+            "f1": 0.5526315789473685
+          },
+          "S": {
+            "hits": 21,
+            "reference": 31,
+            "predicted": 45,
+            "f1": 0.5526315789473685
+          },
+          "PULSE": {
+            "hits": 27,
+            "reference": 31,
+            "predicted": 92,
+            "f1": 0.43902439024390244
+          }
+        }
+      },
+      {
+        "id": "hiphop.00013",
+        "period": {
+          "bpm": 102,
+          "originalClock": {
+            "count": 49,
+            "mean": 0.5951020408163266,
+            "median": 0.5899999999999999,
+            "min": 0.5699999999999998,
+            "max": 0.7399999999999984
+          },
+          "truth": {
+            "count": 50,
+            "mean": 0.58874,
+            "median": 0.5869999999999997,
+            "min": 0.5799999999999983,
+            "max": 0.597999999999999
+          }
+        },
+        "clocks": {
+          "B": {
+            "hits": 2,
+            "reference": 51,
+            "predicted": 50,
+            "f1": 0.039603960396039604
+          },
+          "W": {
+            "hits": 1,
+            "reference": 51,
+            "predicted": 49,
+            "f1": 0.02
+          },
+          "S": {
+            "hits": 1,
+            "reference": 51,
+            "predicted": 49,
+            "f1": 0.02
+          },
+          "PULSE": {
+            "hits": 38,
+            "reference": 51,
+            "predicted": 86,
+            "f1": 0.5547445255474452
+          }
+        }
+      },
+      {
+        "id": "jazz.00035",
+        "period": {
+          "bpm": 141,
+          "originalClock": {
+            "count": 65,
+            "mean": 0.45199999999999996,
+            "median": 0.4200000000000017,
+            "min": 0.28000000000000114,
+            "max": 0.8900000000000006
+          },
+          "truth": {
+            "count": 34,
+            "mean": 0.8521470588235294,
+            "median": 0.8470000000000013,
+            "min": 0.8309999999999995,
+            "max": 0.9260000000000002
+          }
+        },
+        "clocks": {
+          "B": {
+            "hits": 28,
+            "reference": 35,
+            "predicted": 66,
+            "f1": 0.5544554455445545
+          },
+          "W": {
+            "hits": 31,
+            "reference": 35,
+            "predicted": 67,
+            "f1": 0.6078431372549019
+          },
+          "S": {
+            "hits": 31,
+            "reference": 35,
+            "predicted": 67,
+            "f1": 0.6078431372549019
+          },
+          "PULSE": {
+            "hits": 30,
+            "reference": 35,
+            "predicted": 97,
+            "f1": 0.45454545454545453
+          }
+        }
+      },
+      {
+        "id": "classical.00011",
+        "period": {
+          "bpm": 159,
+          "originalClock": {
+            "count": 69,
+            "mean": 0.38072463768115944,
+            "median": 0.3799999999999999,
+            "min": 0.31999999999999673,
+            "max": 0.4400000000000013
+          },
+          "truth": {
+            "count": 37,
+            "mean": 0.7945945945945946,
+            "median": 0.7879999999999998,
+            "min": 0.7719999999999985,
+            "max": 1.024
+          }
+        },
+        "clocks": {
+          "B": {
+            "hits": 22,
+            "reference": 38,
+            "predicted": 70,
+            "f1": 0.4074074074074074
+          },
+          "W": {
+            "hits": 22,
+            "reference": 38,
+            "predicted": 70,
+            "f1": 0.4074074074074074
+          },
+          "S": {
+            "hits": 22,
+            "reference": 38,
+            "predicted": 70,
+            "f1": 0.4074074074074074
+          },
+          "PULSE": {
+            "hits": 15,
+            "reference": 38,
+            "predicted": 57,
+            "f1": 0.3157894736842105
+          }
+        }
+      },
+      {
+        "id": "disco.00031",
+        "period": {
+          "bpm": 123,
+          "originalClock": {
+            "count": 61,
+            "mean": 0.48475409836065575,
+            "median": 0.48999999999999844,
+            "min": 0.46000000000000085,
+            "max": 0.51
+          },
+          "truth": {
+            "count": 61,
+            "mean": 0.48477049180327864,
+            "median": 0.4869999999999983,
+            "min": 0.4759999999999991,
+            "max": 0.4930000000000021
+          }
+        },
+        "clocks": {
+          "B": {
+            "hits": 62,
+            "reference": 62,
+            "predicted": 62,
+            "f1": 1
+          },
+          "W": {
+            "hits": 62,
+            "reference": 62,
+            "predicted": 62,
+            "f1": 1
+          },
+          "S": {
+            "hits": 62,
+            "reference": 62,
+            "predicted": 62,
+            "f1": 1
+          },
+          "PULSE": {
+            "hits": 44,
+            "reference": 62,
+            "predicted": 65,
+            "f1": 0.6929133858267716
+          }
+        }
+      }
+    ],
+    "interpretation": "Some retrospective band-identity evidence exists; scalar E loses contributor identity but weighted preprocessing preserves some concurrence. HP low-band presence distinguishes aggregate GT/wrong groups but12–20s both100%; wrong side can be stronger. Not a stable rule, causal proof, new algorithm or promise of beat-layer recovery."
+  },
+  "artifactsPendingPrototypeVerification": false,
+  "mathematicalEvidence": {
+    "DOracleSHA": "38c3d2572b46b3d2d84cfbfe2a0ddc279201f8456a374d748fe84b1844283951",
+    "PULSEMathReportSHA": "35772fc4e27ede0191a47451ec45cec23540f3e26807e479ee498feb790833a3",
+    "RUnitReportSHA": "0007c3b65648b5afa2ca48eadf2ea444c339c0522e33e2d7ff6d960f576b9530",
+    "notMusicGroundTruth": true
+  },
+  "prototypes": {
+    "artifact": "clock-selection-prototypes.json",
+    "sha256": "d3f8b9950b8211fa4bb1835c2df28b2e279016b1422ae5422712dec5de33877a",
+    "allFiveIndependentGitApplyAndTargetBytesExact": true,
+    "algorithmCalls": 0
+  }
+}

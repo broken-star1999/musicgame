@@ -5,7 +5,6 @@ import { beatPosition, chartBeats, snapToBeat, timeAtBeat } from './rhythm';
 import { phrasePattern, phraseSwipe, sustainedEnd } from './patterns';
 import { FINGER_MODEL, planFingering, validateFingering } from './fingering';
 import { selectMusicalOnsets } from './onset-selection';
-import { musicalEvents } from './musical-events';
 import { annotateSignalEvents } from './signal-events';
 
 export const DIFFICULTIES = {
@@ -27,8 +26,7 @@ export function generateChart(analysis: Analysis, difficulty: Difficulty, bpmOve
   let events = analysis.pulse?.onsets ?? analysis.onsets;
   if (bpmOverride !== undefined) {
     const reference = { beats, tempo: [], confidence: 0, downbeats: [], meterConfidence: 0 };
-    if (analysis.recognition?.engine === 'beat-this') events = musicalEvents(analysis, reference);
-    else if (analysis.pulse) {
+    if (analysis.pulse) {
       // A fixed manual reference replaces automatic roles, including roles
       // that no longer match. It never adds an attack from a different band.
       const raw = analysis.pulse.onsets.map(event => { const copy = { ...event }; delete copy.role; return copy; });
@@ -112,7 +110,7 @@ export function generateChart(analysis: Analysis, difficulty: Difficulty, bpmOve
   notes.sort((a, b) => a.time - b.time || a.lane - b.lane);
   notes.forEach((note, i) => { note.id = i; });
   progress?.(0.48, '正在匹配相似乐句与按键模板');
-  const chart = reusePhraseTemplates(bpmOverride === undefined ? musicalAnalysis : { ...musicalAnalysis, rhythm: undefined }, { version: 11, generator: analysis.recognition?.engine ?? 'signal', fingerprint: analysis.fingerprint, difficulty, fingerLimit: config.max, duration: analysis.duration, bpm, notes }, config.max);
+  const chart = reusePhraseTemplates(bpmOverride === undefined ? musicalAnalysis : { ...musicalAnalysis, rhythm: undefined }, { version: 11, generator: 'signal', fingerprint: analysis.fingerprint, difficulty, fingerLimit: config.max, duration: analysis.duration, bpm, notes }, config.max);
   progress?.(0.72, '正在规划整段指法与移动路线');
   const plan = planFingering(chart.notes, config.max);
   const checked = validateFingering(plan.notes, config.max, chart.duration);
