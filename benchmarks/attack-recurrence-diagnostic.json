@@ -1,0 +1,1097 @@
+{
+  "schema": 1,
+  "candidate": "AR1 attack-spectrum recurrence",
+  "outcome": "REJECTED AT FIXED PCM GATE",
+  "complete": true,
+  "acceptedRuntimeChanged": false,
+  "deployment": false,
+  "original41Calls": 0,
+  "realMusicCalls": 0,
+  "cachedExportOnly": true,
+  "exportAlgorithmCalls": 0,
+  "baselineCommit": "aeaf78284cb66601fd02bf9e40eaf99642285689",
+  "chartVersions": {
+    "B": 12,
+    "F": 12,
+    "C": 12
+  },
+  "scope": "Five manual-event controls; ONE predetermined synthetic21s PCM on B/F/C plus F samegain repeat and three silence rows. No real song, old41, broad210, fresh,ASAP,ledger or runtime promotion.",
+  "arms": {
+    "B": "Accepted original pure-DSP analysis and clock",
+    "F": "New physical attackSignature producer with exact original clock",
+    "C": "Same producer plus fixed recurrence-conditioned phase prior and original single DP"
+  },
+  "frozenMechanism": {
+    "groups": 16,
+    "positiveFFTBins": 511,
+    "signatureFrames": "clipped f-1..f+1",
+    "recurrenceLags": [
+      1,
+      2,
+      4
+    ],
+    "minimumPairs": 3,
+    "sameOriginalPreferredPeriodOnly": true,
+    "phaseEmission": "originalCoverage * max available mean cosine",
+    "unchangedKernelSHA": "f26394775038d289af90462366840c294aa65acb9a7c6d7650708c96d66e97c7",
+    "samePositiveSupportOnly": true,
+    "limits": "Engineering spectral-repeatability evidence, not instrument or semantic-beat identity. Missing/equal alternatives do not force a phase. No crossgain log-profile invariance claim."
+  },
+  "fixedGate": {
+    "manual": "Positive C50/C70 quarterhits strictly>B; equal/missing/sparse wholeclock+DP+E exact; reverse counterexample preserved.",
+    "physical": "Run actual B/F/C canonical full audio pipeline and one-finger chart. F stripped-attackSignature wholeAnalysis+Chart must equalB; C singlefinger head50 and70 hits must both strictly exceedB against independent quarter schedule. Failure stops original41inputs; preserve all outputs and physicalfeature diagnostics. This is one constructed timbral-repeatability mechanism, not semantic beat correctness.",
+    "passed": false,
+    "stopBeforeOriginal41": true,
+    "noTuningOrRetry": true,
+    "stageChecks": {
+      "manual": true,
+      "silence": true,
+      "allPhysicalSuccessful": true,
+      "featureOnlyExact": true,
+      "sameGainRepeatExact": true,
+      "consumerPhysicalAndDPInvariants": true,
+      "physicalStrictQuarterGain": false
+    },
+    "failures": [
+      {
+        "stage": "physical",
+        "message": "Fixed PCM C must have strictly more quarterhits thanB at BOTH50and70ms"
+      }
+    ],
+    "downstreamMusicalThresholdsNotRun": {
+      "PULSE": {
+        "minimumMacroHead70Gain": 0.02,
+        "minimumMacroHead50Gain": 0,
+        "minimumMacroClock70Gain": 0.02,
+        "minimumGenreHead70Delta": -0.03,
+        "minimumClipHead70Delta": -0.15,
+        "minimumEveryClipFourMeasuredHeadCountRatio": 0.95
+      },
+      "allCandidates": {
+        "allFourModesPlayableDeterministicRouteChecked": true,
+        "noF0CueInInference": true,
+        "originalMeasuredEventTimesOnly": true,
+        "primaryMinuteAndHandoffSingleFingerHead50And70MustNotDecrease": true,
+        "noReferenceRescalingOffsetSearchOrPredictionClipping": true,
+        "noNegativeExemption": true
+      }
+    }
+  },
+  "manual": [
+    {
+      "id": "positive",
+      "suppliedDescriptor": "Manual basis vectors, not audio extraction",
+      "counterexample": false,
+      "fixedChecksPassed": true,
+      "B": {
+        "50": {
+          "hits": 0,
+          "predicted": 40,
+          "reference": 40,
+          "precision": 0,
+          "recall": 0,
+          "f1": 0
+        },
+        "70": {
+          "hits": 0,
+          "predicted": 40,
+          "reference": 40,
+          "precision": 0,
+          "recall": 0,
+          "f1": 0
+        }
+      },
+      "C": {
+        "50": {
+          "hits": 40,
+          "predicted": 40,
+          "reference": 40,
+          "precision": 1,
+          "recall": 1,
+          "f1": 1
+        },
+        "70": {
+          "hits": 40,
+          "predicted": 40,
+          "reference": 40,
+          "precision": 1,
+          "recall": 1,
+          "f1": 1
+        }
+      },
+      "changedEnvelopeFrames": 720,
+      "wholeClockExact": false,
+      "wholeDPExact": false,
+      "recurrenceEligiblePhases": 12,
+      "reliabilityMin": 1,
+      "reliabilityMax": 1
+    },
+    {
+      "id": "equal-complete",
+      "suppliedDescriptor": "Manual basis vectors, not audio extraction",
+      "counterexample": false,
+      "fixedChecksPassed": true,
+      "B": {
+        "50": {
+          "hits": 0,
+          "predicted": 40,
+          "reference": 40,
+          "precision": 0,
+          "recall": 0,
+          "f1": 0
+        },
+        "70": {
+          "hits": 0,
+          "predicted": 40,
+          "reference": 40,
+          "precision": 0,
+          "recall": 0,
+          "f1": 0
+        }
+      },
+      "C": {
+        "50": {
+          "hits": 0,
+          "predicted": 40,
+          "reference": 40,
+          "precision": 0,
+          "recall": 0,
+          "f1": 0
+        },
+        "70": {
+          "hits": 0,
+          "predicted": 40,
+          "reference": 40,
+          "precision": 0,
+          "recall": 0,
+          "f1": 0
+        }
+      },
+      "changedEnvelopeFrames": 0,
+      "wholeClockExact": true,
+      "wholeDPExact": true,
+      "recurrenceEligiblePhases": 24,
+      "reliabilityMin": 0,
+      "reliabilityMax": 0
+    },
+    {
+      "id": "missing-signatures",
+      "suppliedDescriptor": "Manual basis vectors, not audio extraction",
+      "counterexample": false,
+      "fixedChecksPassed": true,
+      "B": {
+        "50": {
+          "hits": 0,
+          "predicted": 40,
+          "reference": 40,
+          "precision": 0,
+          "recall": 0,
+          "f1": 0
+        },
+        "70": {
+          "hits": 0,
+          "predicted": 40,
+          "reference": 40,
+          "precision": 0,
+          "recall": 0,
+          "f1": 0
+        }
+      },
+      "C": {
+        "50": {
+          "hits": 0,
+          "predicted": 40,
+          "reference": 40,
+          "precision": 0,
+          "recall": 0,
+          "f1": 0
+        },
+        "70": {
+          "hits": 0,
+          "predicted": 40,
+          "reference": 40,
+          "precision": 0,
+          "recall": 0,
+          "f1": 0
+        }
+      },
+      "changedEnvelopeFrames": 0,
+      "wholeClockExact": true,
+      "wholeDPExact": true,
+      "recurrenceEligiblePhases": 0,
+      "reliabilityMin": 0,
+      "reliabilityMax": 0
+    },
+    {
+      "id": "reverse-adversarial",
+      "suppliedDescriptor": "Manual basis vectors, not audio extraction",
+      "counterexample": true,
+      "fixedChecksPassed": true,
+      "B": {
+        "50": {
+          "hits": 0,
+          "predicted": 40,
+          "reference": 40,
+          "precision": 0,
+          "recall": 0,
+          "f1": 0
+        },
+        "70": {
+          "hits": 0,
+          "predicted": 40,
+          "reference": 40,
+          "precision": 0,
+          "recall": 0,
+          "f1": 0
+        }
+      },
+      "C": {
+        "50": {
+          "hits": 0,
+          "predicted": 40,
+          "reference": 40,
+          "precision": 0,
+          "recall": 0,
+          "f1": 0
+        },
+        "70": {
+          "hits": 0,
+          "predicted": 40,
+          "reference": 40,
+          "precision": 0,
+          "recall": 0,
+          "f1": 0
+        }
+      },
+      "changedEnvelopeFrames": 720,
+      "wholeClockExact": true,
+      "wholeDPExact": false,
+      "recurrenceEligiblePhases": 12,
+      "reliabilityMin": 1,
+      "reliabilityMax": 1
+    },
+    {
+      "id": "sparse-signatures",
+      "suppliedDescriptor": "Manual basis vectors, not audio extraction",
+      "counterexample": false,
+      "fixedChecksPassed": true,
+      "B": {
+        "50": {
+          "hits": 0,
+          "predicted": 40,
+          "reference": 40,
+          "precision": 0,
+          "recall": 0,
+          "f1": 0
+        },
+        "70": {
+          "hits": 0,
+          "predicted": 40,
+          "reference": 40,
+          "precision": 0,
+          "recall": 0,
+          "f1": 0
+        }
+      },
+      "C": {
+        "50": {
+          "hits": 0,
+          "predicted": 40,
+          "reference": 40,
+          "precision": 0,
+          "recall": 0,
+          "f1": 0
+        },
+        "70": {
+          "hits": 0,
+          "predicted": 40,
+          "reference": 40,
+          "precision": 0,
+          "recall": 0,
+          "f1": 0
+        }
+      },
+      "changedEnvelopeFrames": 0,
+      "wholeClockExact": true,
+      "wholeDPExact": true,
+      "recurrenceEligiblePhases": 0,
+      "reliabilityMin": 0,
+      "reliabilityMax": 0
+    }
+  ],
+  "physical": [
+    {
+      "label": "pcm-main",
+      "arm": "B",
+      "status": "ANALYZED",
+      "scores": {
+        "50": {
+          "hits": 0,
+          "predicted": 40,
+          "reference": 40,
+          "precision": 0,
+          "recall": 0,
+          "f1": 0
+        },
+        "70": {
+          "hits": 0,
+          "predicted": 40,
+          "reference": 40,
+          "precision": 0,
+          "recall": 0,
+          "f1": 0
+        }
+      },
+      "chartVersion": 12,
+      "chartNotes": 40,
+      "chartSHA": "d78e0d5ae7e20f86849435b9ddc74ec630bd3ca9bd8c9861357f0c4fac2c29dc",
+      "analysisSHA": "205144f530b1d04eee0c55e4c6e2243764d2f72812d7b032e5dfea59025f6155",
+      "stockTraceAnalysisExact": true,
+      "deterministicChart": true,
+      "stockTraceChartExact": true,
+      "fingeringChecked": true,
+      "bpm": 120,
+      "clockPoints": 40,
+      "clockConfidence": 0.65461891072796,
+      "geometryCount": 40,
+      "profileFrameSHA": null
+    },
+    {
+      "label": "pcm-main",
+      "arm": "F",
+      "status": "ANALYZED",
+      "scores": {
+        "50": {
+          "hits": 0,
+          "predicted": 40,
+          "reference": 40,
+          "precision": 0,
+          "recall": 0,
+          "f1": 0
+        },
+        "70": {
+          "hits": 0,
+          "predicted": 40,
+          "reference": 40,
+          "precision": 0,
+          "recall": 0,
+          "f1": 0
+        }
+      },
+      "chartVersion": 12,
+      "chartNotes": 40,
+      "chartSHA": "d78e0d5ae7e20f86849435b9ddc74ec630bd3ca9bd8c9861357f0c4fac2c29dc",
+      "analysisSHA": "e0ee2beb7395efc524c4b280fa7cb52fb3d1788b5efba395f23ea66cfbde4dac",
+      "stockTraceAnalysisExact": true,
+      "deterministicChart": true,
+      "stockTraceChartExact": true,
+      "fingeringChecked": true,
+      "bpm": 120,
+      "clockPoints": 40,
+      "clockConfidence": 0.65461891072796,
+      "geometryCount": 40,
+      "profileFrameSHA": "14e2603b002fca14d8471e1759217202d0fbafc7bf5bc20d856a77179e920f8c"
+    },
+    {
+      "label": "pcm-main",
+      "arm": "C",
+      "status": "ANALYZED",
+      "scores": {
+        "50": {
+          "hits": 0,
+          "predicted": 40,
+          "reference": 40,
+          "precision": 0,
+          "recall": 0,
+          "f1": 0
+        },
+        "70": {
+          "hits": 0,
+          "predicted": 40,
+          "reference": 40,
+          "precision": 0,
+          "recall": 0,
+          "f1": 0
+        }
+      },
+      "chartVersion": 12,
+      "chartNotes": 40,
+      "chartSHA": "d78e0d5ae7e20f86849435b9ddc74ec630bd3ca9bd8c9861357f0c4fac2c29dc",
+      "analysisSHA": "4cf32861bab0567e68797d33d8352cffe76528b2bf1b5566c3cf8d4fa5f5870a",
+      "stockTraceAnalysisExact": true,
+      "deterministicChart": true,
+      "stockTraceChartExact": true,
+      "fingeringChecked": true,
+      "bpm": 120,
+      "clockPoints": 40,
+      "clockConfidence": 0.6546201357696202,
+      "geometryCount": 40,
+      "profileFrameSHA": "14e2603b002fca14d8471e1759217202d0fbafc7bf5bc20d856a77179e920f8c"
+    },
+    {
+      "label": "pcm-repeat",
+      "arm": "F",
+      "status": "ANALYZED",
+      "scores": {
+        "50": {
+          "hits": 0,
+          "predicted": 40,
+          "reference": 40,
+          "precision": 0,
+          "recall": 0,
+          "f1": 0
+        },
+        "70": {
+          "hits": 0,
+          "predicted": 40,
+          "reference": 40,
+          "precision": 0,
+          "recall": 0,
+          "f1": 0
+        }
+      },
+      "chartVersion": 12,
+      "chartNotes": 40,
+      "chartSHA": "d78e0d5ae7e20f86849435b9ddc74ec630bd3ca9bd8c9861357f0c4fac2c29dc",
+      "analysisSHA": "e0ee2beb7395efc524c4b280fa7cb52fb3d1788b5efba395f23ea66cfbde4dac",
+      "stockTraceAnalysisExact": true,
+      "deterministicChart": true,
+      "stockTraceChartExact": true,
+      "fingeringChecked": true,
+      "bpm": 120,
+      "clockPoints": 40,
+      "clockConfidence": 0.65461891072796,
+      "geometryCount": 40,
+      "profileFrameSHA": "14e2603b002fca14d8471e1759217202d0fbafc7bf5bc20d856a77179e920f8c"
+    },
+    {
+      "label": "silence",
+      "arm": "B",
+      "status": "SILENCE"
+    },
+    {
+      "label": "silence",
+      "arm": "F",
+      "status": "SILENCE"
+    },
+    {
+      "label": "silence",
+      "arm": "C",
+      "status": "SILENCE"
+    }
+  ],
+  "fixedPCM": {
+    "duration": 21,
+    "sampleRate": 22050,
+    "samples": 463050,
+    "sha256": "ecc618b72ea338ca9c51d0464f3ef070966e9eca91369ded8d567995ef61450a",
+    "quarterCount": 40,
+    "quarterAmplitude": 0.3,
+    "quarterFrequenciesHz": [
+      110,
+      3500
+    ],
+    "offbeatAmplitude": 1,
+    "offbeatLogGroups": 14,
+    "toneDuration": 0.14,
+    "decayPerSecond": 45,
+    "generatorIdentityBound": true,
+    "waveformSummary": "40weak alternating110/3500Hz decays plus40strong decays cycling14fixed loggroups; no amplitude,pitch,offset or noise-seed trials."
+  },
+  "identity": {
+    "FWholeAnalysisAfterOnlySignatureStrip": true,
+    "FChart": true,
+    "sameGainWholeAnalysis": true,
+    "sameGainActualProfiles": true,
+    "sameGainChart": true,
+    "originalPhysicalCaller": true,
+    "originalInputsE0": true,
+    "actualSingleHelperAndDP": true,
+    "samePositiveSupport": true,
+    "physicalClockTimesBCExact": true,
+    "physicalOneChartBCExact": true
+  },
+  "changedEFrames": 720,
+  "producerWorkOneSuccessfulFeatureAnalysis": {
+    "frameAccumulatorCalls": 2091,
+    "attachmentCalls": 4,
+    "differencesStored": 1068501,
+    "differenceValidationReads": 1070592,
+    "outputValidationReads": 33456,
+    "accumulationAdds": 1068501,
+    "attachmentProfileValidationReads": 133824,
+    "ownedFrameTypedBytes": 133824,
+    "ownedDifferenceTypedBytes": 4096,
+    "peakAccumulationTemporaryBytes": 64,
+    "cumulativeAccumulationTemporaryBytes": 133824,
+    "traceFrameCloneBytes": 133824,
+    "originalEventCount": 237,
+    "signedEventCount": 237
+  },
+  "recurrenceWorkOneSuccessfulCAnalysis": {
+    "inputOnsets": 80,
+    "nonboundaryOnsets": 80,
+    "boundaryExcluded": 0,
+    "signatureInspections": 80,
+    "validInputSignatures": 80,
+    "absentOrInvalidInputSignatures": 0,
+    "blocks": 12,
+    "matchingHypotheses": 12,
+    "originalPhases": 24,
+    "evaluatedPhases": 24,
+    "eligiblePhases": 24,
+    "targets": 307,
+    "matchedTargets": 307,
+    "validTargets": 307,
+    "lagPairs": 753,
+    "cosineProducts": 12048,
+    "maximumTargetsPerPhase": 16,
+    "additionalTypedBytes": 0,
+    "signatureRecords": 80,
+    "profileBlocks": 12,
+    "profilePhases": 24,
+    "profileTargets": 307,
+    "profileLagRecords": 72
+  },
+  "all12Blocks": [
+    {
+      "index": 0,
+      "time": 0,
+      "period": 0.5,
+      "chosenPhaseIndex": 1,
+      "chosenAnchor": 2.9772268221574345,
+      "reliability": 0.2130461643183576,
+      "chainScore": 11.486306187947568,
+      "otherScore": 11.215583618644857,
+      "margin": 0.2707225693027109
+    },
+    {
+      "index": 1,
+      "time": 2,
+      "period": 0.5,
+      "chosenPhaseIndex": 0,
+      "chosenAnchor": 3.4780625850340137,
+      "reliability": 0.2130461643183576,
+      "chainScore": 11.486306187947568,
+      "otherScore": 11.215583618644857,
+      "margin": 0.2707225693027109
+    },
+    {
+      "index": 2,
+      "time": 4,
+      "period": 0.5,
+      "chosenPhaseIndex": 1,
+      "chosenAnchor": 3.477657445200302,
+      "reliability": 0.2130461643183576,
+      "chainScore": 11.486306187947568,
+      "otherScore": 11.215583618644857,
+      "margin": 0.2707225693027109
+    },
+    {
+      "index": 3,
+      "time": 6,
+      "period": 0.5,
+      "chosenPhaseIndex": 1,
+      "chosenAnchor": 7.978660657596372,
+      "reliability": 0.2130461643183576,
+      "chainScore": 11.486306187947568,
+      "otherScore": 11.215583618644857,
+      "margin": 0.2707225693027109
+    },
+    {
+      "index": 4,
+      "time": 8,
+      "period": 0.5,
+      "chosenPhaseIndex": 0,
+      "chosenAnchor": 7.978184467120181,
+      "reliability": 0.2130461643183576,
+      "chainScore": 11.486306187947568,
+      "otherScore": 11.215583618644857,
+      "margin": 0.2707225693027109
+    },
+    {
+      "index": 5,
+      "time": 10,
+      "period": 0.5,
+      "chosenPhaseIndex": 0,
+      "chosenAnchor": 7.978334693877551,
+      "reliability": 0.2130461643183576,
+      "chainScore": 11.486306187947568,
+      "otherScore": 11.215583618644857,
+      "margin": 0.2707225693027109
+    },
+    {
+      "index": 6,
+      "time": 12,
+      "period": 0.5,
+      "chosenPhaseIndex": 1,
+      "chosenAnchor": 11.977858503401361,
+      "reliability": 0.2130461643183576,
+      "chainScore": 11.486306187947568,
+      "otherScore": 11.215583618644857,
+      "margin": 0.2707225693027109
+    },
+    {
+      "index": 7,
+      "time": 14,
+      "period": 0.5,
+      "chosenPhaseIndex": 0,
+      "chosenAnchor": 16.477382312925172,
+      "reliability": 0.2130461643183576,
+      "chainScore": 11.486306187947568,
+      "otherScore": 11.215583618644857,
+      "margin": 0.2707225693027109
+    },
+    {
+      "index": 8,
+      "time": 16,
+      "period": 0.5,
+      "chosenPhaseIndex": 1,
+      "chosenAnchor": 12.4781589569161,
+      "reliability": 0.2130461643183576,
+      "chainScore": 11.486306187947568,
+      "otherScore": 11.215583618644857,
+      "margin": 0.2707225693027109
+    },
+    {
+      "index": 9,
+      "time": 18,
+      "period": 0.5,
+      "chosenPhaseIndex": 0,
+      "chosenAnchor": 16.477503250188967,
+      "reliability": 0.21304616431835868,
+      "chainScore": 11.486306187947568,
+      "otherScore": 11.215583618644855,
+      "margin": 0.27072256930271266
+    },
+    {
+      "index": 10,
+      "time": 20,
+      "period": 0.5,
+      "chosenPhaseIndex": 1,
+      "chosenAnchor": 16.97893560090703,
+      "reliability": 0.21304616431835868,
+      "chainScore": 11.486306187947568,
+      "otherScore": 11.215583618644855,
+      "margin": 0.27072256930271266
+    },
+    {
+      "index": 11,
+      "time": 22,
+      "period": 0.5,
+      "chosenPhaseIndex": 1,
+      "chosenAnchor": 18.478697505668936,
+      "reliability": 0.2130461643183576,
+      "chainScore": 11.486306187947568,
+      "otherScore": 11.215583618644857,
+      "margin": 0.2707225693027109
+    }
+  ],
+  "all24Phases": {
+    "path": "attack-recurrence-phases.csv",
+    "rows": 24,
+    "sha256": "27db7fbbcbeab50c61487ddd8a9f5be13801bc6784bc00f2ba1c7e0addf133f1",
+    "allLagsRetained": true,
+    "missingMeansOrScoresAreNullBlank": true,
+    "targetOwnershipAndVectorsNotPublished": true
+  },
+  "attribution": {
+    "cachedOnly": true,
+    "exploratoryAfterFailure": true,
+    "priorKnownObservations": "ROOT already saw0/40 andr≈.213 beforethisprotocol; no prospectivedesignclaim.",
+    "calls": {
+      "candidate": 0,
+      "helper": 0,
+      "audio": 0,
+      "FFT": 0,
+      "analyzer": 0,
+      "clock": 0,
+      "Chart": 0,
+      "optimizer": 0,
+      "coefficientSearch": 0,
+      "fresh": 0,
+      "ASAP": 0,
+      "ledger": 0
+    },
+    "checks": {
+      "all292FrozenPinsExact": true,
+      "ownedTerminal": true,
+      "capturesChecked": 17,
+      "featureOnlyWholeOldAnalysisChartCallerTraceExact": true,
+      "sameGainAnalysisChartActualProfileExact": true,
+      "oldConsumerPhysicalCallerInvestigationLocalE0Exact": true,
+      "sameActualHelperConsumedBySingleDP": true,
+      "positiveSupportExact": true,
+      "changedEFrames": 720,
+      "originalBlocks": 12,
+      "matchingOriginalPhases": 24,
+      "targetOwnershipChecks": 307,
+      "lagValuesChecked": 288,
+      "phaseFieldsChecked": 240,
+      "allOriginalPhasesRetained": true
+    },
+    "unchanged": {
+      "completeBCChart": true,
+      "clockTimes": true,
+      "rawDPPaths": true
+    },
+    "phaseChains": {
+      "quarter": {
+        "emission": 11.486397601680247,
+        "transitionCost": 0.00009141373267863815,
+        "score": 11.486306187947568,
+        "lastBlockEmission": 0.48988398918705217
+      },
+      "offbeat": {
+        "emission": 11.215700905414513,
+        "transitionCost": 0.00011728676965736773,
+        "score": 11.215583618644855,
+        "lastBlockEmission": 0.9513161728507487
+      }
+    },
+    "reliability": {
+      "min": 0.2130461643183576,
+      "max": 0.21304616431835868
+    },
+    "lastShortWindow": {
+      "blockIndex": 11,
+      "from": 18,
+      "to": 21,
+      "quarterTargets": 4,
+      "quarterLag2Pairs": 2,
+      "quarterLag2Mean": 0.9993766591196817,
+      "quarterLag2Available": false,
+      "quarterSelectedLag": 1,
+      "quarterScore": 0.48988398918705217,
+      "offbeatTargets": 5,
+      "offbeatScore": 0.9513161728507487
+    },
+    "twoFixedPaths": {
+      "interpretation": "Direct cached objective algebra only; actual recorded path versus ONE explicitly constructed recorded-lattice path. No optimizer, DP, offset/coefficient search or proof of best quarter path.",
+      "formula": "env[t]-3.2*(log(q)-log(local[t]))^2+(previousScore-1.1*(log(q)-log(previousLag))^2); initialScore=env[first],previousLag=local[first]. Endingrankadds.1*env[last]forselectiononly.",
+      "actualOffbeat": {
+        "E0": {
+          "feasible": true,
+          "frames": 40,
+          "rewards": 26.233052272766123,
+          "localPenalty": 0.011498616867156617,
+          "lagPenalty": 0.007473940643555632,
+          "objective": 26.214079715255405,
+          "endingRank": 26.30650327222742,
+          "E0ZeroFrames": 0,
+          "quarter50": {
+            "hits": 0,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 0,
+            "recall": 0,
+            "f1": 0
+          },
+          "quarter70": {
+            "hits": 0,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 0,
+            "recall": 0,
+            "f1": 0
+          }
+        },
+        "E1": {
+          "feasible": true,
+          "frames": 40,
+          "rewards": 26.233102347461386,
+          "localPenalty": 0.011498616867156617,
+          "lagPenalty": 0.007473940643555632,
+          "objective": 26.214129789950665,
+          "endingRank": 26.306553435214518,
+          "E0ZeroFrames": 0,
+          "quarter50": {
+            "hits": 0,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 0,
+            "recall": 0,
+            "f1": 0
+          },
+          "quarter70": {
+            "hits": 0,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 0,
+            "recall": 0,
+            "f1": 0
+          }
+        }
+      },
+      "explicitRecordedQuarterLattice": {
+        "construction": "Every original100Hzframe -> recordednearest2sblockchosenA/P -> exactnearestlatticeMath.round -> nearestframeMath.round; identicalframeunion only; no offset, maxima selection or optimization.",
+        "sourceFrameAssociations": 2101,
+        "uniqueGeneratedFrames": 43,
+        "E0": {
+          "feasible": true,
+          "frames": 40,
+          "rewards": 9.396528826128263,
+          "localPenalty": 0,
+          "lagPenalty": 0,
+          "objective": 9.396528826128263,
+          "endingRank": 9.42746259930468,
+          "E0ZeroFrames": 0,
+          "quarter50": {
+            "hits": 40,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "quarter70": {
+            "hits": 40,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          }
+        },
+        "E1": {
+          "feasible": true,
+          "frames": 40,
+          "rewards": 17.91112225743342,
+          "localPenalty": 0,
+          "lagPenalty": 0,
+          "objective": 17.91112225743342,
+          "endingRank": 17.963355820194987,
+          "E0ZeroFrames": 0,
+          "quarter50": {
+            "hits": 40,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "quarter70": {
+            "hits": 40,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          }
+        }
+      }
+    },
+    "interpretation": {
+      "newPatternPreference": "All12recordedchosenphases are evaluated againstfixedsyntheticquarter/offbeatschedules; descriptivepatterncompatibility, not semanticbeatproof.",
+      "lowMargin": "Bothphaseattackprofiles can be highly similar; finalshortwindow only4quartertargets leaveslag2with2pairs(unavailable), loweringquarteremission tolag1similarity. This lowerscompletechainmarginunderfixedrule.",
+      "DPOutcome": "Compare fixedactualoffbeatpath andoneexplicitrecordedquarterlatticepath underunchangedE0/E1objective below. No alternativecoefficient or optimizedpath was tried.",
+      "limits": "Savedownershipused; matcher andDPnotrerun. ArithmeticconsistencydoesnotnewlyproveglobalF/Goptimality; priorindependentmathproofboundssamehelper. OneconstructedPCMdoesnotestablishrealmusic/phonequality. Reversedmanualcounterexampleandequalambiguityremain."
+    },
+    "chineseMarkdown": "独立缓存归因在失败后进行，已知0/40和权重约.213，明确属于探索性归因。它复核全部292冻结项、17捕获、12块/24相位及288个lag计数/和/均值/有效score，没有重跑匹配、helper、DP或优化器。全部12个已选相位与本人工四分拍日程相容，前11块的选中S约.999；**最后短窗是例外**：只有4个四分拍目标，lag2只有2对，不足原定至少3对，因此虽均值.9993766591196817仍不可用，实际退回lag1，S降到.48988398918705217；另一相位S为.9513161728507487。没有删除这块或改变最少配对数。\n\n完整四分相位链分数11.486306187947568，完整半拍链11.215583618644855，固定规则得到间隔约.27072257及权重.2130461643。描述符确实给出了偏好，但两相位都存在较高重复性，短窗进一步缩小链间隔。下面只比较两条固定路径在旧目标函数上的直接代数分数：\n\n| 固定路径（未优化） | E0目标 | E1目标 | 四分拍50/70ms命中 |\n| --- | ---: | ---: | ---: |\n| 实际缓存半拍路径 | 26.214079715255405 | 26.214129789950665 | 0/40 |\n| 唯一预定义的已记录四分相位格近帧路径 | 9.396528826128263 | 17.91112225743342 | 40/40 |\n\n诊断路径由全部2101原帧到记录相位格的原Math.round规则构造，43个独立帧中，1个位于包络外、2个超过原DP末起音范围，留下40个合法、原E0>0的帧；没有偏移、峰值选择、系数搜索或优化。四分路径没有速度/间隔变化惩罚，先验虽提高其分数，当前实际路径的目标和结束rank仍更高。**这不证明该诊断路径是最好的四分路径，不证明所有四分路径都输，也没有验证增大权重、新目标函数或任何调参补救。** 40/40只是固定诊断路径的缓存算术结果，不是新算法或实际游戏成果。"
+  },
+  "independentArithmetic": {
+    "pass": true,
+    "assertions": 607578,
+    "failures": 0,
+    "mutations": 0,
+    "profileValidCases": 60,
+    "invalidProfileCases": 34,
+    "recurrenceValidCases": 96,
+    "invalidRecurrenceCases": 13,
+    "calls": {
+      "profileBin": 519,
+      "accumulate": 64,
+      "attach": 22,
+      "recurrence": 109,
+      "successfulReturnedKernelCalls": 96,
+      "directActualKernel": 0,
+      "moduleInitializationProfileBinFromFrozenSource": 511,
+      "audio": 0,
+      "FFT": 0,
+      "analyzer": 0,
+      "clock": 0,
+      "chart": 0,
+      "fresh": 0,
+      "ASAP": 0,
+      "ledger": 0
+    },
+    "comparisons": {
+      "profileBin": 511,
+      "frameCells": 2960,
+      "attachmentComponents": 394,
+      "recurrenceDiagnosticValues": 61865,
+      "decoratedMetadataValues": 6744,
+      "workValues": 3936,
+      "kernelForward": 358,
+      "kernelBackward": 358,
+      "kernelMaxMarginal": 358,
+      "kernelReliability": 300,
+      "effectiveEnvelope": 133495
+    },
+    "pathChecks": {
+      "unique": 73,
+      "numericalTie": 3
+    },
+    "shortMaximumActualEnumeratedPaths": 8,
+    "sampledRSS": {
+      "rssGuardBytes": 536870912,
+      "checkpoints": 196,
+      "notContinuousOSHardcap": true
+    },
+    "wallMs": 122.8979,
+    "observedMaxRSSKiB": 81916,
+    "terminal": {
+      "code": 0,
+      "childClosed": true,
+      "elapsedMs": 187.7072,
+      "deadlineMs": 60000,
+      "V8OldSpaceMiB": 256
+    },
+    "interpretation": "Synthetic mathematics/contracts only, no audio/music/Chart/phone/release quality evidence. Unique long resource case is analytic, not enumerated."
+  },
+  "execution": {
+    "calls": {
+      "moduleProfileBinCallsFromFrozenSource": 2044,
+      "traceTrack": 10,
+      "stockTrack": 10,
+      "traceAnalysis": 7,
+      "stockAnalysis": 7,
+      "chart": 12,
+      "geometry": 4,
+      "measure": 28,
+      "physicalFixtureGenerators": 1,
+      "fresh": 0,
+      "ASAP": 0,
+      "ledger": 0,
+      "original41": 0
+    },
+    "owned": {
+      "startedAt": "2026-11-01T16:03:23.379Z",
+      "freezeSHA": "cb5ed87348ca783ba0f6318a7804cd49275b1ff50a4aa07354f7ccd2c3cb6665",
+      "scope": "manual-and-fixed-PCM-only",
+      "timeoutMs": 360000,
+      "V8OldSpaceMiB": 512,
+      "RSSHardCap": false,
+      "spawnCount": 1,
+      "automaticRetries": 0,
+      "timedOut": false,
+      "childClosed": true,
+      "pid": 77440,
+      "code": 0,
+      "signal": null,
+      "elapsedMs": 2564.3639,
+      "endedAt": "2026-11-01T16:03:25.943Z"
+    },
+    "cpuDeltaMicroseconds": {
+      "user": 2360000,
+      "system": 1125000
+    },
+    "observedMaxRSSKiB": 198112,
+    "startMemoryBytes": {
+      "rss": 65785856,
+      "heapTotal": 9048064,
+      "heapUsed": 7040144,
+      "external": 16227590,
+      "arrayBuffers": 13541493
+    },
+    "endMemoryBytes": {
+      "rss": 202862592,
+      "heapTotal": 101507072,
+      "heapUsed": 46360880,
+      "external": 41681784,
+      "arrayBuffers": 38995647
+    },
+    "interpretation": "One desktop process containing compilation,JIT,graphs,traces/artifacts; V8oldspace is not RSS hardcap; no isolatedDSP timing or phone measurement."
+  },
+  "verification": {
+    "consumerPostflight": {
+      "pinsV2": 292,
+      "originalPins": 286,
+      "actualSourcePins": 24,
+      "captures": 17,
+      "rawCountFormulaCells": 84,
+      "cachedOnly": true
+    },
+    "rootIndependentCachedReview": {
+      "complete": true,
+      "rawCountFormulaCells": 84,
+      "intervalMatchingIndependent": true
+    },
+    "exportScoreFormulaCells": 84,
+    "exportAllPhaseLagValuesRechecked": 288,
+    "reportingV2": {
+      "beforeAllIntegrationCalls": true,
+      "originalPinsExact": 286,
+      "reason": "Increment chart and measure counters immediately before each individual actual call so early exceptions do not pre-count later calls. Only literal frozen-wrapper filenames additionally change.",
+      "sourceGraphsHelpersFixturesRulesUntouched": true,
+      "originalScriptsAndFreezePreserved": true,
+      "actualIntegrationRunCount": 1
+    },
+    "producerHistoricalDesign": [
+      {
+        "originalPath": ".qa/attack-recurrence-v1/DESIGN.md",
+        "originalSHA": "4d4709df2df537e1c30b1f16678097628616f163e6fdbbf6458c4f6ccd53064f",
+        "exactHistoricalSnapshot": ".qa/attack-profile-v1/root-design-at-freeze.md",
+        "currentSHA": "80f82b8b3f23bf799305af0ac70418fa40be5e74a052cf9589b9d075a133fad7",
+        "reason": "Root pre-call consumer-domain/interface clarifications; original producer freeze is retained, never rewritten."
+      }
+    ],
+    "currentProducerPins": 83,
+    "historicalDesignSnapshots": 1,
+    "ledger": {
+      "clips": 210,
+      "runs": 89,
+      "freezes": 89,
+      "writes": 0
+    },
+    "noActualSourceOrDependencyChange": true
+  },
+  "prototype": {
+    "path": "prototypes/attack-recurrence-v1.patch",
+    "bytes": 33864,
+    "sha256": "2b3bf0128e51a3fcdb7dea36a8752d2fae0a23fe3f10e4a684597596329f3a42",
+    "independentlyAppliedFullFiles": 27,
+    "changedPaths": [
+      "src/core/attack-profile.ts",
+      "src/core/attack-recurrence.ts",
+      "src/core/phase-lattice.ts",
+      "src/core/rhythm.ts",
+      "src/core/signal-analysis.ts",
+      "src/types.ts"
+    ],
+    "qualification": "Inactive rejected research prototype; no release",
+    "relativeImportsClosed": true,
+    "actualRuntimeUnchanged": true,
+    "noScratchCommitRequired": true
+  },
+  "sourceEvidenceSHA256": {
+    ".qa/attack-recurrence-clock-v1/stage-report.json": "673864baaa4e0ef939e2ddd2a5efdd78f45019a3e9f0ffea86467a1a87ac096c",
+    ".qa/attack-recurrence-clock-v1/stage-owned.json": "7b5ee5fa2a786c159d8fa56243f9e7a01e4508edefcf214d806c73d2ec562b72",
+    ".qa/attack-recurrence-clock-v1/postflight.json": "c03ff6d43356acde06d955d6f98241a5b6a04b0e23c97800918deade9eaf3cee",
+    ".qa/attack-recurrence-v1/root-stage-postflight.json": "78a9c3547f30d219a2b6df95f2231b7d17a468527a25998ebbba6bf027da630f",
+    ".qa/attack-recurrence-clock-v1/source-protocol.json": "c8606f5e40989957973633b6f1e4c84e0e30712e33c82df7db8228342a738734",
+    ".qa/attack-recurrence-v1/root-qualification.json": "6f4775f32ce868f624193a341f7c729af1bcb9aead652c65603855385eafaf56",
+    ".qa/attack-recurrence-v1/physical-fixtures.json": "711b5a861c55c462d4590ec9576ea1702e7fb65269aa0ba9b8d663a15d84fee9",
+    ".qa/attack-recurrence-v1/physical-fixtures.mjs": "4a69296ba8ac68c65efda6cfdd667b6d730e1f079da4078e70d3ab5eacf6cedf",
+    ".qa/attack-recurrence-v1/DESIGN.md": "80f82b8b3f23bf799305af0ac70418fa40be5e74a052cf9589b9d075a133fad7",
+    ".qa/attack-recurrence-helper-v1/mechanism-fixtures.json": "91d52f1a21e0c24be37c1af3e29d5c91cc20421ac7f9f1d6c6a414206f5a7c2d",
+    ".qa/attack-recurrence-oracle-v1/report.json": "324febfc6ec327f52dc0149747372956bb5b31366291840c5447419877c22f1d",
+    ".qa/attack-recurrence-oracle-v1/terminal.json": "07c324c54f332c3689b4f76aa07be7d8e28846362edc22c378e3880162f5b342",
+    ".qa/attack-recurrence-oracle-v1/verification.json": "e170390a7d8317b424fea79aa7f3d7ad7f0c4bd1f4d525bd374930a751c3040a",
+    ".qa/attack-recurrence-clock-v1/stage-v2-static-verification.json": "ad7f7298ab80f27f775284422006ae7e76728298307e8772e020d60507f676b4",
+    ".qa/attack-recurrence-clock-v1/stage-v2-exact.diff": "cd7a119517872f61e45a29f8cd11c6cc378762e07b8643480e23ab58e04efe0a",
+    ".qa/attack-recurrence-clock-v1/stage-freeze.json": "7e8a3d049d3f11d59468ba4f91bf1850af1273b1b575a66a782419235e4e94d0",
+    ".qa/attack-recurrence-clock-v1/stage-freeze-v2.json": "cb5ed87348ca783ba0f6318a7804cd49275b1ff50a4aa07354f7ccd2c3cb6665",
+    ".qa/attack-profile-v1/freeze.json": "3c2ad0b333b5b2a16b99bfca90c318f1ed6a8fbc668dacea51d915a74f196ec1",
+    ".qa/attack-profile-v1/root-design-at-freeze.md": "4d4709df2df537e1c30b1f16678097628616f163e6fdbbf6458c4f6ccd53064f",
+    ".qa/attack-recurrence-patch-proof-v1/proof.json": "9fd7b44e233a49eb24de008d7bef545a110859b80760165ee876db9b2a70ba4d",
+    "benchmarks/prototypes/attack-recurrence-v1.patch": "2b3bf0128e51a3fcdb7dea36a8752d2fae0a23fe3f10e4a684597596329f3a42",
+    "benchmarks/dsp-cohorts.json": "df1957bce05ea31a1216a07e6303e46420eb6f3c45de5f425a34c44383ca79c1",
+    ".qa/attack-recurrence-public-export-v1/PROTOCOL.md": "f398fd0a14f3fbe6cb5ed0ad2f2e6aa87967ccffb1f63252df9dbfbebd4bb07a",
+    ".qa/attack-recurrence-failure-audit-v1/summary.json": "0ec172c2af06b7ff4ce414e21dcbafa0bf50b6f2d597b69f84deb4f767fb20cb",
+    ".qa/attack-recurrence-failure-audit-v1/RESULTS.md": "6bc7c0392f9277f47871598f67a272c6665a1bc2ec14904a274913887acc05a4",
+    ".qa/attack-recurrence-failure-audit-v1/verification.json": "be0149181828c27a0fd129ad032dec2a2803654c4196560ffabff009dd78b508",
+    ".qa/attack-recurrence-failure-audit-v1/all-phases.csv": "3e49d16051db005c8b5bc4db17d86b10987c628a70d85be501e548c5babbf54c"
+  },
+  "privacy": "No audio, sample arrays, raw descriptors, reference/target/onset time arrays, absolute local paths or stacks. Fixed synthetic block/phase scalar diagnostics and hashes only."
+}

@@ -1,0 +1,648 @@
+diff --git a/src/core/attack-profile.ts b/src/core/attack-profile.ts
+new file mode 100644
+index 0000000..d55af55
+--- /dev/null
++++ b/src/core/attack-profile.ts
+@@ -0,0 +1,86 @@
++import type { Onset } from '../types';
++
++export const ATTACK_PROFILE_BANDS = 16;
++const FFT_SIZE = 1024;
++
++/** Original positive FFT bins only; the Nyquist bin is not part of old flux. */
++export function profileBin(k: number): number {
++  if (!Number.isSafeInteger(k) || k < 1 || k >= FFT_SIZE / 2)
++    throw new Error('Attack profile bin must be an integer from 1 to 511');
++  return Math.min(ATTACK_PROFILE_BANDS - 1, Math.floor(ATTACK_PROFILE_BANDS * Math.log2(k) / Math.log2(FFT_SIZE / 2)));
++}
++
++const groups = Array<number>(FFT_SIZE / 2).fill(0);
++const counts = Array<number>(ATTACK_PROFILE_BANDS).fill(0);
++for (let k = 1; k < FFT_SIZE / 2; k++) {
++  groups[k] = profileBin(k);
++  counts[groups[k]]++;
++}
++/** Read-only metadata also used by the actual frame accumulator. Index0 is unused. */
++export const ATTACK_PROFILE_LAYOUT = Object.freeze({ groups: Object.freeze(groups), counts: Object.freeze(counts) });
++
++/** Replace one frame with per-bin-rounded group means. No FFT/audio is performed.
++ * A temporary 64-byte frame makes validation/overflow failure atomic to callers. */
++export function accumulateAttackProfileFrame(differences: Float64Array, profiles: Float32Array, frame: number): void {
++  if (!(differences instanceof Float64Array) || differences.length !== FFT_SIZE / 2
++    || !(profiles instanceof Float32Array) || profiles.length % ATTACK_PROFILE_BANDS !== 0)
++    throw new Error('Attack profile accumulation requires 512 Float64 differences and whole Float32 frames');
++  if (!Number.isSafeInteger(frame) || frame < 0 || frame >= profiles.length / ATTACK_PROFILE_BANDS)
++    throw new Error('Attack profile output frame is outside storage');
++  if (differences.buffer === profiles.buffer)
++    throw new Error('Attack profile differences and output must use separate buffers');
++  for (const difference of differences)
++    if (!Number.isFinite(difference) || difference < 0)
++      throw new Error('Attack profile differences must be finite and nonnegative');
++  const offset = frame * ATTACK_PROFILE_BANDS;
++  for (let group = 0; group < ATTACK_PROFILE_BANDS; group++)
++    if (!Number.isFinite(profiles[offset + group]) || profiles[offset + group] < 0)
++      throw new Error('Attack profile output cells must be finite and nonnegative');
++  const accumulated = new Float32Array(ATTACK_PROFILE_BANDS);
++  for (let k = 1; k < FFT_SIZE / 2; k++) {
++    const group = ATTACK_PROFILE_LAYOUT.groups[k];
++    accumulated[group] += differences[k] / ATTACK_PROFILE_LAYOUT.counts[group];
++    if (!Number.isFinite(accumulated[group])) throw new Error('Attack profile Float32 accumulation overflow');
++  }
++  profiles.set(accumulated, offset);
++}
++
++/** Attach recording-local shapes without changing physical event measurements.
++ * The caller owns both inputs. Only an event receiving a signature is copied. */
++export function attachAttackSignatures(events: readonly Onset[], frameProfiles: Float32Array,
++  frames: number, hop: number, sampleRate: number): Onset[] {
++  if (!Array.isArray(events) || !(frameProfiles instanceof Float32Array))
++    throw new Error('Attack profiles require an event array and Float32 frames');
++  if (!Number.isSafeInteger(frames) || frames < 0 || frameProfiles.length !== frames * ATTACK_PROFILE_BANDS)
++    throw new Error('Attack profile frame count and storage differ');
++  if (!Number.isSafeInteger(hop) || hop <= 0 || !Number.isFinite(sampleRate) || sampleRate <= 0)
++    throw new Error('Attack profiles require a positive hop and sample rate');
++  for (const value of frameProfiles)
++    if (!Number.isFinite(value) || value < 0)
++      throw new Error('Attack profile values must be finite and nonnegative');
++  for (const event of events) {
++    if (!event || typeof event !== 'object' || !Number.isFinite(event.time) || event.time < 0
++      || !Number.isFinite(event.strength) || event.strength < 0 || !Number.isSafeInteger(event.band)
++      || event.band < 0 || event.band > 2)
++      throw new Error('Invalid physical attack profile event');
++  }
++  if (!frames && events.length)
++    throw new Error('Attack profile events require at least one frame');
++  return events.map(event => {
++    if (event.boundary) return event;
++    const rawFrame = Math.round((event.time * sampleRate - FFT_SIZE * .22) / hop);
++    if (!Number.isFinite(rawFrame)) throw new Error('Nonfinite attack profile frame arithmetic');
++    const frame = Math.max(0, Math.min(frames - 1, rawFrame));
++    const shape = Array<number>(ATTACK_PROFILE_BANDS).fill(0);
++    for (let f = Math.max(0, frame - 1); f <= Math.min(frames - 1, frame + 1); f++)
++      for (let group = 0; group < ATTACK_PROFILE_BANDS; group++)
++        shape[group] += frameProfiles[f * ATTACK_PROFILE_BANDS + group];
++    let squares = 0;
++    for (const value of shape) squares += value * value;
++    const norm = Math.sqrt(squares);
++    if (!Number.isFinite(norm)) throw new Error('Nonfinite attack profile norm');
++    if (!(norm > 0)) return event;
++    for (let group = 0; group < ATTACK_PROFILE_BANDS; group++) shape[group] /= norm;
++    return { ...event, attackSignature: shape };
++  });
++}
+diff --git a/src/core/attack-recurrence.ts b/src/core/attack-recurrence.ts
+new file mode 100644
+index 0000000..e789d77
+--- /dev/null
++++ b/src/core/attack-recurrence.ts
+@@ -0,0 +1,249 @@
++import { applyPhaseLattice } from './phase-lattice';
++import type { PhaseLatticeBlock, PhaseLatticeEvidence, PhaseLatticeResult } from './phase-lattice';
++import { config } from './tempo-family-config';
++
++export interface AttackRecurrenceOnset {
++  readonly time: number;
++  readonly boundary?: true;
++  readonly attackSignature?: unknown;
++}
++export interface AttackRecurrenceBlock extends PhaseLatticeBlock {
++  readonly from: number;
++  readonly to: number;
++}
++export interface AttackRecurrenceTarget {
++  k: number;
++  time: number;
++  onsetIndex: number | null;
++  distance: number | null;
++  signatureValid: boolean;
++}
++export interface AttackRecurrenceLag {
++  lag: 1 | 2 | 4;
++  pairs: number;
++  sum: number;
++  /** Descriptive mean, including fewer than three pairs. */
++  mean: number | null;
++  /** Unavailable until at least three pairs exist. */
++  score: number | null;
++}
++export interface AttackRecurrencePhase {
++  phaseIndex: number;
++  anchor: number | null;
++  originalCoverage: number | null;
++  originalSupported: boolean;
++  originalUnknown: boolean;
++  reason: 'invalid-period' | 'invalid-window' | 'invalid-phase' | 'original-unknown' | 'original-unsupported' | 'no-signature-pairs' | 'zero-recurrence' | 'eligible';
++  targets: AttackRecurrenceTarget[];
++  matched: number;
++  validSignatures: number;
++  lags: AttackRecurrenceLag[];
++  chosenLag: 1 | 2 | 4 | null;
++  recurrenceScore: number | null;
++  decoratedCoverage: number | null;
++  decoratedSupported: boolean;
++}
++export interface AttackRecurrenceBlockProfile {
++  blockIndex: number;
++  time: number;
++  period: number | null;
++  hypothesisIndex: number | null;
++  reason: 'missing-period' | 'missing-hypothesis' | 'invalid-period' | 'invalid-window' | 'evaluated';
++  phases: AttackRecurrencePhase[];
++}
++export interface AttackRecurrenceWork {
++  inputOnsets: number;
++  nonboundaryOnsets: number;
++  boundaryExcluded: number;
++  signatureInspections: number;
++  validInputSignatures: number;
++  absentOrInvalidInputSignatures: number;
++  blocks: number;
++  matchingHypotheses: number;
++  originalPhases: number;
++  evaluatedPhases: number;
++  eligiblePhases: number;
++  targets: number;
++  matchedTargets: number;
++  validTargets: number;
++  lagPairs: number;
++  cosineProducts: number;
++  maximumTargetsPerPhase: number;
++  /** This wrapper allocates plain arrays/objects only; kernel storage is separate. */
++  additionalTypedBytes: number;
++  signatureRecords: number;
++  profileBlocks: number;
++  profilePhases: number;
++  profileTargets: number;
++  profileLagRecords: number;
++}
++export interface AttackRecurrenceResult extends PhaseLatticeResult {
++  /** The exact metadata passed to the sole actual kernel call. */
++  decoratedBlocks: AttackRecurrenceBlock[];
++  recurrenceBlocks: AttackRecurrenceBlockProfile[];
++  recurrenceWork: AttackRecurrenceWork;
++  kernelCalls: 1;
++}
++
++interface Signature {
++  values: readonly number[];
++  norm: number;
++}
++interface PhysicalEvent {
++  event: AttackRecurrenceOnset;
++  originalIndex: number;
++  signature: Signature | null;
++}
++const EPS = 1e-9, TOLERANCE = .05, DIMENSIONS = 16;
++const LAGS = [1, 2, 4] as const;
++
++function signatureOf(value: unknown): Signature | null {
++  if (!Array.isArray(value) || value.length !== DIMENSIONS) return null;
++  let square = 0;
++  for (const component of value) {
++    if (!Number.isFinite(component) || component < 0 || component > 1 + EPS) return null;
++    square += component * component;
++  }
++  return square > 0 ? { values: value as number[], norm: Math.sqrt(square) } : null;
++}
++
++/** Only existing preferred-period phases are decorated. All times are seconds.
++ * Spectral recurrence is pattern evidence, not a calibrated correctness score. */
++export function applyAttackRecurrence(
++  envelope: Float64Array,
++  input: readonly AttackRecurrenceBlock[],
++  onsets: readonly AttackRecurrenceOnset[],
++): AttackRecurrenceResult {
++  if (!Array.isArray(input as unknown) || !Array.isArray(onsets as unknown)) throw Error('Attack recurrence requires block and onset arrays');
++  const work: AttackRecurrenceWork = {
++    inputOnsets: onsets.length, nonboundaryOnsets: 0, boundaryExcluded: 0,
++    signatureInspections: 0, validInputSignatures: 0, absentOrInvalidInputSignatures: 0,
++    blocks: input.length, matchingHypotheses: 0, originalPhases: 0, evaluatedPhases: 0,
++    eligiblePhases: 0, targets: 0, matchedTargets: 0, validTargets: 0, lagPairs: 0,
++    cosineProducts: 0, maximumTargetsPerPhase: 0, additionalTypedBytes: 0,
++    signatureRecords: 0, profileBlocks: input.length, profilePhases: 0,
++    profileTargets: 0, profileLagRecords: 0,
++  };
++  const physical: PhysicalEvent[] = [];
++  for (let index = 0; index < onsets.length; index++) {
++    const event = onsets[index];
++    if (event.boundary) { work.boundaryExcluded++; continue; }
++    if (!Number.isFinite(event.time) || event.time < 0
++      || (physical.length > 0 && event.time <= physical[physical.length - 1].event.time)) {
++      throw Error('Strictly increasing nonboundary measured event times required');
++    }
++    work.signatureInspections++;
++    const signature = signatureOf(event.attackSignature);
++    if (signature) work.validInputSignatures++; else work.absentOrInvalidInputSignatures++;
++    physical.push({ event, originalIndex: index, signature });
++  }
++  work.nonboundaryOnsets = physical.length;
++  work.signatureRecords = physical.length;
++  const domainStart = physical[0]?.event.time ?? 0;
++  const domainEnd = physical.length ? physical[physical.length - 1].event.time + EPS : 0;
++  const profiles: AttackRecurrenceBlockProfile[] = [];
++  const decoratedBlocks = input.map((block, blockIndex): AttackRecurrenceBlock => {
++    const period = block.preferredPeriod;
++    const profile: AttackRecurrenceBlockProfile = {
++      blockIndex, time: block.time, period: null, hypothesisIndex: null,
++      reason: 'missing-period', phases: [],
++    };
++    profiles.push(profile);
++    if (!(period !== null && Number.isFinite(period) && period > 0)) return { ...block };
++    profile.period = period;
++    const hypothesisIndex = block.hypotheses.findIndex(h => Number.isFinite(h.period) && Math.abs(h.period - period) <= EPS);
++    if (hypothesisIndex < 0) { profile.reason = 'missing-hypothesis'; return { ...block }; }
++    profile.hypothesisIndex = hypothesisIndex;
++    const domainReason = period < config.periodHypotheses.minimumSeconds - EPS || period > config.periodHypotheses.maximumSeconds + EPS
++      ? 'invalid-period' : !Number.isFinite(block.from) || !Number.isFinite(block.to) || block.from < 0
++        || block.to < block.from || block.to - block.from > config.windowSeconds + EPS ? 'invalid-window' : null;
++    profile.reason = domainReason ?? 'evaluated';
++    work.matchingHypotheses++;
++    const originalPhases = block.hypotheses[hypothesisIndex].phases;
++    if (originalPhases.length > 4) throw Error('Phase hypothesis exceeds the original four-state bound');
++    const phases = originalPhases.map((phase, phaseIndex): PhaseLatticeEvidence => {
++      work.originalPhases++;
++      const anchor = phase.anchor + phase.meanResidual;
++      const valid = Number.isFinite(phase.anchor) && Number.isFinite(phase.meanResidual)
++        && Number.isFinite(anchor) && Number.isFinite(phase.coverage) && phase.coverage >= 0 && phase.coverage <= 1;
++      const row: AttackRecurrencePhase = {
++        phaseIndex, anchor: Number.isFinite(anchor) ? anchor : null,
++        originalCoverage: Number.isFinite(phase.coverage) ? phase.coverage : null,
++        originalSupported: phase.supported, originalUnknown: phase.unknown,
++        reason: 'invalid-phase', targets: [], matched: 0, validSignatures: 0,
++        lags: LAGS.map(lag => ({ lag, pairs: 0, sum: 0, mean: null, score: null })),
++        chosenLag: null, recurrenceScore: null,
++        decoratedCoverage: Number.isFinite(phase.coverage) ? phase.coverage : null,
++        decoratedSupported: false,
++      };
++      profile.phases.push(row);
++      if (domainReason) { row.reason = domainReason; return { ...phase, supported: false }; }
++      if (!valid) return { ...phase, supported: false };
++      work.evaluatedPhases++;
++      const start = Math.max(block.from, domainStart), end = Math.min(block.to, domainEnd);
++      const observations = new Map<number, Signature>();
++      let cursor = 0;
++      const firstK = Math.ceil((start - anchor) / period - EPS);
++      if (!Number.isSafeInteger(firstK)) throw Error('Unsafe target integer arithmetic');
++      let previousTarget = -Infinity;
++      for (let k = firstK, target = anchor + firstK * period; target < end; k++, target += period) {
++        if (!Number.isSafeInteger(k) || !Number.isFinite(target) || target <= previousTarget) throw Error('Nonfinite or nonadvancing target arithmetic');
++        previousTarget = target;
++        const targetProfile: AttackRecurrenceTarget = { k, time: target, onsetIndex: null, distance: null, signatureValid: false };
++        row.targets.push(targetProfile);
++        work.targets++;
++        while (cursor < physical.length && physical[cursor].event.time < target - TOLERANCE - EPS) cursor++;
++        let nearest = -1, distance = Infinity;
++        for (let at = cursor; at < physical.length && physical[at].event.time <= target + TOLERANCE + EPS; at++) {
++          const difference = Math.abs(physical[at].event.time - target);
++          if (difference < distance) { nearest = at; distance = difference; }
++        }
++        if (nearest >= 0) {
++          // Physical ownership is consumed before feature validity is checked.
++          cursor = nearest + 1;
++          const matched = physical[nearest];
++          targetProfile.onsetIndex = matched.originalIndex;
++          targetProfile.distance = distance;
++          targetProfile.signatureValid = matched.signature !== null;
++          row.matched++; work.matchedTargets++;
++          if (matched.signature) {
++            observations.set(k, matched.signature);
++            row.validSignatures++; work.validTargets++;
++          }
++        }
++      }
++      work.maximumTargetsPerPhase = Math.max(work.maximumTargetsPerPhase, row.targets.length);
++      for (const lag of row.lags) {
++        for (const [k, first] of observations) {
++          const second = observations.get(k + lag.lag);
++          if (!second) continue;
++          let dot = 0;
++          for (let component = 0; component < DIMENSIONS; component++) dot += first.values[component] * second.values[component];
++          const cosine = Math.max(0, Math.min(1, dot / (first.norm * second.norm)));
++          lag.pairs++; lag.sum += cosine;
++          work.lagPairs++; work.cosineProducts += DIMENSIONS;
++        }
++        lag.mean = lag.pairs ? lag.sum / lag.pairs : null;
++        lag.score = lag.pairs >= 3 ? lag.mean : null;
++        if (lag.score !== null && (row.recurrenceScore === null || lag.score > row.recurrenceScore)) {
++          row.chosenLag = lag.lag;
++          row.recurrenceScore = lag.score;
++        }
++      }
++      const coverage = row.recurrenceScore === null ? phase.coverage : phase.coverage * row.recurrenceScore;
++      row.decoratedCoverage = coverage;
++      row.decoratedSupported = phase.supported && !phase.unknown && row.recurrenceScore !== null && row.recurrenceScore > 0;
++      row.reason = phase.unknown ? 'original-unknown' : !phase.supported ? 'original-unsupported'
++        : row.recurrenceScore === null ? 'no-signature-pairs' : row.recurrenceScore <= 0 ? 'zero-recurrence' : 'eligible';
++      if (row.decoratedSupported) work.eligiblePhases++;
++      return { ...phase, coverage, supported: row.decoratedSupported };
++    });
++    const hypotheses = block.hypotheses.map((hypothesis, index) => index === hypothesisIndex ? { ...hypothesis, phases } : hypothesis);
++    return { ...block, hypotheses };
++  });
++  work.profilePhases = work.originalPhases;
++  work.profileTargets = work.targets;
++  work.profileLagRecords = work.profilePhases * LAGS.length;
++  const lattice = applyPhaseLattice(envelope, decoratedBlocks);
++  return { ...lattice, decoratedBlocks, recurrenceBlocks: profiles, recurrenceWork: work, kernelCalls: 1 };
++}
+diff --git a/src/core/phase-lattice.ts b/src/core/phase-lattice.ts
+new file mode 100644
+index 0000000..fbdffe3
+--- /dev/null
++++ b/src/core/phase-lattice.ts
+@@ -0,0 +1,196 @@
++/** A phase-only continuity prior. All positions and periods are in seconds.
++ * Coverage and continuity select among existing supported phases of the one
++ * existing preferred period. This helper never reads audio or creates onsets. */
++export interface PhaseLatticeEvidence {
++  readonly anchor: number;
++  readonly meanResidual: number;
++  readonly coverage: number;
++  readonly unknown: boolean;
++  readonly supported: boolean;
++}
++export interface PhaseLatticeBlock {
++  readonly time: number;
++  readonly preferredPeriod: number | null;
++  readonly hypotheses: readonly {
++    readonly period: number;
++    readonly phases: readonly PhaseLatticeEvidence[];
++  }[];
++}
++export interface PhaseLatticeStateProfile {
++  phaseIndex: number;
++  anchor: number;
++  coverage: number;
++  forward: number;
++  backward: number;
++  maxMarginal: number;
++}
++export interface PhaseLatticeBlockProfile {
++  index: number;
++  time: number;
++  period: number | null;
++  hypothesisIndex: number | null;
++  reason: 'missing-period' | 'missing-hypothesis' | 'no-supported-phase' | 'eligible';
++  states: PhaseLatticeStateProfile[];
++  chosenState: number | null;
++  chosenPhaseIndex: number | null;
++  chosenAnchor: number | null;
++  chainIndex: number | null;
++  chainScore: number | null;
++  otherScore: number | null;
++  margin: number | null;
++  reliability: number;
++}
++export interface PhaseLatticeWork {
++  frames: number;
++  blocks: number;
++  eligibleBlocks: number;
++  eligibleStates: number;
++  maximumStates: number;
++  chains: number;
++  forwardTransitions: number;
++  backwardTransitions: number;
++  positiveFrames: number;
++  alignmentEvaluations: number;
++  changedFrames: number;
++  typedBytes: number;
++  returnedTypedBytes: number;
++  scratchTypedBytes: number;
++  profileBlocks: number;
++  profileStates: number;
++}
++export interface PhaseLatticeResult {
++  effectiveEnvelope: Float64Array;
++  blocks: PhaseLatticeBlockProfile[];
++  /** Eligible-state slots in original phase order; -1 means a chain break. */
++  path: Int8Array;
++  /** Sum of independent chain best scores; each block also records its Z. */
++  score: number;
++  reliability: Float64Array;
++  work: PhaseLatticeWork;
++}
++const STEP = .01, BLOCK_SECONDS = 2, TOLERANCE = .05, EPS = 1e-9, MAX_STATES = 4;
++
++export function applyPhaseLattice(envelope: Float64Array, input: readonly PhaseLatticeBlock[]): PhaseLatticeResult {
++  if (!(envelope instanceof Float64Array)) throw Error('Phase lattice requires a Float64 envelope');
++  for (const value of envelope)
++    if (!(Number.isFinite(value) && value >= 0)) throw Error('Invalid original phase envelope');
++  const n = input.length, slots = n * MAX_STATES;
++  const effectiveEnvelope = envelope.slice(), counts = new Uint8Array(n), periods = new Float64Array(n);
++  const anchors = new Float64Array(slots), coverage = new Float64Array(slots), phaseIndices = new Int8Array(slots);
++  const forward = new Float64Array(slots), backward = new Float64Array(slots), predecessor = new Int8Array(slots);
++  const path = new Int8Array(n), reliability = new Float64Array(n);
++  path.fill(-1); predecessor.fill(-1);
++  const profiles: PhaseLatticeBlockProfile[] = [];
++  const work: PhaseLatticeWork = { frames: envelope.length, blocks: n, eligibleBlocks: 0, eligibleStates: 0,
++    maximumStates: 0, chains: 0, forwardTransitions: 0, backwardTransitions: 0, positiveFrames: 0,
++    alignmentEvaluations: 0, changedFrames: 0, typedBytes: 0, returnedTypedBytes: 0,
++    scratchTypedBytes: 0, profileBlocks: n, profileStates: 0 };
++  for (let i = 0; i < n; i++) {
++    const block = input[i];
++    if (!Number.isFinite(block.time)) throw Error('Invalid phase block time');
++    const profile: PhaseLatticeBlockProfile = { index: i, time: block.time, period: null, hypothesisIndex: null,
++      reason: 'missing-period', states: [], chosenState: null, chosenPhaseIndex: null, chosenAnchor: null,
++      chainIndex: null, chainScore: null, otherScore: null, margin: null, reliability: 0 };
++    profiles.push(profile);
++    const period = block.preferredPeriod;
++    if (!(period !== null && Number.isFinite(period) && period > 0)) continue;
++    profile.period = period; periods[i] = period;
++    const hypothesisIndex = block.hypotheses.findIndex(h => Number.isFinite(h.period) && Math.abs(h.period - period) <= EPS);
++    if (hypothesisIndex < 0) { profile.reason = 'missing-hypothesis'; continue; }
++    profile.hypothesisIndex = hypothesisIndex;
++    const phases = block.hypotheses[hypothesisIndex].phases;
++    if (phases.length > MAX_STATES) throw Error('Phase hypothesis exceeds the original four-state bound');
++    profile.reason = 'no-supported-phase';
++    for (let j = 0; j < phases.length; j++) {
++      const phase = phases[j], anchor = phase.anchor + phase.meanResidual;
++      if (!phase.supported || phase.unknown || !Number.isFinite(phase.anchor) || !Number.isFinite(phase.meanResidual)
++        || !Number.isFinite(anchor) || !Number.isFinite(phase.coverage) || phase.coverage < 0 || phase.coverage > 1) continue;
++      const at = i * MAX_STATES + counts[i]++;
++      anchors[at] = anchor; coverage[at] = phase.coverage; phaseIndices[at] = j;
++    }
++    if (counts[i]) { profile.reason = 'eligible'; work.eligibleBlocks++; }
++    work.eligibleStates += counts[i]; work.maximumStates = Math.max(work.maximumStates, counts[i]);
++  }
++  const transition = (previous: number, previousState: number, current: number, currentState: number): number => {
++    const midpoint = (input[previous].time + input[current].time) / 2;
++    const z = (midpoint - anchors[current * MAX_STATES + currentState]) / periods[current]
++      - (midpoint - anchors[previous * MAX_STATES + previousState]) / periods[previous];
++    if (!Number.isFinite(z)) throw Error('Nonfinite phase transition arithmetic');
++    const d = z - Math.round(z);
++    return 4 * d * d;
++  };
++  let score = 0, begin = 0;
++  while (begin < n) {
++    if (!counts[begin]) { begin++; continue; }
++    let end = begin;
++    while (end + 1 < n && counts[end + 1]) end++;
++    const chainIndex = work.chains++;
++    for (let i = begin; i <= end; i++) for (let s = 0; s < counts[i]; s++) {
++      const at = i * MAX_STATES + s;
++      if (i === begin) { forward[at] = coverage[at]; continue; }
++      let best = -Infinity, bestState = -1;
++      for (let p = 0; p < counts[i - 1]; p++) {
++        work.forwardTransitions++;
++        const value = forward[(i - 1) * MAX_STATES + p] - transition(i - 1, p, i, s);
++        if (value > best) { best = value; bestState = p; }
++      }
++      forward[at] = coverage[at] + best; predecessor[at] = bestState;
++    }
++    for (let i = end - 1; i >= begin; i--) for (let s = 0; s < counts[i]; s++) {
++      let best = -Infinity;
++      for (let u = 0; u < counts[i + 1]; u++) {
++        work.backwardTransitions++;
++        const at = (i + 1) * MAX_STATES + u;
++        const value = coverage[at] - transition(i, s, i + 1, u) + backward[at];
++        if (value > best) best = value;
++      }
++      backward[i * MAX_STATES + s] = best;
++    }
++    let z = -Infinity, state = -1;
++    for (let s = 0; s < counts[end]; s++) if (forward[end * MAX_STATES + s] > z) {
++      z = forward[end * MAX_STATES + s]; state = s;
++    }
++    score += z;
++    for (let i = end; i >= begin; i--) {
++      path[i] = state;
++      state = predecessor[i * MAX_STATES + state];
++    }
++    for (let i = begin; i <= end; i++) {
++      const profile = profiles[i], chosen = i * MAX_STATES + path[i];
++      let other = -Infinity;
++      for (let s = 0; s < counts[i]; s++) {
++        const at = i * MAX_STATES + s;
++        profile.states.push({ phaseIndex: phaseIndices[at], anchor: anchors[at], coverage: coverage[at],
++          forward: forward[at], backward: backward[at], maxMarginal: forward[at] + backward[at] });
++        if (s !== path[i]) other = Math.max(other, forward[at] + backward[at]);
++      }
++      const margin = Math.max(0, z - other);
++      reliability[i] = counts[i] === 1 ? 1 : margin <= EPS ? 0 : margin / (1 + margin);
++      Object.assign(profile, { chosenState: path[i], chosenPhaseIndex: phaseIndices[chosen], chosenAnchor: anchors[chosen],
++        chainIndex, chainScore: z, otherScore: Number.isFinite(other) ? other : null,
++        margin: Number.isFinite(margin) ? margin : null, reliability: reliability[i] });
++    }
++    begin = end + 1;
++  }
++  for (let frame = 0; frame < envelope.length; frame++) {
++    if (!(envelope[frame] > 0)) continue;
++    work.positiveFrames++;
++    const block = Math.min(n - 1, Math.round(frame * STEP / BLOCK_SECONDS));
++    if (block < 0 || path[block] < 0 || !(reliability[block] > 0)) continue;
++    work.alignmentEvaluations++;
++    const anchor = anchors[block * MAX_STATES + path[block]], period = periods[block], time = frame * STEP;
++    const closest = anchor + Math.round((time - anchor) / period) * period;
++    const errorSeconds = Math.abs(time - closest);
++    if (!Number.isFinite(errorSeconds)) throw Error('Nonfinite phase alignment arithmetic');
++    const alignment = Math.exp(-.5 * (errorSeconds / TOLERANCE) ** 2);
++    effectiveEnvelope[frame] = envelope[frame] + reliability[block] * alignment;
++    if (!Number.isFinite(effectiveEnvelope[frame])) throw Error('Nonfinite effective phase envelope');
++    if (effectiveEnvelope[frame] !== envelope[frame]) work.changedFrames++;
++  }
++  const arrays = [effectiveEnvelope, counts, periods, anchors, coverage, phaseIndices, forward, backward, predecessor, path, reliability];
++  work.typedBytes = arrays.reduce((sum, array) => sum + array.byteLength, 0);
++  work.returnedTypedBytes = effectiveEnvelope.byteLength + path.byteLength + reliability.byteLength;
++  work.scratchTypedBytes = work.typedBytes - work.returnedTypedBytes;
++  work.profileStates = work.eligibleStates;
++  return { effectiveEnvelope, blocks: profiles, path, score, reliability, work };
++}
+diff --git a/src/core/rhythm.ts b/src/core/rhythm.ts
+index 7534f26..946d7b1 100644
+--- a/src/core/rhythm.ts
++++ b/src/core/rhythm.ts
+@@ -1,3 +1,4 @@
++import { applyAttackRecurrence } from './attack-recurrence';
+ import { gateClockEvidence } from './phase-gate';
+ import { phaseDP } from './phase-dp';
+ import { investigateTempo } from './tempo-families';
+@@ -10,14 +11,16 @@ export function trackBeats(onsets: Onset[], duration: number, bpm: number, sourc
+         return { beats: [], tempo: [], confidence: 0, downbeats: [], meterConfidence: 0 };
+     const investigation = investigateTempo(onsets, duration, bpm);
+     const projected = gateClockEvidence(onsets, investigation.blocks, sourceOnsets);
+-    const frames = Math.ceil(duration / STEP) + 1, envelope = new Float64Array(frames);
++    const frames = Math.ceil(duration / STEP) + 1, oldEnvelope = new Float64Array(frames);
+     const reference = Math.max(1e-8, ...onsets.map(onset => onset.strength));
+     for (const onset of projected) {
+         const center = Math.round(onset.time / STEP);
+         for (let d = -4; d <= 4; d++)
+             if (center + d >= 0 && center + d < frames)
+-                envelope[center + d] = Math.max(envelope[center + d], onset.strength / reference * Math.exp(-d * d / 5));
++                oldEnvelope[center + d] = Math.max(oldEnvelope[center + d], onset.strength / reference * Math.exp(-d * d / 5));
+     }
++    const recurrence = applyAttackRecurrence(oldEnvelope, investigation.blocks, onsets);
++    const envelope = recurrence.effectiveEnvelope;
+     const base = 60 / bpm / STEP;
+     void base;
+     const local = Float64Array.from(investigation.blocks, block => (block.preferredPeriod ?? block.rememberedPeriod ?? 60 / bpm) / STEP);
+diff --git a/src/core/signal-analysis.ts b/src/core/signal-analysis.ts
+index 13ef671..9d442c4 100644
+--- a/src/core/signal-analysis.ts
++++ b/src/core/signal-analysis.ts
+@@ -1,3 +1,4 @@
++import { ATTACK_PROFILE_BANDS, accumulateAttackProfileFrame, attachAttackSignatures } from './attack-profile';
+ import { mergeClockOnsets } from './clock-evidence';
+ import { reinforceCoincidentOnsets } from './clock-evidence';
+ import type { Analysis, Onset } from '../types';
+@@ -57,6 +58,7 @@ export function analyzeAudio(samples: Float32Array, sampleRate: number, progress
+     const frames = Math.max(0, Math.floor((samples.length - n) / hop) + 1);
+     if (!frames)
+         throw new Error('音频太短，请选择至少 2 秒的音乐。');
++    const attackFrameProfiles = new Float32Array(frames * ATTACK_PROFILE_BANDS), attackDifferences = new Float64Array(n / 2);
+     const flux = new Float64Array(frames), rms = new Float64Array(frames), bands = new Uint8Array(frames);
+     const bandEnvelopes = Array.from({ length: 3 }, () => new Float64Array(frames));
+     const bandMax = [0, 0, 0];
+@@ -87,11 +89,13 @@ export function analyzeAudio(samples: Float32Array, sampleRate: number, progress
+             for (let bin = Math.max(1, k - radius); bin <= Math.min(n / 2 - 1, k + radius); bin++)
+                 reference = Math.max(reference, previous[bin]);
+             const difference = Math.max(0, current[k] - reference);
++            attackDifferences[k] = difference;
+             const freq = k * sampleRate / n;
+             const band = freq < 250 ? 0 : freq < 2500 ? 1 : 2;
+             bandFlux[band] += difference;
+             rawBandFlux[band] += Math.max(0, current[k] - previous[k]);
+         }
++        accumulateAttackProfileFrame(attackDifferences, attackFrameProfiles, f);
+         previous.set(current);
+         // Equalize the number of bins so the high band does not dominate all songs.
+         bandFlux[0] *= 3;
+@@ -112,7 +116,7 @@ export function analyzeAudio(samples: Float32Array, sampleRate: number, progress
+     if (maxRms < 0.0005 || maxFlux < 0.001)
+         throw new Error('这段音频接近静音，没有检测到可用的节奏。');
+     progress?.(0.8, '正在估计节拍');
+-    const onsets: Onset[] = [];
++    let onsets: Onset[] = [];
+     let boundaryOnset: Onset | undefined;
+     // A loud passage elsewhere must not erase audible attacks in a quiet one.
+     // Keep the absolute RMS floor and the independent spectral/local-peak gates.
+@@ -140,7 +144,7 @@ export function analyzeAudio(samples: Float32Array, sampleRate: number, progress
+             onsets.push(onset);
+     }
+     const boundaryStreams: (Onset | undefined)[] = [];
+-    const streams = bandEnvelopes.map((envelope, band) => {
++    let streams = bandEnvelopes.map((envelope, band) => {
+         const events: Onset[] = [];
+         const reference = Math.max(maxFlux * 0.03, bandMax[band]);
+         for (let f = 0; f < frames - 2; f++) {
+@@ -164,6 +168,8 @@ export function analyzeAudio(samples: Float32Array, sampleRate: number, progress
+         }
+         return events;
+     });
++    onsets = attachAttackSignatures(onsets, attackFrameProfiles, frames, hop, sampleRate);
++    streams = streams.map(events => attachAttackSignatures(events, attackFrameProfiles, frames, hop, sampleRate));
+     progress?.(0.82, '正在选择各乐段稳定的节奏主线');
+     const pulse = followRhythmSource(streams, onsets, samples.length / sampleRate);
+     if (pulse.onsets.length < 3 && onsets.length < 3)
+diff --git a/src/types.ts b/src/types.ts
+index 813c05c..e511e6f 100644
+--- a/src/types.ts
++++ b/src/types.ts
+@@ -2,7 +2,7 @@ export type Difficulty = 'one' | 'two' | 'three' | 'four';
+ export type ScrollMode = 'perspective' | 'screen';
+ export type NoteType = 'tap' | 'hold' | 'left' | 'right' | 'up';
+ export type Grade = 'perfect' | 'great' | 'good' | 'miss';
+-export interface Onset { time: number; strength: number; band: number; attack?: number; boundary?: true; role?: 'beat' | 'half' | 'quarter' | 'free' }
++export interface Onset { time: number; strength: number; band: number; attack?: number; attackSignature?: number[]; boundary?: true; role?: 'beat' | 'half' | 'quarter' | 'free' }
+ export interface RhythmSection { start: number; end: number; band: 'low' | 'mid' | 'high' | 'mixed'; support: number }
+ export interface Rhythm {
+   beats: number[];
