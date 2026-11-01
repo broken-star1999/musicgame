@@ -1,0 +1,196 @@
+{
+  "schema": 1,
+  "candidate": "PL1 persistent repetition length with on-path establishment",
+  "outcome": "REJECTED AT FIXED MUSIC SMALL SCREEN",
+  "cachedExportOnly": true,
+  "algorithmCalls": 0,
+  "baselineCommit": "aeaf78284cb66601fd02bf9e40eaf99642285689",
+  "acceptedRuntimeChanged": false,
+  "deployed": false,
+  "files": {
+    "benchmarks/PATTERN_LENGTH_AUDIT.md": {
+      "sha256": "180c2ba4e1c378d280b5bd5b82c46bb4e4f2e2825c3bf0010584b65a18362513",
+      "bytes": 11458
+    },
+    "benchmarks/pattern-length-paired.csv": {
+      "sha256": "5ae43004ce537f679242745e17069ebd44266791ec55f7e5ce5f1492cc42b5e7",
+      "bytes": 68863
+    },
+    "benchmarks/pattern-length-regressions.csv": {
+      "sha256": "edd549057df2cf540e2b16bb77d99c9a4e4b26aabcfecc3063e4830ec6ef522a",
+      "bytes": 2357
+    },
+    "benchmarks/pattern-length-all-mode-regressions.csv": {
+      "sha256": "29662a4afa987a3b2ca305692ada0434874bdd8f9784f4043c2d0a38be2cf0e3",
+      "bytes": 4657
+    },
+    "benchmarks/pattern-length-all-mode-heads.csv": {
+      "sha256": "e2d55682fa1758bf03d5e87dc91898f44a9c7a0e618726ed4a628a822393945f",
+      "bytes": 92926
+    },
+    "benchmarks/pattern-length-four-finger.csv": {
+      "sha256": "fef491d165280a860e073a04c8b6beeba7ecc2e838218b03123b91ff16431d05",
+      "bytes": 3079
+    },
+    "benchmarks/pattern-length-hold-density.csv": {
+      "sha256": "ffb7f67f1fe6e8a1c3fe36fca38d038f26e212dd0ec1bb6b10a5a7d4ac6fdd04",
+      "bytes": 14470
+    },
+    "benchmarks/pattern-length-normal-rejects.csv": {
+      "sha256": "9339370f326ca1cfcea284affba9382553e71e01c8893819546d8e7645c8d53b",
+      "bytes": 1647
+    },
+    "benchmarks/pattern-length-pattern-summary.csv": {
+      "sha256": "68066b1fcd22fffd38e684da8880e3de23bb242b61c9865b03534282a673780f",
+      "bytes": 26644
+    },
+    "benchmarks/pattern-length-diagnostic.json": {
+      "sha256": "25065fda36364797554bb09887101ae9ca7361442329bdae17801ddefd632c8f",
+      "bytes": 53496
+    },
+    "benchmarks/prototypes/clock-pattern-length-rejected.patch": {
+      "sha256": "281e3d348a2a6930d3da4aeb3bf055594dc81fbdd5fd641e342497b671218b14",
+      "bytes": 48213
+    },
+    "benchmarks/README.md": {
+      "sha256": "9908b69a03a799142f8e204ae3e8bc16fcf54fc1d33d8a851fdd507a21994dfe",
+      "bytes": 5271
+    }
+  },
+  "manifestSelfHashOmitted": true,
+  "sourceEvidenceSHA256": {
+    ".qa/pattern-length-public-export-v1/PROTOCOL.md": "87650a174fe5047d2f270dbe44d397b80f31f4d1eb1e33988dd17336c245ca68",
+    ".qa/pattern-length-small-v1/summary.json": "cf01f008e768877e9218e344fd3e19d0e6cb8e397b88e6eb8f3cc5962b6089ed",
+    ".qa/pattern-length-small-v1/owned.json": "04372dd45d791f91420590ed8d5ffe27c542e96639f83de9d9d335d37c78b241",
+    ".qa/pattern-length-small-v1/freeze.json": "8dfa41159f506e88b2cd574d46242840a449b3fa476698b54a18fa3ece36cf07",
+    ".qa/pattern-length-small-v1/summary-output-manifest.json": "69ad23d3f7978f0ea58e2cf6e974b1b0e1e2049b3bef2ec3e992e815a2809ddd",
+    ".qa/pattern-length-small-v1/source-protocol.json": "f6fab650f5e83ed4036ac7c7ef16e387a705891bb53c39177b2e79e37b39aa4c",
+    ".qa/pattern-length-small-v1/qualification.json": "3fc1442339ff68b416d60764c90f8541663282d1ba49c01e35534e69dc23e026",
+    ".qa/pattern-length-stage-v1/stage-report.json": "58033ce6d4df80a34fb56378bf9508c6107e9358c96c98a7699dae095edef6ab",
+    ".qa/pattern-length-stage-v1/stage-owned.json": "fa8349bfffeed30aba9f68e5c2a18e5c41fc26a432f40bfadf4751db7beab121",
+    ".qa/pattern-length-stage-v1/stage-freeze.json": "1253fd7ec7566ee6f9be49242d692f59ba00e14b36056699d12f0e9acd8b1059",
+    ".qa/pattern-length-oracle-v2/certificate.json": "534018deead547b678f728632319700580fa5985b23158471fa91adfa7d50144",
+    ".qa/pattern-length-oracle-v1/report.json": "59204b28fe8aac3979a1680f63a3f73ee575d3837a6418ea15529a27e725a33d",
+    ".qa/pattern-length-oracle-v2/report.json": "67d5c24d38dfdc800dcc172132e15dbbb54b5416c1b72b330ed4763d52b9e167",
+    ".qa/pattern-length-oracle-v1/terminal.json": "ce379efc8e8295a2ea79dcad69d02011c1a83a944d91fac7418f5302971e7c0d",
+    ".qa/pattern-length-oracle-v2/terminal.json": "c05eb8f676989b5583ffa6a44b3af78893d208418d017c2eb39b1cbba9928083",
+    ".qa/pattern-length-independent-review-v1/report.json": "fe0edb2a59ae9a64a2048d070e32e25c79b5453463f344489d5a3a5f0040f49d",
+    ".qa/pattern-length-patch-proof-v1/proof.json": "e8dc4826e343463b951aa4ceb5ddba5acf33849a705f19b16c9bcf9ca50fb0a8",
+    "benchmarks/prototypes/clock-pattern-length-rejected.patch": "281e3d348a2a6930d3da4aeb3bf055594dc81fbdd5fd641e342497b671218b14",
+    ".qa/pattern-length-small-v1/report.json": "fd75b53e452f7d7d5b49bfe4fa9bcc0fbf715be5abbd24b27da418d7274a0cb3",
+    ".qa/pattern-length-v1/DESIGN.md": "0ad4690267eea2af111550e39eba5dfd0bbbf9b20197260091a49393b59a99bc",
+    ".qa/pattern-evidence-v1/freeze.json": "925ee87b3c745f98958834411e7ae5a0b5e1a4bf4e40f267d3f8078074aa4454",
+    ".qa/pattern-length-helper-v1/freeze.json": "ccceb7521112adbc30237e00d3b1863cc73fbed6fc1c86ebf9f56c7fa9becd7c",
+    ".qa/pattern-length-small-v1/inherited-qualification.json": "19b1377a6cde8002d962316330bb7f647ed7dfe145ef37c2de0c7eea687f5d65",
+    ".qa/attack-recurrence-v1/physical-fixtures.json": "711b5a861c55c462d4590ec9576ea1702e7fb65269aa0ba9b8d663a15d84fee9",
+    ".qa/attack-recurrence-v1/physical-fixtures.mjs": "4a69296ba8ac68c65efda6cfdd667b6d730e1f079da4078e70d3ab5eacf6cedf",
+    "benchmarks/dsp-cohorts.json": "df1957bce05ea31a1216a07e6303e46420eb6f3c45de5f425a34c44383ca79c1",
+    ".qa/pattern-length-small-v1/paired.csv": "5ae43004ce537f679242745e17069ebd44266791ec55f7e5ce5f1492cc42b5e7",
+    ".qa/pattern-length-small-v1/metric-regressions.csv": "edd549057df2cf540e2b16bb77d99c9a4e4b26aabcfecc3063e4830ec6ef522a",
+    ".qa/pattern-length-small-v1/all-mode-regressions.csv": "29662a4afa987a3b2ca305692ada0434874bdd8f9784f4043c2d0a38be2cf0e3",
+    ".qa/pattern-length-small-v1/all-mode-heads.csv": "e2d55682fa1758bf03d5e87dc91898f44a9c7a0e618726ed4a628a822393945f",
+    ".qa/pattern-length-small-v1/four-finger.csv": "fef491d165280a860e073a04c8b6beeba7ecc2e838218b03123b91ff16431d05",
+    ".qa/pattern-length-small-v1/hold-density.csv": "ffb7f67f1fe6e8a1c3fe36fca38d038f26e212dd0ec1bb6b10a5a7d4ac6fdd04",
+    ".qa/pattern-length-small-v1/normal-rejects.csv": "9339370f326ca1cfcea284affba9382553e71e01c8893819546d8e7645c8d53b"
+  },
+  "sourceRuntimeOriginal24": {
+    "src/core/analysis.ts": "e3f33c635510cbaf2c7f8d07a2d35230eca1617c03045ab58837d82d5f77b7e7",
+    "src/core/signal-analysis.ts": "51ae75faeebee18a8c1f4a0e22e063d0067c0e5cd1f37fb8a5b045471682ce98",
+    "src/core/clock-evidence.ts": "128164a84bf29dc71667d9f82517dd0a595e6daf9b4045e69756c84e7e5b0c16",
+    "src/types.ts": "37cad5619425d6d7387ba0024e03eb5a116a2f21dc377c1990ec0622393d1390",
+    "src/core/rhythm.ts": "f79cdafab5bc406f50c6bff63506fbf46f15db8ec2a83b2d8e702250b3a28dd9",
+    "src/core/phase-gate.ts": "23f7a52d3a72076857868a8533995abaf0e009b16700514f3434ccb803901e01",
+    "src/core/tempo-families.ts": "b4181a948486c12a09ac81150b7bb6d095d3337768664d5ef5abb1889dd7920c",
+    "src/core/tempo-family-config.ts": "3036bb40ce762546651cad5a890c54809b9264df6f45311b7ba1ae98f178d13d",
+    "src/core/phase-dp.ts": "33165fa8deefc87d52c1b463a2dbd3ca08ecfad16e655b8fcfc365f839400ae6",
+    "src/core/phase-dp-types.ts": "737c54e98f9f614ed997a207624d1556b666df2fe40fbfb8d1f5532c1eae798f",
+    "src/core/phase-dp-kernel.ts": "d0575991cc06e5470bb7ad420c1324d2b2f06909bb20e7ac82017ec499a8f438",
+    "src/core/chroma.ts": "4172510959a332bfeff4970964dd5c8ad2a696d1725bbd1496481d8d82f84ded",
+    "src/core/rhythm-source.ts": "878fe191a23b67d36545b06fd41428df5832f3ac53db6fbc29cb44ebe51c5a90",
+    "src/core/signal-events.ts": "cfab9dd27bcd2d5a3daecce3ec4cf084e6897e5e72538ed3179d078ce6518c13",
+    "src/core/musical-events.ts": "a4b51ea2fbb794656cbfabcaab3edbbe485925398f2afd2ccd82e991d2e3e185",
+    "src/core/signal-binding.ts": "93c9e516abe08a08a0a43c54f01591e2bd6f8f33ad6291f20ec946ce60e8e36d",
+    "src/core/signal-pool.ts": "3d54e98503ada15b29f9018f2c23528bda98e2e8a30ad78cbc55272568c1855e",
+    "src/core/analysis-fallback.ts": "eda2ec9970bba7318c6cb1ce60520c54d2cee6ca7ff92f98416dfa781dbaff1e",
+    "src/core/chart.ts": "25e9dfe901aac3248ff6e2d8d26d2ab465800094178b7090afc99bb2a6440c5f",
+    "src/core/phrases.ts": "8d9029820b333c3f699cecf9998c950294f50d0fe72751cc3fd13b871c5dfc89",
+    "src/core/chart-constraints.ts": "35e4f304aed8eb2dfe49bb4dbae6d7b7db7b5deea34732a96dc7df05aeec1736",
+    "src/core/patterns.ts": "10966f254c5e5025ff8acd12986fa3218daa6e0467e75313768ce9833fe34ffc",
+    "src/core/fingering.ts": "797d6bc08a44163a261e4e02c22fe8ea4e57eff67bfd5fdc9a5d938b2b23d83e",
+    "src/core/onset-selection.ts": "00a59956b5a27c49d78f6e8cb76fa1aa2bdde5d364d57a2815716a4b096c917f"
+  },
+  "sourceCandidateFrozen27": {
+    "src/core/analysis-fallback.ts": "eda2ec9970bba7318c6cb1ce60520c54d2cee6ca7ff92f98416dfa781dbaff1e",
+    "src/core/analysis.ts": "e3f33c635510cbaf2c7f8d07a2d35230eca1617c03045ab58837d82d5f77b7e7",
+    "src/core/attack-profile.ts": "9c12a516636d79451d51500db957c6500ced49f4bbb07f7319ad6882c22fcebf",
+    "src/core/chart-constraints.ts": "35e4f304aed8eb2dfe49bb4dbae6d7b7db7b5deea34732a96dc7df05aeec1736",
+    "src/core/chart.ts": "25e9dfe901aac3248ff6e2d8d26d2ab465800094178b7090afc99bb2a6440c5f",
+    "src/core/chroma.ts": "4172510959a332bfeff4970964dd5c8ad2a696d1725bbd1496481d8d82f84ded",
+    "src/core/clock-evidence.ts": "128164a84bf29dc71667d9f82517dd0a595e6daf9b4045e69756c84e7e5b0c16",
+    "src/core/collect-attack-evidence.ts": "f2a82a8473b60be50126709b245166e289c5be2e2958f79051f74bb999604ff6",
+    "src/core/fingering.ts": "797d6bc08a44163a261e4e02c22fe8ea4e57eff67bfd5fdc9a5d938b2b23d83e",
+    "src/core/musical-events.ts": "a4b51ea2fbb794656cbfabcaab3edbbe485925398f2afd2ccd82e991d2e3e185",
+    "src/core/onset-selection.ts": "00a59956b5a27c49d78f6e8cb76fa1aa2bdde5d364d57a2815716a4b096c917f",
+    "src/core/pattern-length.ts": "edd09fe98c851ae8d7765e2f82a2557a373764980d2e65aa49453eb4430aa1ba",
+    "src/core/patterns.ts": "10966f254c5e5025ff8acd12986fa3218daa6e0467e75313768ce9833fe34ffc",
+    "src/core/phase-dp-kernel.ts": "d0575991cc06e5470bb7ad420c1324d2b2f06909bb20e7ac82017ec499a8f438",
+    "src/core/phase-dp-types.ts": "737c54e98f9f614ed997a207624d1556b666df2fe40fbfb8d1f5532c1eae798f",
+    "src/core/phase-dp.ts": "33165fa8deefc87d52c1b463a2dbd3ca08ecfad16e655b8fcfc365f839400ae6",
+    "src/core/phase-gate.ts": "23f7a52d3a72076857868a8533995abaf0e009b16700514f3434ccb803901e01",
+    "src/core/phrases.ts": "8d9029820b333c3f699cecf9998c950294f50d0fe72751cc3fd13b871c5dfc89",
+    "src/core/rhythm-source.ts": "878fe191a23b67d36545b06fd41428df5832f3ac53db6fbc29cb44ebe51c5a90",
+    "src/core/rhythm.ts": "06e168877391eb3669afe8d0026713a1f17a3eae9cbc5a3ad5f88275635fd3f6",
+    "src/core/signal-analysis.ts": "b11e4fd398f30a7ce2c660185b99206377ef0d4bbb85226167c8e510bba2fc8c",
+    "src/core/signal-binding.ts": "93c9e516abe08a08a0a43c54f01591e2bd6f8f33ad6291f20ec946ce60e8e36d",
+    "src/core/signal-events.ts": "cfab9dd27bcd2d5a3daecce3ec4cf084e6897e5e72538ed3179d078ce6518c13",
+    "src/core/signal-pool.ts": "3d54e98503ada15b29f9018f2c23528bda98e2e8a30ad78cbc55272568c1855e",
+    "src/core/tempo-families.ts": "b4181a948486c12a09ac81150b7bb6d095d3337768664d5ef5abb1889dd7920c",
+    "src/core/tempo-family-config.ts": "3036bb40ce762546651cad5a890c54809b9264df6f45311b7ba1ae98f178d13d",
+    "src/types.ts": "78c5f634c3108b6ca9bacccd530516ba67f814f2270219b90c679a7bc5985c8d"
+  },
+  "patchReproduction": {
+    "sha256": "281e3d348a2a6930d3da4aeb3bf055594dc81fbdd5fd641e342497b671218b14",
+    "bytes": 48213,
+    "changedPaths": [
+      "src/core/attack-profile.ts",
+      "src/core/collect-attack-evidence.ts",
+      "src/core/pattern-length.ts",
+      "src/core/rhythm.ts",
+      "src/core/signal-analysis.ts",
+      "src/types.ts"
+    ],
+    "independentlyAppliedExactFiles": 27,
+    "relativeImportsClosed": true,
+    "actualRuntimeUnchanged": true,
+    "noScratchCommit": true
+  },
+  "csvRows": {
+    "pattern-length-paired.csv": 123,
+    "pattern-length-regressions.csv": 22,
+    "pattern-length-all-mode-regressions.csv": 42,
+    "pattern-length-all-mode-heads.csv": 432,
+    "pattern-length-four-finger.csv": 36,
+    "pattern-length-hold-density.csv": 144,
+    "pattern-length-normal-rejects.csv": 5,
+    "pattern-length-pattern-summary.csv": 36
+  },
+  "compactDiagnostics": "EightpublicCSVs retainallnegative/score/count/density rows; pattern-summary isderivedscalaronly. FullF/G and target/signature/reference/audio data are not published.",
+  "preparationErrata": {
+    "beforePublicWrites": true,
+    "algorithmOrSummaryReruns": 0,
+    "sourceResultsUnchanged": true,
+    "firstScriptSHA": "c5cba91fa9d1d7ae8f96b05e2d06cec91085b076b8d9b109c5ef7975d654096f",
+    "secondScriptSHA": "232f038efaa170619a90fb38bbdc0924924629bac81d4b03326023ee60407b99",
+    "thirdScriptSHA": "bb5338cccfebd8b104a57ae6aa9056027e95345528c51febf90fff31377bcbef",
+    "fourthScriptSHA": "1f73991ef7c7b82ba6e03743ae005280cdade8c379a054bafee82a403824eb3e",
+    "description": "Pre-output checks corrected compactcollectorRows omitted failures field, V2 newCore count key, and F1 directcount arithmetic. A self-selected48KiB artifact-size guard led to deduplication and a96KiB ceiling; no music qualification threshold changed. No tolerance/gate/result changes. Original scripts/errors retained."
+  },
+  "rootReviewRequiredBeforeCommit": true,
+  "rootSemanticClarification": {
+    "at": "2026-11-01T17:41:54.149Z",
+    "kind": "Public wording only",
+    "reason": "Establishment uses count of valid signature pairs n>=3 and mean>0; it does not require three individually positive cosines. Seven exact CSV copies and one derived scalar table are distinguished.",
+    "frozenSourceResultsAndGateUnchanged": true,
+    "algorithmOrSummaryReruns": 0
+  }
+}

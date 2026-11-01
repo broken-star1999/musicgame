@@ -1,0 +1,1722 @@
+{
+  "schema": 1,
+  "candidate": "PL1 persistent repetition length with on-path establishment",
+  "outcome": "REJECTED AT FIXED MUSIC SMALL SCREEN",
+  "complete": true,
+  "acceptedRuntimeChanged": false,
+  "deployed": false,
+  "exportCachedOnly": true,
+  "exportAlgorithmCalls": 0,
+  "baselineCommit": "aeaf78284cb66601fd02bf9e40eaf99642285689",
+  "chartVersions": {
+    "B": 12,
+    "F": 12,
+    "C": 12
+  },
+  "scope": "Independent arithmetic + observed-development manual/syntheticPCM stage, then one fixedoriginal41screen (36synthetic+5already-observedmusic;31synthetic+5music successes/5normalrejects). Notfresh orblind. No210/fresh/ASAP/runtime/ledger/publication.",
+  "mechanism": {
+    "lengths": [
+      1,
+      2,
+      4
+    ],
+    "sameLengthWithinTemporalChain": true,
+    "maximumStatesPerBlock": 24,
+    "emission": "originalCoverage*mean when pairs>0&&mean>0; otherwise0",
+    "establishment": "Valid-signature pair count n>=3 AND cosine mean>0 at ONE visited block for the same selected length. Individual valid pairs may have zero cosine; pair counts are not summed across overlapping windows.",
+    "missingFeatures": "Carry originaltemporalchain but appliedReliability0 locally when chosenlength has no positivepair; originalunsupported/unknown temporalstate gap breakschain.",
+    "forwardBackward": "Fprefixseenflag/Gconditionalprefixflag+terminalseen1; originalphase maxmarginals aggregateallL/h. Differentlengths at sameoriginalphaseindex are not phaseambiguity.",
+    "fusion": "Unchanged4*d*dphasecost, margin<=1e-9=>0 elsemargin/(1+margin); uniquequalifiedphase raw1. Same old50msGaussian addedonlyE0>0 withlocalappliedR.",
+    "coreTypedBytes": "8F+657Bpeak;8F+20Breturned, plainprofiles/collector/producer/source/audio/FFT/runtime separate.",
+    "complexity": "CoreO(24B+F); originalcollector separatelyO(B*4*N) scans. No extraFFT/model/backend/audio upload."
+  },
+  "mathematics": {
+    "combinedCorrectedQualification": true,
+    "originalV1": {
+      "pass": false,
+      "assertions": 330092,
+      "incorrectLateSemanticExpectations": 1,
+      "callerMutationFailures": 0,
+      "successfulCoreCases": 60,
+      "rejectedCoreCases": 28,
+      "collectorCases": 19,
+      "rejectedCollectorCases": 6,
+      "perRowMathematicalFailures": 0,
+      "calls": {
+        "core": 88,
+        "collector": 25,
+        "oldAR1Kernel": 0,
+        "profileProducer": 0,
+        "FFT": 0,
+        "audio": 0,
+        "analyzer": 0,
+        "clock": 0,
+        "Chart": 0,
+        "fresh": 0,
+        "ASAP": 0,
+        "ledger": 0
+      },
+      "paths": {
+        "uniqueExact": 32,
+        "nearTieOptimal": 18
+      },
+      "comparisons": {
+        "forward": 2166,
+        "backward": 2166,
+        "stateMaxMarginal": 2166,
+        "phaseMaxMarginal": 361,
+        "predecessor": 859,
+        "work": 1740,
+        "envelope": 82960,
+        "collector": 9246
+      },
+      "scope": "OriginalFAILretained. One latefixture incorrectlyexpected everypostgaplengthunestablished, but L1 stillhad4pairs/mean.2 and correctlyfreshlyestablished. No originalrun replay or helperchange."
+    },
+    "cachedCorrection": {
+      "verified": true,
+      "reason": "OriginalpostgapL1has4positivepairs/mean.2andfreshlocalmarker; originalblanketexpected−1assertion waswrong.",
+      "auditSHA": "79ba938b54f3d12fe3406489b7ceeeeea355cb5081daee6db1864f7f3eb24ca3"
+    },
+    "supplementV2": {
+      "pass": true,
+      "assertions": 5128,
+      "failures": 0,
+      "callerMutationFailures": 0,
+      "calls": {
+        "newCore": 2,
+        "oldCoreReplay": 0,
+        "collector": 0,
+        "profileProducer": 0,
+        "oldKernel": 0,
+        "FFT": 0,
+        "audio": 0,
+        "analyzer": 0,
+        "clock": 0,
+        "Chart": 0,
+        "optimizer": 0,
+        "fresh": 0,
+        "ASAP": 0,
+        "ledger": 0
+      },
+      "oldRunReplay": false,
+      "properGapCases": [
+        "proper-unsupported-gap-all-postgap-lengths-partial",
+        "proper-unknown-gap-all-postgap-lengths-partial"
+      ],
+      "scope": "Exactly2NEW proper-gap cases with allpostgaplengths<3pairs; no original88core/25collector replay. Combined certificate is not a claim originalV1passed."
+    },
+    "resources": {
+      "V1": {
+        "wallMs": 144.2029,
+        "maxRSSKiB": 92628,
+        "terminal": 1,
+        "closed": true
+      },
+      "V2": {
+        "wallMs": 12.674199999999999,
+        "maxRSSKiB": 52488,
+        "terminal": 0,
+        "closed": true
+      },
+      "interpretation": "Pure synthetic arithmetic, sampledRSSguards not continuousOS hardcaps/mobile/music proof."
+    }
+  },
+  "manualPCMStage": {
+    "passed": true,
+    "manual": [
+      {
+        "id": "positive",
+        "counterexample": false,
+        "checksPassed": true,
+        "B": {
+          "50": {
+            "hits": 0,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 0,
+            "recall": 0,
+            "f1": 0
+          },
+          "70": {
+            "hits": 0,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 0,
+            "recall": 0,
+            "f1": 0
+          }
+        },
+        "C": {
+          "50": {
+            "hits": 40,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "70": {
+            "hits": 40,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          }
+        },
+        "changedEFrames": 720,
+        "wholeClockExact": false,
+        "wholeDPExact": false
+      },
+      {
+        "id": "equal-complete",
+        "counterexample": false,
+        "checksPassed": true,
+        "B": {
+          "50": {
+            "hits": 0,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 0,
+            "recall": 0,
+            "f1": 0
+          },
+          "70": {
+            "hits": 0,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 0,
+            "recall": 0,
+            "f1": 0
+          }
+        },
+        "C": {
+          "50": {
+            "hits": 0,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 0,
+            "recall": 0,
+            "f1": 0
+          },
+          "70": {
+            "hits": 0,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 0,
+            "recall": 0,
+            "f1": 0
+          }
+        },
+        "changedEFrames": 0,
+        "wholeClockExact": true,
+        "wholeDPExact": true
+      },
+      {
+        "id": "missing-signatures",
+        "counterexample": false,
+        "checksPassed": true,
+        "B": {
+          "50": {
+            "hits": 0,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 0,
+            "recall": 0,
+            "f1": 0
+          },
+          "70": {
+            "hits": 0,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 0,
+            "recall": 0,
+            "f1": 0
+          }
+        },
+        "C": {
+          "50": {
+            "hits": 0,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 0,
+            "recall": 0,
+            "f1": 0
+          },
+          "70": {
+            "hits": 0,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 0,
+            "recall": 0,
+            "f1": 0
+          }
+        },
+        "changedEFrames": 0,
+        "wholeClockExact": true,
+        "wholeDPExact": true
+      },
+      {
+        "id": "reverse-adversarial",
+        "counterexample": true,
+        "checksPassed": true,
+        "B": {
+          "50": {
+            "hits": 0,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 0,
+            "recall": 0,
+            "f1": 0
+          },
+          "70": {
+            "hits": 0,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 0,
+            "recall": 0,
+            "f1": 0
+          }
+        },
+        "C": {
+          "50": {
+            "hits": 0,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 0,
+            "recall": 0,
+            "f1": 0
+          },
+          "70": {
+            "hits": 0,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 0,
+            "recall": 0,
+            "f1": 0
+          }
+        },
+        "changedEFrames": 720,
+        "wholeClockExact": true,
+        "wholeDPExact": false
+      },
+      {
+        "id": "sparse-signatures",
+        "counterexample": false,
+        "checksPassed": true,
+        "B": {
+          "50": {
+            "hits": 0,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 0,
+            "recall": 0,
+            "f1": 0
+          },
+          "70": {
+            "hits": 0,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 0,
+            "recall": 0,
+            "f1": 0
+          }
+        },
+        "C": {
+          "50": {
+            "hits": 0,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 0,
+            "recall": 0,
+            "f1": 0
+          },
+          "70": {
+            "hits": 0,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 0,
+            "recall": 0,
+            "f1": 0
+          }
+        },
+        "changedEFrames": 0,
+        "wholeClockExact": true,
+        "wholeDPExact": true
+      }
+    ],
+    "physical": [
+      {
+        "label": "pcm-main",
+        "arm": "B",
+        "status": "ANALYZED",
+        "scores": {
+          "50": {
+            "hits": 0,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 0,
+            "recall": 0,
+            "f1": 0
+          },
+          "70": {
+            "hits": 0,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 0,
+            "recall": 0,
+            "f1": 0
+          }
+        },
+        "clockPoints": 40,
+        "oneFingerNotes": 40,
+        "chartVersion": 12,
+        "chartSHA": "d78e0d5ae7e20f86849435b9ddc74ec630bd3ca9bd8c9861357f0c4fac2c29dc",
+        "analysisSHA": "205144f530b1d04eee0c55e4c6e2243764d2f72812d7b032e5dfea59025f6155",
+        "stockTraceAnalysisExact": true,
+        "stockTraceChartExact": true,
+        "deterministicChart": true
+      },
+      {
+        "label": "pcm-main",
+        "arm": "F",
+        "status": "ANALYZED",
+        "scores": {
+          "50": {
+            "hits": 0,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 0,
+            "recall": 0,
+            "f1": 0
+          },
+          "70": {
+            "hits": 0,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 0,
+            "recall": 0,
+            "f1": 0
+          }
+        },
+        "clockPoints": 40,
+        "oneFingerNotes": 40,
+        "chartVersion": 12,
+        "chartSHA": "d78e0d5ae7e20f86849435b9ddc74ec630bd3ca9bd8c9861357f0c4fac2c29dc",
+        "analysisSHA": "e0ee2beb7395efc524c4b280fa7cb52fb3d1788b5efba395f23ea66cfbde4dac",
+        "stockTraceAnalysisExact": true,
+        "stockTraceChartExact": true,
+        "deterministicChart": true
+      },
+      {
+        "label": "pcm-main",
+        "arm": "C",
+        "status": "ANALYZED",
+        "scores": {
+          "50": {
+            "hits": 19,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 0.475,
+            "recall": 0.475,
+            "f1": 0.475
+          },
+          "70": {
+            "hits": 19,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 0.475,
+            "recall": 0.475,
+            "f1": 0.475
+          }
+        },
+        "clockPoints": 41,
+        "oneFingerNotes": 40,
+        "chartVersion": 12,
+        "chartSHA": "84c27126dcbf9dd66d9542ff47b7a00770a8e1c8e8566b2917ba2a1510c5d943",
+        "analysisSHA": "97ad208a1c294a6088683b929b8a1e57c97afacfecd0ab3ed625c871d5081f1a",
+        "stockTraceAnalysisExact": true,
+        "stockTraceChartExact": true,
+        "deterministicChart": true
+      },
+      {
+        "label": "pcm-repeat",
+        "arm": "F",
+        "status": "ANALYZED",
+        "scores": {
+          "50": {
+            "hits": 0,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 0,
+            "recall": 0,
+            "f1": 0
+          },
+          "70": {
+            "hits": 0,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 0,
+            "recall": 0,
+            "f1": 0
+          }
+        },
+        "clockPoints": 40,
+        "oneFingerNotes": 40,
+        "chartVersion": 12,
+        "chartSHA": "d78e0d5ae7e20f86849435b9ddc74ec630bd3ca9bd8c9861357f0c4fac2c29dc",
+        "analysisSHA": "e0ee2beb7395efc524c4b280fa7cb52fb3d1788b5efba395f23ea66cfbde4dac",
+        "stockTraceAnalysisExact": true,
+        "stockTraceChartExact": true,
+        "deterministicChart": true
+      },
+      {
+        "label": "silence",
+        "arm": "B",
+        "status": "SILENCE"
+      },
+      {
+        "label": "silence",
+        "arm": "F",
+        "status": "SILENCE"
+      },
+      {
+        "label": "silence",
+        "arm": "C",
+        "status": "SILENCE"
+      }
+    ],
+    "all12ChosenLength2": true,
+    "chosenBlockDiagnostics": [
+      {
+        "index": 0,
+        "time": 0,
+        "phaseIndex": 1,
+        "length": 2,
+        "prefixSeen": 1,
+        "pairs": 5,
+        "mean": 0.9997804076358066,
+        "established": true,
+        "locallyApplicable": true,
+        "rawReliability": 0.43827017207788155,
+        "appliedReliability": 0.43827017207788155
+      },
+      {
+        "index": 1,
+        "time": 2,
+        "phaseIndex": 0,
+        "length": 2,
+        "prefixSeen": 1,
+        "pairs": 9,
+        "mean": 0.9997451685560453,
+        "established": true,
+        "locallyApplicable": true,
+        "rawReliability": 0.43827017207788155,
+        "appliedReliability": 0.43827017207788155
+      },
+      {
+        "index": 2,
+        "time": 4,
+        "phaseIndex": 1,
+        "length": 2,
+        "prefixSeen": 1,
+        "pairs": 13,
+        "mean": 0.9997449814459682,
+        "established": true,
+        "locallyApplicable": true,
+        "rawReliability": 0.43827017207788155,
+        "appliedReliability": 0.43827017207788155
+      },
+      {
+        "index": 3,
+        "time": 6,
+        "phaseIndex": 1,
+        "length": 2,
+        "prefixSeen": 1,
+        "pairs": 14,
+        "mean": 0.9997713480535478,
+        "established": true,
+        "locallyApplicable": true,
+        "rawReliability": 0.43827017207788155,
+        "appliedReliability": 0.43827017207788155
+      },
+      {
+        "index": 4,
+        "time": 8,
+        "phaseIndex": 0,
+        "length": 2,
+        "prefixSeen": 1,
+        "pairs": 14,
+        "mean": 0.999701748449086,
+        "established": true,
+        "locallyApplicable": true,
+        "rawReliability": 0.43827017207788155,
+        "appliedReliability": 0.43827017207788155
+      },
+      {
+        "index": 5,
+        "time": 10,
+        "phaseIndex": 0,
+        "length": 2,
+        "prefixSeen": 1,
+        "pairs": 14,
+        "mean": 0.9997035784831766,
+        "established": true,
+        "locallyApplicable": true,
+        "rawReliability": 0.43827017207788155,
+        "appliedReliability": 0.43827017207788155
+      },
+      {
+        "index": 6,
+        "time": 12,
+        "phaseIndex": 1,
+        "length": 2,
+        "prefixSeen": 1,
+        "pairs": 14,
+        "mean": 0.9995250233131288,
+        "established": true,
+        "locallyApplicable": true,
+        "rawReliability": 0.43827017207788155,
+        "appliedReliability": 0.43827017207788155
+      },
+      {
+        "index": 7,
+        "time": 14,
+        "phaseIndex": 0,
+        "length": 2,
+        "prefixSeen": 1,
+        "pairs": 14,
+        "mean": 0.999599646785993,
+        "established": true,
+        "locallyApplicable": true,
+        "rawReliability": 0.43827017207788155,
+        "appliedReliability": 0.43827017207788155
+      },
+      {
+        "index": 8,
+        "time": 16,
+        "phaseIndex": 1,
+        "length": 2,
+        "prefixSeen": 1,
+        "pairs": 14,
+        "mean": 0.999541797244022,
+        "established": true,
+        "locallyApplicable": true,
+        "rawReliability": 0.43827017207788155,
+        "appliedReliability": 0.43827017207788155
+      },
+      {
+        "index": 9,
+        "time": 18,
+        "phaseIndex": 0,
+        "length": 2,
+        "prefixSeen": 1,
+        "pairs": 10,
+        "mean": 0.9997328180984836,
+        "established": true,
+        "locallyApplicable": true,
+        "rawReliability": 0.4382701720778821,
+        "appliedReliability": 0.4382701720778821
+      },
+      {
+        "index": 10,
+        "time": 20,
+        "phaseIndex": 1,
+        "length": 2,
+        "prefixSeen": 1,
+        "pairs": 6,
+        "mean": 0.9996670944279379,
+        "established": true,
+        "locallyApplicable": true,
+        "rawReliability": 0.4382701720778821,
+        "appliedReliability": 0.4382701720778821
+      },
+      {
+        "index": 11,
+        "time": 22,
+        "phaseIndex": 1,
+        "length": 2,
+        "prefixSeen": 1,
+        "pairs": 2,
+        "mean": 0.9993766591196817,
+        "established": false,
+        "locallyApplicable": true,
+        "rawReliability": 0.43827017207788155,
+        "appliedReliability": 0.43827017207788155
+      }
+    ],
+    "mechanismLimit": "Manualvector positive40/40 is distinctfrom actualPCM19/40. PatternlengthstaysL2butmainDPcan switch rhythmic layer after E1fusion; CactualChart retains40heads withonly19quartermatches, not acompletefix.",
+    "checks": {
+      "manual": true,
+      "silence": true,
+      "allPhysicalSuccessful": true,
+      "featureOnlyExact": true,
+      "sameGainRepeatExact": true,
+      "consumerPhysicalAndDPInvariants": true,
+      "physicalStrictQuarterGain": true
+    },
+    "calls": {
+      "moduleProfileBinCallsFromFrozenSource": 2044,
+      "traceTrack": 10,
+      "stockTrack": 10,
+      "traceAnalysis": 7,
+      "stockAnalysis": 7,
+      "chart": 12,
+      "geometry": 4,
+      "measure": 28,
+      "physicalFixtureGenerators": 1,
+      "fresh": 0,
+      "ASAP": 0,
+      "ledger": 0,
+      "original41": 0
+    },
+    "owned": {
+      "startedAt": "2026-11-01T17:06:23.848Z",
+      "freezeSHA": "1253fd7ec7566ee6f9be49242d692f59ba00e14b36056699d12f0e9acd8b1059",
+      "scope": "manual-and-fixed-PCM-only",
+      "timeoutMs": 360000,
+      "V8OldSpaceMiB": 512,
+      "RSSHardCap": false,
+      "spawnCount": 1,
+      "automaticRetries": 0,
+      "timedOut": false,
+      "childClosed": true,
+      "pid": 29684,
+      "code": 0,
+      "signal": null,
+      "elapsedMs": 2583.8255,
+      "endedAt": "2026-11-01T17:06:26.432Z"
+    },
+    "CPUSeconds": 3.453,
+    "maxRSSKiB": 196164,
+    "interpretation": "Onepredetermined21sPCM previouslyobserved inAR1, unchangedamplitudes/frequencies/timings. Fsamegainrepeatexact and3silencenormalrejects. Desktopmultigraph/JIT/traceprocess, not phone orisolatedDSP measurement."
+  },
+  "smallScreen": {
+    "counts": {
+      "inputs": 41,
+      "syntheticInputs": 36,
+      "observedMusic": 5,
+      "successes": 36,
+      "syntheticSuccesses": 31,
+      "musicSuccesses": 5,
+      "normalRejects": 5,
+      "primaryInputs": 16,
+      "primarySuccesses": 15,
+      "primarySilence": 1
+    },
+    "all18ObservedMacro": {
+      "head50F1": {
+        "B": 0.43745908430331265,
+        "C": 0.4381700992470926,
+        "delta": 0.000711014943779964
+      },
+      "head50Precision": {
+        "B": 0.45041623667010666,
+        "C": 0.4507207272071553,
+        "delta": 0.0003044905370486739
+      },
+      "head50Recall": {
+        "B": 0.44284192454570964,
+        "C": 0.44284192454570964,
+        "delta": 0
+      },
+      "head70F1": {
+        "B": 0.5128174756638428,
+        "C": 0.5025966914993967,
+        "delta": -0.010220784164446129
+      },
+      "head70Precision": {
+        "B": 0.5264981080151359,
+        "C": 0.5170693769584979,
+        "delta": -0.00942873105663804
+      },
+      "head70Recall": {
+        "B": 0.5203631469565755,
+        "C": 0.5074599211501238,
+        "delta": -0.012903225806451623
+      },
+      "clock50F1": {
+        "B": 0.39469373422911047,
+        "C": 0.3963213106485666,
+        "delta": 0.001627576419456056
+      },
+      "clock50Precision": {
+        "B": 0.34585365172461946,
+        "C": 0.34771956359053136,
+        "delta": 0.0018659118659118622
+      },
+      "clock50Recall": {
+        "B": 0.48952637761386386,
+        "C": 0.48952637761386386,
+        "delta": 0
+      },
+      "clock70F1": {
+        "B": 0.4802933626696003,
+        "C": 0.4819980182415405,
+        "delta": 0.0017046555719401502
+      },
+      "clock70Precision": {
+        "B": 0.4150806277056277,
+        "C": 0.4172307692307692,
+        "delta": 0.0021501415251415244
+      },
+      "clock70Recall": {
+        "B": 0.6062132561004028,
+        "C": 0.6054759289114627,
+        "delta": -0.0007373271889400846
+      },
+      "pulse50F1": {
+        "B": 0.42947559031969157,
+        "C": 0.43198859919633675,
+        "delta": 0.0025130088766452396
+      },
+      "pulse50Precision": {
+        "B": 0.3452799401856006,
+        "C": 0.3470913123340514,
+        "delta": 0.001811372148450796
+      },
+      "pulse50Recall": {
+        "B": 0.6941186933177346,
+        "C": 0.6980402619451855,
+        "delta": 0.003921568627450989
+      },
+      "pulse70F1": {
+        "B": 0.4813671027372381,
+        "C": 0.48396275624198254,
+        "delta": 0.0025956535047444106
+      },
+      "pulse70Precision": {
+        "B": 0.39018252188063507,
+        "C": 0.39206880039612707,
+        "delta": 0.0018862785154920014
+      },
+      "pulse70Recall": {
+        "B": 0.7659256300143147,
+        "C": 0.7698471986417657,
+        "delta": 0.003921568627450989
+      }
+    },
+    "perObserved": [
+      {
+        "id": "country.00022",
+        "scores": {
+          "B": {
+            "head": {
+              "50": {
+                "hits": 16,
+                "predicted": 45,
+                "reference": 31,
+                "precision": 0.35555555555555557,
+                "recall": 0.5161290322580645,
+                "f1": 0.42105263157894735
+              },
+              "70": {
+                "hits": 19,
+                "predicted": 45,
+                "reference": 31,
+                "precision": 0.4222222222222222,
+                "recall": 0.6129032258064516,
+                "f1": 0.5
+              }
+            },
+            "clock": {
+              "50": {
+                "hits": 16,
+                "predicted": 64,
+                "reference": 31,
+                "precision": 0.25,
+                "recall": 0.5161290322580645,
+                "f1": 0.3368421052631579
+              },
+              "70": {
+                "hits": 19,
+                "predicted": 64,
+                "reference": 31,
+                "precision": 0.296875,
+                "recall": 0.6129032258064516,
+                "f1": 0.4
+              }
+            },
+            "pulse": {
+              "50": {
+                "hits": 24,
+                "predicted": 90,
+                "reference": 31,
+                "precision": 0.26666666666666666,
+                "recall": 0.7741935483870968,
+                "f1": 0.39669421487603307
+              },
+              "70": {
+                "hits": 27,
+                "predicted": 90,
+                "reference": 31,
+                "precision": 0.3,
+                "recall": 0.8709677419354839,
+                "f1": 0.4462809917355372
+              }
+            }
+          },
+          "C": {
+            "head": {
+              "50": {
+                "hits": 16,
+                "predicted": 43,
+                "reference": 31,
+                "precision": 0.37209302325581395,
+                "recall": 0.5161290322580645,
+                "f1": 0.43243243243243246
+              },
+              "70": {
+                "hits": 17,
+                "predicted": 43,
+                "reference": 31,
+                "precision": 0.3953488372093023,
+                "recall": 0.5483870967741935,
+                "f1": 0.4594594594594595
+              }
+            },
+            "clock": {
+              "50": {
+                "hits": 16,
+                "predicted": 63,
+                "reference": 31,
+                "precision": 0.25396825396825395,
+                "recall": 0.5161290322580645,
+                "f1": 0.3404255319148936
+              },
+              "70": {
+                "hits": 18,
+                "predicted": 63,
+                "reference": 31,
+                "precision": 0.2857142857142857,
+                "recall": 0.5806451612903226,
+                "f1": 0.3829787234042553
+              }
+            },
+            "pulse": {
+              "50": {
+                "hits": 24,
+                "predicted": 89,
+                "reference": 31,
+                "precision": 0.2696629213483146,
+                "recall": 0.7741935483870968,
+                "f1": 0.4
+              },
+              "70": {
+                "hits": 27,
+                "predicted": 89,
+                "reference": 31,
+                "precision": 0.30337078651685395,
+                "recall": 0.8709677419354839,
+                "f1": 0.45
+              }
+            }
+          }
+        },
+        "head70Delta": -0.040540540540540515,
+        "fourMeasured": {
+          "B": 87,
+          "C": 88,
+          "ratio": 1.0114942528735633,
+          "identity20": 1
+        },
+        "clockTimesEqual": false,
+        "wholeClockEqual": false,
+        "pulseOldFieldsEqual": false,
+        "geometryEqual": false
+      },
+      {
+        "id": "hiphop.00013",
+        "scores": {
+          "B": {
+            "head": {
+              "50": {
+                "hits": 2,
+                "predicted": 51,
+                "reference": 51,
+                "precision": 0.0392156862745098,
+                "recall": 0.0392156862745098,
+                "f1": 0.0392156862745098
+              },
+              "70": {
+                "hits": 2,
+                "predicted": 51,
+                "reference": 51,
+                "precision": 0.0392156862745098,
+                "recall": 0.0392156862745098,
+                "f1": 0.0392156862745098
+              }
+            },
+            "clock": {
+              "50": {
+                "hits": 2,
+                "predicted": 50,
+                "reference": 51,
+                "precision": 0.04,
+                "recall": 0.0392156862745098,
+                "f1": 0.039603960396039604
+              },
+              "70": {
+                "hits": 2,
+                "predicted": 50,
+                "reference": 51,
+                "precision": 0.04,
+                "recall": 0.0392156862745098,
+                "f1": 0.039603960396039604
+              }
+            },
+            "pulse": {
+              "50": {
+                "hits": 50,
+                "predicted": 165,
+                "reference": 51,
+                "precision": 0.30303030303030304,
+                "recall": 0.9803921568627451,
+                "f1": 0.46296296296296297
+              },
+              "70": {
+                "hits": 50,
+                "predicted": 165,
+                "reference": 51,
+                "precision": 0.30303030303030304,
+                "recall": 0.9803921568627451,
+                "f1": 0.46296296296296297
+              }
+            }
+          },
+          "C": {
+            "head": {
+              "50": {
+                "hits": 2,
+                "predicted": 51,
+                "reference": 51,
+                "precision": 0.0392156862745098,
+                "recall": 0.0392156862745098,
+                "f1": 0.0392156862745098
+              },
+              "70": {
+                "hits": 2,
+                "predicted": 51,
+                "reference": 51,
+                "precision": 0.0392156862745098,
+                "recall": 0.0392156862745098,
+                "f1": 0.0392156862745098
+              }
+            },
+            "clock": {
+              "50": {
+                "hits": 2,
+                "predicted": 50,
+                "reference": 51,
+                "precision": 0.04,
+                "recall": 0.0392156862745098,
+                "f1": 0.039603960396039604
+              },
+              "70": {
+                "hits": 2,
+                "predicted": 50,
+                "reference": 51,
+                "precision": 0.04,
+                "recall": 0.0392156862745098,
+                "f1": 0.039603960396039604
+              }
+            },
+            "pulse": {
+              "50": {
+                "hits": 51,
+                "predicted": 165,
+                "reference": 51,
+                "precision": 0.3090909090909091,
+                "recall": 1,
+                "f1": 0.4722222222222222
+              },
+              "70": {
+                "hits": 51,
+                "predicted": 165,
+                "reference": 51,
+                "precision": 0.3090909090909091,
+                "recall": 1,
+                "f1": 0.4722222222222222
+              }
+            }
+          }
+        },
+        "head70Delta": 0,
+        "fourMeasured": {
+          "B": 163,
+          "C": 159,
+          "ratio": 0.9754601226993865,
+          "identity20": 0.9693251533742331
+        },
+        "clockTimesEqual": false,
+        "wholeClockEqual": false,
+        "pulseOldFieldsEqual": false,
+        "geometryEqual": false
+      },
+      {
+        "id": "jazz.00035",
+        "scores": {
+          "B": {
+            "head": {
+              "50": {
+                "hits": 20,
+                "predicted": 36,
+                "reference": 35,
+                "precision": 0.5555555555555556,
+                "recall": 0.5714285714285714,
+                "f1": 0.5633802816901409
+              },
+              "70": {
+                "hits": 27,
+                "predicted": 36,
+                "reference": 35,
+                "precision": 0.75,
+                "recall": 0.7714285714285715,
+                "f1": 0.7605633802816901
+              }
+            },
+            "clock": {
+              "50": {
+                "hits": 23,
+                "predicted": 66,
+                "reference": 35,
+                "precision": 0.3484848484848485,
+                "recall": 0.6571428571428571,
+                "f1": 0.45544554455445546
+              },
+              "70": {
+                "hits": 28,
+                "predicted": 66,
+                "reference": 35,
+                "precision": 0.42424242424242425,
+                "recall": 0.8,
+                "f1": 0.5544554455445545
+              }
+            },
+            "pulse": {
+              "50": {
+                "hits": 22,
+                "predicted": 53,
+                "reference": 35,
+                "precision": 0.41509433962264153,
+                "recall": 0.6285714285714286,
+                "f1": 0.5
+              },
+              "70": {
+                "hits": 28,
+                "predicted": 53,
+                "reference": 35,
+                "precision": 0.5283018867924528,
+                "recall": 0.8,
+                "f1": 0.6363636363636364
+              }
+            }
+          },
+          "C": {
+            "head": {
+              "50": {
+                "hits": 20,
+                "predicted": 37,
+                "reference": 35,
+                "precision": 0.5405405405405406,
+                "recall": 0.5714285714285714,
+                "f1": 0.5555555555555556
+              },
+              "70": {
+                "hits": 27,
+                "predicted": 37,
+                "reference": 35,
+                "precision": 0.7297297297297297,
+                "recall": 0.7714285714285715,
+                "f1": 0.75
+              }
+            },
+            "clock": {
+              "50": {
+                "hits": 23,
+                "predicted": 65,
+                "reference": 35,
+                "precision": 0.35384615384615387,
+                "recall": 0.6571428571428571,
+                "f1": 0.46
+              },
+              "70": {
+                "hits": 29,
+                "predicted": 65,
+                "reference": 35,
+                "precision": 0.4461538461538462,
+                "recall": 0.8285714285714286,
+                "f1": 0.58
+              }
+            },
+            "pulse": {
+              "50": {
+                "hits": 22,
+                "predicted": 53,
+                "reference": 35,
+                "precision": 0.41509433962264153,
+                "recall": 0.6285714285714286,
+                "f1": 0.5
+              },
+              "70": {
+                "hits": 28,
+                "predicted": 53,
+                "reference": 35,
+                "precision": 0.5283018867924528,
+                "recall": 0.8,
+                "f1": 0.6363636363636364
+              }
+            }
+          }
+        },
+        "head70Delta": -0.010563380281690127,
+        "fourMeasured": {
+          "B": 50,
+          "C": 51,
+          "ratio": 1.02,
+          "identity20": 0.98
+        },
+        "clockTimesEqual": false,
+        "wholeClockEqual": false,
+        "pulseOldFieldsEqual": false,
+        "geometryEqual": true
+      },
+      {
+        "id": "classical.00011",
+        "scores": {
+          "B": {
+            "head": {
+              "50": {
+                "hits": 7,
+                "predicted": 19,
+                "reference": 38,
+                "precision": 0.3684210526315789,
+                "recall": 0.18421052631578946,
+                "f1": 0.24561403508771928
+              },
+              "70": {
+                "hits": 8,
+                "predicted": 19,
+                "reference": 38,
+                "precision": 0.42105263157894735,
+                "recall": 0.21052631578947367,
+                "f1": 0.2807017543859649
+              }
+            },
+            "clock": {
+              "50": {
+                "hits": 12,
+                "predicted": 70,
+                "reference": 38,
+                "precision": 0.17142857142857143,
+                "recall": 0.3157894736842105,
+                "f1": 0.2222222222222222
+              },
+              "70": {
+                "hits": 22,
+                "predicted": 70,
+                "reference": 38,
+                "precision": 0.3142857142857143,
+                "recall": 0.5789473684210527,
+                "f1": 0.4074074074074074
+              }
+            },
+            "pulse": {
+              "50": {
+                "hits": 7,
+                "predicted": 20,
+                "reference": 38,
+                "precision": 0.35,
+                "recall": 0.18421052631578946,
+                "f1": 0.2413793103448276
+              },
+              "70": {
+                "hits": 8,
+                "predicted": 20,
+                "reference": 38,
+                "precision": 0.4,
+                "recall": 0.21052631578947367,
+                "f1": 0.27586206896551724
+              }
+            }
+          },
+          "C": {
+            "head": {
+              "50": {
+                "hits": 7,
+                "predicted": 19,
+                "reference": 38,
+                "precision": 0.3684210526315789,
+                "recall": 0.18421052631578946,
+                "f1": 0.24561403508771928
+              },
+              "70": {
+                "hits": 8,
+                "predicted": 19,
+                "reference": 38,
+                "precision": 0.42105263157894735,
+                "recall": 0.21052631578947367,
+                "f1": 0.2807017543859649
+              }
+            },
+            "clock": {
+              "50": {
+                "hits": 12,
+                "predicted": 70,
+                "reference": 38,
+                "precision": 0.17142857142857143,
+                "recall": 0.3157894736842105,
+                "f1": 0.2222222222222222
+              },
+              "70": {
+                "hits": 22,
+                "predicted": 70,
+                "reference": 38,
+                "precision": 0.3142857142857143,
+                "recall": 0.5789473684210527,
+                "f1": 0.4074074074074074
+              }
+            },
+            "pulse": {
+              "50": {
+                "hits": 7,
+                "predicted": 20,
+                "reference": 38,
+                "precision": 0.35,
+                "recall": 0.18421052631578946,
+                "f1": 0.2413793103448276
+              },
+              "70": {
+                "hits": 8,
+                "predicted": 20,
+                "reference": 38,
+                "precision": 0.4,
+                "recall": 0.21052631578947367,
+                "f1": 0.27586206896551724
+              }
+            }
+          }
+        },
+        "head70Delta": 0,
+        "fourMeasured": {
+          "B": 20,
+          "C": 20,
+          "ratio": 1,
+          "identity20": 1
+        },
+        "clockTimesEqual": true,
+        "wholeClockEqual": true,
+        "pulseOldFieldsEqual": true,
+        "geometryEqual": true
+      },
+      {
+        "id": "disco.00031",
+        "scores": {
+          "B": {
+            "head": {
+              "50": {
+                "hits": 56,
+                "predicted": 60,
+                "reference": 62,
+                "precision": 0.9333333333333333,
+                "recall": 0.9032258064516129,
+                "f1": 0.9180327868852459
+              },
+              "70": {
+                "hits": 60,
+                "predicted": 60,
+                "reference": 62,
+                "precision": 1,
+                "recall": 0.967741935483871,
+                "f1": 0.9836065573770492
+              }
+            },
+            "clock": {
+              "50": {
+                "hits": 57,
+                "predicted": 62,
+                "reference": 62,
+                "precision": 0.9193548387096774,
+                "recall": 0.9193548387096774,
+                "f1": 0.9193548387096774
+              },
+              "70": {
+                "hits": 62,
+                "predicted": 62,
+                "reference": 62,
+                "precision": 1,
+                "recall": 1,
+                "f1": 1
+              }
+            },
+            "pulse": {
+              "50": {
+                "hits": 56,
+                "predicted": 143,
+                "reference": 62,
+                "precision": 0.3916083916083916,
+                "recall": 0.9032258064516129,
+                "f1": 0.5463414634146342
+              },
+              "70": {
+                "hits": 60,
+                "predicted": 143,
+                "reference": 62,
+                "precision": 0.4195804195804196,
+                "recall": 0.967741935483871,
+                "f1": 0.5853658536585366
+              }
+            }
+          },
+          "C": {
+            "head": {
+              "50": {
+                "hits": 56,
+                "predicted": 60,
+                "reference": 62,
+                "precision": 0.9333333333333333,
+                "recall": 0.9032258064516129,
+                "f1": 0.9180327868852459
+              },
+              "70": {
+                "hits": 60,
+                "predicted": 60,
+                "reference": 62,
+                "precision": 1,
+                "recall": 0.967741935483871,
+                "f1": 0.9836065573770492
+              }
+            },
+            "clock": {
+              "50": {
+                "hits": 57,
+                "predicted": 62,
+                "reference": 62,
+                "precision": 0.9193548387096774,
+                "recall": 0.9193548387096774,
+                "f1": 0.9193548387096774
+              },
+              "70": {
+                "hits": 62,
+                "predicted": 62,
+                "reference": 62,
+                "precision": 1,
+                "recall": 1,
+                "f1": 1
+              }
+            },
+            "pulse": {
+              "50": {
+                "hits": 56,
+                "predicted": 143,
+                "reference": 62,
+                "precision": 0.3916083916083916,
+                "recall": 0.9032258064516129,
+                "f1": 0.5463414634146342
+              },
+              "70": {
+                "hits": 60,
+                "predicted": 143,
+                "reference": 62,
+                "precision": 0.4195804195804196,
+                "recall": 0.967741935483871,
+                "f1": 0.5853658536585366
+              }
+            }
+          }
+        },
+        "head70Delta": 0,
+        "fourMeasured": {
+          "B": 123,
+          "C": 123,
+          "ratio": 1,
+          "identity20": 1
+        },
+        "clockTimesEqual": false,
+        "wholeClockEqual": false,
+        "pulseOldFieldsEqual": false,
+        "geometryEqual": false
+      }
+    ],
+    "gate": {
+      "scope": "Fixed PULSE-style small development screen. Each observed clip is its own genre proxy; no rounding or negative exemption.",
+      "thresholds": {
+        "minimumMacroHead70Gain": 0.02,
+        "minimumMacroHead50Gain": 0,
+        "minimumMacroClock70Gain": 0.02,
+        "minimumGenreHead70Delta": -0.03,
+        "minimumClipHead70Delta": -0.15,
+        "minimumEveryClipFourMeasuredHeadCountRatio": 0.95
+      },
+      "checks": {
+        "macroHead70Gain": false,
+        "macroClock70Gain": false,
+        "macroHead50NonDecrease": true,
+        "everyObservedGenreProxy": false,
+        "everyObservedClip": true,
+        "everyFourMeasuredCount": true,
+        "primaryMinuteHandoffOne50And70NonDecrease": true,
+        "allModesPlayableDeterministicAndFingerChecked": true,
+        "normalRejectParity": true,
+        "allFrozenSourceEnvelopeLocalAndSupportAssertions": true,
+        "mathematicalOracleAndActualDPConsumption": true
+      },
+      "passed": false,
+      "failures": [
+        "macroHead70Gain",
+        "macroClock70Gain",
+        "everyObservedGenreProxy"
+      ]
+    },
+    "negativeCounts": {
+      "primary18Metrics": 22,
+      "allModesPRF": 42,
+      "byMode": {
+        "one": 11,
+        "two": 15,
+        "three": 4,
+        "four": 12
+      }
+    },
+    "fourFinger": {
+      "countRatio": {
+        "n": 36,
+        "min": 0.9754601226993865,
+        "median": 1,
+        "mean": 1.0017017977889038,
+        "max": 1.05
+      },
+      "identity20": {
+        "n": 36,
+        "min": 0.9693251533742331,
+        "median": 1,
+        "mean": 0.9985923653715064,
+        "max": 1
+      },
+      "countLosses": [
+        {
+          "id": "hiphop.00013",
+          "name": "hiphop.00013",
+          "kind": "observed",
+          "B": 163,
+          "C": 159,
+          "countRatio": 0.9754601226993865,
+          "zeroBaselineNonemptyValid": null,
+          "identity20": 0.9693251533742331,
+          "passed": true
+        }
+      ],
+      "failures": [],
+      "identityDiagnosticOnly": true
+    },
+    "assertions": {
+      "stockTraceAnalysis": 108,
+      "stockTraceCharts": 432,
+      "deterministicCharts": 432,
+      "physicalCharts": 432,
+      "goldenAnalysis": 36,
+      "goldenCharts": 144,
+      "featureOnlyAnalysis": 36,
+      "featureOnlyCharts": 144,
+      "featureOnlyOriginalTrace": 36,
+      "physicalAndSource": 36,
+      "rawClockInputLocalE0": 36,
+      "E1SupportInvariant": 36,
+      "actualDPConsumption": 36,
+      "boundaryExcluded": 108,
+      "legacyConfidence": 108,
+      "normalRejectStockTrace": 15
+    },
+    "featureOnly": "All36FwholeAnalysis afterONLYattackSignaturestrip,144fullCharts and36oldtrace/caller comparisons exactB. Actual stock/trace fulloutputs, legality/determinism/routes andactual singlecollector/core->DP checks pass; thisdoesnotwaivemusicalgate.",
+    "goldenMapping": {
+      "kind": "direct-actual-version12",
+      "mainVersions": {
+        "B": 12,
+        "F": 12,
+        "C": 12
+      },
+      "normalization": false,
+      "analysisSource": ".qa/clock-horizon-v1/report.json",
+      "analysisArm": "C",
+      "chartSource": ".qa/clock-horizon-v1/version12-parity.json",
+      "chartField": "afterSHA"
+    },
+    "clockChanges": {
+      "timingArrays": 13,
+      "wholeObjectsIncludingConfidence": 34,
+      "pulseWholeObjects": 36,
+      "pulseOldFieldsObjects": 5,
+      "geometry": 14,
+      "derivation": "Counts from saved change-ID arrays; full per-input B/F/C hashes remain in pairedCSV. Complete pulse includes attackSignature; old-field pulse stripsONLYthatproperty."
+    },
+    "calls": {
+      "profileModuleInitializationFromFrozenSource": 2044,
+      "traceAnalysis": 123,
+      "stockAnalysis": 123,
+      "chart": 1296,
+      "geometry": 108,
+      "measureExplicit": 1332,
+      "traceCollector": 36,
+      "tracePattern": 36,
+      "stockCollectorFromFrozenSource": 36,
+      "stockPatternFromFrozenSource": 36,
+      "fresh": 0,
+      "ASAP": 0,
+      "ledgerWriter": 0
+    },
+    "owned": {
+      "startedAt": "2026-11-01T17:14:54.063Z",
+      "freezeSHA": "8dfa41159f506e88b2cd574d46242840a449b3fa476698b54a18fa3ece36cf07",
+      "scope": "original41-small-only",
+      "timeoutMs": 360000,
+      "V8OldSpaceMiB": 512,
+      "RSSHardCap": false,
+      "spawnCount": 1,
+      "automaticRetries": 0,
+      "timedOut": false,
+      "childClosed": true,
+      "pid": 56172,
+      "exit": 0,
+      "signal": null,
+      "elapsedMs": 64300.8438,
+      "finishedAt": "2026-11-01T17:15:58.362Z"
+    },
+    "CPUSeconds": 78.296,
+    "maxRSSKiB": 334440,
+    "interpretation": "5already-observedmusic clips are genreproxies only. F1againstfixedquarterreferences is not playeraccuracy or allacceptablegameonsets. Source/projection/tempo/periodE0unchanged; no offsetsearch/rescale/predictionclipping/negativeexemption."
+  },
+  "verification": {
+    "all398FrozenPinsExact": true,
+    "allSummaryOutputsExact": true,
+    "actualRuntimePins": 24,
+    "rawCountFormulaCells": 4536,
+    "independentReview": {
+      "complete": true,
+      "maxFormulaDifference": 0,
+      "maxSummaryDifference": 0,
+      "formulaCells": 4536
+    },
+    "normalStatusesAllThreeMatch": true,
+    "ledger": {
+      "clips": 210,
+      "runs": 89,
+      "freezes": 89,
+      "writes": 0
+    },
+    "fullDiagnostics": "Originalreport/summary/fullpattern-consumptionwithallF/Gandvectors remainlocal; thiscompactJSON/derivedtable do not publish fullstate/target/audio/reference arrays."
+  },
+  "artifacts": [
+    {
+      "path": "pattern-length-paired.csv",
+      "rows": 123,
+      "sha256": "5ae43004ce537f679242745e17069ebd44266791ec55f7e5ce5f1492cc42b5e7",
+      "bytes": 68863,
+      "exactSourceCopy": true
+    },
+    {
+      "path": "pattern-length-regressions.csv",
+      "rows": 22,
+      "sha256": "edd549057df2cf540e2b16bb77d99c9a4e4b26aabcfecc3063e4830ec6ef522a",
+      "bytes": 2357,
+      "exactSourceCopy": true
+    },
+    {
+      "path": "pattern-length-all-mode-regressions.csv",
+      "rows": 42,
+      "sha256": "29662a4afa987a3b2ca305692ada0434874bdd8f9784f4043c2d0a38be2cf0e3",
+      "bytes": 4657,
+      "exactSourceCopy": true
+    },
+    {
+      "path": "pattern-length-all-mode-heads.csv",
+      "rows": 432,
+      "sha256": "e2d55682fa1758bf03d5e87dc91898f44a9c7a0e618726ed4a628a822393945f",
+      "bytes": 92926,
+      "exactSourceCopy": true
+    },
+    {
+      "path": "pattern-length-four-finger.csv",
+      "rows": 36,
+      "sha256": "fef491d165280a860e073a04c8b6beeba7ecc2e838218b03123b91ff16431d05",
+      "bytes": 3079,
+      "exactSourceCopy": true
+    },
+    {
+      "path": "pattern-length-hold-density.csv",
+      "rows": 144,
+      "sha256": "ffb7f67f1fe6e8a1c3fe36fca38d038f26e212dd0ec1bb6b10a5a7d4ac6fdd04",
+      "bytes": 14470,
+      "exactSourceCopy": true
+    },
+    {
+      "path": "pattern-length-normal-rejects.csv",
+      "rows": 5,
+      "sha256": "9339370f326ca1cfcea284affba9382553e71e01c8893819546d8e7645c8d53b",
+      "bytes": 1647,
+      "exactSourceCopy": true
+    },
+    {
+      "path": "pattern-length-pattern-summary.csv",
+      "rows": 36,
+      "sha256": "68066b1fcd22fffd38e684da8880e3de23bb242b61c9865b03534282a673780f",
+      "bytes": 26644,
+      "exactSourceCopy": false,
+      "derivation": "Scalar chain/length/block-count/reliability ranges and exact saved hashes from all36successful cached comparison objects; fullF/G, target ownership, signatures and reference arrays are not published."
+    }
+  ],
+  "prototype": {
+    "path": "prototypes/clock-pattern-length-rejected.patch",
+    "bytes": 48213,
+    "sha256": "281e3d348a2a6930d3da4aeb3bf055594dc81fbdd5fd641e342497b671218b14",
+    "changedPaths": [
+      "src/core/attack-profile.ts",
+      "src/core/collect-attack-evidence.ts",
+      "src/core/pattern-length.ts",
+      "src/core/rhythm.ts",
+      "src/core/signal-analysis.ts",
+      "src/types.ts"
+    ],
+    "independentAppliedExactFiles": 27,
+    "relativeImportsClosed": true,
+    "actualRuntimeUnchanged": true,
+    "noGitCommitCreatedAnywhere": true,
+    "qualification": "Inactive rejected research; not a release or runtime port."
+  },
+  "sourceEvidenceSHA256": {
+    ".qa/pattern-length-public-export-v1/PROTOCOL.md": "87650a174fe5047d2f270dbe44d397b80f31f4d1eb1e33988dd17336c245ca68",
+    ".qa/pattern-length-small-v1/summary.json": "cf01f008e768877e9218e344fd3e19d0e6cb8e397b88e6eb8f3cc5962b6089ed",
+    ".qa/pattern-length-small-v1/owned.json": "04372dd45d791f91420590ed8d5ffe27c542e96639f83de9d9d335d37c78b241",
+    ".qa/pattern-length-small-v1/freeze.json": "8dfa41159f506e88b2cd574d46242840a449b3fa476698b54a18fa3ece36cf07",
+    ".qa/pattern-length-small-v1/summary-output-manifest.json": "69ad23d3f7978f0ea58e2cf6e974b1b0e1e2049b3bef2ec3e992e815a2809ddd",
+    ".qa/pattern-length-small-v1/source-protocol.json": "f6fab650f5e83ed4036ac7c7ef16e387a705891bb53c39177b2e79e37b39aa4c",
+    ".qa/pattern-length-small-v1/qualification.json": "3fc1442339ff68b416d60764c90f8541663282d1ba49c01e35534e69dc23e026",
+    ".qa/pattern-length-stage-v1/stage-report.json": "58033ce6d4df80a34fb56378bf9508c6107e9358c96c98a7699dae095edef6ab",
+    ".qa/pattern-length-stage-v1/stage-owned.json": "fa8349bfffeed30aba9f68e5c2a18e5c41fc26a432f40bfadf4751db7beab121",
+    ".qa/pattern-length-stage-v1/stage-freeze.json": "1253fd7ec7566ee6f9be49242d692f59ba00e14b36056699d12f0e9acd8b1059",
+    ".qa/pattern-length-oracle-v2/certificate.json": "534018deead547b678f728632319700580fa5985b23158471fa91adfa7d50144",
+    ".qa/pattern-length-oracle-v1/report.json": "59204b28fe8aac3979a1680f63a3f73ee575d3837a6418ea15529a27e725a33d",
+    ".qa/pattern-length-oracle-v2/report.json": "67d5c24d38dfdc800dcc172132e15dbbb54b5416c1b72b330ed4763d52b9e167",
+    ".qa/pattern-length-oracle-v1/terminal.json": "ce379efc8e8295a2ea79dcad69d02011c1a83a944d91fac7418f5302971e7c0d",
+    ".qa/pattern-length-oracle-v2/terminal.json": "c05eb8f676989b5583ffa6a44b3af78893d208418d017c2eb39b1cbba9928083",
+    ".qa/pattern-length-independent-review-v1/report.json": "fe0edb2a59ae9a64a2048d070e32e25c79b5453463f344489d5a3a5f0040f49d",
+    ".qa/pattern-length-patch-proof-v1/proof.json": "e8dc4826e343463b951aa4ceb5ddba5acf33849a705f19b16c9bcf9ca50fb0a8",
+    "benchmarks/prototypes/clock-pattern-length-rejected.patch": "281e3d348a2a6930d3da4aeb3bf055594dc81fbdd5fd641e342497b671218b14",
+    ".qa/pattern-length-small-v1/report.json": "fd75b53e452f7d7d5b49bfe4fa9bcc0fbf715be5abbd24b27da418d7274a0cb3",
+    ".qa/pattern-length-v1/DESIGN.md": "0ad4690267eea2af111550e39eba5dfd0bbbf9b20197260091a49393b59a99bc",
+    ".qa/pattern-evidence-v1/freeze.json": "925ee87b3c745f98958834411e7ae5a0b5e1a4bf4e40f267d3f8078074aa4454",
+    ".qa/pattern-length-helper-v1/freeze.json": "ccceb7521112adbc30237e00d3b1863cc73fbed6fc1c86ebf9f56c7fa9becd7c",
+    ".qa/pattern-length-small-v1/inherited-qualification.json": "19b1377a6cde8002d962316330bb7f647ed7dfe145ef37c2de0c7eea687f5d65",
+    ".qa/attack-recurrence-v1/physical-fixtures.json": "711b5a861c55c462d4590ec9576ea1702e7fb65269aa0ba9b8d663a15d84fee9",
+    ".qa/attack-recurrence-v1/physical-fixtures.mjs": "4a69296ba8ac68c65efda6cfdd667b6d730e1f079da4078e70d3ab5eacf6cedf",
+    "benchmarks/dsp-cohorts.json": "df1957bce05ea31a1216a07e6303e46420eb6f3c45de5f425a34c44383ca79c1",
+    ".qa/pattern-length-small-v1/paired.csv": "5ae43004ce537f679242745e17069ebd44266791ec55f7e5ce5f1492cc42b5e7",
+    ".qa/pattern-length-small-v1/metric-regressions.csv": "edd549057df2cf540e2b16bb77d99c9a4e4b26aabcfecc3063e4830ec6ef522a",
+    ".qa/pattern-length-small-v1/all-mode-regressions.csv": "29662a4afa987a3b2ca305692ada0434874bdd8f9784f4043c2d0a38be2cf0e3",
+    ".qa/pattern-length-small-v1/all-mode-heads.csv": "e2d55682fa1758bf03d5e87dc91898f44a9c7a0e618726ed4a628a822393945f",
+    ".qa/pattern-length-small-v1/four-finger.csv": "fef491d165280a860e073a04c8b6beeba7ecc2e838218b03123b91ff16431d05",
+    ".qa/pattern-length-small-v1/hold-density.csv": "ffb7f67f1fe6e8a1c3fe36fca38d038f26e212dd0ec1bb6b10a5a7d4ac6fdd04",
+    ".qa/pattern-length-small-v1/normal-rejects.csv": "9339370f326ca1cfcea284affba9382553e71e01c8893819546d8e7645c8d53b"
+  },
+  "privacy": "No audio,PCM,descriptor/spectral arrays, humanreference/onsettime arrays, privateabsolutepaths or stacks. Fixed synthetic scalar block/length evidence and count/metric/hash tables only.",
+  "artifactManifest": "pattern-length-artifacts.json"
+}

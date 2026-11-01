@@ -1,0 +1,6 @@
+id,name,kind,B,F,C,errorB,errorF,errorC
+14-primary-dynamics-subthreshold,primary/dynamics-subthreshold,control,SILENCE,SILENCE,SILENCE,这段音频接近静音，没有检测到可用的节奏。,这段音频接近静音，没有检测到可用的节奏。,这段音频接近静音，没有检测到可用的节奏。
+24-old10-stationary-noise-amp0.008-seed101,old10/stationary-noise-amp0.008-seed101,control,INSUFFICIENT_ONSETS,INSUFFICIENT_ONSETS,INSUFFICIENT_ONSETS,没有找到足够的声音起点，试试鼓点更清楚的音乐。,没有找到足够的声音起点，试试鼓点更清楚的音乐。,没有找到足够的声音起点，试试鼓点更清楚的音乐。
+25-old10-silence,old10/silence,control,SILENCE,SILENCE,SILENCE,这段音频接近静音，没有检测到可用的节奏。,这段音频接近静音，没有检测到可用的节奏。,这段音频接近静音，没有检测到可用的节奏。
+26-abstention-stationary-noise-seed101-amp008,abstention/stationary-noise-seed101-amp008,control,INSUFFICIENT_ONSETS,INSUFFICIENT_ONSETS,INSUFFICIENT_ONSETS,没有找到足够的声音起点，试试鼓点更清楚的音乐。,没有找到足够的声音起点，试试鼓点更清楚的音乐。,没有找到足够的声音起点，试试鼓点更清楚的音乐。
+32-abstention-persistent-vibrato-amp006,abstention/persistent-vibrato-amp006,control,INSUFFICIENT_ONSETS,INSUFFICIENT_ONSETS,INSUFFICIENT_ONSETS,没有找到足够的声音起点，试试鼓点更清楚的音乐。,没有找到足够的声音起点，试试鼓点更清楚的音乐。,没有找到足够的声音起点，试试鼓点更清楚的音乐。
