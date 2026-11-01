@@ -25,6 +25,7 @@ export function trackBeats(onsets: Onset[], duration: number, bpm: number, sourc
     // Trim unsupported lead/tail beats; retain continuity across rests inside a song.
     while (path.length && path[0] * STEP < onsets[0].time - 0.08)
         path.shift();
+    trimClockTail(path, projected);
     const beats = path.map(frame => frame * STEP);
     const tempo = beats.slice(1).map((time, i) => {
         const from = Math.max(0, i - 1), to = Math.min(beats.length - 1, i + 2);
@@ -41,6 +42,17 @@ export function trackBeats(onsets: Onset[], duration: number, bpm: number, sourc
     const means = accents.map((value, i) => value / Math.max(1, counts[i])), sorted = [...means].sort((a, b) => b - a);
     const phase = means.indexOf(sorted[0]), meterConfidence = (sorted[0] - sorted[1]) / Math.max(0.01, sorted[0]);
     return { beats, tempo, confidence: Math.min(1, support * Math.exp(-20 * deviation)), downbeats: meterConfidence > 0.12 ? beats.filter((_, i) => i % 4 === phase) : [], meterConfidence };
+}
+/** A gated-out late attack cannot extend the clock; keep internal rests. */
+export function trimClockTail(path: number[], projected: readonly Onset[]): void {
+    let lastSupportedTime = -Infinity;
+    for (const onset of projected)
+        if (onset.strength > 0)
+            lastSupportedTime = onset.time;
+    // Include the 80 ms boundary despite frame-to-seconds rounding.
+    const limit = lastSupportedTime + 0.08 + 1e-9;
+    while (path.length && path.at(-1)! * STEP > limit)
+        path.pop();
 }
 export function beatPosition(beats: number[], time: number, fallbackBpm: number): number {
     if (beats.length < 2)
