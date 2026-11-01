@@ -1,0 +1,60 @@
+{
+  "schema": 1,
+  "scope": "Prospective screening and qualification rules for the fixed PULSE and R prototypes; written before either has quality results. Observed210 is development, sealed9/10/12 is consumed only after one actual-source candidate is chosen and frozen.",
+  "baselineCommit": "067e0501b6704a1895c44429fd5219fc14362b27",
+  "development": {
+    "materials": "Same210 observed clips and fixed36PCM controls; retain all normal rejects, errors, negative cases and all four modes.",
+    "PULSE": {
+      "minimumMacroHead70Gain": 0.02,
+      "minimumMacroHead50Gain": 0,
+      "minimumMacroClock70Gain": 0.02,
+      "minimumGenreHead70Delta": -0.03,
+      "minimumClipHead70Delta": -0.15,
+      "minimumEveryClipFourMeasuredHeadCountRatio": 0.95
+    },
+    "R": {
+      "minimumMacroHead70Gain": 0.01,
+      "minimumMacroHead50Gain": 0,
+      "analysisClockAndSourceMustBeExactBaseline": true,
+      "minimumGenreHead70Delta": -0.03,
+      "minimumClipHead70Delta": -0.15,
+      "minimumEveryClipFourMeasuredHeadCountRatio": 0.95,
+      "gateRationale": "R changes chart selection only. It must improve actual note heads, while all audio analysis and clock outputs remain exact rather than claiming a clock gain."
+    },
+    "allCandidates": {
+      "allFourModesPlayableDeterministicRouteChecked": true,
+      "noF0CueInInference": true,
+      "originalMeasuredEventTimesOnly": true,
+      "primaryMinuteAndHandoffSingleFingerHead50And70MustNotDecrease": true,
+      "noReferenceRescalingOffsetSearchOrPredictionClipping": true,
+      "noNegativeExemption": true
+    },
+    "selection": "Among candidates meeting their fixed development rules, choose greatest macro head70 gain; ties within1e-9 prefer R for lower added runtime work. Do not combine or tune candidates after scores without a new declared development experiment."
+  },
+  "freshQualification": {
+    "dataset": ".qa/gtzan-next30-9-10-12",
+    "frozenDataFingerprint": "8d7b2dedfca64a0cccf8371ee5959522fb856708b2ec28cb2fe630bd4b2022f1",
+    "candidatesPerFreshRun": 1,
+    "freezeActualSourceBeforeCalls": true,
+    "rootApprovalRequiredBeforeConsume": true,
+    "consumeWhole30BeforeFirstAlgorithmImport": true,
+    "noRetryAsFreshAfterFailure": true,
+    "minimumHead70GainByCandidate": { "PULSE": 0.02, "R": 0.01 },
+    "minimumHead50Gain": 0,
+    "minimumClock70GainByCandidate": { "PULSE": 0.02, "R": 0 },
+    "RAlsoRequiresExactFullClockAndAnalysis": true,
+    "head70PairedWithinFixedGenreBootstrapLow95MustBePositive": true,
+    "minimumGenreHead70Delta": -0.03,
+    "minimumClipHead70Delta": -0.15,
+    "minimumEveryClipFourMeasuredHeadCountRatio": 0.95,
+    "allFourModesPlayableDeterministicRouteChecked": true,
+    "statisticalBoundary": "Conditional on the fixed ten genres; no artist/work independence or population claim."
+  },
+  "production": {
+    "changeChartVersionOnlyAfterActualCandidatePort": true,
+    "separateBestScoresForNewChartVersion": true,
+    "testActualPortAndBrowserWorkersAndImportFlowBeforePublish": true,
+    "noReleaseOnDevelopmentOrUnitClockMetricsAlone": true,
+    "noModelDownloadOrBackendRequired": true
+  }
+}

@@ -1,0 +1,115 @@
+{
+  "schema": 1,
+  "algorithmCalls": 0,
+  "purpose": "Rejected research source review only; no actual-source modification/build or music calls. R12 includes archived temporary container/tests; not current release. PULSE patch includes the new file and rhythm change; standalone local-pulse is an identical review copy.",
+  "normalization": "Public artifacts use LF, preserve valid single-space unified-diff context lines; hashes calculated after LF.",
+  "patches": [
+    {
+      "candidate": "W",
+      "status": "REJECTED_RESEARCH_PROTOTYPE_NOT_RELEASED",
+      "baseCommit": "067e0501b6704a1895c44429fd5219fc14362b27",
+      "patch": "prototypes/clock-W.patch",
+      "patchSHA256": "591bd68bd42688b72f397679ee32348e20f56c3c4a776eb95516af23636cda2a",
+      "LF": true,
+      "gitApplyCheck": true,
+      "gitApplyApplied": true,
+      "independentCopy": true,
+      "allTargetBytesExact": true,
+      "verifiedFileCount": 24,
+      "targetFiles": {
+        "src/core/signal-analysis.ts": "824c087ce3108f9bdbf1059a2dc7a29195d9534fce6fe6ff14ad910421e04f6f"
+      },
+      "sourceFreezeSHA256": "07f32a80d02e74e309339f8e45d0fc177e7607c78724846b1bc4636abc659ef7",
+      "rootArchivedPatchExact": null,
+      "containsTemporaryV12AndTests": false
+    },
+    {
+      "candidate": "S",
+      "status": "REJECTED_RESEARCH_PROTOTYPE_NOT_RELEASED",
+      "baseCommit": "067e0501b6704a1895c44429fd5219fc14362b27",
+      "patch": "prototypes/clock-S.patch",
+      "patchSHA256": "d61905d55d5a649ae9737aabb5b430aec52123db69e949499cd4b5773af2a8f1",
+      "LF": true,
+      "gitApplyCheck": true,
+      "gitApplyApplied": true,
+      "independentCopy": true,
+      "allTargetBytesExact": true,
+      "verifiedFileCount": 24,
+      "targetFiles": {
+        "src/core/signal-analysis.ts": "2440a0cb6e77b910e952f92ca13c8e1adacc41e47fdcf97491c12d9341ae0e04"
+      },
+      "sourceFreezeSHA256": "07f32a80d02e74e309339f8e45d0fc177e7607c78724846b1bc4636abc659ef7",
+      "rootArchivedPatchExact": null,
+      "containsTemporaryV12AndTests": false
+    },
+    {
+      "candidate": "D",
+      "status": "REJECTED_RESEARCH_PROTOTYPE_NOT_RELEASED",
+      "baseCommit": "067e0501b6704a1895c44429fd5219fc14362b27",
+      "patch": "prototypes/clock-D.patch",
+      "patchSHA256": "6c368b5bd560dfb9405ad23e225a16e9e3847979a734b3d12562cb5173799310",
+      "LF": true,
+      "gitApplyCheck": true,
+      "gitApplyApplied": true,
+      "independentCopy": true,
+      "allTargetBytesExact": true,
+      "verifiedFileCount": 24,
+      "targetFiles": {
+        "src/core/phase-dp-kernel.ts": "0a647a56ea734216940109b1ee6cdbe1263b5ff256dce6b7ea8257be7734fd4d"
+      },
+      "sourceFreezeSHA256": "66ff0acb54ee4ad5261aa1b4a1b63de7ec371c8fcf2e7987392dc683865b0781",
+      "rootArchivedPatchExact": null,
+      "containsTemporaryV12AndTests": false
+    },
+    {
+      "candidate": "PULSE",
+      "status": "REJECTED_RESEARCH_PROTOTYPE_NOT_RELEASED",
+      "baseCommit": "067e0501b6704a1895c44429fd5219fc14362b27",
+      "patch": "prototypes/clock-PULSE.patch",
+      "patchSHA256": "565ae9634cd07699c83765a3613cdf024f62ce6f7b7c8d51f96a58c739841118",
+      "LF": true,
+      "gitApplyCheck": true,
+      "gitApplyApplied": true,
+      "independentCopy": true,
+      "allTargetBytesExact": true,
+      "verifiedFileCount": 25,
+      "targetFiles": {
+        "src/core/rhythm.ts": "5460d6e2db604070e672418e86f01a0c5addb2fccf58fc38b8da1db611c11cd8",
+        "src/core/local-pulse.ts": "946a456071e32c9654ea31dfd112579d0cb0efded33c43aef55d44abba724fbe"
+      },
+      "sourceFreezeSHA256": "21c9c99202083f9015238353f72c624b088d91c7c63ccb9bbbbb6ccc81a59522",
+      "rootArchivedPatchExact": null,
+      "containsTemporaryV12AndTests": false
+    },
+    {
+      "candidate": "R-rejected-v12",
+      "status": "REJECTED_RESEARCH_PROTOTYPE_NOT_RELEASED",
+      "baseCommit": "99bd9877628c720252ed39a312a1af85f502e579",
+      "patch": "prototypes/clock-R-rejected-v12.patch",
+      "patchSHA256": "b966857f36e363e8119b080a50030114890b05cb0e26f561b189cc81060414e1",
+      "LF": true,
+      "gitApplyCheck": true,
+      "gitApplyApplied": true,
+      "independentCopy": true,
+      "allTargetBytesExact": true,
+      "verifiedFileCount": 5,
+      "targetFiles": {
+        "src/core/chart.ts": "4f7a773b5533ebf264ad3c91b3a3fd99828b88ddb3bbd417cec92f6f3d03c7e1",
+        "src/core/onset-selection.ts": "7b26e3f855c527d778fdbab5908707e0a2e9ff1967bcf2fdb654d50cf00de9e7",
+        "src/types.ts": "a53593bb3371c9cd21a3a11c0ed6f0ca15a6dab953f69752c5418c16e412ded3",
+        "src/core/finger-modes.test.ts": "86ec49eb5a951937ec8d6d88300cb08547c114c83dda5186f1b10efdb8f5e471",
+        "src/core/onset-selection.test.ts": "5d685703ccc7182e68f40fa86231930e90eae3980f48c41e099bc1fc1f49121c"
+      },
+      "sourceFreezeSHA256": null,
+      "rootArchivedPatchExact": true,
+      "containsTemporaryV12AndTests": true
+    }
+  ],
+  "standalonePulse": {
+    "file": "prototypes/clock-PULSE-local-pulse.ts",
+    "destination": "src/core/local-pulse.ts",
+    "sha256": "946a456071e32c9654ea31dfd112579d0cb0efded33c43aef55d44abba724fbe",
+    "matchesFrozenStockBytes": true
+  },
+  "noThirdPartyLibrarySourceCopied": true
+}

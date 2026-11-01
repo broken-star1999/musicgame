@@ -1,0 +1,122 @@
+{
+  "schema": 1,
+  "scope": "LF public export hashes; no audio, raw GT/anchor/stream/note vectors, absolute user paths or signed URLs. Rejected prototypes only. Self manifest intentionally excluded from its hash list.",
+  "algorithmCalls": 0,
+  "files": [
+    {
+      "file": "CLOCK_SELECTION_AUDIT.md",
+      "bytes": 14826,
+      "sha256": "5f4bf0090bf34244f1cf31f5f18529b5c450f23b90594dd2f45fe3315f1703dd"
+    },
+    {
+      "file": "clock-selection-band-windows.csv",
+      "bytes": 396871,
+      "sha256": "02b20ed60506abc38b420c48b2673a023c35790afb4514280004d06ae71b3845"
+    },
+    {
+      "file": "clock-selection-diagnostic.json",
+      "bytes": 174377,
+      "sha256": "5671f7c7a7fefd8c5be0b4368902aed8dd631c5a5c062a2b16dd354bb8d579af"
+    },
+    {
+      "file": "clock-selection-prototypes.json",
+      "bytes": 5154,
+      "sha256": "d3f8b9950b8211fa4bb1835c2df28b2e279016b1422ae5422712dec5de33877a"
+    },
+    {
+      "file": "clock-selection-qualification-nov1.json",
+      "bytes": 3127,
+      "sha256": "19b1377a6cde8002d962316330bb7f647ed7dfe145ef37c2de0c7eea687f5d65"
+    },
+    {
+      "file": "clock-selection-r210-all-mode-heads.csv",
+      "bytes": 286755,
+      "sha256": "58b86b37ccbde848cd9ad76f0cf0e1f5774dd472516c58f1421405d20c4bb389"
+    },
+    {
+      "file": "clock-selection-r210-all-mode-regressions.csv",
+      "bytes": 162702,
+      "sha256": "f7a869e19ba0d019f7b1a3ce5039eefdae2fb5ce8f131691da63a60b8072d89d"
+    },
+    {
+      "file": "clock-selection-r210-four-finger.csv",
+      "bytes": 7727,
+      "sha256": "f8dd4d850ebd0fe3e23a6d0fc6cbcba27a6591655266e7260e15be285150e9bc"
+    },
+    {
+      "file": "clock-selection-r210-hold-density.csv",
+      "bytes": 177449,
+      "sha256": "d65e92fedcb81ae9235e830c7c5cba7d621b83324f9f667a4fcad5d2f12a5857"
+    },
+    {
+      "file": "clock-selection-r210-primary-regressions.csv",
+      "bytes": 23395,
+      "sha256": "55a0e09973ec2c713fea36f6189adcc2a108a1e154636022f1b58e361b464782"
+    },
+    {
+      "file": "clock-selection-r210-primary18.csv",
+      "bytes": 147830,
+      "sha256": "1e26736fee8e07c6d40b6a050720880ddceff726df7f4cb4e90702f19b6d9e30"
+    },
+    {
+      "file": "clock-selection-small-observed.csv",
+      "bytes": 8396,
+      "sha256": "4a72477aac7d94cb9f6420cf7c98abf998759ed174b532557218af86d40c3a2e"
+    },
+    {
+      "file": "clock-selection-small-status.csv",
+      "bytes": 42204,
+      "sha256": "98d41d36fbe23e32d34dfd0ae5a4d64c9ff10c158992a6ecda3e995fe8bd3f3f"
+    },
+    {
+      "file": "clock-selection-ws210-four-finger.csv",
+      "bytes": 25524,
+      "sha256": "c2a0bf7f1ed947208d846c6cf638dfc8a245c97bdc696abd5e387a3f98366454"
+    },
+    {
+      "file": "clock-selection-ws210-genres.csv",
+      "bytes": 11318,
+      "sha256": "517863ccb6951828f6b713d0790f4d050553a71685a9ce60ab14e226de6b4285"
+    },
+    {
+      "file": "clock-selection-ws210-paired.csv",
+      "bytes": 202449,
+      "sha256": "b581bdf54208ac226f75dd90f3946217e72c8522e2510bf1f7608596808f8a7e"
+    },
+    {
+      "file": "clock-selection-ws210-regressions.csv",
+      "bytes": 357918,
+      "sha256": "f9a25542d001f1047ed4e0f54a2aa36589f18e221526f5baf208686a6c28f1b2"
+    },
+    {
+      "file": "prototypes/clock-D.patch",
+      "bytes": 1022,
+      "sha256": "6c368b5bd560dfb9405ad23e225a16e9e3847979a734b3d12562cb5173799310"
+    },
+    {
+      "file": "prototypes/clock-PULSE-local-pulse.ts",
+      "bytes": 7102,
+      "sha256": "946a456071e32c9654ea31dfd112579d0cb0efded33c43aef55d44abba724fbe"
+    },
+    {
+      "file": "prototypes/clock-PULSE.patch",
+      "bytes": 8694,
+      "sha256": "565ae9634cd07699c83765a3613cdf024f62ce6f7b7c8d51f96a58c739841118"
+    },
+    {
+      "file": "prototypes/clock-R-rejected-v12.patch",
+      "bytes": 8874,
+      "sha256": "b966857f36e363e8119b080a50030114890b05cb0e26f561b189cc81060414e1"
+    },
+    {
+      "file": "prototypes/clock-S.patch",
+      "bytes": 779,
+      "sha256": "d61905d55d5a649ae9737aabb5b430aec52123db69e949499cd4b5773af2a8f1"
+    },
+    {
+      "file": "prototypes/clock-W.patch",
+      "bytes": 827,
+      "sha256": "591bd68bd42688b72f397679ee32348e20f56c3c4a776eb95516af23636cda2a"
+    }
+  ]
+}

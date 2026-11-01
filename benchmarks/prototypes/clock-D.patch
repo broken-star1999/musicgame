@@ -1,0 +1,21 @@
+diff --git a/src/core/phase-dp-kernel.ts b/src/core/phase-dp-kernel.ts
+--- a/src/core/phase-dp-kernel.ts
++++ b/src/core/phase-dp-kernel.ts
+@@ -193,7 +193,7 @@
+             states[t * (s.L + 1)] = env[t];
+         for (let q = low; q <= high; q++) {
+             const i = q - qmin, p = t - q, offset = (p % R) * s.L + i;
+-            const value = env[t] - B * (s.logs[i] - logLocal) ** 2 + ring[offset];
++            const value = env[t] * (q / local[t]) - B * (s.logs[i] - logLocal) ** 2 + ring[offset];
+             row[i] = value;
+             trace[t * s.L + i] = ringCodes[offset];
+             if (states)
+@@ -238,7 +238,7 @@
+                     code = r;
+                 }
+             }
+-            const i = q - qmin, value = env[t] - B * (x - Math.log(local[t])) ** 2 + best;
++            const i = q - qmin, value = env[t] * (q / local[t]) - B * (x - Math.log(local[t])) ** 2 + best;
+             states[offset + i + 1] = value;
+             trace[t * s.L + i] = code;
+             if (value > frameBest) {
