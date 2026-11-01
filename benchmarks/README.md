@@ -1,10 +1,14 @@
 # 节拍识别开发比较：GTZAN 30 段
 
+**当前网站为纯算法版本12。** 神经网络识别、模型选项、权重、ONNX/WASM 推理运行库和模型导出／比较脚本均已移除。本文的版本7结果属于历史记录，不代表当前网站的依赖、能力或部署步骤；当前实现与验证入口见[项目说明](../README.md)。
+
+TC1 持续主拍／来源接力原型的唯一 original41 缓存筛查为 FAIL，见 [TC1原型归档](TC1_CONTINUITY_AUDIT.md)。分钟与声部切换控制保持准确，但 disco 与100→180 BPM换速控制有明显退步；保留全部95个 primary 负项和46个模式负项。候选没有移植运行源码，没有扩展数据或部署。
+
 后续 RME1-Q 联合有理节拍／事件角色原型的唯一 original41 缓存筛查为 FAIL，见 [联合节拍原型归档](RATIONAL_METRE_AUDIT.md)。五段已观察音乐宏平均改善，但主控制及 disco 门槛失败；候选未启用，保留全部198个 primary 负项与104个模式负项，没有210广测、版本提升或部署。
 
 版本11的时钟/起音归并、一次预冻结新30段验证和全部退步见[版本11验证](PHASE_V11_RELEASE.md)。观察历史现为210段；已观察数据不能重新作为新留出。
 
-当前版本10的来源放弃／边界谱面修正与新30段回归见 [来源验证](SOURCE_AUDIT.md)。版本9弱段修正见 [弱段及算法诊断](DYNAMICS_AUDIT.md)，版本8默认纯算法改进及其30段一次评价见 [纯算法验证](SIGNAL_AUDIT.md)。本文保留版本7模型辅助的历史比较；后续两个未采用原型见 [真实音乐质量诊断](QUALITY_AUDIT.md)。记录保留全部退步，不把调度正确等同于音乐识别正确。
+历史版本10的来源放弃／边界谱面修正与新30段回归见 [来源验证](SOURCE_AUDIT.md)。版本9弱段修正见 [弱段及算法诊断](DYNAMICS_AUDIT.md)，版本8默认纯算法改进及其30段一次评价见 [纯算法验证](SIGNAL_AUDIT.md)。本文保留版本7模型辅助的历史比较；后续两个未采用原型见 [真实音乐质量诊断](QUALITY_AUDIT.md)。记录保留全部退步，不把调度正确等同于音乐识别正确。
 
 后续仍未采用的多候选周期、主相位、角色过滤与噪声来源实验见 [周期与角色证据](TEMPO_EVIDENCE.md)。其中真实歌曲结果全部来自已观察开发集，没有称作新未见测试。
 
@@ -36,21 +40,10 @@ Beat This! 的训练排除 GTZAN；但这些 30 段用于本次开发和参数�
 
 F1 采用容差内一对一匹配，分别计算精确率和召回率，再逐曲平均；不去掉开头五秒。半速/倍速也会被指标惩罚。单指会主动降低密度，人工节拍不包含全部合理旋律/切分落点，因而单指音符头 F1 **不是玩家准确率，也不是整张谱的音乐质量评分**。本报告没有完成逐键的人类听感评审。
 
-## 本地复现
+## 当前验证与历史复现范围
 
-普通玩家、项目构建和部署无需以下准备。基准运行使用 Node.js，转换输入需要 FFmpeg 及 Python 标准库，不需要 Python 模型环境。请按数据来源的使用条款取得 GTZAN 音频，放在 `.qa/gtzan`；不要将音乐提交到 Git。
+当前项目使用 `npm test` 验证纯算法分析、编谱和游戏逻辑，使用 `npm run test:benchmark` 检查纯算法比较工具。构建与部署无需模型环境或权重下载。真实音乐比较使用 [benchmark-dsp.mjs](../scripts/benchmark-dsp.mjs) 的预冻结协议；数据与历史观察状态见各次纯算法报告，不应把已观察样本重新当作新留出。
 
-```bash
-npm ci
-git clone https://github.com/CPJKU/beat_this_annotations.git .qa/beat-annotations
-git -C .qa/beat-annotations checkout fd9fcc0896cb78730bae735102c8753ef3a3badd
-python scripts/prepare-beat-benchmark.py --audio .qa/gtzan --annotations .qa/beat-annotations/gtzan/annotations/beats --out .qa/beat-benchmark-input
-node scripts/prepare-benchmark-baseline.mjs
-node scripts/benchmark-beats.mjs --data .qa/beat-benchmark-input --baseline .qa/baseline/src/core --out .qa/reproduced-benchmark.json
-```
+上面的版本7报告来自移除前的代码。其 `scripts/benchmark-beats.mjs`、`tests/beat-inference.test.ts`、模型资源及推理依赖已从当前项目删除，旧命令不适用于当前分支。历史证据应结合报告记录的提交解释；如需复核旧实验，使用相应历史提交的源码与依赖，不能据此声称当前网站仍发布或运行 WASM 模型。
 
-Windows 可以将 `python` 换成 `py -3.12`。基准顺序运行随网站发布的实际 WASM 模型，可能需要几分钟，输出时长只代表运行机器。省略 `--baseline` 时，对照改为当前版本的轻量识别，不再是历史版本 6。历史对照需要本地 Git 中有该提交；浅克隆需先取得提交历史。
-
-准备脚本将音频转为 22050 Hz / 单声道 Float32 PCM，并提取人工 `.beats` 第一列。浏览器采用自己的解码与抗混叠前处理，因此实际网页数量可能略有不同。脚本检查四档谱面的时间、占用和路线约束；它不能替代手机输入、内存或主观手感测试。
-
-同频干扰的自合成声音另由 `tests/beat-inference.test.ts` 检查：真实鼓点时间独立于模型输出，参考数值来自未修改的原始 Torch small0 推理，用于检查 WASM 与跨块一致性。它不包含用户歌曲。
+保留的数据准备脚本只将用户自行取得的音频转为 22050 Hz / 单声道 Float32 PCM，并提取人工 `.beats` 第一列。浏览器采用自己的解码与抗混叠前处理，因此数量可能略有不同。请遵守数据来源的使用条款，不向仓库提交音乐；离线比较也不能替代手机输入、内存或主观手感测试。

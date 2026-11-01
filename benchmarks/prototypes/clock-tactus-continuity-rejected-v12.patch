@@ -1,0 +1,1841 @@
+diff --git a/src/core/analysis.ts b/src/core/analysis.ts
+index ff70260..f4a5421 100644
+--- a/src/core/analysis.ts
++++ b/src/core/analysis.ts
+@@ -1,4 +1,11 @@
+ import { analyzeAudio as source } from './signal-analysis';
+ import { bindCanonical } from './signal-binding';
++import { applyTactusAnalysis, type TactusContext } from './rational-application';
++import type { Analysis } from '../types';
+ export { fingerprint, estimateTempo } from './signal-analysis';
+-export function analyzeAudio(...args: Parameters<typeof source>): ReturnType<typeof source> { return bindCanonical(source(...args)); }
++export function analyzeAudio(samples: Float32Array, sampleRate: number, progress?: (value: number, stage: string) => void): Analysis {
++  const holder: { value?: TactusContext } = {};
++  const baseline = bindCanonical(source(samples, sampleRate, (fraction, stage) => progress?.(fraction * .8, stage), context => { holder.value = context; }));
++  if (!holder.value) throw Error('Original physical context was not returned');
++  return applyTactusAnalysis(baseline, holder.value, (fraction, stage) => progress?.(.8 + fraction * .2, stage)).analysis;
++}
+diff --git a/src/core/chart.ts b/src/core/chart.ts
+index 009cc9b..ed2113d 100644
+--- a/src/core/chart.ts
++++ b/src/core/chart.ts
+@@ -1,3 +1,5 @@
++import { tactusNoteTime, tactusSingleFingerEvents } from './rational-application';
++import { selectTactusOnsets } from './rational-selection';
+ import type { Analysis, Chart, Difficulty, Note, NoteType } from '../types';
+ import { reusePhraseTemplates } from './phrases';
+ import { fingerReleaseTime } from './chart-constraints';
+@@ -33,11 +35,16 @@ export function generateChart(analysis: Analysis, difficulty: Difficulty, bpmOve
+       events = annotateSignalEvents({ ...analysis, rhythm: reference, pulse: { ...analysis.pulse, onsets: raw } }).pulse!.onsets;
+     }
+   }
+-  const sourceOnsets = events.filter(onset => !onset.role || onset.role === 'beat' || (config.max >= 2 && onset.role === 'half') || (config.max >= 3 && onset.role === 'quarter') || config.max === 4);
++  if (analysis.tactus && bpmOverride === undefined && config.max === 1) events = tactusSingleFingerEvents(events, analysis.tactus, config.gap);
++  const sourceOnsets = events.filter(onset => !onset.role || onset.role === 'beat' || (config.max >= 2 && (onset.role === 'half' || onset.role === 'third')) || (config.max >= 3 && onset.role === 'quarter') || config.max === 4);
+   const strengthSorted = sourceOnsets.map(x => x.strength).sort((a, b) => a - b);
+   const threshold = Math.min(config.threshold, (strengthSorted[Math.floor(strengthSorted.length * 0.75)] || config.threshold) * 0.55);
+-  const noteTime = (onset: Analysis['onsets'][number]) => onset.role || onset.boundary ? onset.time : bpmOverride !== undefined || (analysis.rhythm?.confidence ?? 1) >= 0.45 ? snapToBeat(onset.time, beats, bpm) : onset.time;
+-  const selected = selectMusicalOnsets(sourceOnsets.filter(onset => onset.time <= analysis.duration - 0.18), config.gap, threshold, noteTime);
++  const legacyNoteTime = (onset: Analysis['onsets'][number]) => onset.role || onset.boundary ? onset.time : bpmOverride !== undefined || (analysis.rhythm?.confidence ?? 1) >= 0.45 ? snapToBeat(onset.time, beats, bpm) : onset.time;
++  const noteTime = (onset: Analysis['onsets'][number]) => tactusNoteTime(onset, analysis.tactus, bpmOverride, legacyNoteTime);
++  const eligible = sourceOnsets.filter(onset => onset.time <= analysis.duration - 0.18);
++  const selected = analysis.tactus && bpmOverride === undefined
++    ? selectTactusOnsets(eligible, config.gap, threshold, noteTime, analysis.tactus)
++    : selectMusicalOnsets(eligible, config.gap, threshold, noteTime);
+   // Motif progression and repetition compare the same retained musical layer,
+   // rather than letting rejected ornaments change every subsequent lane.
+   const musicalAnalysis = { ...analysis, onsets: selected };
+diff --git a/src/core/phase-dp-types.ts b/src/core/phase-dp-types.ts
+index fc23de2..24f8388 100644
+--- a/src/core/phase-dp-types.ts
++++ b/src/core/phase-dp-types.ts
+@@ -4,7 +4,7 @@ export interface Onset {
+     band: number;
+     attack?: number;
+     boundary?: true;
+-    role?: 'beat' | 'half' | 'quarter' | 'free';
++    role?: 'beat' | 'half' | 'third' | 'quarter' | 'free';
+ }
+ export interface Rhythm {
+     beats: number[];
+diff --git a/src/core/rational-application.ts b/src/core/rational-application.ts
+new file mode 100644
+index 0000000..92888f2
+--- /dev/null
++++ b/src/core/rational-application.ts
+@@ -0,0 +1,232 @@
++import type { Analysis, Onset, Rhythm, RhythmSection } from '../types';
++import { readoutTactus, type ReadoutBlock, type ReadoutResult } from './tactus-readout';
++
++export type TactusRole = 'beat' | 'half' | 'third' | 'quarter' | 'free';
++export interface TactusOnset extends Omit<Onset, 'role'> { role?: TactusRole }
++export interface TactusMetadata {
++  version: 'TC1-readout/v1';
++  primaryHeads: { time: number; targetTime: number; ordinal: number; chain: number; period: number }[];
++  roleEvidence: { time: number; denominator: 1 | 2 | 3 | 4; compatibility: number }[];
++  unknownIntervals: { from: number; to: number }[];
++  knownSegments: number;
++  sourceFrames: number;
++  assignments: number;
++}
++export interface TactusAnalysis extends Omit<Analysis, 'pulse' | 'rhythm'> {
++  pulse?: { onsets: TactusOnset[]; sections: RhythmSection[] };
++  rhythm?: Rhythm & { method?: 'TC1-readout/v1' };
++  tactus?: TactusMetadata;
++}
++export interface TactusContext {
++  /** Four ORIGINAL pre-role streams: mixed, low, mid, high. */
++  readonly streams: readonly (readonly Onset[])[];
++  readonly blocks: readonly ReadoutBlock[];
++  readonly sampleRate: number;
++}
++export interface TactusMember { readonly source: 0 | 1 | 2 | 3; readonly index: number; readonly time: number; readonly strength: number }
++export interface TactusBundle {
++  readonly id: number; readonly time: number; readonly strength: number; readonly sourceMask: number; readonly members: readonly TactusMember[];
++}
++export interface TactusBundlePreparation {
++  readonly events: readonly TactusBundle[];
++  readonly representatives: readonly Onset[];
++  readonly memberCount: number;
++  readonly boundaryMembersExcluded: number;
++}
++
++/** Exact physical union; no RME dependency, neighbouring-time clustering or
++ * waveform work. Readout consumes all source members rather than max salience.
++ * Representatives are diagnostic only; overlays use the actual chosen member.
++ */
++export function prepareTactusBundles(streams: readonly (readonly Onset[])[], duration: number): TactusBundlePreparation {
++  if (!Array.isArray(streams) || streams.length !== 4 || !Number.isFinite(duration) || duration <= 0)
++    throw Error('Four original physical streams and finite duration are required');
++  const groups = new Map<number, { members: TactusMember[]; representative: Onset; representativeSource: number }>();
++  let memberCount = 0, boundaryMembersExcluded = 0;
++  streams.forEach((stream, sourceIndex) => {
++    if (!Array.isArray(stream)) throw Error('Physical stream must be an array');
++    let last = -Infinity;
++    stream.forEach((event, index) => {
++      if (!event || !Number.isFinite(event.time) || event.time < 0 || event.time >= duration || event.time < last
++        || !Number.isFinite(event.strength) || event.strength < 0 || !Number.isSafeInteger(event.band) || event.band < 0 || event.band > 2)
++        throw Error('Invalid original physical event');
++      last = event.time;
++      if (event.boundary) { boundaryMembersExcluded++; return; }
++      const member: TactusMember = { source: sourceIndex as 0 | 1 | 2 | 3, index, time: event.time, strength: event.strength };
++      const copy = { ...event }; delete copy.role;
++      const old = groups.get(event.time);
++      if (!old) groups.set(event.time, { members: [member], representative: copy, representativeSource: sourceIndex });
++      else {
++        old.members.push(member);
++        if (event.strength > old.representative.strength || event.strength === old.representative.strength && sourceIndex < old.representativeSource) {
++          old.representative = copy; old.representativeSource = sourceIndex;
++        }
++      }
++      memberCount++;
++    });
++  });
++  const representatives: Onset[] = [];
++  const events = [...groups.entries()].sort((a, b) => a[0] - b[0]).map(([time, group], id): TactusBundle => {
++    let sourceMask = 0, strength = 0;
++    for (const member of group.members) { sourceMask |= 1 << member.source; strength = Math.max(strength, Math.min(1, Math.max(0, member.strength))); }
++    representatives.push({ ...group.representative });
++    return { id, time, strength, sourceMask, members: group.members };
++  });
++  return { events, representatives, memberCount, boundaryMembersExcluded };
++}
++
++/** All targets came from actual traversed geometry. Match residuals do not trim
++ * endpoints; no virtual rest target is turned into a physical onset.
++ */
++export function tactusChainGeometry(targetTimes: readonly number[], matchedTargetTimes: readonly number[], duration: number): number[] {
++  if (!matchedTargetTimes.length) return [];
++  let first = Infinity, last = -Infinity;
++  for (const time of matchedTargetTimes) {
++    if (!Number.isFinite(time) || time < 0 || time >= duration) throw Error('TC primary target outside the audio domain');
++    first = Math.min(first, time); last = Math.max(last, time);
++  }
++  const result = targetTimes.filter(time => time >= first && time <= last && time >= 0 && time < duration), retained = new Set(result);
++  if (matchedTargetTimes.some(time => !retained.has(time))) throw Error('TC primary target missing from actual traversed geometry');
++  return result;
++}
++
++export function tactusNoteTime(onset: TactusOnset, metadata: TactusMetadata | undefined, bpmOverride: number | undefined,
++  legacyTiming: (onset: TactusOnset) => number): number {
++  return metadata !== undefined && bpmOverride === undefined ? onset.time : legacyTiming(onset);
++}
++
++export function tactusSingleFingerEvents(events: readonly TactusOnset[], metadata: TactusMetadata, gap: number): TactusOnset[] {
++  const heads = new Map(metadata.primaryHeads.map(head => [head.time, head]));
++  return events.filter(event => {
++    if (event.role !== 'beat') return true;
++    const head = heads.get(event.time);
++    return !head || head.ordinal % Math.max(1, Math.ceil(gap / head.period)) === 0;
++  });
++}
++
++function tempoFrom(beats: readonly number[]): { time: number; bpm: number }[] {
++  return beats.slice(1).map((time, i) => {
++    const from = Math.max(0, i - 1), to = Math.min(beats.length - 1, i + 2);
++    return { time, bpm: Math.round(60 * (to - from) / (beats[to] - beats[from]) * 10) / 10 };
++  });
++}
++const SUBDIVISIONS = [
++  { fraction: .25, denominator: 4, role: 'quarter' }, { fraction: 1 / 3, denominator: 3, role: 'third' },
++  { fraction: .5, denominator: 2, role: 'half' }, { fraction: 2 / 3, denominator: 3, role: 'third' },
++  { fraction: .75, denominator: 4, role: 'quarter' },
++] as const;
++
++/** Exactly one actual readout call after the unchanged baseline canonical pass.
++ * The old role binder must not run again after this overlay.
++ */
++export function applyTactusAnalysis(baseline: Analysis, context: TactusContext,
++  progress?: (fraction: number, stage: string) => void): {
++    analysis: TactusAnalysis; readout: ReadoutResult; bundles: TactusBundlePreparation;
++  } {
++  if (!Number.isFinite(context.sampleRate) || context.sampleRate <= 0) throw Error('Invalid original sample rate');
++  const bundles = prepareTactusBundles(context.streams, baseline.duration);
++  const readout = readoutTactus({ duration: baseline.duration, streams: context.streams, physical: bundles.events, blocks: context.blocks,
++    progress: (block, total) => progress?.((block + 1) / Math.max(1, total), '正在沿物理起音追踪持续主拍') });
++  if (readout.version !== 'TC1-readout/v1' || readout.duration !== baseline.duration) throw Error('Unexpected TC readout identity');
++  const unknown = readout.unknownIntervals.map(interval => ({ from: interval.from, to: interval.to }));
++  let covered = 0, previousUnknownTo = -Infinity;
++  for (const interval of unknown) {
++    if (!Number.isFinite(interval.from) || !Number.isFinite(interval.to) || interval.from < 0 || interval.to > baseline.duration || interval.to <= interval.from
++      || interval.from < previousUnknownTo)
++      throw Error('Invalid TC unknown interval');
++    if (interval.from <= covered) covered = Math.max(covered, interval.to);
++    previousUnknownTo = interval.to;
++  }
++  if (!readout.heads.length && !readout.knownSegments.length && covered === baseline.duration) return { analysis: baseline, readout, bundles };
++  if (readout.heads.length < 2 || !readout.knownSegments.length || readout.geometry.length < 2)
++    throw Error('持续主拍追踪没有建立足够的真实起点，请更换节奏更清楚的音乐。');
++  const isUnknown = (time: number): boolean => unknown.some(interval => time >= interval.from && time < interval.to);
++  const pulse = baseline.pulse ?? { onsets: baseline.onsets, sections: [] }, byTime = new Map<number, TactusOnset>();
++  for (const event of pulse.onsets) {
++    const copy: TactusOnset = { ...event };
++    if (!event.boundary && !isUnknown(event.time)) copy.role = 'free';
++    byTime.set(event.time, copy);
++  }
++  const roleEvidence: TactusMetadata['roleEvidence'] = [], primaryTimes = new Set<number>(), primaryIds = new Set<number>();
++  const geometryByIdentity = new Map<string, typeof readout.geometry[number]>();
++  if (readout.primaryIds.length !== readout.heads.length || readout.primaryIds.some((id, index) => id !== readout.heads[index].eventId))
++    throw Error('TC primary identity tape differs from actual heads');
++  for (const target of readout.geometry) {
++    if (!Number.isFinite(target.time) || target.time < 0 || target.time >= baseline.duration) throw Error('Invalid actual TC geometry');
++    const key = `${target.chain}:${target.ordinal}`;
++    if (geometryByIdentity.has(key)) throw Error('Duplicate actual TC target ordinal');
++    geometryByIdentity.set(key, target);
++  }
++  for (const head of readout.heads) {
++    const bundle = bundles.events[head.eventId], original = context.streams[head.source]?.[head.sourceMemberIndex];
++    const target = geometryByIdentity.get(`${head.chain}:${head.ordinal}`);
++    const tolerance = Math.min(.09, .2 * head.period), compatibility = 1 - Math.abs(head.time - head.targetTime) / tolerance;
++    if (!bundle || !original || original.boundary || bundle.time !== head.time || original.time !== head.time
++      || !bundle.members.some(member => member.source === head.source && member.index === head.sourceMemberIndex)
++      || primaryIds.has(head.eventId) || !target || target.time !== head.targetTime || target.eventId !== head.eventId
++      || target.period !== head.period || target.source !== head.source || !Number.isFinite(head.period) || head.period <= 0
++      || head.compatibility !== compatibility
++      || !Number.isFinite(head.compatibility) || head.compatibility < 0 || head.compatibility > 1)
++      throw Error('TC primary lost its exact physical/source/target identity');
++    primaryIds.add(head.eventId); primaryTimes.add(head.time);
++    byTime.set(head.time, { ...original, role: 'beat' });
++    roleEvidence.push({ time: head.time, denominator: 1, compatibility: head.compatibility });
++  }
++
++  // Subdivision candidates belong only to the source actually carried inside
++  // this known segment. No wholesale all-detector pool is admitted.
++  const subdivisionTimes = new Set<number>();
++  let previousSegmentTo = -Infinity;
++  for (const segment of readout.knownSegments) {
++    if (!Number.isFinite(segment.from) || !Number.isFinite(segment.to) || segment.from < 0 || segment.to > baseline.duration || segment.to <= segment.from
++      || !Number.isFinite(segment.period) || segment.period <= 0 || !Number.isInteger(segment.source) || segment.source < 0 || segment.source > 3
++      || segment.from < previousSegmentTo)
++      throw Error('Invalid TC known source/clock segment');
++    previousSegmentTo = segment.to;
++    const anchors = readout.geometry.filter(target => target.chain === segment.chain && target.time >= segment.from && target.time < segment.to);
++    if (!anchors.length) continue;
++    for (const event of context.streams[segment.source]) {
++      if (event.boundary || primaryTimes.has(event.time) || subdivisionTimes.has(event.time) || event.time < segment.from || event.time >= segment.to) continue;
++      let anchor = anchors[0].time;
++      for (const target of anchors) if (Math.abs(target.time - event.time) < Math.abs(anchor - event.time)) anchor = target.time;
++      const cycle = Math.floor((event.time - anchor) / segment.period);
++      let best: { compatibility: number; denominator: 2 | 3 | 4; role: 'half' | 'third' | 'quarter'; order: number } | undefined;
++      SUBDIVISIONS.forEach((slot, order) => {
++        const targetTime = anchor + (cycle + slot.fraction) * segment.period;
++        if (targetTime < segment.from || targetTime >= segment.to) return;
++        const tolerance = slot.denominator === 2 ? Math.min(.05, .12 * segment.period) : Math.min(.03, .07 * segment.period);
++        const distance = Math.abs(event.time - targetTime);
++        if (distance > tolerance) return;
++        const compatibility = 1 - distance / tolerance;
++        if (!best || compatibility > best.compatibility || compatibility === best.compatibility
++          && (slot.denominator < best.denominator || slot.denominator === best.denominator && order < best.order))
++          best = { compatibility, denominator: slot.denominator, role: slot.role, order };
++      });
++      if (!best) continue;
++      subdivisionTimes.add(event.time);
++      byTime.set(event.time, { ...event, role: best.role });
++      roleEvidence.push({ time: event.time, denominator: best.denominator, compatibility: best.compatibility });
++    }
++  }
++  const regular = [...byTime.values()].filter(event => !event.boundary);
++  for (const event of byTime.values()) if (event.boundary && regular.some(other => Math.abs(other.time - event.time) <= .085)) byTime.delete(event.time);
++  const onsets = [...byTime.values()].sort((a, b) => a.time - b.time);
++  const geometry: number[] = [], chains = new Set(readout.heads.map(head => head.chain));
++  for (const chain of chains) geometry.push(...tactusChainGeometry(readout.geometry.filter(target => target.chain === chain).map(target => target.time),
++    readout.heads.filter(head => head.chain === chain).map(head => head.targetTime), baseline.duration));
++  for (const time of baseline.rhythm?.beats ?? []) if (isUnknown(time)) geometry.push(time);
++  geometry.sort((a, b) => a - b);
++  const beats = geometry.filter((time, index) => index === 0 || time > geometry[index - 1]);
++  if (beats.length < 2) throw Error('持续主拍追踪没有形成可用的连续参考。');
++  const confidence = Math.max(0, Math.min(1, readout.heads.reduce((sum, head) => sum + head.compatibility, 0) / readout.geometry.length));
++  const periods = readout.knownSegments.map(segment => ({ period: segment.period, weight: segment.to - segment.from })).sort((a, b) => a.period - b.period);
++  const halfWeight = periods.reduce((sum, value) => sum + value.weight, 0) / 2;
++  let accumulated = 0, dominantPeriod = periods[0].period;
++  for (const value of periods) { accumulated += value.weight; dominantPeriod = value.period; if (accumulated >= halfWeight) break; }
++  const metadata: TactusMetadata = { version: 'TC1-readout/v1', primaryHeads: readout.heads.map(head => ({ time: head.time, targetTime: head.targetTime,
++    ordinal: head.ordinal, chain: head.chain, period: head.period })), roleEvidence, unknownIntervals: unknown,
++    knownSegments: readout.knownSegments.length, sourceFrames: bundles.events.length, assignments: roleEvidence.length };
++  return { analysis: { ...baseline, bpm: Math.round(60 / dominantPeriod * 10) / 10, confidence,
++    rhythm: { beats, tempo: tempoFrom(beats), confidence, downbeats: [], meterConfidence: 0, method: 'TC1-readout/v1' },
++    pulse: { ...pulse, onsets }, tactus: metadata }, readout, bundles };
++}
+diff --git a/src/core/rational-selection.ts b/src/core/rational-selection.ts
+new file mode 100644
+index 0000000..ee70d99
+--- /dev/null
++++ b/src/core/rational-selection.ts
+@@ -0,0 +1,30 @@
++import type { TactusMetadata, TactusOnset } from './rational-application';
++
++/** Finite automatic TC utility on original physical times. Unknown original
++ * roles are candidates, never lexicographically infinite priority. Whole-unknown
++ * analysis has no marker and never enters this new selector through the bridge.
++ */
++export function selectTactusOnsets(onsets: readonly TactusOnset[], gap: number, threshold: number,
++  timing: (onset: TactusOnset) => number, metadata: TactusMetadata): TactusOnset[] {
++  const evidence = new Map(metadata.roleEvidence.map(value => [value.time, value]));
++  const events = onsets.filter(onset => onset.strength >= threshold || onset.role === 'beat').slice().sort((a, b) => a.time - b.time);
++  const times = events.map(timing), scores = new Float64Array(events.length + 1), previous = new Int32Array(events.length), take = new Uint8Array(events.length);
++  for (let i = 0; i < events.length; i++) {
++    let low = 0, high = i;
++    while (low < high) {
++      const middle = (low + high) >>> 1;
++      if (times[i] - times[middle] >= gap - 1e-6) low = middle + 1; else high = middle;
++    }
++    previous[i] = low;
++    const observation = evidence.get(events[i].time);
++    const finiteRoleValue = observation ? observation.compatibility / observation.denominator : 0;
++    const value = scores[low] + events[i].strength ** 2 + .005 + finiteRoleValue;
++    const choose = value > scores[i] + 1e-10;
++    scores[i + 1] = choose ? value : scores[i]; take[i] = Number(choose);
++  }
++  const selected: TactusOnset[] = [];
++  for (let i = events.length - 1; i >= 0;) {
++    if (take[i]) { selected.push(events[i]); i = previous[i] - 1; } else i--;
++  }
++  return selected.reverse();
++}
+diff --git a/src/core/rhythm.ts b/src/core/rhythm.ts
+index 7534f26..5366394 100644
+--- a/src/core/rhythm.ts
++++ b/src/core/rhythm.ts
+@@ -1,14 +1,15 @@
+ import { gateClockEvidence } from './phase-gate';
+ import { phaseDP } from './phase-dp';
+-import { investigateTempo } from './tempo-families';
++import { investigateTempo, type TempoInvestigation } from './tempo-families';
+ import type { Analysis, Onset, Rhythm } from '../types';
+ const STEP = 0.01;
+ /** Onset-envelope autocorrelation + a tempo-continuity dynamic program.
+  * All positions are in recording time; the grid never creates chart notes. */
+-export function trackBeats(onsets: Onset[], duration: number, bpm: number, sourceOnsets?: Onset[]): Rhythm {
++export function trackBeats(onsets: Onset[], duration: number, bpm: number, sourceOnsets?: Onset[], capture?: (value: TempoInvestigation) => void): Rhythm {
+     if (onsets.length < 4)
+         return { beats: [], tempo: [], confidence: 0, downbeats: [], meterConfidence: 0 };
+     const investigation = investigateTempo(onsets, duration, bpm);
++    capture?.(investigation);
+     const projected = gateClockEvidence(onsets, investigation.blocks, sourceOnsets);
+     const frames = Math.ceil(duration / STEP) + 1, envelope = new Float64Array(frames);
+     const reference = Math.max(1e-8, ...onsets.map(onset => onset.strength));
+@@ -78,6 +79,7 @@ export function timeAtBeat(beats: number[], position: number, fallbackBpm: numbe
+     return beats[index] + (position - index) * (beats[index + 1] - beats[index]);
+ }
+ export function chartBeats(analysis: Analysis, bpmOverride?: number): number[] {
++    if (bpmOverride === undefined && analysis.rhythm?.method === 'TC1-readout/v1' && analysis.rhythm.beats.length > 1) return analysis.rhythm.beats;
+     if (bpmOverride === undefined && analysis.rhythm && analysis.rhythm.confidence >= 0.45 && analysis.rhythm.beats.length > 1)
+         return analysis.rhythm.beats;
+     // A possible recording-boundary cue has no measured rise. It must not seed
+diff --git a/src/core/signal-analysis.ts b/src/core/signal-analysis.ts
+index 13ef671..59e8685 100644
+--- a/src/core/signal-analysis.ts
++++ b/src/core/signal-analysis.ts
+@@ -1,3 +1,4 @@
++import type { TactusContext } from './rational-application';
+ import { mergeClockOnsets } from './clock-evidence';
+ import { reinforceCoincidentOnsets } from './clock-evidence';
+ import type { Analysis, Onset } from '../types';
+@@ -52,7 +53,7 @@ export function estimateTempo(onsets: Onset[]): {
+     }
+     return { bpm: best, confidence: Math.min(1, aligned / Math.max(total, 1e-8)) };
+ }
+-export function analyzeAudio(samples: Float32Array, sampleRate: number, progress?: (value: number, stage: string) => void): Analysis {
++export function analyzeAudio(samples: Float32Array, sampleRate: number, progress?: (value: number, stage: string) => void, capture?: (value: TactusContext) => void): Analysis {
+     const n = 1024, hop = Math.round(sampleRate * 0.01);
+     const frames = Math.max(0, Math.floor((samples.length - n) / hop) + 1);
+     if (!frames)
+@@ -173,7 +174,8 @@ export function analyzeAudio(samples: Float32Array, sampleRate: number, progress
+     progress?.(0.83, '正在提取乐句音高与持续声音特征');
+     const { chroma, tonalEnergy } = extractTonalFeatures(samples, sampleRate, hop, rms);
+     progress?.(0.86, '正在跟踪连续拍点与局部速度');
+-    const rhythm = trackBeats(reinforceCoincidentOnsets(mergeClockOnsets(onsets, musicalOnsets), streams, 'weighted'), samples.length / sampleRate, tempo.bpm, musicalOnsets);
++    let originalBlocks: TactusContext['blocks'] = [];
++    const rhythm = trackBeats(reinforceCoincidentOnsets(mergeClockOnsets(onsets, musicalOnsets), streams, 'weighted'), samples.length / sampleRate, tempo.bpm, musicalOnsets, result => { originalBlocks = result.blocks; });
+     const energy: number[] = [];
+     for (let i = 0; i < frames; i += 5)
+         energy.push(rms[i] / maxRms);
+@@ -197,5 +199,6 @@ export function analyzeAudio(samples: Float32Array, sampleRate: number, progress
+         ? [boundary, ...musicalOnsets] : musicalOnsets;
+     const rawOnsets = boundaryOnset ? [boundaryOnset, ...onsets] : onsets;
+     const candidates = [...rawOnsets, ...streams.flat(), ...boundaryStreams.flatMap(event => event ? [event] : [])].sort((a, b) => a.time - b.time);
++    capture?.({ streams: [onsets, ...streams], blocks: originalBlocks, sampleRate });
+     return annotateSignalEvents({ duration: samples.length / sampleRate, ...tempo, rhythm, pulse: { ...pulse, onsets: pulseOnsets }, candidates, onsets: rawOnsets, energy, energyStep: hop * 5 / sampleRate, chroma, tonalEnergy, chromaStep: hop * 5 / sampleRate, waveform: waveform.map(x => x / maxWave), fingerprint: fingerprint(samples) });
+ }
+diff --git a/src/core/source-change-witness.ts b/src/core/source-change-witness.ts
+new file mode 100644
+index 0000000..5b0a69c
+--- /dev/null
++++ b/src/core/source-change-witness.ts
+@@ -0,0 +1,110 @@
++import { inspectSourceContinuity, type ContinuityAssessment, type SourceId } from './source-continuity';
++import type { SourceRoleInspection, SourceRoleRequest, SourceRoleTrack } from './source-role-evidence';
++import { stateKey, type KnownCarrier, type CarrierSeed, type ChangeWitness, type ChangeDestination } from './tactus-carrier';
++
++export interface PhysicalIdentity { readonly id: number; readonly time: number }
++export interface WitnessContext {
++  readonly streams: SourceRoleRequest['streams'];
++  /** Exact-time global bundles from the actual source streams, not reference beats. */
++  readonly physical: readonly PhysicalIdentity[];
++  readonly from: number;
++  readonly to: number;
++}
++export interface BuiltChange {
++  readonly witness: ChangeWitness;
++  readonly evidence: SourceRoleInspection;
++  readonly assessment: ContinuityAssessment;
++}
++export const sourceStateKey = (source: SourceId): string => `source:${source}`;
++
++function validateState(state: KnownCarrier, source: SourceId): void {
++  if (state.sourceStateKey !== sourceStateKey(source)) throw Error('Source state does not match the active source');
++  stateKey(state); // Validate the complete actual carrier using its public contract.
++}
++function destination(state: KnownCarrier): ChangeDestination {
++  return { chainId: state.chainId, lastPrimaryId: state.lastPrimaryId, lastPrimaryTime: state.lastPrimaryTime,
++    virtualTarget: state.virtualTarget, period: state.period, beatOrdinal: state.beatOrdinal, sourceStateKey: state.sourceStateKey };
++}
++function currentWindow(context: WitnessContext, pivot: number): void {
++  if (context.from !== pivot || !Number.isFinite(context.to) || context.to <= pivot || context.to - pivot > 8)
++    throw Error('Change evidence must start at its current virtual pivot and span at most eight seconds');
++}
++function build(state: KnownCarrier, to: ChangeDestination, kind: ChangeWitness['kind'], source: SourceId,
++  context: WitnessContext, evidence: SourceRoleInspection, assessment: ContinuityAssessment, track: SourceRoleTrack): BuiltChange {
++  const byTime = new Map<number, number>(), byId = new Map<number, number>();
++  let previousId = -1, previousTime = -Infinity;
++  for (const event of context.physical) {
++    if (!Number.isSafeInteger(event.id) || event.id <= previousId || !Number.isFinite(event.time) || event.time < 0 || event.time <= previousTime)
++      throw Error('Physical bundle identities/times must strictly increase');
++    byTime.set(event.time, event.id); byId.set(event.id, event.time); previousId = event.id; previousTime = event.time;
++  }
++  const originalTimes = new Set(context.streams.flatMap(stream => stream.filter(e => !e.boundary).map(e => e.time)));
++  if (byTime.size !== originalTimes.size || [...byTime.keys()].some(time => !originalTimes.has(time)))
++    throw Error('Physical inventory must exactly cover the original regular source frames');
++  if (byId.get(state.lastPrimaryId) !== state.lastPrimaryTime || byId.get(to.lastPrimaryId) !== to.lastPrimaryTime)
++    throw Error('Old and proposed primary identities must be real source bundles');
++  const ids = new Set([state.lastPrimaryId, to.lastPrimaryId]);
++  for (const point of track.primary) if (point.memberIndex !== null) {
++    const original = context.streams[source]?.[point.memberIndex];
++    if (!original || original.boundary || original.time !== point.eventTime) throw Error('Support lost its original source member');
++    const id = byTime.get(original.time); if (id === undefined) throw Error('Supported source member lacks its physical bundle');
++    ids.add(id);
++  }
++  const physicalEventIds = [...ids].sort((a, b) => a - b);
++  const payload = { interval: { from: context.from, to: context.to }, activeSource: assessment.activeSource,
++    chosenSource: source, action: assessment.action, old: assessment.old, proposed: assessment.proposed,
++    oldCarrier: evidence.old.carrier, proposedCarrier: evidence.proposed?.carrier ?? null,
++    scope: 'Actual source tapes under a fixed engineering rule; not calibrated change probability or human-beat truth.' };
++  const proofId = JSON.stringify([assessment.ruleId, kind, stateKey(state), to, context.from, context.to, physicalEventIds]);
++  const witness: ChangeWitness = Object.freeze({ schema: 'tactus-change-witness/v1', kind, fromStateKey: stateKey(state),
++    to: Object.freeze(to), evidence: Object.freeze({ ruleId: assessment.ruleId, proofId,
++      physicalEventIds: Object.freeze(physicalEventIds), payload: Object.freeze(payload) }) });
++  return { witness, evidence, assessment };
++}
++
++/** A same-phase relay only changes source, never tempo or virtual phase. */
++export function sourceRelayWitness(state: KnownCarrier, active: SourceId, next: SourceId, context: WitnessContext): BuiltChange {
++  validateState(state, active);
++  currentWindow(context, state.virtualTarget);
++  const { evidence, assessment } = inspectSourceContinuity({ streams: context.streams,
++    oldCarrier: { virtualTarget: state.virtualTarget, period: state.period }, from: context.from, to: context.to }, active);
++  if (assessment.action !== 'relay' || next === active || !assessment.oldSupportedSources.includes(next)) throw Error('No observed same-clock relay');
++  return build(state, { ...destination(state), sourceStateKey: sourceStateKey(next) }, 'source-relay', next,
++    context, evidence, assessment, evidence.old.sources[next]);
++}
++
++/** A new period branches only after OLD-clock support fails across all sources.
++ * New observations are tested at the carried virtual beat boundary, not at an
++ * arbitrary local grid anchor. The kernel independently checks this binding.
++ */
++export function tempoChangeWitness(state: KnownCarrier, active: SourceId, next: SourceId, period: number, context: WitnessContext): BuiltChange {
++  validateState(state, active);
++  currentWindow(context, state.virtualTarget);
++  if (!Number.isFinite(period) || period <= 0 || period === state.period) throw Error('A genuinely different finite period is required');
++  const { evidence, assessment } = inspectSourceContinuity({ streams: context.streams,
++    oldCarrier: { virtualTarget: state.virtualTarget, period: state.period },
++    proposed: { virtualTarget: state.virtualTarget, period }, from: context.from, to: context.to }, active);
++  if (assessment.action !== 'change-candidate' || !assessment.proposedSupportedSources.includes(next)) throw Error('Old support has not failed or proposed tempo lacks support');
++  return build(state, { ...destination(state), period, sourceStateKey: sourceStateKey(next) }, 'tempo-update', next,
++    context, evidence, assessment, evidence.proposed!.sources[next]);
++}
++
++/** Explicit phase discontinuity starts a new chain, using a real unconsumed head. */
++export function phaseChangeWitness(state: KnownCarrier, active: SourceId, next: SourceId, seed: CarrierSeed, context: WitnessContext): BuiltChange {
++  validateState(state, active);
++  currentWindow(context, seed.virtualTarget);
++  if (seed.sourceStateKey !== sourceStateKey(next) || seed.observation.id <= state.consumedCursor
++    || seed.observation.time <= state.lastPrimaryTime || seed.virtualTarget <= state.virtualTarget)
++    throw Error('New phase needs a later unconsumed physical primary and source binding');
++  const { evidence, assessment } = inspectSourceContinuity({ streams: context.streams,
++    oldCarrier: { virtualTarget: state.virtualTarget, period: state.period },
++    proposed: { virtualTarget: seed.virtualTarget, period: seed.period }, from: context.from, to: context.to }, active);
++  if (!context.streams[next]?.some(event => !event.boundary && event.time === seed.observation.time)
++    || !Number.isFinite(seed.tolerance) || seed.tolerance < 0 || seed.tolerance > evidence.proposed!.tolerance
++    || Math.abs(seed.observation.time - seed.virtualTarget) > seed.tolerance)
++    throw Error('New phase seed must be an original member of the proposed source within its physical tolerance');
++  if (assessment.action !== 'change-candidate' || !assessment.proposedSupportedSources.includes(next)) throw Error('No observed phase-change candidate');
++  return build(state, { chainId: state.chainId + 1, lastPrimaryId: seed.observation.id, lastPrimaryTime: seed.observation.time,
++    virtualTarget: seed.virtualTarget, period: seed.period, beatOrdinal: 0, sourceStateKey: seed.sourceStateKey }, 'phase-reset', next,
++    context, evidence, assessment, evidence.proposed!.sources[next]);
++}
+diff --git a/src/core/source-continuity.ts b/src/core/source-continuity.ts
+new file mode 100644
+index 0000000..e77f597
+--- /dev/null
++++ b/src/core/source-continuity.ts
+@@ -0,0 +1,73 @@
++import { inspectSourceRoleEvidence, type SourceRoleInspection, type SourceRoleRequest, type SourceRoleTrack } from './source-role-evidence';
++
++/** Prospective engineering policy, fixed before any new feature/music scores.
++ * These are observation sufficiency rules, not probabilities or human labels.
++ * A nested faster train can support both clocks; that ambiguity is intentional.
++ */
++export const SOURCE_CONTINUITY_POLICY = Object.freeze({
++  ruleId: 'source-continuity/v1', minimumOpportunities: 4, minimumMatched: 4,
++  minimumMatchedSpan: 1, minimumCoverage: .5,
++});
++export type SourceId = 0 | 1 | 2 | 3;
++export interface SupportSummary {
++  readonly source: SourceId;
++  readonly opportunities: number;
++  readonly matched: number;
++  readonly coverage: number | null;
++  readonly matchedSpan: number;
++  readonly supported: boolean;
++  readonly sufficientWindow: boolean;
++}
++export interface ContinuityAssessment {
++  readonly ruleId: 'source-continuity/v1';
++  readonly action: 'continue' | 'relay' | 'change-candidate' | 'insufficient-old-window' | 'unsupported';
++  readonly activeSource: SourceId;
++  readonly old: readonly SupportSummary[];
++  readonly proposed: readonly SupportSummary[] | null;
++  readonly oldSupportedSources: readonly SourceId[];
++  readonly proposedSupportedSources: readonly SourceId[];
++  readonly changeSuppressedByOldSupport: boolean;
++  readonly interpretation: string;
++}
++
++function summarize(track: SourceRoleTrack): SupportSummary {
++  const p = SOURCE_CONTINUITY_POLICY;
++  const sufficientWindow = track.opportunities >= p.minimumOpportunities;
++  return Object.freeze({ source: track.source, opportunities: track.opportunities, matched: track.matched,
++    coverage: track.coverage, matchedSpan: track.matchedSpan, sufficientWindow,
++    supported: sufficientWindow && track.matched >= p.minimumMatched && track.matchedSpan >= p.minimumMatchedSpan
++      && track.coverage !== null && track.coverage >= p.minimumCoverage });
++}
++
++/** Uses the OLD carried clock to decide whether continuation remains observed.
++ * Neither loudness nor the new grid redefines the old primary observations.
++ * Sources are alternatives, including mixed; their overlapping rows are never
++ * added together as independent votes. Full ordered words remain in inspection,
++ * but this conservative first policy uses primary tapes only, not word scores.
++ */
++export function assessSourceContinuity(evidence: SourceRoleInspection, activeSource: SourceId): ContinuityAssessment {
++  if (!Number.isInteger(activeSource) || activeSource < 0 || activeSource > 3) throw Error('Invalid active source');
++  if (evidence.old.sources.length !== 4 || evidence.old.sources.some((s, i) => s.source !== i)
++    || evidence.proposed && (evidence.proposed.sources.length !== 4 || evidence.proposed.sources.some((s, i) => s.source !== i)))
++    throw Error('Four ordered source alternatives are required');
++  const old = evidence.old.sources.map(summarize), proposed = evidence.proposed?.sources.map(summarize) ?? null;
++  const oldSupportedSources = old.filter(s => s.supported).map(s => s.source);
++  const proposedSupportedSources = proposed?.filter(s => s.supported).map(s => s.source) ?? [];
++  const oldSufficient = old.every(s => s.sufficientWindow);
++  const action = oldSupportedSources.length
++    ? old[activeSource].supported ? 'continue' : 'relay'
++    : !oldSufficient ? 'insufficient-old-window' : proposedSupportedSources.length ? 'change-candidate' : 'unsupported';
++  return Object.freeze({ ruleId: SOURCE_CONTINUITY_POLICY.ruleId, action, activeSource,
++    old: Object.freeze(old), proposed: proposed && Object.freeze(proposed),
++    oldSupportedSources: Object.freeze(oldSupportedSources), proposedSupportedSources: Object.freeze(proposedSupportedSources),
++    changeSuppressedByOldSupport: oldSupportedSources.length > 0 && proposedSupportedSources.length > 0,
++    interpretation: 'Conservative source/clock continuity rule only. Supported alternatives and nested clocks remain semantically ambiguous.' });
++}
++
++/** This path always computes facts from the actual four source streams. */
++export function inspectSourceContinuity(input: SourceRoleRequest, activeSource: SourceId): {
++  readonly evidence: SourceRoleInspection; readonly assessment: ContinuityAssessment;
++} {
++  const evidence = inspectSourceRoleEvidence(input);
++  return { evidence, assessment: assessSourceContinuity(evidence, activeSource) };
++}
+diff --git a/src/core/source-role-evidence.ts b/src/core/source-role-evidence.ts
+new file mode 100644
+index 0000000..3dfa1b0
+--- /dev/null
++++ b/src/core/source-role-evidence.ts
+@@ -0,0 +1,248 @@
++/** Pure source-conditioned observations. No candidate/clock selection, fitted
++ * threshold, source preference, role rebinding, amplitude winner, or NN.
++ * Source0=mixed; source1/2/3=original low/mid/high detector streams.
++ */
++export interface RawSourceEvent {
++  readonly time: number;
++  readonly strength: number;
++  readonly boundary?: boolean;
++  /** Original metadata may exist but is never consumed as role evidence. */
++  readonly band?: number;
++  readonly role?: unknown;
++}
++export interface SourceRoleCarrier { readonly virtualTarget: number; readonly period: number }
++export interface SourceRoleRequest {
++  readonly streams: readonly (readonly RawSourceEvent[])[];
++  readonly oldCarrier: SourceRoleCarrier;
++  readonly proposed?: SourceRoleCarrier;
++  /** Common observed half-open time interval; raw streams retain original indices. */
++  readonly from: number;
++  readonly to: number;
++}
++export interface SourcePrimaryObservation {
++  readonly ordinal: number;
++  readonly targetTime: number;
++  readonly censored: boolean;
++  readonly memberIndex: number | null;
++  readonly eventTime: number | null;
++  readonly residual: number | null;
++}
++export interface SourceWordToken {
++  readonly memberIndex: number;
++  readonly time: number;
++  readonly strength: number;
++  readonly bin: number;
++}
++export interface SourceCycleWord {
++  readonly ordinal: number;
++  readonly from: number;
++  readonly to: number;
++  readonly complete: boolean;
++  readonly mask12: number;
++  /** Ordered original members; multiplicity is retained even inside one bin. */
++  readonly tokens: readonly SourceWordToken[];
++}
++export interface SourceRoleTrack {
++  readonly source: 0 | 1 | 2 | 3;
++  readonly name: 'mixed' | 'low' | 'mid' | 'high';
++  readonly primary: readonly SourcePrimaryObservation[];
++  readonly opportunities: number;
++  readonly matched: number;
++  readonly coverage: number | null;
++  readonly longestConsecutive: number;
++  readonly firstMatchTime: number | null;
++  readonly lastMatchTime: number | null;
++  readonly matchedSpan: number;
++  readonly rawMembersInInterval: number;
++  readonly words: readonly SourceCycleWord[];
++}
++export interface CarrierRoleEvidence {
++  readonly carrier: SourceRoleCarrier;
++  readonly from: number;
++  readonly to: number;
++  readonly tolerance: number;
++  readonly targets: readonly { readonly ordinal: number; readonly time: number; readonly censored: boolean }[];
++  readonly sources: readonly SourceRoleTrack[];
++}
++export interface SourcePrimaryRelation {
++  readonly source: 0 | 1 | 2 | 3;
++  readonly oldOpportunities: number;
++  readonly proposedOpportunities: number;
++  readonly oldMemberIndices: readonly number[];
++  readonly proposedMemberIndices: readonly number[];
++  readonly shared: readonly number[];
++  readonly oldOnly: readonly number[];
++  readonly proposedOnly: readonly number[];
++  /** Set relations are observations, not metrical equivalence or change permission. */
++  readonly sameMembers: boolean;
++  readonly oldSubsetOfProposed: boolean;
++  readonly proposedSubsetOfOld: boolean;
++}
++export interface SourceRoleWork {
++  originalValidationReads: number;
++  boundaryMembersExcluded: number;
++  carrierEvaluations: number;
++  targetRecords: number;
++  primaryQueries: number;
++  binaryComparisons: number;
++  distanceComparisons: number;
++  duplicateTieReads: number;
++  wordMemberReads: number;
++  wordTokens: number;
++  cycleWords: number;
++  explicitTypedBytes: 0;
++}
++export interface SourceRoleInspection {
++  readonly old: CarrierRoleEvidence;
++  readonly proposed?: CarrierRoleEvidence;
++  readonly comparisons?: readonly SourcePrimaryRelation[];
++  readonly work: SourceRoleWork;
++}
++
++const NAMES = ['mixed', 'low', 'mid', 'high'] as const;
++const MAX_CYCLES = 20000; // Explicit allocation guard, not a musical support gate.
++
++/** For a fixed carrier, source membership/time determines every support choice.
++ * Strength is retained in word tokens but never affects IDs, bins or coverage.
++ * A full closed tolerance window must lie inside [from,to); censored targets do
++ * not enter a denominator. The12 bins never replace continuous-time support.
++ */
++export function inspectSourceRoleEvidence(input: SourceRoleRequest): SourceRoleInspection {
++  if (!Number.isFinite(input.from) || input.from < 0 || !Number.isFinite(input.to) || input.to <= input.from
++    || !Array.isArray(input.streams) || input.streams.length !== 4) throw Error('A finite observed interval and four original streams are required');
++  const work: SourceRoleWork = { originalValidationReads: 0, boundaryMembersExcluded: 0, carrierEvaluations: 0,
++    targetRecords: 0, primaryQueries: 0, binaryComparisons: 0, distanceComparisons: 0, duplicateTieReads: 0,
++    wordMemberReads: 0, wordTokens: 0, cycleWords: 0, explicitTypedBytes: 0 };
++  const regular = input.streams.map(stream => {
++    if (!Array.isArray(stream)) throw Error('Original source stream must be an array');
++    let previous = -Infinity;
++    const indices: number[] = [];
++    stream.forEach((event, memberIndex) => {
++      work.originalValidationReads++;
++      if (!event || !Number.isFinite(event.time) || event.time < 0 || event.time < previous
++        || !Number.isFinite(event.strength) || event.strength < 0) throw Error('Invalid original source event');
++      previous = event.time;
++      if (event.boundary) work.boundaryMembersExcluded++; else indices.push(memberIndex);
++    });
++    return indices;
++  });
++  const lowerBound = (source: number, time: number): number => {
++    const indices = regular[source], stream = input.streams[source];
++    let low = 0, high = indices.length;
++    while (low < high) {
++      const middle = (low + high) >>> 1; work.binaryComparisons++;
++      if (stream[indices[middle]].time < time) low = middle + 1; else high = middle;
++    }
++    return low;
++  };
++  const inspectCarrier = (carrier: SourceRoleCarrier): CarrierRoleEvidence => {
++    const v = carrier.virtualTarget, period = carrier.period;
++    if (!Number.isFinite(v) || !Number.isFinite(period) || period <= 0) throw Error('Finite virtual target and positive period are required');
++    for (const anchor of [v, input.from, input.to]) {
++      const before = anchor - period, after = anchor + period;
++      if (!Number.isFinite(before) || !Number.isFinite(after) || before >= anchor || after <= anchor)
++        throw Error('Carrier period cannot make finite numerical progress at the observed anchors');
++    }
++    const firstCycle = Math.floor((input.from - v) / period), lastCycle = Math.floor((input.to - v) / period);
++    if (!Number.isSafeInteger(firstCycle) || !Number.isSafeInteger(lastCycle)
++      || Math.abs(firstCycle) > Number.MAX_SAFE_INTEGER - 4 || Math.abs(lastCycle) > Number.MAX_SAFE_INTEGER - 4
++      || lastCycle - firstCycle + 1 > MAX_CYCLES)
++      throw Error('Carrier exceeds the explicit cycle-allocation bound');
++    work.carrierEvaluations++;
++    const tolerance = Math.min(.09, .2 * period);
++    const targets: { ordinal: number; time: number; censored: boolean }[] = [];
++    let previousBoundary = -Infinity;
++    for (let ordinal = firstCycle - 1; ordinal <= lastCycle + 1; ordinal++) {
++      const time = v + ordinal * period;
++      if (!Number.isFinite(time) || time <= previousBoundary) throw Error('Carrier targets cannot make finite numerical progress');
++      previousBoundary = time;
++      if (time < input.from || time >= input.to) continue;
++      // Original subtraction predicates; an endpoint equal to `to` is outside
++      // the observed half-open interval and hence conservatively censored.
++      const censored = time - input.from < tolerance || input.to - time <= tolerance;
++      targets.push({ ordinal, time, censored }); work.targetRecords++;
++    }
++    const sources = input.streams.map((stream, sourceIndex): SourceRoleTrack => {
++      const source = sourceIndex as 0 | 1 | 2 | 3, indices = regular[source];
++      let opportunities = 0, matched = 0, longestConsecutive = 0, run = 0;
++      let firstMatchTime: number | null = null, lastMatchTime: number | null = null, lastMember = -1;
++      const primary: SourcePrimaryObservation[] = [];
++      for (const target of targets) {
++        let chosen: number | null = null, distance = Infinity;
++        if (!target.censored) {
++          opportunities++; work.primaryQueries++;
++          const right = lowerBound(source, target.time);
++          let left = right - 1;
++          // Equal-time duplicates retain the earliest ORIGINAL member index.
++          while (left > 0 && stream[indices[left - 1]].time === stream[indices[left]].time) { left--; work.duplicateTieReads++; }
++          for (const position of [left, right]) {
++            if (position < 0 || position >= indices.length) continue;
++            const member = indices[position], d = Math.abs(stream[member].time - target.time); work.distanceComparisons++;
++            if (d > tolerance) continue;
++            if (d < distance || d === distance && (chosen === null || stream[member].time < stream[chosen].time
++              || stream[member].time === stream[chosen].time && member < chosen)) { chosen = member; distance = d; }
++          }
++        }
++        if (chosen !== null) {
++          if (chosen <= lastMember) throw Error('Nonoverlapping primary windows reused or reordered a source member');
++          lastMember = chosen; matched++; run++; longestConsecutive = Math.max(longestConsecutive, run);
++          if (firstMatchTime === null) firstMatchTime = stream[chosen].time;
++          lastMatchTime = stream[chosen].time;
++        } else run = 0;
++        primary.push({ ordinal: target.ordinal, targetTime: target.time, censored: target.censored, memberIndex: chosen,
++          eventTime: chosen === null ? null : stream[chosen].time, residual: chosen === null ? null : stream[chosen].time - target.time });
++      }
++      const words: { ordinal: number; from: number; to: number; complete: boolean; mask12: number; tokens: SourceWordToken[] }[] = [];
++      // Include each cycle intersecting the interval, including empty cycles.
++      for (let ordinal = firstCycle - 1; ordinal <= lastCycle + 1; ordinal++) {
++        const from = v + ordinal * period, to = v + (ordinal + 1) * period;
++        if (!Number.isFinite(from) || !Number.isFinite(to) || to <= from) throw Error('Carrier cycle cannot make finite numerical progress');
++        if (to <= input.from || from >= input.to) continue;
++        words.push({ ordinal, from, to, complete: from >= input.from && to <= input.to, mask12: 0, tokens: [] }); work.cycleWords++;
++      }
++      const byOrdinal = new Map(words.map(word => [word.ordinal, word]));
++      let rawMembersInInterval = 0;
++      for (let i = lowerBound(source, input.from); i < indices.length; i++) {
++        const memberIndex = indices[i], event = stream[memberIndex]; work.wordMemberReads++;
++        if (event.time >= input.to) break;
++        let ordinal = Math.floor((event.time - v) / period);
++        // Correct only floating-point boundary ownership, never fit an offset.
++        for (let corrections = 0; event.time < v + ordinal * period; corrections++) {
++          if (corrections >= 2 || Math.abs(ordinal) > Number.MAX_SAFE_INTEGER - 4
++            || v + (ordinal - 1) * period >= v + ordinal * period) throw Error('Carrier cycle ownership cannot progress backwards');
++          ordinal--;
++        }
++        for (let corrections = 0; event.time >= v + (ordinal + 1) * period; corrections++) {
++          if (corrections >= 2 || Math.abs(ordinal) > Number.MAX_SAFE_INTEGER - 4
++            || v + (ordinal + 2) * period <= v + (ordinal + 1) * period) throw Error('Carrier cycle ownership cannot progress forwards');
++          ordinal++;
++        }
++        const word = byOrdinal.get(ordinal);
++        if (!word) throw Error('Original event is missing its carrier cycle');
++        const fraction = (event.time - word.from) / period;
++        const bin = Math.max(0, Math.min(11, Math.floor(fraction * 12)));
++        word.tokens.push({ memberIndex, time: event.time, strength: event.strength, bin }); word.mask12 |= 1 << bin;
++        rawMembersInInterval++; work.wordTokens++;
++      }
++      return { source, name: NAMES[source], primary, opportunities, matched, coverage: opportunities ? matched / opportunities : null,
++        longestConsecutive, firstMatchTime, lastMatchTime, matchedSpan: firstMatchTime === null ? 0 : lastMatchTime! - firstMatchTime,
++        rawMembersInInterval, words };
++    });
++    return { carrier: { virtualTarget: v, period }, from: input.from, to: input.to, tolerance, targets, sources };
++  };
++  const old = inspectCarrier(input.oldCarrier);
++  if (!input.proposed) return { old, work };
++  const proposed = inspectCarrier(input.proposed);
++  const comparisons = old.sources.map((track, sourceIndex): SourcePrimaryRelation => {
++    const other = proposed.sources[sourceIndex];
++    const oldMemberIndices = track.primary.flatMap(value => value.memberIndex === null ? [] : [value.memberIndex]);
++    const proposedMemberIndices = other.primary.flatMap(value => value.memberIndex === null ? [] : [value.memberIndex]);
++    const oldSet = new Set(oldMemberIndices), newSet = new Set(proposedMemberIndices);
++    const shared = oldMemberIndices.filter(id => newSet.has(id)), oldOnly = oldMemberIndices.filter(id => !newSet.has(id));
++    const proposedOnly = proposedMemberIndices.filter(id => !oldSet.has(id));
++    return { source: sourceIndex as 0 | 1 | 2 | 3, oldOpportunities: track.opportunities, proposedOpportunities: other.opportunities,
++      oldMemberIndices, proposedMemberIndices, shared, oldOnly, proposedOnly, sameMembers: !oldOnly.length && !proposedOnly.length,
++      oldSubsetOfProposed: !oldOnly.length, proposedSubsetOfOld: !proposedOnly.length };
++  });
++  return { old, proposed, comparisons, work };
++}
+diff --git a/src/core/tactus-carrier.ts b/src/core/tactus-carrier.ts
+new file mode 100644
+index 0000000..0ea3d28
+--- /dev/null
++++ b/src/core/tactus-carrier.ts
+@@ -0,0 +1,260 @@
++/** Unexecuted geometry primitive. This is not a tracker or a source/change
++ * detector. ChangeWitness is an evidence-binding interface, not proof that the
++ * source observations establish a musical tempo/phase change. ROOT must connect
++ * and independently validate an actual evidence producer before musical use. */
++export interface PrimaryObservation { readonly id: number; readonly time: number }
++export interface ObservedGrid { readonly period: number; readonly anchor: number }
++export interface CarrierSeed {
++  readonly observation: PrimaryObservation;
++  readonly virtualTarget: number;
++  readonly period: number;
++  readonly tolerance: number;
++  /** Must encode ALL source/role/pending-change memory used by future scoring. */
++  readonly sourceStateKey: string;
++}
++export interface KnownCarrier {
++  readonly status: 'known';
++  readonly chainId: number;
++  readonly lastPrimaryId: number;
++  readonly lastPrimaryTime: number;
++  readonly virtualTarget: number;
++  /** Duration of the next beat, selected at this virtual primary boundary. */
++  readonly period: number;
++  /** Includes unobserved intervening primary targets when m > 1. */
++  readonly beatOrdinal: number;
++  readonly consumedCursor: number;
++  readonly sourceStateKey: string;
++  /** Descriptive only in this primitive: never used to re-anchor the carrier. */
++  readonly observedGrid: ObservedGrid | null;
++  readonly lastChangeProofId: string | null;
++}
++export interface UnknownCarrier {
++  readonly status: 'unknown';
++  readonly nextChainId: number;
++  readonly consumedCursor: number;
++  readonly unavailableUntil: number;
++  readonly unavailableRuleId: string;
++  readonly unavailableProofId: string;
++}
++export type Carrier = KnownCarrier | UnknownCarrier;
++
++export interface ChangeDestination {
++  readonly chainId: number;
++  readonly lastPrimaryId: number;
++  readonly lastPrimaryTime: number;
++  readonly virtualTarget: number;
++  readonly period: number;
++  readonly beatOrdinal: number;
++  readonly sourceStateKey: string;
++}
++export interface ChangeWitness {
++  readonly schema: 'tactus-change-witness/v1';
++  readonly kind: 'tempo-update' | 'phase-reset' | 'source-relay';
++  /** Complete future-relevant old state binding, including consumed cursor.
++   * Descriptive grid/audit IDs are excluded as documented by continuationKey. */
++  readonly fromStateKey: string;
++  readonly to: ChangeDestination;
++  readonly evidence: {
++    readonly ruleId: string;
++    readonly proofId: string;
++    readonly physicalEventIds: readonly number[];
++    /** Opaque source evidence. This module never treats a Boolean as validity. */
++    readonly payload: Readonly<Record<string, unknown>>;
++  };
++}
++export interface UnknownEvidence {
++  readonly from: number;
++  readonly to: number;
++  readonly ruleId: string;
++  readonly proofId: string;
++}
++export interface TempoDestination { readonly period: number; readonly sourceStateKey: string }
++
++function finite(value: number, name: string): void {
++  if (!Number.isFinite(value)) throw Error(`${name} must be finite`);
++}
++function positive(value: number, name: string): void {
++  finite(value, name); if (value <= 0) throw Error(`${name} must be positive`);
++}
++function identifier(value: number, name: string, minimum = 0): void {
++  if (!Number.isSafeInteger(value) || value < minimum) throw Error(`${name} must be a safe integer >= ${minimum}`);
++}
++function text(value: string, name: string): void {
++  if (typeof value !== 'string' || !value.length) throw Error(`${name} must be nonempty`);
++}
++function observation(value: PrimaryObservation): void {
++  if (!value) throw Error('Missing observation');
++  identifier(value.id, 'observation.id'); finite(value.time, 'observation.time');
++  if (value.time < 0) throw Error('observation.time must be nonnegative');
++}
++function tolerance(value: number, period: number): void {
++  finite(value, 'tolerance');
++  if (value < 0 || value >= period / 2) throw Error('tolerance must be in [0,period/2)');
++}
++function validateSeed(seed: CarrierSeed): void {
++  if (!seed) throw Error('Missing seed');
++  observation(seed.observation); finite(seed.virtualTarget, 'virtualTarget');
++  if (seed.virtualTarget < 0) throw Error('virtualTarget must be nonnegative');
++  positive(seed.period, 'period'); tolerance(seed.tolerance, seed.period); text(seed.sourceStateKey, 'sourceStateKey');
++  if (Math.abs(seed.observation.time - seed.virtualTarget) > seed.tolerance) throw Error('Seed observation outside closed tolerance');
++}
++function known(state: KnownCarrier): void {
++  if (!state || state.status !== 'known') throw Error('Known carrier required');
++  identifier(state.chainId, 'chainId'); identifier(state.lastPrimaryId, 'lastPrimaryId');
++  finite(state.lastPrimaryTime, 'lastPrimaryTime'); finite(state.virtualTarget, 'virtualTarget');
++  if (state.lastPrimaryTime < 0 || state.virtualTarget < 0) throw Error('Negative carrier time');
++  positive(state.period, 'period'); identifier(state.beatOrdinal, 'beatOrdinal');
++  identifier(state.consumedCursor, 'consumedCursor');
++  if (state.consumedCursor < state.lastPrimaryId) throw Error('Cursor precedes actual primary');
++  text(state.sourceStateKey, 'sourceStateKey');
++  if (state.observedGrid) { positive(state.observedGrid.period, 'grid.period'); finite(state.observedGrid.anchor, 'grid.anchor'); }
++  if (state.lastChangeProofId !== null) text(state.lastChangeProofId, 'lastChangeProofId');
++}
++function unknown(state: UnknownCarrier): void {
++  if (!state || state.status !== 'unknown') throw Error('Unknown carrier required');
++  identifier(state.nextChainId, 'nextChainId'); identifier(state.consumedCursor, 'consumedCursor', -1);
++  finite(state.unavailableUntil, 'unavailableUntil');
++  if (state.unavailableUntil < 0) throw Error('Negative unknown end');
++  text(state.unavailableRuleId, 'unavailableRuleId'); text(state.unavailableProofId, 'unavailableProofId');
++}
++function validate(state: Carrier): void { if (state?.status === 'known') known(state); else unknown(state as UnknownCarrier); }
++function freezeKnown(state: KnownCarrier): KnownCarrier { return Object.freeze(state); }
++function destination(state: KnownCarrier): ChangeDestination {
++  return { chainId: state.chainId, lastPrimaryId: state.lastPrimaryId, lastPrimaryTime: state.lastPrimaryTime,
++    virtualTarget: state.virtualTarget, period: state.period, beatOrdinal: state.beatOrdinal, sourceStateKey: state.sourceStateKey };
++}
++
++/** Initialization only; a tracker must not call this to bypass an existing chain. */
++export function createCarrier(seed: CarrierSeed, chainId = 0): KnownCarrier {
++  validateSeed(seed); identifier(chainId, 'chainId');
++  return freezeKnown({ status: 'known', chainId, lastPrimaryId: seed.observation.id,
++    lastPrimaryTime: seed.observation.time, virtualTarget: seed.virtualTarget, period: seed.period,
++    beatOrdinal: 0, consumedCursor: seed.observation.id, sourceStateKey: seed.sourceStateKey,
++    observedGrid: null, lastChangeProofId: null });
++}
++
++/** Observation residual never becomes a phase update. No new period is inferred. */
++export function advancePrimary(state: KnownCarrier, next: PrimaryObservation, m: number, closedTolerance: number): KnownCarrier {
++  known(state); observation(next); identifier(m, 'm', 1); tolerance(closedTolerance, state.period);
++  if (next.id <= state.consumedCursor || next.time <= state.lastPrimaryTime) throw Error('Primary must follow cursor and actual time');
++  const target = state.virtualTarget + m * state.period, ordinal = state.beatOrdinal + m;
++  finite(target, 'next virtualTarget'); identifier(ordinal, 'next beatOrdinal');
++  if (target <= state.virtualTarget) throw Error('Target did not advance numerically');
++  if (Math.abs(next.time - target) > closedTolerance) throw Error('Observation outside persistent target closed tolerance');
++  return freezeKnown({ ...state, lastPrimaryId: next.id, lastPrimaryTime: next.time,
++    virtualTarget: target, beatOrdinal: ordinal, consumedCursor: next.id });
++}
++
++/** Re-division/relabeling changes only the observation descriptor. In particular
++ * A -> A+kP (a gauge change) cannot move any primary target or target ordinal. */
++export function observeGrid(state: KnownCarrier, grid: ObservedGrid): KnownCarrier {
++  known(state); if (!grid) throw Error('Missing observed grid');
++  positive(grid.period, 'grid.period'); finite(grid.anchor, 'grid.anchor');
++  return freezeKnown({ ...state, observedGrid: Object.freeze({ period: grid.period, anchor: grid.anchor }) });
++}
++
++/** A secondary observation can advance consumption past the last primary.
++ * lastPrimaryId and virtualTarget remain independent of this global cursor. */
++export function advanceCursor(state: KnownCarrier, cursor: number): KnownCarrier;
++export function advanceCursor(state: UnknownCarrier, cursor: number): UnknownCarrier;
++export function advanceCursor(state: Carrier, cursor: number): Carrier;
++export function advanceCursor(state: Carrier, cursor: number): Carrier {
++  validate(state); identifier(cursor, 'cursor', -1);
++  if (cursor < state.consumedCursor) throw Error('Cursor moved backward');
++  return Object.freeze({ ...state, consumedCursor: cursor });
++}
++
++/** Same future iff all persisted predictive memory is equal. observedGrid and
++ * audit proof IDs are excluded ONLY because this primitive never reads them for
++ * future legality/scoring. A full tracker must add any such dependencies to its
++ * own context key. Exact carrier doubles are retained; no phase binning occurs. */
++export function continuationKey(state: Carrier): string {
++  validate(state);
++  return state.status === 'known'
++    ? JSON.stringify(['known', state.chainId, state.lastPrimaryId, state.lastPrimaryTime, state.virtualTarget,
++      state.period, state.beatOrdinal, state.sourceStateKey])
++    : JSON.stringify(['unknown', state.nextChainId, state.unavailableUntil]);
++}
++export function stateKey(state: Carrier): string { return JSON.stringify([continuationKey(state), state.consumedCursor]); }
++
++function witness(state: KnownCarrier, next: KnownCarrier, kind: ChangeWitness['kind'], proof: ChangeWitness): void {
++  if (!proof || proof.schema !== 'tactus-change-witness/v1' || proof.kind !== kind) throw Error('Explicit bound change witness required');
++  if (proof.fromStateKey !== stateKey(state)) throw Error('Witness belongs to a different complete old state');
++  const expected = destination(next), actual = proof.to;
++  if (!actual || (Object.keys(expected) as (keyof ChangeDestination)[]).some(key => actual[key] !== expected[key]))
++    throw Error('Witness destination differs from proposed change');
++  const evidence = proof.evidence;
++  if (!evidence) throw Error('Missing witness evidence reference');
++  text(evidence.ruleId, 'evidence.ruleId'); text(evidence.proofId, 'evidence.proofId');
++  if (!Array.isArray(evidence.physicalEventIds) || !evidence.physicalEventIds.length) throw Error('Witness must reference physical observations');
++  let previous = -1;
++  for (const id of evidence.physicalEventIds) { identifier(id, 'evidence physical ID'); if (id <= previous) throw Error('Evidence IDs must increase'); previous = id; }
++  if (!evidence.physicalEventIds.includes(state.lastPrimaryId) || !evidence.physicalEventIds.includes(next.lastPrimaryId))
++    throw Error('Witness must bind old and new actual primary identities');
++  if (!evidence.payload || typeof evidence.payload !== 'object' || Array.isArray(evidence.payload)) throw Error('Opaque evidence payload object required');
++  // Binding validation deliberately does NOT certify the source evidence rule.
++}
++
++/** Genuine tempo update at the carried virtual beat boundary. There is no rho
++ * alias minimization and no simultaneous phase shift. Witness semantics belong
++ * to the independently validated source/change producer, not this primitive. */
++export function updateTempo(state: KnownCarrier, next: TempoDestination, proof: ChangeWitness): KnownCarrier {
++  known(state); if (!next) throw Error('Missing tempo destination');
++  positive(next.period, 'next period'); text(next.sourceStateKey, 'next sourceStateKey');
++  if (next.period === state.period) throw Error('Tempo update must change period; use source relay for source-only changes');
++  const result = freezeKnown({ ...state, period: next.period, sourceStateKey: next.sourceStateKey });
++  witness(state, result, 'tempo-update', proof);
++  return freezeKnown({ ...result, lastChangeProofId: proof.evidence.proofId });
++}
++
++/** A source can hand over the same continuing clock without changing tempo,
++ * phase, actual primary, target ordinal, cursor or chain. */
++export function relaySource(state: KnownCarrier, sourceStateKey: string, proof: ChangeWitness): KnownCarrier {
++  known(state); text(sourceStateKey, 'relay sourceStateKey');
++  if (sourceStateKey === state.sourceStateKey) throw Error('Source relay must change source state');
++  const result = freezeKnown({ ...state, sourceStateKey });
++  witness(state, result, 'source-relay', proof);
++  return freezeKnown({ ...result, lastChangeProofId: proof.evidence.proofId });
++}
++
++/** A real phase discontinuity starts an explicit new chain at a later physical
++ * observation. It cannot be hidden inside a grid or tempo update. */
++export function resetPhase(state: KnownCarrier, seed: CarrierSeed, proof: ChangeWitness): KnownCarrier {
++  known(state); validateSeed(seed);
++  if (seed.observation.id <= state.consumedCursor || seed.observation.time <= state.lastPrimaryTime)
++    throw Error('Phase reset must use a new unconsumed later primary');
++  if (seed.virtualTarget <= state.virtualTarget) throw Error('Phase reset virtual target must advance strictly');
++  const result = createCarrier(seed, state.chainId + 1);
++  witness(state, result, 'phase-reset', proof);
++  return freezeKnown({ ...result, lastChangeProofId: proof.evidence.proofId });
++}
++
++/** The caller must establish this unsupported span using an actual evidence
++ * rule. It is not a free reset edge and this primitive does not infer absence. */
++export function markUnknown(state: KnownCarrier, gap: UnknownEvidence): UnknownCarrier {
++  known(state); if (!gap) throw Error('Missing unsupported-span evidence');
++  finite(gap.from, 'gap.from'); finite(gap.to, 'gap.to');
++  if (gap.from < Math.max(state.lastPrimaryTime, state.virtualTarget) || gap.to <= gap.from)
++    throw Error('Unknown interval must follow actual and virtual primary times');
++  text(gap.ruleId, 'gap.ruleId'); text(gap.proofId, 'gap.proofId');
++  identifier(state.chainId + 1, 'next chainId');
++  return Object.freeze({ status: 'unknown', nextChainId: state.chainId + 1, consumedCursor: state.consumedCursor,
++    unavailableUntil: gap.to, unavailableRuleId: gap.ruleId, unavailableProofId: gap.proofId });
++}
++
++/** Old phase, period and source-role history have been discarded. The consumed
++ * physical cursor survives, so a new chain cannot reuse an old observation. */
++export function seedAfterUnknown(state: UnknownCarrier, seed: CarrierSeed): KnownCarrier {
++  unknown(state); validateSeed(seed);
++  if (seed.observation.id <= state.consumedCursor || seed.observation.time < state.unavailableUntil || seed.virtualTarget < state.unavailableUntil)
++    throw Error('New seed must follow consumed IDs and the unsupported interval');
++  return createCarrier(seed, state.nextChainId);
++}
++
++/** Reward convention: greater is better. This is a geometry/context dominance
++ * predicate only; caller scoring must depend solely on the complete key+cursor.
++ * New source summaries or pending witness obligations must enter sourceStateKey. */
++export function dominates(a: Carrier, rewardA: number, b: Carrier, rewardB: number): boolean {
++  finite(rewardA, 'rewardA'); finite(rewardB, 'rewardB');
++  return continuationKey(a) === continuationKey(b) && a.consumedCursor <= b.consumedCursor && rewardA >= rewardB;
++}
+diff --git a/src/core/tactus-readout.ts b/src/core/tactus-readout.ts
+new file mode 100644
+index 0000000..9f8c2d6
+--- /dev/null
++++ b/src/core/tactus-readout.ts
+@@ -0,0 +1,697 @@
++/** Static prototype preparation. This module is not called during preparation.
++ * The greedy/hysteretic readout consumes original physical streams and original
++ * hypotheses. It never consumes RME1 selected paths, baseline roles or truth. */
++import { inspectSourceRoleEvidence, type RawSourceEvent, type SourceRoleInspection, type SourceRoleTrack } from './source-role-evidence';
++import { assessSourceContinuity, SOURCE_CONTINUITY_POLICY, type SourceId, type ContinuityAssessment } from './source-continuity';
++import { sourceStateKey, sourceRelayWitness, tempoChangeWitness, phaseChangeWitness,
++  type PhysicalIdentity, type BuiltChange, type WitnessContext } from './source-change-witness';
++import { createCarrier, seedAfterUnknown, advancePrimary, relaySource, updateTempo, resetPhase, markUnknown,
++  type KnownCarrier, type UnknownCarrier, type CarrierSeed } from './tactus-carrier';
++
++export interface ReadoutPhase {
++  readonly anchor: number | null;
++  readonly meanResidual: number | null;
++  readonly coverage: number | null;
++  readonly supported: boolean;
++  readonly unknown: boolean;
++}
++export interface ReadoutHypothesis { readonly period: number | null; readonly phases: readonly ReadoutPhase[] }
++export interface ReadoutBlock {
++  readonly time: number;
++  readonly from: number;
++  readonly to: number;
++  readonly hypotheses: readonly ReadoutHypothesis[];
++  readonly preferredPeriod?: number | null;
++}
++export interface ReadoutInput {
++  readonly duration: number;
++  readonly streams: readonly (readonly RawSourceEvent[])[];
++  readonly physical: readonly PhysicalIdentity[];
++  readonly blocks: readonly ReadoutBlock[];
++  readonly progress?: (blockIndex: number, totalBlocks: number) => void;
++}
++export interface ReadoutCandidate {
++  readonly candidateId: string;
++  readonly inputBlockIndex: number;
++  readonly hypothesisIndex: number;
++  readonly phaseIndex: number;
++  readonly period: number | null;
++  readonly anchor: number | null;
++  readonly eligible: boolean;
++  readonly reason: string;
++}
++export interface PrimaryHead {
++  readonly eventId: number;
++  readonly time: number;
++  readonly targetTime: number;
++  readonly ordinal: number;
++  readonly chain: number;
++  readonly period: number;
++  readonly source: SourceId;
++  readonly sourceMemberIndex: number;
++  readonly compatibility: number;
++  readonly blockIndex: number;
++}
++export interface GeometryTarget {
++  readonly time: number;
++  readonly ordinal: number;
++  readonly chain: number;
++  readonly period: number;
++  readonly source: SourceId;
++  readonly eventId: number | null;
++  readonly blockIndex: number;
++}
++export interface KnownSegment {
++  readonly from: number;
++  readonly to: number;
++  readonly chain: number;
++  readonly period: number;
++  readonly source: SourceId;
++}
++export interface UnknownInterval { readonly from: number; readonly to: number; readonly reason: string; readonly blockIndex: number }
++export interface ReadoutChange {
++  readonly blockIndex: number;
++  readonly kind: 'source-relay' | 'tempo-update' | 'phase-reset';
++  readonly candidateId: string | null;
++  readonly score: number;
++  readonly meanCompatibility: number;
++  /** Effective outgoing clock/source boundary; may precede its decision owner. */
++  readonly effectiveFrom: number;
++  readonly built: BuiltChange;
++}
++export interface OwnerDiagnostic {
++  readonly blockIndex: number;
++  readonly from: number;
++  readonly to: number;
++  readonly inputBlockIndex: number | null;
++  readonly candidates: readonly ReadoutCandidate[];
++  status: string;
++  seedCandidateId: string | null;
++  seedSource: SourceId | null;
++  seedScore: number | null;
++  seedMeanCompatibility: number | null;
++  partialUnknown: boolean;
++  readonly factoryRejections: { readonly kind: string; readonly candidateId: string | null; readonly source: SourceId; readonly message: string }[];
++  heads: number;
++  targets: number;
++  inspections: number;
++}
++export interface ReadoutWork {
++  physicalValidationReads: number;
++  sourceValidationReads: number;
++  sourceMembers: number;
++  boundaryMembersExcluded: number;
++  sourceBlocks: number;
++  ownedBlocks: number;
++  contextOnlyBlocks: number;
++  originalHypotheses: number;
++  originalPhases: number;
++  eligibleCandidates: number;
++  sourceInspectionCalls: number;
++  sourceInspectionCacheHits: number;
++  sourceInspectionCacheEntries: number;
++  sourcePolicyCalls: number;
++  sourceRelayFactoryCalls: number;
++  tempoFactoryCalls: number;
++  phaseFactoryCalls: number;
++  factoryReturns: number;
++  factoryThrows: number;
++  factoryInternalInspectionCallsMinimum: number;
++  factoryInternalInspectionCallsMaximum: number;
++  factoryInternalPolicyCallsMinimum: number;
++  factoryInternalPolicyCallsMaximum: number;
++  helperWork: Record<string, number>;
++  returnedFactoryHelperWork: Record<string, number>;
++  createCarrierCalls: number;
++  seedAfterUnknownCalls: number;
++  advancePrimaryCalls: number;
++  relaySourceCalls: number;
++  updateTempoCalls: number;
++  resetPhaseCalls: number;
++  markUnknownCalls: number;
++  normalTargetTrials: number;
++  restTargets: number;
++  headMatches: number;
++  nearestQueries: number;
++  binaryComparisons: number;
++  distanceComparisons: number;
++  duplicateTieReads: number;
++  candidateTrials: number;
++  phaseSeedTrials: number;
++  loopIterations: number;
++  maximumOwnerIterations: number;
++  maximumOwnerCacheEntries: number;
++  maximumOwnerFactoryAttempts: number;
++  rankingMatchReads: number;
++  windowEndpointAdjustments: number;
++  explicitWindowScratchBytes: 8;
++  retrospectiveMetadataSegments: number;
++  retrospectiveMetadataSplits: number;
++  censoredSeedQueries: number;
++  censoredSeedMatches: number;
++  nearestEligibilityReads: number;
++  uncensoredSeedFallbackQueries: number;
++  uncensoredSeedFallbackMatches: number;
++}
++export interface ReadoutResult {
++  readonly version: 'TC1-readout/v1';
++  readonly duration: number;
++  readonly primaryIds: readonly number[];
++  readonly heads: readonly PrimaryHead[];
++  readonly geometry: readonly GeometryTarget[];
++  readonly knownSegments: readonly KnownSegment[];
++  readonly unknownIntervals: readonly UnknownInterval[];
++  readonly owners: readonly OwnerDiagnostic[];
++  readonly changes: readonly ReadoutChange[];
++  readonly contextOnlyBlocks: readonly { readonly inputBlockIndex: number; readonly time: number }[];
++  readonly work: ReadoutWork;
++  readonly selection: 'greedy-hysteresis-not-global-optimization';
++}
++
++const OWNED_SECONDS = 2, EPS = 1e-9, MIN_PERIOD = .27, MAX_PERIOD = 1.2;
++const MAX_HYPOTHESES = 22, MAX_PHASES = 4, MAX_CANDIDATES = 88, MAX_OWNERS = 1_000_000;
++export const READOUT_LIMITS = Object.freeze({ maximumOwners: MAX_OWNERS, maximumCandidatesPerOriginalBlock: MAX_CANDIDATES,
++  maximumOwnerIterations: 4096, maximumOwnerInspectionCacheEntries: 8192, maximumOwnerFactoryAttempts: 8192 });
++const timingTolerance = (period: number): number => Math.min(.09, .2 * period);
++
++interface Prepared {
++  readonly byTime: ReadonlyMap<number, number>;
++  readonly regularIndices: readonly (readonly number[])[];
++  readonly associated: ReadonlyMap<number, { readonly inputBlockIndex: number; readonly candidates: readonly ReadoutCandidate[] }>;
++  readonly context: readonly { readonly inputBlockIndex: number; readonly time: number }[];
++  readonly count: number;
++}
++
++function prepare(input: ReadoutInput, work: ReadoutWork): Prepared {
++  if (!input || !Number.isFinite(input.duration) || input.duration <= 0 || !Array.isArray(input.streams) || input.streams.length !== 4
++    || !Array.isArray(input.physical) || !Array.isArray(input.blocks)) throw Error('Finite duration, four raw streams, physical inventory and original blocks required');
++  const count = Math.ceil(input.duration / OWNED_SECONDS);
++  if (!Number.isSafeInteger(count) || count > MAX_OWNERS) throw Error('Owned timeline exceeds explicit allocation bound');
++  work.ownedBlocks = count; work.sourceBlocks = input.blocks.length;
++  const originalTimes = new Set<number>();
++  const regularIndices = input.streams.map(stream => {
++    if (!Array.isArray(stream)) throw Error('Raw source stream must be an array');
++    const regular: number[] = []; let previous = -Infinity;
++    stream.forEach((event, index) => {
++      work.sourceValidationReads++;
++      if (!event || !Number.isFinite(event.time) || event.time < 0 || event.time >= input.duration || event.time < previous
++        || !Number.isFinite(event.strength) || event.strength < 0) throw Error('Invalid original raw source member');
++      previous = event.time;
++      if (event.boundary) { work.boundaryMembersExcluded++; return; }
++      originalTimes.add(event.time); regular.push(index); work.sourceMembers++;
++    });
++    return regular;
++  });
++  const byTime = new Map<number, number>(); let previousId = -1, previousTime = -Infinity;
++  for (const event of input.physical) {
++    work.physicalValidationReads++;
++    if (!event || !Number.isSafeInteger(event.id) || event.id <= previousId || !Number.isFinite(event.time)
++      || event.time < 0 || event.time >= input.duration || event.time <= previousTime || !originalTimes.has(event.time))
++      throw Error('Physical IDs/times must strictly increase and belong to the original regular frame union');
++    byTime.set(event.time, event.id); previousId = event.id; previousTime = event.time;
++  }
++  if (byTime.size !== originalTimes.size) throw Error('Physical inventory must exactly cover all original regular frame times');
++  const associated = new Map<number, { inputBlockIndex: number; candidates: readonly ReadoutCandidate[] }>();
++  const context: { inputBlockIndex: number; time: number }[] = [];
++  input.blocks.forEach((block, inputBlockIndex) => {
++    if (!block || !Number.isFinite(block.time) || block.time < 0 || typeof block.from !== 'number' || typeof block.to !== 'number'
++      || !Array.isArray(block.hypotheses) || block.hypotheses.length > MAX_HYPOTHESES) throw Error('Invalid original block/hypothesis inventory');
++    const owner = Math.round(block.time / OWNED_SECONDS);
++    if (!Number.isSafeInteger(owner) || Math.abs(block.time - owner * OWNED_SECONDS) > EPS || associated.has(owner))
++      throw Error('Original block times must uniquely associate with two-second owners');
++    const domainReason = !Number.isFinite(block.from) || !Number.isFinite(block.to) || block.from < 0 || block.to < block.from
++      || block.to - block.from > 8 + EPS ? 'invalid-original-window' : null;
++    const candidates: ReadoutCandidate[] = [];
++    work.originalHypotheses += block.hypotheses.length;
++    block.hypotheses.forEach((hypothesis: ReadoutHypothesis, hypothesisIndex: number) => {
++      if (!hypothesis || !Array.isArray(hypothesis.phases) || hypothesis.phases.length > MAX_PHASES
++        || hypothesis.period !== null && typeof hypothesis.period !== 'number') throw Error('Malformed original period/phase inventory');
++      const period = hypothesis.period;
++      const periodReason = period === null || !Number.isFinite(period) || period < MIN_PERIOD - EPS || period > MAX_PERIOD + EPS
++        ? 'invalid-original-period' : null;
++      hypothesis.phases.forEach((phase: ReadoutPhase, phaseIndex: number) => {
++        work.originalPhases++;
++        if (!phase || typeof phase.supported !== 'boolean' || typeof phase.unknown !== 'boolean'
++          || phase.anchor !== null && typeof phase.anchor !== 'number'
++          || phase.meanResidual !== null && typeof phase.meanResidual !== 'number'
++          || phase.coverage !== null && typeof phase.coverage !== 'number') throw Error('Malformed original phase metadata');
++        const anchor = phase.anchor === null || phase.meanResidual === null ? null : phase.anchor + phase.meanResidual;
++        const valid = anchor !== null && Number.isFinite(anchor) && phase.coverage !== null && Number.isFinite(phase.coverage)
++          && phase.coverage >= 0 && phase.coverage <= 1;
++        const reason = domainReason ?? periodReason ?? (!valid ? 'invalid-original-phase' : phase.unknown ? 'original-unknown'
++          : !phase.supported ? 'original-unsupported' : 'eligible');
++        candidates.push({ candidateId: `${inputBlockIndex}:${hypothesisIndex}:${phaseIndex}`, inputBlockIndex, hypothesisIndex, phaseIndex,
++          period: period !== null && Number.isFinite(period) ? period : null, anchor: anchor !== null && Number.isFinite(anchor) ? anchor : null,
++          eligible: reason === 'eligible', reason });
++        if (reason === 'eligible') work.eligibleCandidates++;
++      });
++    });
++    if (candidates.length > MAX_CANDIDATES) throw Error('Original candidate count exceeds 88');
++    associated.set(owner, { inputBlockIndex, candidates });
++    if (owner >= count) { context.push({ inputBlockIndex, time: block.time }); work.contextOnlyBlocks++; }
++  });
++  return { byTime, regularIndices, associated, context, count };
++}
++
++interface Match { readonly eventId: number; readonly time: number; readonly source: SourceId; readonly memberIndex: number; readonly target: number }
++interface Rank {
++  readonly score: number;
++  readonly meanCompatibility: number;
++  readonly hypothesisIndex: number;
++  readonly phaseIndex: number;
++  readonly source: SourceId;
++}
++interface SeedChoice extends Rank { readonly candidate: ReadoutCandidate; readonly match: Match }
++interface ChangeChoice extends Rank {
++  readonly kind: 'tempo-update' | 'phase-reset';
++  readonly candidate: ReadoutCandidate;
++  readonly built: BuiltChange;
++  readonly match: Match | null;
++}
++
++function workRecord(): ReadoutWork {
++  return { physicalValidationReads: 0, sourceValidationReads: 0, sourceMembers: 0, boundaryMembersExcluded: 0,
++    sourceBlocks: 0, ownedBlocks: 0, contextOnlyBlocks: 0, originalHypotheses: 0, originalPhases: 0, eligibleCandidates: 0,
++    sourceInspectionCalls: 0, sourceInspectionCacheHits: 0, sourceInspectionCacheEntries: 0, sourcePolicyCalls: 0,
++    sourceRelayFactoryCalls: 0, tempoFactoryCalls: 0, phaseFactoryCalls: 0, factoryReturns: 0, factoryThrows: 0,
++    factoryInternalInspectionCallsMinimum: 0, factoryInternalInspectionCallsMaximum: 0,
++    factoryInternalPolicyCallsMinimum: 0, factoryInternalPolicyCallsMaximum: 0, helperWork: {}, returnedFactoryHelperWork: {},
++    createCarrierCalls: 0, seedAfterUnknownCalls: 0, advancePrimaryCalls: 0, relaySourceCalls: 0, updateTempoCalls: 0,
++    resetPhaseCalls: 0, markUnknownCalls: 0, normalTargetTrials: 0, restTargets: 0, headMatches: 0,
++    nearestQueries: 0, binaryComparisons: 0, distanceComparisons: 0, duplicateTieReads: 0,
++    candidateTrials: 0, phaseSeedTrials: 0, loopIterations: 0, maximumOwnerIterations: 0, maximumOwnerCacheEntries: 0,
++    maximumOwnerFactoryAttempts: 0, rankingMatchReads: 0, windowEndpointAdjustments: 0, explicitWindowScratchBytes: 8,
++    retrospectiveMetadataSegments: 0, retrospectiveMetadataSplits: 0, censoredSeedQueries: 0, censoredSeedMatches: 0,
++    nearestEligibilityReads: 0, uncensoredSeedFallbackQueries: 0, uncensoredSeedFallbackMatches: 0 };
++}
++function addNumeric(target: Record<string, number>, value: object): void {
++  for (const [key, amount] of Object.entries(value)) if (typeof amount === 'number') target[key] = (target[key] ?? 0) + amount;
++}
++function isSupported(track: SourceRoleTrack): boolean {
++  const p = SOURCE_CONTINUITY_POLICY;
++  return track.opportunities >= p.minimumOpportunities && track.matched >= p.minimumMatched
++    && track.matchedSpan >= p.minimumMatchedSpan && track.coverage !== null && track.coverage >= p.minimumCoverage;
++}
++function rank(track: SourceRoleTrack, period: number, candidate: ReadoutCandidate, work: ReadoutWork): Rank {
++  const denominator = track.opportunities + track.rawMembersInInterval;
++  let sum = 0, count = 0; const tau = timingTolerance(period);
++  for (const point of track.primary) {
++    work.rankingMatchReads++;
++    if (!point.censored && point.memberIndex !== null && point.residual !== null) {
++      sum += 1 - Math.abs(point.residual) / tau; count++;
++    }
++  }
++  if (count !== track.matched) throw Error('Source rank lost actual matched uncensored primary rows');
++  return { score: denominator ? 2 * track.matched / denominator : 0, meanCompatibility: count ? sum / count : 0,
++    hypothesisIndex: candidate.hypothesisIndex, phaseIndex: candidate.phaseIndex, source: track.source };
++}
++function better(a: Rank, b: Rank | null): boolean {
++  if (!b) return true;
++  if (a.score !== b.score) return a.score > b.score;
++  if (a.meanCompatibility !== b.meanCompatibility) return a.meanCompatibility > b.meanCompatibility;
++  if (a.hypothesisIndex !== b.hypothesisIndex) return a.hypothesisIndex < b.hypothesisIndex;
++  if (a.phaseIndex !== b.phaseIndex) return a.phaseIndex < b.phaseIndex;
++  return a.source < b.source;
++}
++// TypeScript does not propagate the unknown-state write inside becomeUnknown's
++// closure back through the owner loop. Keep this runtime branch explicitly typed.
++function priorUnknown(state: KnownCarrier | UnknownCarrier | null): UnknownCarrier | null {
++  return state?.status === 'unknown' ? state : null;
++}
++
++/** One automatic, deterministic greedy readout. No audio/FFT, old canonical
++ * role binder, RME1 path, GT, genre or alternative-path optimizer is used. */
++export function readoutTactus(input: ReadoutInput): ReadoutResult {
++  const work = workRecord(), prepared = prepare(input, work);
++  const heads: PrimaryHead[] = [], geometry: GeometryTarget[] = [],
++    unknownIntervals: UnknownInterval[] = [], owners: OwnerDiagnostic[] = [], changes: ReadoutChange[] = [];
++  let knownSegments: KnownSegment[] = [];
++  let carrier: KnownCarrier | UnknownCarrier | null = null, activeSource: SourceId | null = null;
++  let lastCommitted = -Infinity;
++  const endpointView = new DataView(new ArrayBuffer(8));
++  const windowEnd = (pivot: number): number => {
++    let end = Math.min(input.duration, pivot + 8);
++    if (end - pivot > 8) {
++      // Both endpoints are positive finite floats. Move by exactly one ULP,
++      // without relaxing the frozen factory's strict eight-second predicate.
++      endpointView.setFloat64(0, end, false);
++      endpointView.setBigUint64(0, endpointView.getBigUint64(0, false) - 1n, false);
++      end = endpointView.getFloat64(0, false); work.windowEndpointAdjustments++;
++    }
++    if (!Number.isFinite(end) || end <= pivot || end - pivot > 8) throw Error('Finite strict eight-second evidence window cannot progress');
++    return end;
++  };
++  const maximumM = Math.ceil(input.duration / (MIN_PERIOD - EPS)) + 2;
++  if (!Number.isSafeInteger(maximumM)) throw Error('Timeline cannot have safe finite target ordinals');
++
++  const nearest = (source: SourceId, target: number, tau: number, state: KnownCarrier | UnknownCarrier | null,
++    minimumActualTime = -Infinity): Match | null => {
++    work.nearestQueries++;
++    const indices = prepared.regularIndices[source], stream = input.streams[source];
++    // All restrictions are monotone on original time/global physical ID. First
++    // find the eligible suffix: filtering the global nearest two afterwards
++    // could let a consumed closest member hide a legal later member in tau.
++    const eligible = (position: number): boolean => {
++      work.nearestEligibilityReads++;
++      const event = stream[indices[position]], id = prepared.byTime.get(event.time);
++      if (id === undefined) throw Error('Original source member lost its exact physical identity');
++      return event.time >= minimumActualTime && (!state || id > state.consumedCursor)
++        && (state?.status !== 'known' || event.time > state.lastPrimaryTime)
++        && (state?.status !== 'unknown' || event.time >= state.unavailableUntil);
++    };
++    let low = 0, high = indices.length;
++    while (low < high) {
++      const middle = (low + high) >>> 1; work.binaryComparisons++;
++      if (eligible(middle)) high = middle; else low = middle + 1;
++    }
++    const firstAllowed = low;
++    if (firstAllowed >= indices.length) return null;
++    high = indices.length;
++    while (low < high) {
++      const middle = (low + high) >>> 1; work.binaryComparisons++;
++      if (stream[indices[middle]].time < target) low = middle + 1; else high = middle;
++    }
++    let left = low - 1;
++    while (left > firstAllowed && stream[indices[left - 1]].time === stream[indices[left]].time) { left--; work.duplicateTieReads++; }
++    let selected: Match | null = null, distance = Infinity;
++    for (const position of [left, low]) {
++      if (position < firstAllowed || position >= indices.length) continue;
++      const memberIndex = indices[position], event = stream[memberIndex], id = prepared.byTime.get(event.time);
++      if (id === undefined) throw Error('Original source member lost its exact physical identity');
++      work.distanceComparisons++;
++      const d = Math.abs(event.time - target);
++      if (d > tau) continue;
++      if (d < distance || d === distance && (!selected || event.time < selected.time
++        || event.time === selected.time && memberIndex < selected.memberIndex)) {
++        selected = { eventId: id, time: event.time, source, memberIndex, target }; distance = d;
++      }
++    }
++    return selected;
++  };
++  const legalSeed = (track: SourceRoleTrack, period: number, from: number, to: number, state: KnownCarrier | UnknownCarrier | null,
++    phase: boolean): Match | null => {
++    // Censored targets never establish support. Only an independently supported
++    // future source tape permits this physical seed lookup at an interval edge.
++    if (!isSupported(track)) return null;
++    for (const point of track.primary) {
++      work.phaseSeedTrials++;
++      if (point.targetTime < from || point.targetTime >= to || point.targetTime <= lastCommitted) continue;
++      if (state?.status === 'known' && point.targetTime <= state.virtualTarget) continue;
++      if (state?.status === 'unknown' && point.targetTime < state.unavailableUntil) continue;
++      if (phase && state?.status !== 'known') throw Error('Phase seed requires a known old carrier');
++      if (point.censored) {
++        work.censoredSeedQueries++;
++        const found = nearest(track.source, point.targetTime, timingTolerance(period), state, from);
++        if (found) { work.censoredSeedMatches++; return found; }
++        continue;
++      }
++      if (point.memberIndex === null || point.eventTime === null) continue;
++      const event = input.streams[track.source][point.memberIndex], eventId = prepared.byTime.get(event.time);
++      if (eventId === undefined || event.time !== point.eventTime || event.boundary) throw Error('Source seed lost original member identity');
++      if (state && eventId <= state.consumedCursor || state?.status === 'known' && event.time <= state.lastPrimaryTime
++        || state?.status === 'unknown' && event.time < state.unavailableUntil) {
++        work.uncensoredSeedFallbackQueries++;
++        const found = nearest(track.source, point.targetTime, timingTolerance(period), state, from);
++        if (found) { work.uncensoredSeedFallbackMatches++; return found; }
++        continue;
++      }
++      return { eventId, time: event.time, source: track.source, memberIndex: point.memberIndex, target: point.targetTime };
++    }
++    return null;
++  };
++  const makeSeed = (match: Match, period: number): CarrierSeed => ({ observation: { id: match.eventId, time: match.time },
++    virtualTarget: match.target, period, tolerance: timingTolerance(period), sourceStateKey: sourceStateKey(match.source) });
++  const appendGeometry = (state: KnownCarrier, source: SourceId, target: number, ordinal: number, eventId: number | null, blockIndex: number): void => {
++    if (!Number.isFinite(target) || target <= lastCommitted || !Number.isSafeInteger(ordinal) || ordinal < 0)
++      throw Error('Committed geometry must progress strictly with safe ordinals');
++    geometry.push({ time: target, ordinal, chain: state.chainId, period: state.period, source, eventId, blockIndex });
++    lastCommitted = target;
++    if (eventId === null) work.restTargets++;
++  };
++  const appendHead = (state: KnownCarrier, match: Match, blockIndex: number): void => {
++    const previous = heads[heads.length - 1];
++    if (previous && (match.eventId <= previous.eventId || match.time <= previous.time)) throw Error('Physical heads must strictly progress');
++    if (state.lastPrimaryId !== match.eventId || state.lastPrimaryTime !== match.time || state.virtualTarget !== match.target
++      || state.sourceStateKey !== sourceStateKey(match.source)) throw Error('Actual carrier, head and source bindings differ');
++    const tau = timingTolerance(state.period), compatibility = 1 - Math.abs(match.time - match.target) / tau;
++    if (!Number.isFinite(compatibility) || compatibility < 0 || compatibility > 1) throw Error('Head outside actual time-only compatibility range');
++    heads.push({ eventId: match.eventId, time: match.time, targetTime: match.target, ordinal: state.beatOrdinal,
++      chain: state.chainId, period: state.period, source: match.source, sourceMemberIndex: match.memberIndex,
++      compatibility, blockIndex }); work.headMatches++;
++    appendGeometry(state, match.source, match.target, state.beatOrdinal, match.eventId, blockIndex);
++  };
++  const appendUnknown = (from: number, to: number, reason: string, blockIndex: number): void => {
++    if (to <= from) return;
++    const previous = unknownIntervals[unknownIntervals.length - 1];
++    if (previous && from < previous.to) throw Error('Unknown intervals overlap or move backward');
++    unknownIntervals.push({ from, to, reason, blockIndex });
++  };
++  const appendKnown = (from: number, to: number, state: KnownCarrier, source: SourceId): void => {
++    if (to <= from) return;
++    const previous = knownSegments[knownSegments.length - 1];
++    if (previous && from < previous.to) throw Error('Known source/clock segments overlap');
++    knownSegments.push({ from, to, chain: state.chainId, period: state.period, source });
++  };
++
++  for (let blockIndex = 0; blockIndex < prepared.count; blockIndex++) {
++    const from = blockIndex * OWNED_SECONDS, to = Math.min(from + OWNED_SECONDS, input.duration), original = prepared.associated.get(blockIndex);
++    const eligible = original?.candidates.filter(candidate => candidate.eligible) ?? [];
++    const owner: OwnerDiagnostic = { blockIndex, from, to, inputBlockIndex: original?.inputBlockIndex ?? null,
++      candidates: original?.candidates ?? [], status: 'pending', seedCandidateId: null, seedSource: null, seedScore: null,
++      seedMeanCompatibility: null, partialUnknown: false, factoryRejections: [], heads: 0, targets: 0, inspections: 0 };
++    owners.push(owner);
++    const headStart = heads.length, geometryStart = geometry.length, unknownStart = unknownIntervals.length,
++      inspectionStart = work.sourceInspectionCalls;
++    const cache = new Map<string, SourceRoleInspection>(), policyCache = new Map<string, ContinuityAssessment>();
++    let ownerIterations = 0, ownerFactories = 0;
++    let ownerHasKnown = false;
++    let segment: { from: number; state: KnownCarrier; source: SourceId } | null = null;
++    const closeKnown = (end: number): void => {
++      if (!segment) return;
++      const effectiveEnd = Math.max(segment.from, Math.min(to, end));
++      if (effectiveEnd > segment.from) ownerHasKnown = true;
++      appendKnown(segment.from, effectiveEnd, segment.state, segment.source); segment = null;
++    };
++    const startKnown = (start: number, state: KnownCarrier, source: SourceId): void => {
++      if (segment) throw Error('Known segment already open');
++      segment = { from: Math.max(from, Math.min(to, start)), state, source };
++    };
++    const inspect = (v: number, period: number, windowFrom: number, windowTo: number,
++      proposed?: { readonly virtualTarget: number; readonly period: number }): SourceRoleInspection => {
++      const key = JSON.stringify([v, period, windowFrom, windowTo, proposed?.virtualTarget ?? null, proposed?.period ?? null]);
++      const existing = cache.get(key);
++      if (existing) { work.sourceInspectionCacheHits++; return existing; }
++      if (cache.size >= READOUT_LIMITS.maximumOwnerInspectionCacheEntries) throw Error('Owner inspection-cache allocation guard exceeded');
++      work.sourceInspectionCalls++;
++      const value = inspectSourceRoleEvidence({ streams: input.streams, oldCarrier: { virtualTarget: v, period },
++        ...(proposed ? { proposed } : {}), from: windowFrom, to: windowTo });
++      addNumeric(work.helperWork, value.work); cache.set(key, value); work.sourceInspectionCacheEntries++;
++      return value;
++    };
++    const assess = (evidence: SourceRoleInspection, source: SourceId): ContinuityAssessment => {
++      const key = JSON.stringify([evidence.old.carrier.virtualTarget, evidence.old.carrier.period, evidence.old.from, evidence.old.to,
++        evidence.proposed?.carrier.virtualTarget ?? null, evidence.proposed?.carrier.period ?? null, source]);
++      const existing = policyCache.get(key); if (existing) return existing;
++      work.sourcePolicyCalls++; const value = assessSourceContinuity(evidence, source); policyCache.set(key, value); return value;
++    };
++    const factory = (kind: ReadoutChange['kind'], candidateId: string | null, source: SourceId, invoke: () => BuiltChange): BuiltChange | null => {
++      if (ownerFactories >= READOUT_LIMITS.maximumOwnerFactoryAttempts) throw Error('Owner source-factory attempt guard exceeded');
++      ownerFactories++;
++      if (kind === 'source-relay') work.sourceRelayFactoryCalls++; else if (kind === 'tempo-update') work.tempoFactoryCalls++; else work.phaseFactoryCalls++;
++      // The fixed source reaches one inspector/policy pair on a successful
++      // return; a throw may happen before either entry. Preserve the interval,
++      // rather than relabel attempted factories as actual internal calls.
++      work.factoryInternalInspectionCallsMaximum++; work.factoryInternalPolicyCallsMaximum++;
++      try {
++        const value = invoke(); work.factoryReturns++;
++        work.factoryInternalInspectionCallsMinimum++; work.factoryInternalPolicyCallsMinimum++;
++        addNumeric(work.returnedFactoryHelperWork, value.evidence.work); return value;
++      } catch (error) {
++        work.factoryThrows++;
++        owner.factoryRejections.push({ kind, candidateId, source, message: error instanceof Error ? error.message : String(error) });
++        return null;
++      }
++    };
++    const context = (pivot: number): WitnessContext => ({ streams: input.streams, physical: input.physical,
++      from: pivot, to: windowEnd(pivot) });
++    const reviseOutgoingMetadata = (pivot: number, state: KnownCarrier, source: SourceId): void => {
++      if (pivot >= from) return;
++      if (lastCommitted !== pivot) throw Error('Outgoing metadata cannot revise a committed later target');
++      const revised: KnownSegment[] = [];
++      for (const previous of knownSegments) {
++        if (previous.to <= pivot || previous.from >= from) { revised.push(previous); continue; }
++        if (previous.chain !== state.chainId) throw Error('Outgoing tempo metadata crossed a different known chain');
++        const piecesBefore = revised.length;
++        if (previous.from < pivot) revised.push({ ...previous, to: pivot });
++        revised.push({ from: Math.max(pivot, previous.from), to: Math.min(from, previous.to),
++          chain: state.chainId, period: state.period, source });
++        if (previous.to > from) revised.push({ ...previous, from });
++        work.retrospectiveMetadataSegments++;
++        work.retrospectiveMetadataSplits += revised.length - piecesBefore - 1;
++      }
++      // Metadata only. Existing head and committed-target arrays are untouched.
++      knownSegments = revised;
++    };
++    const becomeUnknown = (start: number, reason: string, reportFrom = start): void => {
++      const suffixFrom = Math.max(from, Math.min(to, reportFrom));
++      closeKnown(suffixFrom); appendUnknown(suffixFrom, to, reason, blockIndex);
++      if (carrier?.status === 'known') {
++        const gapFrom = Math.max(start, carrier.lastPrimaryTime, carrier.virtualTarget);
++        if (gapFrom >= to) throw Error('Unsupported suffix cannot clear a carrier without a progressing evidence interval');
++        work.markUnknownCalls++;
++        carrier = markUnknown(carrier, { from: gapFrom, to, ruleId: 'TC1-readout/unavailable-owner-suffix/v1',
++          proofId: JSON.stringify([blockIndex, gapFrom, to, reason]) });
++      }
++      activeSource = null;
++    };
++
++    if (!eligible.length) {
++      becomeUnknown(from, original ? 'no-eligible-original-phase' : 'missing-original-block', from);
++    } else {
++      if (carrier?.status !== 'known') {
++        let chosen: SeedChoice | null = null;
++        for (const candidate of eligible) {
++          work.candidateTrials++;
++          const evidence = inspect(candidate.anchor!, candidate.period!, from, windowEnd(from));
++          for (const track of evidence.old.sources) {
++            if (!isSupported(track)) continue;
++            const match = legalSeed(track, candidate.period!, from, to, carrier, false); if (!match) continue;
++            const value: SeedChoice = { ...rank(track, candidate.period!, candidate, work), candidate, match };
++            if (better(value, chosen)) chosen = value;
++          }
++        }
++        if (chosen) {
++          const seed = makeSeed(chosen.match, chosen.candidate.period!);
++          const previousUnknown = priorUnknown(carrier);
++          if (previousUnknown) { work.seedAfterUnknownCalls++; carrier = seedAfterUnknown(previousUnknown, seed); }
++          else { work.createCarrierCalls++; carrier = createCarrier(seed); }
++          activeSource = chosen.source;
++          owner.seedCandidateId = chosen.candidate.candidateId; owner.seedSource = chosen.source;
++          owner.seedScore = chosen.score; owner.seedMeanCompatibility = chosen.meanCompatibility;
++          startKnown(from, carrier, activeSource); appendHead(carrier, chosen.match, blockIndex);
++        } else becomeUnknown(from, 'no-supported-current-owner-physical-seed', from);
++      } else {
++        if (activeSource === null) throw Error('Established carrier lost its active source');
++        startKnown(from, carrier, activeSource);
++      }
++
++      while (carrier?.status === 'known' && activeSource !== null) {
++        ownerIterations++; work.loopIterations++;
++        if (ownerIterations > READOUT_LIMITS.maximumOwnerIterations) throw Error('Owner readout iteration guard exceeded');
++        if (carrier.period < MIN_PERIOD - EPS || carrier.period > MAX_PERIOD + EPS) throw Error('Established period left original proposal bounds');
++        let m = Math.max(1, Math.floor((from - carrier.virtualTarget) / carrier.period));
++        let target = carrier.virtualTarget + m * carrier.period;
++        while (target < from || target <= lastCommitted) {
++          m++; if (!Number.isSafeInteger(m) || m > maximumM) throw Error('Primary skip count exceeded explicit finite bound');
++          target = carrier.virtualTarget + m * carrier.period;
++        }
++        if (!Number.isSafeInteger(m) || m > maximumM || !Number.isFinite(target) || target <= carrier.virtualTarget)
++          throw Error('Normal target did not make finite safe progress');
++        if (target >= to) break;
++        work.normalTargetTrials++;
++        const match = nearest(activeSource, target, timingTolerance(carrier.period), carrier);
++        if (match) {
++          work.advancePrimaryCalls++; carrier = advancePrimary(carrier, { id: match.eventId, time: match.time }, m, timingTolerance(carrier.period));
++          appendHead(carrier, match, blockIndex); continue;
++        }
++        const oldContext = context(carrier.virtualTarget);
++        const oldEvidence = inspect(carrier.virtualTarget, carrier.period, oldContext.from, oldContext.to);
++        const oldAssessment = assess(oldEvidence, activeSource);
++        if (oldAssessment.action === 'continue') {
++          appendGeometry(carrier, activeSource, target, carrier.beatOrdinal + m, null, blockIndex); continue;
++        }
++        if (oldAssessment.action === 'relay') {
++          let relay: Rank | null = null;
++          // No original candidate distinguishes same-clock sources; use one
++          // neutral index pair and the fixed source-ID tie order.
++          const neutral: ReadoutCandidate = { candidateId: '', inputBlockIndex: original?.inputBlockIndex ?? 0,
++            hypothesisIndex: 0, phaseIndex: 0, period: carrier.period, anchor: carrier.virtualTarget, eligible: true, reason: 'carried-clock' };
++          for (const source of oldAssessment.oldSupportedSources) {
++            const value = rank(oldEvidence.old.sources[source], carrier.period, neutral, work);
++            if (better(value, relay)) relay = value;
++          }
++          if (!relay || relay.source === activeSource) throw Error('Relay policy lacks a new supported source');
++          const state = carrier, active = activeSource, next = relay.source;
++          const built = factory('source-relay', null, next, () => sourceRelayWitness(state, active, next, oldContext));
++          if (!built) { becomeUnknown(target, 'source-relay-factory-rejected'); break; }
++          closeKnown(target); work.relaySourceCalls++; carrier = relaySource(carrier, sourceStateKey(next), built.witness); activeSource = next;
++          startKnown(target, carrier, next);
++          changes.push({ blockIndex, kind: 'source-relay', candidateId: null, score: relay.score,
++            meanCompatibility: relay.meanCompatibility, effectiveFrom: target, built });
++          continue;
++        }
++        if (oldAssessment.action === 'insufficient-old-window') { becomeUnknown(target, 'insufficient-old-clock-observation-window'); break; }
++        if (oldAssessment.oldSupportedSources.length) throw Error('A supported old clock reached change enumeration');
++
++        const oldState = carrier, oldSource = activeSource;
++        let change: ChangeChoice | null = null;
++        // A true tempo update at the previous actual head cannot reinterpret
++        // rest targets which have already been committed after that boundary.
++        if (lastCommitted === carrier.virtualTarget) {
++          const seenPeriods = new Set<number>();
++          for (const candidate of eligible) {
++            if (seenPeriods.has(candidate.period!) || candidate.period === carrier.period) continue;
++            seenPeriods.add(candidate.period!); work.candidateTrials++;
++            const evidence = inspect(carrier.virtualTarget, carrier.period, oldContext.from, oldContext.to,
++              { virtualTarget: carrier.virtualTarget, period: candidate.period! });
++            const policy = assess(evidence, activeSource);
++            if (policy.action !== 'change-candidate' || !evidence.proposed) continue;
++            for (const source of policy.proposedSupportedSources) {
++              const built = factory('tempo-update', candidate.candidateId, source,
++                () => tempoChangeWitness(oldState, oldSource, source, candidate.period!, oldContext));
++              if (!built) continue;
++              const value: ChangeChoice = { ...rank(built.evidence.proposed!.sources[source], candidate.period!, candidate, work),
++                kind: 'tempo-update', candidate, built, match: null };
++              if (better(value, change)) change = value;
++            }
++          }
++        }
++        for (const candidate of eligible) {
++          work.candidateTrials++;
++          const evidence = inspect(candidate.anchor!, candidate.period!, from, windowEnd(from));
++          for (const track of evidence.old.sources) {
++            if (!isSupported(track)) continue;
++            const seedMatch = legalSeed(track, candidate.period!, from, to, carrier, true); if (!seedMatch) continue;
++            const seed = makeSeed(seedMatch, candidate.period!), newContext = context(seed.virtualTarget);
++            const built = factory('phase-reset', candidate.candidateId, track.source,
++              () => phaseChangeWitness(oldState, oldSource, track.source, seed, newContext));
++            if (!built) continue;
++            const value: ChangeChoice = { ...rank(built.evidence.proposed!.sources[track.source], candidate.period!, candidate, work),
++              kind: 'phase-reset', candidate, built, match: seedMatch };
++            if (better(value, change)) change = value;
++          }
++        }
++        if (!change) { becomeUnknown(target, 'no-supported-explicit-clock-change'); break; }
++        if (change.kind === 'tempo-update') {
++          closeKnown(Math.max(from, carrier.virtualTarget)); work.updateTempoCalls++;
++          carrier = updateTempo(carrier, { period: change.candidate.period!, sourceStateKey: sourceStateKey(change.source) }, change.built.witness);
++          reviseOutgoingMetadata(carrier.virtualTarget, carrier, change.source);
++          activeSource = change.source; startKnown(Math.max(from, carrier.virtualTarget), carrier, activeSource);
++        } else {
++          if (!change.match) throw Error('Accepted phase change lacks its physical seed');
++          const transitionAt = change.match.target, gapStart = Math.max(from, target, carrier.lastPrimaryTime, lastCommitted);
++          closeKnown(Math.min(gapStart, transitionAt));
++          if (gapStart < transitionAt) appendUnknown(gapStart, transitionAt, 'explicit-phase-change-unresolved-gap', blockIndex);
++          work.resetPhaseCalls++; carrier = resetPhase(carrier, makeSeed(change.match, change.candidate.period!), change.built.witness);
++          activeSource = change.source; startKnown(transitionAt, carrier, activeSource); appendHead(carrier, change.match, blockIndex);
++        }
++        changes.push({ blockIndex, kind: change.kind, candidateId: change.candidate.candidateId,
++          score: change.score, meanCompatibility: change.meanCompatibility,
++          effectiveFrom: carrier.virtualTarget, built: change.built });
++      }
++    }
++    closeKnown(to);
++    owner.heads = heads.length - headStart; owner.targets = geometry.length - geometryStart;
++    owner.inspections = work.sourceInspectionCalls - inspectionStart;
++    const hasUnknown = unknownIntervals.length > unknownStart, hasKnown = ownerHasKnown;
++    owner.partialUnknown = hasUnknown && hasKnown;
++    owner.status = hasUnknown ? hasKnown ? 'partial-unknown' : 'unknown' : hasKnown ? 'known' : 'unavailable';
++    work.maximumOwnerIterations = Math.max(work.maximumOwnerIterations, ownerIterations);
++    work.maximumOwnerCacheEntries = Math.max(work.maximumOwnerCacheEntries, cache.size);
++    work.maximumOwnerFactoryAttempts = Math.max(work.maximumOwnerFactoryAttempts, ownerFactories);
++    input.progress?.(blockIndex, prepared.count);
++  }
++  return { version: 'TC1-readout/v1', duration: input.duration, primaryIds: heads.map(head => head.eventId), heads, geometry,
++    knownSegments, unknownIntervals, owners, changes, contextOnlyBlocks: prepared.context, work,
++    selection: 'greedy-hysteresis-not-global-optimization' };
++}
+diff --git a/src/types.ts b/src/types.ts
+index 813c05c..4e279a5 100644
+--- a/src/types.ts
++++ b/src/types.ts
+@@ -2,9 +2,10 @@ export type Difficulty = 'one' | 'two' | 'three' | 'four';
+ export type ScrollMode = 'perspective' | 'screen';
+ export type NoteType = 'tap' | 'hold' | 'left' | 'right' | 'up';
+ export type Grade = 'perfect' | 'great' | 'good' | 'miss';
+-export interface Onset { time: number; strength: number; band: number; attack?: number; boundary?: true; role?: 'beat' | 'half' | 'quarter' | 'free' }
++export interface Onset { time: number; strength: number; band: number; attack?: number; boundary?: true; role?: 'beat' | 'half' | 'third' | 'quarter' | 'free' }
+ export interface RhythmSection { start: number; end: number; band: 'low' | 'mid' | 'high' | 'mixed'; support: number }
+ export interface Rhythm {
++  method?: 'TC1-readout/v1';
+   beats: number[];
+   tempo: { time: number; bpm: number }[];
+   confidence: number;
+@@ -12,6 +13,7 @@ export interface Rhythm {
+   meterConfidence: number;
+ }
+ export interface Analysis {
++  tactus?: import('./core/rational-application').TactusMetadata;
+   duration: number;
+   bpm: number;
+   confidence: number;
