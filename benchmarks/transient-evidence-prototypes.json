@@ -1,0 +1,84 @@
+{
+  "schema": 1,
+  "algorithmCalls": 0,
+  "purpose": "Review-only exact research code. F is extraction only; T and T2 rejected. T2 patch contains the entire archived8-file actualdraft12 including native regressions. Applying a patch is not a release recommendation.",
+  "baseCommit": "ce301e0c9c99eab6b1adedca1515544d348b458d",
+  "normalization": "Frozen target bytes alreadyLF; patchesLF with legal blank unified-diff context lines. No source repaired to fit compilation.",
+  "patches": [
+    {
+      "candidate": "F",
+      "status": "EXTRACTION_ONLY_NOT_ADOPTED",
+      "baseCommit": "ce301e0c9c99eab6b1adedca1515544d348b458d",
+      "patch": "prototypes/clock-transient-F.patch",
+      "patchSHA256": "0e106b68d274ac8c0d3a69f448d03b60b485fcb8af5b836321794824138b308f",
+      "LF": true,
+      "gitApplyCheck": true,
+      "gitApplyApplied": true,
+      "independentScratchBase": true,
+      "allTargetBytesExact": true,
+      "completeTargetFileCount": 25,
+      "changedFileCount": 3,
+      "targetFiles": {
+        "src/types.ts": "ab7965ba6f8195104d2a0447bdf3211cb6e7d03316a3365d40812e9f2f9c4227",
+        "src/core/acoustic-evidence.ts": "d752125fa74049e273b5538e1bbce140843fa9fffe3e95546388dffd8ed3d80d",
+        "src/core/signal-analysis.ts": "1a38ce954ed8d8805e10c1ba9e6132d1107515579386a753276fbcc896e170bb"
+      },
+      "sourceFreezeSHA256": "11270994007687427a495e5f433994a216f40df289dc7ac1b50b9e6b90a31c8a",
+      "containsActualRejectedV12AndFiveNativeTests": false,
+      "strictTypeScriptStatus": "EXTRACTION_QA_ONLY_NO_PRODUCTION_BUILD_CLAIM"
+    },
+    {
+      "candidate": "T",
+      "status": "REJECTED_NOT_RELEASED",
+      "baseCommit": "ce301e0c9c99eab6b1adedca1515544d348b458d",
+      "patch": "prototypes/clock-transient-T.patch",
+      "patchSHA256": "3700c9c1b5a8119b98bfbd2572687b012939df5e8ace5a295b87543415bcb6a7",
+      "LF": true,
+      "gitApplyCheck": true,
+      "gitApplyApplied": true,
+      "independentScratchBase": true,
+      "allTargetBytesExact": true,
+      "completeTargetFileCount": 26,
+      "changedFileCount": 5,
+      "targetFiles": {
+        "src/types.ts": "ab7965ba6f8195104d2a0447bdf3211cb6e7d03316a3365d40812e9f2f9c4227",
+        "src/core/acoustic-evidence.ts": "d752125fa74049e273b5538e1bbce140843fa9fffe3e95546388dffd8ed3d80d",
+        "src/core/rhythm.ts": "740c13bac30a2edfbf73f4080f37f93c436c2e8d84fcfdc6a3948e035dfd614d",
+        "src/core/signal-analysis.ts": "1a38ce954ed8d8805e10c1ba9e6132d1107515579386a753276fbcc896e170bb",
+        "src/core/transient-envelope.ts": "4e0b6dc138baa376284da1a5af438a89c2eabb5a3c9d21e0ffa0c68104d576c3"
+      },
+      "sourceFreezeSHA256": "cc2680dec5bad805e77143406627d67414740d6e489745e76834b1ee62435650",
+      "containsActualRejectedV12AndFiveNativeTests": false,
+      "strictTypeScriptStatus": "KNOWN_TS6133_UNUSED_VALUES_PRESERVED"
+    },
+    {
+      "candidate": "T2-rejected-v12",
+      "status": "REJECTED_NOT_RELEASED",
+      "baseCommit": "ce301e0c9c99eab6b1adedca1515544d348b458d",
+      "patch": "prototypes/clock-transient-T2-rejected-v12.patch",
+      "patchSHA256": "0014914d51ce3bf2b393be2402a5f3b22a4b5da08583598026c779e954ff4af6",
+      "LF": true,
+      "gitApplyCheck": true,
+      "gitApplyApplied": true,
+      "independentScratchBase": true,
+      "allTargetBytesExact": true,
+      "completeTargetFileCount": 8,
+      "changedFileCount": 8,
+      "targetFiles": {
+        "src/types.ts": "c589cbd33a5a193eb7750e46451d0665c304af7a1964c2e8831ebe3f2a87c8f5",
+        "src/core/acoustic-evidence.test.ts": "a89f9c2f1d4f56b0c2ef67e8c4bd6fb91f4ce74cf1f1466c848d3710511b481c",
+        "src/core/acoustic-evidence.ts": "75066bb2e0f74f071caf8cfd66c28fd62bbc0afd14af3ed6b78469b790765610",
+        "src/core/chart.ts": "01a15c71f240d65981b4645ef2fc320789d09b51aad0d95725d9a39aa4fb6c69",
+        "src/core/finger-modes.test.ts": "86ec49eb5a951937ec8d6d88300cb08547c114c83dda5186f1b10efdb8f5e471",
+        "src/core/rhythm.ts": "01cc9e8653b80f1c080953f35131e3068a5e813ef900793a8eef174b35663990",
+        "src/core/signal-analysis.ts": "1a38ce954ed8d8805e10c1ba9e6132d1107515579386a753276fbcc896e170bb",
+        "src/core/transient-envelope.ts": "13bf1d0d053100aa1ca70107da7bcabc117f68078d6ec779688127d0c025e6ee"
+      },
+      "sourceFreezeSHA256": null,
+      "containsActualRejectedV12AndFiveNativeTests": true,
+      "strictTypeScriptStatus": "ACTUAL_REJECTED_DRAFT_BUILD_AND454TESTS_PASSED"
+    }
+  ],
+  "noStandaloneCopyNeeded": "Complete new feature and consumer modules are included directly in their patches.",
+  "thirdPartySourceCopied": false
+}

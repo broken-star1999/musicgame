@@ -1,0 +1,398 @@
+diff --git a/src/core/acoustic-evidence.test.ts b/src/core/acoustic-evidence.test.ts
+new file mode 100644
+--- /dev/null
++++ b/src/core/acoustic-evidence.test.ts
+@@ -0,0 +1,107 @@
++import FFT from 'fft.js';
++import { describe, expect, it } from 'vitest';
++import { analyzeAudio } from './analysis';
++import { acousticProfileAt, accumulateAcousticPower, createAcousticFrames } from './acoustic-evidence';
++
++const RATE = 22050, N = 1024, HOP = 221;
++
++describe('physical low-transient evidence', () => {
++  it('recognizes a short LF attack after its measured flux frame without moving that onset', () => {
++    const starts = Array.from({ length: 8 }, (_, i) => .8 + i * .5);
++    const samples = new Float32Array(RATE * 5.5);
++    for (const time of starts) {
++      const first = Math.round(time * RATE);
++      for (let j = 0; j < N; j++) samples[first + j] = .6 * Math.sin(2 * Math.PI * 4 * j / N);
++    }
++    // Measured attack times from the original detector, before peak descriptors
++    // existed. The later acoustic maximum must not become the note timestamp.
++    const measuredTimes = [.7719401360544217, 1.2730739229024943, 1.7742077097505669, 2.2753414965986396,
++      2.776475283446712, 3.2776090702947847, 3.778742857142857, 4.27987664399093];
++    const analysis = analyzeAudio(samples, RATE);
++    starts.forEach((time, i) => {
++      const onset = analysis.onsets.filter(event => Math.abs(event.time - time) <= .05)
++        .sort((a, b) => Math.abs(a.time - time) - Math.abs(b.time - time) || a.time - b.time)[0];
++      expect(onset).toBeDefined();
++      expect(onset.time).toBe(measuredTimes[i]);
++      expect(onset.boundary).toBeUndefined();
++      // The original current-frame comparison sees a still-rising envelope.
++      expect(onset.acoustic?.lowDecay).toBe(0);
++      const peak = onset.acoustic?.lowTransient;
++      expect(peak).toBeDefined();
++      expect(peak!.hasHistory && peak!.hasFuture).toBe(true);
++      expect(peak!.peakOffsetFrames).toBeGreaterThan(0);
++      expect(peak!.powerFraction * peak!.rise * peak!.decay).toBeGreaterThan(.9);
++    });
++  });
++
++  it('preserves a distinct raw-FFT burst peak and ratios when its gain changes', () => {
++    const frames = 50, count = N + (frames - 1) * HOP;
++    const window = Float64Array.from({ length: N }, (_, j) => .5 - .5 * Math.cos(2 * Math.PI * j / (N - 1)));
++    const profiles = [.1, 1].map(gain => {
++      const samples = new Float32Array(count), first = 20 * HOP;
++      for (let j = 0; j < N; j++) samples[first + j] = gain * Math.cos(2 * Math.PI * 4 * j / N);
++      const state = createAcousticFrames(frames, N, HOP, RATE), fft = new FFT(N);
++      const input = new Float64Array(N), spectrum = fft.createComplexArray();
++      for (let frame = 0; frame < frames; frame++) {
++        for (let j = 0; j < N; j++) input[j] = samples[frame * HOP + j] * window[j];
++        fft.realTransform(spectrum, input);
++        for (let bin = 1; bin < N / 2; bin++)
++          accumulateAcousticPower(state, frame, bin, Math.hypot(spectrum[2 * bin], spectrum[2 * bin + 1]));
++      }
++      const peak = acousticProfileAt(state, 18)?.lowTransient;
++      expect(peak).toBeDefined();
++      return peak!;
++    });
++    for (const peak of profiles) {
++      expect(peak.peakOffsetFrames).toBe(2);
++      expect(peak.hasHistory && peak.hasFuture).toBe(true);
++      expect(peak.powerFraction).toBeGreaterThan(.99);
++      expect(peak.rise).toBe(1); expect(peak.decay).toBe(1);
++      for (const key of ['powerFraction', 'rise', 'decay'] as const)
++        expect(Math.abs(peak[key] - profiles[1][key])).toBeLessThanOrEqual(1e-6);
++    }
++  });
++
++  it('chooses the earliest equal physical peak and never creates an f0 profile', () => {
++    const state = createAcousticFrames(40, N, HOP, RATE);
++    for (const [frame, amplitude] of [[5, 1], [10, 1], [11, 3], [12, 3], [16, 1]])
++      accumulateAcousticPower(state, frame, 4, amplitude);
++    accumulateAcousticPower(state, 11, 192, 1);
++    const profile = acousticProfileAt(state, 10);
++    expect(profile?.lowTransient).toEqual({ peakOffsetFrames: 1, powerFraction: .9, rise: .8, decay: .8,
++      hasHistory: true, hasFuture: true });
++    expect(acousticProfileAt(state, 10)).toBe(profile);
++    expect(acousticProfileAt(state, 0)).toBeUndefined();
++    expect(state.profiles.has(0)).toBe(false);
++  });
++
++  it('requires the entire peak-search window instead of truncating at the file edge or an invalid frame', () => {
++    const tail = createAcousticFrames(24, N, HOP, RATE);
++    accumulateAcousticPower(tail, 20, 4, 2);
++    const current = acousticProfileAt(tail, 20);
++    expect(current).toBeDefined();
++    expect(current!.powerFractions[0]).toBe(1);
++    expect(current!.lowTransient).toBeUndefined();
++
++    const invalid = createAcousticFrames(40, N, HOP, RATE);
++    accumulateAcousticPower(invalid, 10, 4, 2);
++    invalid.bandPower[0][12] = NaN;
++    const knownCurrent = acousticProfileAt(invalid, 10);
++    expect(knownCurrent).toBeDefined();
++    expect(knownCurrent!.lowTransient).toBeUndefined();
++  });
++
++  it('marks missing pre/post context unknown even when a complete search finds a real peak', () => {
++    const opening = createAcousticFrames(18, N, HOP, RATE);
++    accumulateAcousticPower(opening, 1, 4, 1);
++    accumulateAcousticPower(opening, 3, 4, 3);
++    expect(acousticProfileAt(opening, 1)?.lowTransient).toEqual({ peakOffsetFrames: 2, powerFraction: 1,
++      rise: 0, decay: 1, hasHistory: false, hasFuture: true });
++
++    const closing = createAcousticFrames(35, N, HOP, RATE);
++    accumulateAcousticPower(closing, 29, 4, 1);
++    accumulateAcousticPower(closing, 34, 4, 3);
++    expect(acousticProfileAt(closing, 29)?.lowTransient).toEqual({ peakOffsetFrames: 5, powerFraction: 1,
++      rise: 1, decay: 0, hasHistory: true, hasFuture: false });
++  });
++});
+diff --git a/src/core/acoustic-evidence.ts b/src/core/acoustic-evidence.ts
+new file mode 100644
+--- /dev/null
++++ b/src/core/acoustic-evidence.ts
+@@ -0,0 +1,90 @@
++import type { AcousticEvidence } from '../types';
++
++/** Raw power of the original one-sided k=1..n/2-1 amplitude loop.
++ * These six arrays add no FFT and retain no spectrum per frame. */
++export interface AcousticFrames {
++  bandPower: [Float64Array, Float64Array, Float64Array];
++  sumPower: Float64Array;
++  sumPowerSquared: Float64Array;
++  frequencyPower: Float64Array;
++  frames: number; n: number; hop: number; sampleRate: number; lag: number;
++  profiles: Map<number, AcousticEvidence | undefined>;
++  work: { powerBins: number; profileRequests: number; profilesBuilt: number; invalidProfiles: number; extraFFTCalls: 0; typedArrays: 6; typedBytes: number; peakScanFrames: number; transientProfilesBuilt: number; transientProfilesMissing: number };
++}
++export function createAcousticFrames(frames: number, n: number, hop: number, sampleRate: number): AcousticFrames {
++  return {
++    bandPower: [new Float64Array(frames), new Float64Array(frames), new Float64Array(frames)],
++    sumPower: new Float64Array(frames), sumPowerSquared: new Float64Array(frames), frequencyPower: new Float64Array(frames),
++    frames, n, hop, sampleRate, lag: Math.ceil(n / hop), profiles: new Map(),
++    work: { powerBins: 0, profileRequests: 0, profilesBuilt: 0, invalidProfiles: 0, extraFFTCalls: 0, typedArrays: 6, typedBytes: 6 * frames * Float64Array.BYTES_PER_ELEMENT, peakScanFrames: 0, transientProfilesBuilt: 0, transientProfilesMissing: 0 },
++  };
++}
++export function accumulateAcousticPower(state: AcousticFrames, frame: number, bin: number, amplitude: number): void {
++  const frequency = bin * state.sampleRate / state.n;
++  const power = amplitude * amplitude, band = frequency < 250 ? 0 : frequency < 2500 ? 1 : 2;
++  state.bandPower[band][frame] += power;
++  state.sumPower[frame] += power;
++  state.sumPowerSquared[frame] += power * power;
++  state.frequencyPower[frame] += frequency * power;
++  state.work.powerBins++;
++}
++const valid = (x: number): boolean => Number.isFinite(x) && x >= 0;
++const bounded = (x: number): number => Math.max(0, Math.min(1, x));
++/** Only called for retained regular measured onsets. f0 is left-censored and
++ * deliberately never receives a profile. Invalid current data means missing. */
++export function acousticProfileAt(state: AcousticFrames, frame: number): AcousticEvidence | undefined {
++  state.work.profileRequests++;
++  if (!(Number.isInteger(frame) && frame > 0 && frame < state.frames)) return undefined;
++  if (state.profiles.has(frame)) return state.profiles.get(frame);
++  const bands = state.bandPower.map(values => values[frame]), total = state.sumPower[frame];
++  const square = state.sumPowerSquared[frame], frequency = state.frequencyPower[frame], totalSquared = total * total;
++  if (![...bands, total, square, frequency, totalSquared].every(valid) || !(state.sampleRate > 0 && Number.isFinite(state.sampleRate))) {
++    state.profiles.set(frame, undefined); state.work.invalidProfiles++; return undefined;
++  }
++  const low = bands[0], pastFrame = frame - state.lag, futureFrame = frame + state.lag;
++  const past = pastFrame >= 0 ? state.bandPower[0][pastFrame] : NaN;
++  const future = futureFrame < state.frames ? state.bandPower[0][futureFrame] : NaN;
++  const hasHistory = valid(past) && Number.isFinite(low + past);
++  const hasFuture = valid(future) && Number.isFinite(low + future);
++  const profile: AcousticEvidence = {
++    powerFractions: total > 0 ? bands.map(value => bounded(value / total)) as [number, number, number] : [0, 0, 0],
++    centroidNormalized: total > 0 ? bounded((frequency / total) / (state.sampleRate / 2)) : 0,
++    concentration: totalSquared > 0 ? bounded(square / totalSquared) : 0,
++    lowRise: hasHistory && low + past > 0 ? bounded(Math.max(0, low - past) / (low + past)) : 0,
++    lowDecay: hasFuture && low + future > 0 ? bounded(Math.max(0, low - future) / (low + future)) : 0,
++    hasHistory, hasFuture,
++  };
++  if (!profile.powerFractions.every(Number.isFinite) || ![profile.centroidNormalized, profile.concentration, profile.lowRise, profile.lowDecay].every(Number.isFinite)) {
++    state.profiles.set(frame, undefined); state.work.invalidProfiles++; return undefined;
++  }
++  // A complete one-window search is required. This peak belongs only to the
++  // physical descriptor; the measured onset timestamp is never moved.
++  if (frame + state.lag < state.frames) {
++    let peakFrame = frame, peakPower = low, searchValid = true;
++    for (let at = frame; at <= frame + state.lag; at++) {
++      state.work.peakScanFrames++;
++      const power = state.bandPower[0][at];
++      if (!valid(power)) { searchValid = false; break; }
++      if (power > peakPower) { peakPower = power; peakFrame = at; }
++    }
++    const peakTotal = state.sumPower[peakFrame];
++    if (searchValid && valid(peakTotal) && peakTotal >= peakPower) {
++      const beforeFrame = frame - state.lag, afterFrame = peakFrame + state.lag;
++      const before = beforeFrame >= 0 ? state.bandPower[0][beforeFrame] : NaN;
++      const after = afterFrame < state.frames ? state.bandPower[0][afterFrame] : NaN;
++      const hasHistory = valid(before) && Number.isFinite(peakPower + before);
++      const hasFuture = valid(after) && Number.isFinite(peakPower + after);
++      profile.lowTransient = {
++        peakOffsetFrames: peakFrame - frame,
++        powerFraction: peakTotal > 0 ? bounded(peakPower / peakTotal) : 0,
++        rise: hasHistory && peakPower + before > 0 ? bounded(Math.max(0, peakPower - before) / (peakPower + before)) : 0,
++        decay: hasFuture && peakPower + after > 0 ? bounded(Math.max(0, peakPower - after) / (peakPower + after)) : 0,
++        hasHistory, hasFuture,
++      };
++      state.work.transientProfilesBuilt++;
++    }
++  }
++  if (!profile.lowTransient) state.work.transientProfilesMissing++;
++  state.profiles.set(frame, profile); state.work.profilesBuilt++;
++  return profile;
++}
+diff --git a/src/core/chart.ts b/src/core/chart.ts
+--- a/src/core/chart.ts
++++ b/src/core/chart.ts
+@@ -112,7 +112,7 @@
+   notes.sort((a, b) => a.time - b.time || a.lane - b.lane);
+   notes.forEach((note, i) => { note.id = i; });
+   progress?.(0.48, '正在匹配相似乐句与按键模板');
+-  const chart = reusePhraseTemplates(bpmOverride === undefined ? musicalAnalysis : { ...musicalAnalysis, rhythm: undefined }, { version: 11, generator: analysis.recognition?.engine ?? 'signal', fingerprint: analysis.fingerprint, difficulty, fingerLimit: config.max, duration: analysis.duration, bpm, notes }, config.max);
++  const chart = reusePhraseTemplates(bpmOverride === undefined ? musicalAnalysis : { ...musicalAnalysis, rhythm: undefined }, { version: 12, generator: analysis.recognition?.engine ?? 'signal', fingerprint: analysis.fingerprint, difficulty, fingerLimit: config.max, duration: analysis.duration, bpm, notes }, config.max);
+   progress?.(0.72, '正在规划整段指法与移动路线');
+   const plan = planFingering(chart.notes, config.max);
+   const checked = validateFingering(plan.notes, config.max, chart.duration);
+diff --git a/src/core/finger-modes.test.ts b/src/core/finger-modes.test.ts
+--- a/src/core/finger-modes.test.ts
++++ b/src/core/finger-modes.test.ts
+@@ -15,7 +15,7 @@
+   it.each(['one', 'two', 'three', 'four'] as const)('generates a deterministic, beat-aligned %s chart within its finger budget', difficulty => {
+     const chart = generateChart(analysis, difficulty), max = DIFFICULTIES[difficulty].max;
+     expect(chart).toEqual(generateChart(analysis, difficulty));
+-    expect(chart).toMatchObject({ version: 11, difficulty, fingerLimit: max, fingering: { checked: true } });
++    expect(chart).toMatchObject({ version: 12, difficulty, fingerLimit: max, fingering: { checked: true } });
+     expect(isPlayableChart(chart.notes, max, chart.duration)).toBe(true);
+     expect(peakFingers(chart.notes)).toBe(max);
+     for (const n of chart.notes) expect(Math.min(...analysis.onsets.map(onset => Math.abs(onset.time - n.time)))).toBeLessThan(0.0251);
+diff --git a/src/core/rhythm.ts b/src/core/rhythm.ts
+--- a/src/core/rhythm.ts
++++ b/src/core/rhythm.ts
+@@ -1,3 +1,4 @@
++import { transientEnvelope } from './transient-envelope';
+ import { gateClockEvidence } from './phase-gate';
+ import { phaseDP } from './phase-dp';
+ import { investigateTempo } from './tempo-families';
+@@ -10,14 +11,10 @@
+         return { beats: [], tempo: [], confidence: 0, downbeats: [], meterConfidence: 0 };
+     const investigation = investigateTempo(onsets, duration, bpm);
+     const projected = gateClockEvidence(onsets, investigation.blocks, sourceOnsets);
+-    const frames = Math.ceil(duration / STEP) + 1, envelope = new Float64Array(frames);
++    const frames = Math.ceil(duration / STEP) + 1;
+     const reference = Math.max(1e-8, ...onsets.map(onset => onset.strength));
+-    for (const onset of projected) {
+-        const center = Math.round(onset.time / STEP);
+-        for (let d = -4; d <= 4; d++)
+-            if (center + d >= 0 && center + d < frames)
+-                envelope[center + d] = Math.max(envelope[center + d], onset.strength / reference * Math.exp(-d * d / 5));
+-    }
++    const transient = transientEnvelope(projected, frames, reference);
++    const { envelope } = transient;
+     const base = 60 / bpm / STEP;
+     void base;
+     const local = Float64Array.from(investigation.blocks, block => (block.preferredPeriod ?? block.rememberedPeriod ?? 60 / bpm) / STEP);
+diff --git a/src/core/signal-analysis.ts b/src/core/signal-analysis.ts
+--- a/src/core/signal-analysis.ts
++++ b/src/core/signal-analysis.ts
+@@ -1,3 +1,4 @@
++import { createAcousticFrames, accumulateAcousticPower, acousticProfileAt } from './acoustic-evidence';
+ import { mergeClockOnsets } from './clock-evidence';
+ import { reinforceCoincidentOnsets } from './clock-evidence';
+ import type { Analysis, Onset } from '../types';
+@@ -60,6 +61,7 @@
+     const flux = new Float64Array(frames), rms = new Float64Array(frames), bands = new Uint8Array(frames);
+     const bandEnvelopes = Array.from({ length: 3 }, () => new Float64Array(frames));
+     const bandMax = [0, 0, 0];
++    const acousticFrames = createAcousticFrames(frames, n, hop, sampleRate);
+     const transform = new FFT(n), input = new Float64Array(n), spectrum = transform.createComplexArray();
+     const previous = new Float64Array(n / 2), current = new Float64Array(n / 2);
+     const window = Float64Array.from({ length: n }, (_, i) => 0.5 - 0.5 * Math.cos(2 * Math.PI * i / (n - 1)));
+@@ -77,6 +79,7 @@
+         const bandFlux = [0, 0, 0], rawBandFlux = [0, 0, 0];
+         for (let k = 1; k < n / 2; k++) {
+             const amplitude = Math.hypot(spectrum[k * 2], spectrum[k * 2 + 1]);
++            accumulateAcousticPower(acousticFrames, f, k, amplitude);
+             current[k] = Math.log1p(amplitude);
+         }
+         for (let k = 1; k < n / 2; k++) {
+@@ -112,6 +115,7 @@
+     if (maxRms < 0.0005 || maxFlux < 0.001)
+         throw new Error('这段音频接近静音，没有检测到可用的节奏。');
+     progress?.(0.8, '正在估计节拍');
++    const onsetFrames = new WeakMap<Onset, number>();
+     const onsets: Onset[] = [];
+     let boundaryOnset: Onset | undefined;
+     // A loud passage elsewhere must not erase audible attacks in a quiet one.
+@@ -124,13 +128,14 @@
+         if (flux[f] < median * 1.65 + maxFlux * 0.018 || flux[f] < maxFlux * 0.035)
+             continue;
+         const time = Math.max(0, (f * hop + n * 0.22) / sampleRate);
+-        const onset = { time, strength: flux[f] / maxFlux, band: bands[f] };
++        const onset: Onset = { time, strength: flux[f] / maxFlux, band: bands[f] };
+         // No previous frame exists at f0. Preserve this left-censored candidate,
+         // but isolate it before deduplication so it cannot replace a regular peak.
+         if (f === 0) {
+             boundaryOnset = { ...onset, boundary: true };
+             continue;
+         }
++        onsetFrames.set(onset, f);
+         const last = onsets[onsets.length - 1];
+         if (last && time - last.time < 0.085) {
+             if (onset.strength > last.strength)
+@@ -149,11 +154,12 @@
+             const local = Array.from(envelope.slice(Math.max(0, f - 20), Math.min(frames, f + 16))).sort((a, b) => a - b);
+             if (envelope[f] < local[Math.floor(local.length / 2)] * 1.8 + reference * 0.035 || envelope[f] < Math.max(reference * 0.09, maxFlux * 0.012))
+                 continue;
+-            const event = { time: Math.max(0, (f * hop + n * 0.22) / sampleRate), strength: envelope[f] / reference, band };
++            const event: Onset = { time: Math.max(0, (f * hop + n * 0.22) / sampleRate), strength: envelope[f] / reference, band };
+             if (f === 0) {
+                 boundaryStreams[band] = { ...event, boundary: true };
+                 continue;
+             }
++            onsetFrames.set(event, f);
+             const last = events.at(-1);
+             if (last && event.time - last.time < 0.04) {
+                 if (event.strength > last.strength)
+@@ -164,6 +170,10 @@
+         }
+         return events;
+     });
++    for (const event of [...onsets, ...streams.flat()]) {
++        const profile = acousticProfileAt(acousticFrames, onsetFrames.get(event)!);
++        if (profile) event.acoustic = profile;
++    }
+     progress?.(0.82, '正在选择各乐段稳定的节奏主线');
+     const pulse = followRhythmSource(streams, onsets, samples.length / sampleRate);
+     if (pulse.onsets.length < 3 && onsets.length < 3)
+diff --git a/src/core/transient-envelope.ts b/src/core/transient-envelope.ts
+new file mode 100644
+--- /dev/null
++++ b/src/core/transient-envelope.ts
+@@ -0,0 +1,24 @@
++import type { Onset } from '../types';
++
++/** Independent T2: use the original event's measured peak-context descriptor;
++ * original timestamps, amplitudes and source membership are never overwritten. */
++export function transientEnvelope(projected: Onset[], frames: number, reference: number) {
++  const oldEnvelope = new Float64Array(frames), envelope = new Float64Array(frames);
++  const bonuses = projected.map(onset => {
++    const p = onset.acoustic?.lowTransient;
++    if (!(onset.strength > 0) || onset.boundary || !p || p.hasHistory !== true || p.hasFuture !== true) return 0;
++    if (!(Number.isInteger(p.peakOffsetFrames) && p.peakOffsetFrames >= 0)) return 0;
++    if (![p.powerFraction, p.rise, p.decay].every(value => Number.isFinite(value) && value >= 0 && value <= 1)) return 0;
++    return p.powerFraction * p.rise * p.decay;
++  });
++  for (let i = 0; i < projected.length; i++) {
++    const onset = projected[i], center = Math.round(onset.time / .01), oldAmplitude = onset.strength / reference;
++    const amplitude = oldAmplitude + bonuses[i];
++    for (let d = -4; d <= 4; d++) if (center + d >= 0 && center + d < frames) {
++      const kernel = Math.exp(-d * d / 5);
++      oldEnvelope[center + d] = Math.max(oldEnvelope[center + d], oldAmplitude * kernel);
++      envelope[center + d] = Math.max(envelope[center + d], amplitude * kernel);
++    }
++  }
++  return { oldEnvelope, envelope, bonuses };
++}
+diff --git a/src/types.ts b/src/types.ts
+--- a/src/types.ts
++++ b/src/types.ts
+@@ -3,7 +3,25 @@
+ export type NoteType = 'tap' | 'hold' | 'left' | 'right' | 'up';
+ export type Grade = 'perfect' | 'great' | 'good' | 'miss';
+ export type RecognitionMode = 'enhanced' | 'basic';
+-export interface Onset { time: number; strength: number; band: number; attack?: number; boundary?: true; role?: 'beat' | 'half' | 'quarter' | 'free' }
++export interface LowTransientEvidence {
++  peakOffsetFrames: number;
++  powerFraction: number;
++  rise: number;
++  decay: number;
++  hasHistory: boolean;
++  hasFuture: boolean;
++}
++export interface AcousticEvidence {
++  lowTransient?: LowTransientEvidence;
++  powerFractions: [number, number, number];
++  centroidNormalized: number;
++  concentration: number;
++  lowRise: number;
++  lowDecay: number;
++  hasHistory: boolean;
++  hasFuture: boolean;
++}
++export interface Onset { time: number; strength: number; band: number; attack?: number; boundary?: true; role?: 'beat' | 'half' | 'quarter' | 'free'; acoustic?: AcousticEvidence }
+ export interface RhythmSection { start: number; end: number; band: 'low' | 'mid' | 'high' | 'mixed'; support: number }
+ export interface Rhythm {
+   beats: number[];
+@@ -40,7 +58,7 @@
+   pattern?: string;
+ }
+ export interface Chart {
+-  version: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11;
++  version: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
+   generator?: 'beat-this' | 'signal';
+   fingerprint: string;
+   difficulty: Difficulty;

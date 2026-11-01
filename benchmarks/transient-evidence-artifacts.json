@@ -1,0 +1,152 @@
+{
+  "schema": 1,
+  "scope": "Rejected transient research archive; current runtimev11. All CSVs and JSON are selected scalar/aggregate fields. No user audio/screenshots or original GT/anchor arrays.",
+  "normalization": "Public text LF, hashes after LF. Original frozen code targets alreadyLF; patches independently apply to ce301e0 and match targetbytes.",
+  "algorithmCalls": 0,
+  "files": [
+    {
+      "file": "TRANSIENT_EVIDENCE_AUDIT.md",
+      "bytes": 8975,
+      "sha256": "ee4899a016939a36828a21200fef0a8c3ee3bd94418d209730518394af727672",
+      "LF": true
+    },
+    {
+      "file": "prototypes/clock-transient-F.patch",
+      "bytes": 9339,
+      "sha256": "0e106b68d274ac8c0d3a69f448d03b60b485fcb8af5b836321794824138b308f",
+      "LF": true
+    },
+    {
+      "file": "prototypes/clock-transient-T.patch",
+      "bytes": 12394,
+      "sha256": "3700c9c1b5a8119b98bfbd2572687b012939df5e8ace5a295b87543415bcb6a7",
+      "LF": true
+    },
+    {
+      "file": "prototypes/clock-transient-T2-rejected-v12.patch",
+      "bytes": 22578,
+      "sha256": "0014914d51ce3bf2b393be2402a5f3b22a4b5da08583598026c779e954ff4af6",
+      "LF": true
+    },
+    {
+      "file": "transient-evidence-diagnostic.json",
+      "bytes": 72203,
+      "sha256": "53f7bce98aace5231e6d1678ecf04727f11b3fd8dd04ad2f2ec88c94c146a298",
+      "LF": true
+    },
+    {
+      "file": "transient-evidence-prototypes.json",
+      "bytes": 4568,
+      "sha256": "498917b05cfa0022b39195af9f8193534cc4b2d0485a389277fa208d3c69031c",
+      "LF": true
+    },
+    {
+      "file": "transient-profile-discrimination.csv",
+      "bytes": 245672,
+      "sha256": "6d46571fba02448b4182cf065f5798e7db81257dafb50297567b69ce0f89c627",
+      "LF": true
+    },
+    {
+      "file": "transient-t-small-four-finger.csv",
+      "bytes": 2542,
+      "sha256": "1714a5e41a6bb504b1931601f682f4772081082a359fd45c6fcc87419ab6b860",
+      "LF": true
+    },
+    {
+      "file": "transient-t-small-paired.csv",
+      "bytes": 10247,
+      "sha256": "6b986fe16fb1c8bb8d0d94bbc18b5c018ca1d3afa6ef0121d0bbba023a2efa99",
+      "LF": true
+    },
+    {
+      "file": "transient-t-small-regressions.csv",
+      "bytes": 289,
+      "sha256": "5ec2c8d79cdd3f3ea1b2e9056c73d96d8f250dd21a13f70625146f03795cf0f0",
+      "LF": true
+    },
+    {
+      "file": "transient-t2-210-all-mode-heads.csv",
+      "bytes": 433066,
+      "sha256": "d37adbd44081b9e234d09993f4bc150d243d6619d506b19cf35ae8585b808643",
+      "LF": true
+    },
+    {
+      "file": "transient-t2-210-all-mode-regressions.csv",
+      "bytes": 115169,
+      "sha256": "59a5ba24a7bd4bca060df4537c58c3504adbe4561ec54f58a5e79930d85b089f",
+      "LF": true
+    },
+    {
+      "file": "transient-t2-210-analysis-equalities.csv",
+      "bytes": 9123,
+      "sha256": "e11d99c1a1289d55ce0d850a971055acd45b056d97e4853b666877eb15bd005e",
+      "LF": true
+    },
+    {
+      "file": "transient-t2-210-four-finger.csv",
+      "bytes": 10610,
+      "sha256": "fe7d7d1e72fc880cd30e343a188beddf001dc9607ed3eb3a43bb657f832c4450",
+      "LF": true
+    },
+    {
+      "file": "transient-t2-210-genres.csv",
+      "bytes": 12003,
+      "sha256": "5a110f14a337f0049307aa4b7894050a92b35ad88cf18ef0c09db74b6b103c2b",
+      "LF": true
+    },
+    {
+      "file": "transient-t2-210-hold-density.csv",
+      "bytes": 40576,
+      "sha256": "8ef951a16fe494cc4984fca8a1b24c5faf62834a83b51b094255eba1d4f0ec8d",
+      "LF": true
+    },
+    {
+      "file": "transient-t2-210-paired.csv",
+      "bytes": 170317,
+      "sha256": "2f58010cd9c575b4dc3680067ed8f96eff01c4fe60909b0f458f079a5e3327d4",
+      "LF": true
+    },
+    {
+      "file": "transient-t2-210-regressions.csv",
+      "bytes": 80561,
+      "sha256": "49a3cf22a9805bb717f6d594d11487837c903e8fe11add9516f9e1322bc63680",
+      "LF": true
+    },
+    {
+      "file": "transient-t2-small-four-finger.csv",
+      "bytes": 2574,
+      "sha256": "713535e1d595ee76631be90067c5a935933577c7c6831f2e4c2bf675561a8ad6",
+      "LF": true
+    },
+    {
+      "file": "transient-t2-small-paired.csv",
+      "bytes": 10280,
+      "sha256": "aab76408f0a5ae0d226ca3697bb84f43061acd1c6865264fd0d526c5b1fe092f",
+      "LF": true
+    },
+    {
+      "file": "transient-t2-small-regressions.csv",
+      "bytes": 290,
+      "sha256": "76d525da26d520d1d561350adbf651cfd94019a46ade8fb17a82bffcd8e5dd7e",
+      "LF": true
+    }
+  ],
+  "CSVRows": {
+    "transient-profile-discrimination.csv": 600,
+    "transient-t-small-four-finger.csv": 36,
+    "transient-t-small-paired.csv": 82,
+    "transient-t-small-regressions.csv": 2,
+    "transient-t2-210-all-mode-heads.csv": 1680,
+    "transient-t2-210-all-mode-regressions.csv": 1189,
+    "transient-t2-210-analysis-equalities.csv": 210,
+    "transient-t2-210-four-finger.csv": 210,
+    "transient-t2-210-genres.csv": 10,
+    "transient-t2-210-hold-density.csv": 840,
+    "transient-t2-210-paired.csv": 210,
+    "transient-t2-210-regressions.csv": 868,
+    "transient-t2-small-four-finger.csv": 36,
+    "transient-t2-small-paired.csv": 82,
+    "transient-t2-small-regressions.csv": 2
+  },
+  "totalCSVRows": 6057
+}

@@ -1,0 +1,1967 @@
+{
+  "schema": 1,
+  "scope": "Pure browser-local DSP research. F/F2 extraction correctness is separate from T/T2 chart quality. Both consumers rejected. No runtime algorithm release or fresh validation.",
+  "baselineCommit": "ce301e0c9c99eab6b1adedca1515544d348b458d",
+  "baselineRuntimeCommit": "067e0501b6704a1895c44429fd5219fc14362b27",
+  "defaultRuntimeVersion": 11,
+  "candidateVersion12Rejected": true,
+  "neuralWeightsOrServerRequired": false,
+  "algorithmCallsDuringExport": 0,
+  "datasets": {
+    "knownSyntheticControls": 36,
+    "smallPreviouslyObservedSongs": 5,
+    "broadPreviouslyObservedClips": 210,
+    "genres": 10,
+    "newMusicCalls": 0,
+    "fresh30Calls": 0,
+    "ASAPCalls": 0,
+    "materialBoundary": "Small songs overlap the same210 observed development clips; they are not independent validation. Count all negative results."
+  },
+  "F": {
+    "freezeSHA": "a024a0d7e54d13ea1aec5fa0cb1ae0e9666398603da455276061edb86e13ce1f",
+    "sourceCandidateFreezeSHA": "11270994007687427a495e5f433994a216f40df289dc7ac1b50b9e6b90a31c8a",
+    "summarySHA": "f7cde77b85b9073ca18f6e8ea33724cc2d129d4018aaef78e8c9c1eadc331e28",
+    "successfulInputs": 36,
+    "normalRejects": 5,
+    "assertions": {
+      "analysisOldBytesExact": 36,
+      "stockTraceAnalysis": 72,
+      "baselineAnalysisGolden": 36,
+      "baselineChartGolden": 144,
+      "chartExact": 144,
+      "chartStockTrace": 288,
+      "chartMissingProfileCompatible": 288,
+      "chartDeterministic": 288,
+      "chartPhysical": 288,
+      "traceOldFieldsExact": 36,
+      "callerOldFieldsExact": 36,
+      "profilesPhysical": 36,
+      "boundaryProfilesAbsent": 36
+    },
+    "typedArrays": 6,
+    "typedBytesPerFrame": 48,
+    "extraFFTCallsPerAnalysis": 0,
+    "extraTypedBytesAt22050Hz300sec": 1436544,
+    "adopted": false,
+    "meaning": "Measured whole-frame power fractions, normalized centroid/concentration and original-frame low-rise/decay; f0 excluded and context unknown explicit. Exact charts are correctness evidence, not musical improvement."
+  },
+  "F2": {
+    "sourceCandidateFreezeSHA": "a082ef0aa6bbd38be50a4ada2a996a205f8bdfdf18ecc9cfba1935606e2af0b4",
+    "validExecutionFreezeSHA": "93793a2775c082faea429c82c486e5aa5cabbf5dba89ae59bb4694c0b29afea6",
+    "summarySHA": "a2cf18393de3041997edd4ae5fda229972c890deb60e16ca202598e3a89beb6d",
+    "assertions": {
+      "analysisOldBytesExact": 36,
+      "stockTraceAnalysis": 72,
+      "baselineAnalysisGolden": 36,
+      "baselineChartGolden": 144,
+      "chartExact": 144,
+      "chartStockTrace": 288,
+      "chartMissingProfileCompatible": 288,
+      "chartDeterministic": 288,
+      "chartPhysical": 288,
+      "traceOldFieldsExact": 36,
+      "callerOldFieldsExact": 36,
+      "profilesPhysical": 36,
+      "boundaryProfilesAbsent": 36,
+      "oldFcurrentFrameFieldsFullAnalysisExact": 36
+    },
+    "physics": [
+      {
+        "lengthSamples": 256,
+        "positive": 8,
+        "meanBonus": 0.9977003249917733,
+        "minimumBonus": 0.9975339921344507,
+        "maximumAbsoluteOnsetErrorMs": 28.059863945578357,
+        "maximumPeakOffsetFrames": 2
+      },
+      {
+        "lengthSamples": 512,
+        "positive": 8,
+        "meanBonus": 0.999350308128792,
+        "minimumBonus": 0.9991786217844325,
+        "maximumAbsoluteOnsetErrorMs": 28.059863945578357,
+        "maximumPeakOffsetFrames": 3
+      },
+      {
+        "lengthSamples": 1024,
+        "positive": 8,
+        "meanBonus": 0.9999962241282058,
+        "minimumBonus": 0.9999862181781235,
+        "maximumAbsoluteOnsetErrorMs": 28.059863945578357,
+        "maximumPeakOffsetFrames": 4
+      },
+      {
+        "lengthSamples": 2048,
+        "positive": 8,
+        "meanBonus": 0.08943471635255962,
+        "minimumBonus": 0.000016770700038060828,
+        "maximumAbsoluteOnsetErrorMs": 28.059863945578357,
+        "maximumPeakOffsetFrames": 5
+      }
+    ],
+    "gainScope": "Fixed distinct raw-burst peak for gains0.1/0.3/1, not arbitrary-flat argmax invariance.",
+    "originalFrameFieldsExact": 36,
+    "typedArrays": 6,
+    "typedBytesPerFrame": 48,
+    "extraFFTCallsPerAnalysis": 0,
+    "peakSearch": "Complete[f,f+ceil(n/hop)] earliest rawLFpower maximum; pre=f-lag;post=peak+lag. Missing search omitted, missing context unknown. Original timestamps never moved.",
+    "limits": "All32 synthetic physical attacks have positive proxy;92.9ms minimum1.67707e-5 remains a weak plateau response, not strong decay for every duration.",
+    "adopted": false
+  },
+  "T": {
+    "scope": {
+      "controls": 36,
+      "previouslyObservedSongs": 5,
+      "broad210": false
+    },
+    "freezeSHA": "cc2680dec5bad805e77143406627d67414740d6e489745e76834b1ee62435650",
+    "summarySHA": "f964e68e49f25c43878c822dd3645884893129c711dd8b0cf6614a00cd14bbaa",
+    "assertions": {
+      "stockTraceAnalysis": 72,
+      "stockTraceCharts": 288,
+      "deterministic": 288,
+      "physical": 288,
+      "baselineAnalysisGolden": 36,
+      "baselineChartGolden": 144,
+      "sourceAndPhysicalFields": 36,
+      "clockInputAndEnvelope": 36,
+      "boundaryExcluded": 72,
+      "legacyConfidence": 72,
+      "noFakeDpResult": 36
+    },
+    "observedMacro": {
+      "H50": {
+        "B": 0.43745908430331265,
+        "T": 0.43745908430331265,
+        "delta": 0
+      },
+      "H70": {
+        "B": 0.5128174756638428,
+        "T": 0.5128174756638428,
+        "delta": 0
+      },
+      "C50": {
+        "B": 0.39469373422911047,
+        "T": 0.39469373422911047,
+        "delta": 0
+      },
+      "C70": {
+        "B": 0.4802933626696003,
+        "T": 0.4802933626696003,
+        "delta": 0
+      }
+    },
+    "gate": {
+      "scope": "Fixed small screen only; five already-observedclips, each its one-clip genre proxy. No210/fresh/release qualification. Rules inherited unchanged19b PULSE.",
+      "thresholds": {
+        "minimumMacroHead70Gain": 0.02,
+        "minimumMacroHead50Gain": 0,
+        "minimumMacroClock70Gain": 0.02,
+        "minimumGenreHead70Delta": -0.03,
+        "minimumClipHead70Delta": -0.15,
+        "minimumEveryClipFourMeasuredHeadCountRatio": 0.95
+      },
+      "checks": {
+        "macroH70": false,
+        "macroH50": true,
+        "macroC70": false,
+        "eachObservedGenreProxy": true,
+        "eachObservedClip": true,
+        "eachFourCount": true,
+        "primaryMinuteHandoff": true,
+        "allFourPlayableDeterministic": true,
+        "normalRejectsPreserved": true,
+        "originalFieldsAndEExact": true,
+        "noF0InInference": true
+      },
+      "passed": false,
+      "failures": [
+        "macroH70",
+        "macroC70"
+      ]
+    },
+    "allModeF1NegativeEntries": 2,
+    "normalRejects": [
+      {
+        "id": "14-primary-dynamics-subthreshold",
+        "statuses": {
+          "B": "SILENCE",
+          "T": "SILENCE"
+        }
+      },
+      {
+        "id": "24-old10-stationary-noise-amp0.008-seed101",
+        "statuses": {
+          "B": "INSUFFICIENT_ONSETS",
+          "T": "INSUFFICIENT_ONSETS"
+        }
+      },
+      {
+        "id": "25-old10-silence",
+        "statuses": {
+          "B": "SILENCE",
+          "T": "SILENCE"
+        }
+      },
+      {
+        "id": "26-abstention-stationary-noise-seed101-amp008",
+        "statuses": {
+          "B": "INSUFFICIENT_ONSETS",
+          "T": "INSUFFICIENT_ONSETS"
+        }
+      },
+      {
+        "id": "32-abstention-persistent-vibrato-amp006",
+        "statuses": {
+          "B": "INSUFFICIENT_ONSETS",
+          "T": "INSUFFICIENT_ONSETS"
+        }
+      }
+    ],
+    "observed": [
+      {
+        "name": "country.00022",
+        "arms": {
+          "B": {
+            "status": "ANALYZED",
+            "head50F1": 0.42105263157894735,
+            "head70F1": 0.5,
+            "clock50F1": 0.3368421052631579,
+            "clock70F1": 0.4,
+            "clockConfidence": 0.22411109619476924,
+            "usesActualClock": false
+          },
+          "T": {
+            "status": "ANALYZED",
+            "head50F1": 0.42105263157894735,
+            "head70F1": 0.5,
+            "clock50F1": 0.3368421052631579,
+            "clock70F1": 0.4,
+            "clockConfidence": 0.2613810041876401,
+            "usesActualClock": false
+          }
+        }
+      },
+      {
+        "name": "hiphop.00013",
+        "arms": {
+          "B": {
+            "status": "ANALYZED",
+            "head50F1": 0.0392156862745098,
+            "head70F1": 0.0392156862745098,
+            "clock50F1": 0.039603960396039604,
+            "clock70F1": 0.039603960396039604,
+            "clockConfidence": 0.4100891548117389,
+            "usesActualClock": false
+          },
+          "T": {
+            "status": "ANALYZED",
+            "head50F1": 0.0392156862745098,
+            "head70F1": 0.0392156862745098,
+            "clock50F1": 0.039603960396039604,
+            "clock70F1": 0.039603960396039604,
+            "clockConfidence": 0.44084973372577985,
+            "usesActualClock": false
+          }
+        }
+      },
+      {
+        "name": "jazz.00035",
+        "arms": {
+          "B": {
+            "status": "ANALYZED",
+            "head50F1": 0.5633802816901409,
+            "head70F1": 0.7605633802816901,
+            "clock50F1": 0.45544554455445546,
+            "clock70F1": 0.5544554455445545,
+            "clockConfidence": 0.1560537981496399,
+            "usesActualClock": false
+          },
+          "T": {
+            "status": "ANALYZED",
+            "head50F1": 0.5633802816901409,
+            "head70F1": 0.7605633802816901,
+            "clock50F1": 0.45544554455445546,
+            "clock70F1": 0.5544554455445545,
+            "clockConfidence": 0.16105273787226446,
+            "usesActualClock": false
+          }
+        }
+      },
+      {
+        "name": "classical.00011",
+        "arms": {
+          "B": {
+            "status": "ANALYZED",
+            "head50F1": 0.24561403508771928,
+            "head70F1": 0.2807017543859649,
+            "clock50F1": 0.2222222222222222,
+            "clock70F1": 0.4074074074074074,
+            "clockConfidence": 0.1404347160968567,
+            "usesActualClock": false
+          },
+          "T": {
+            "status": "ANALYZED",
+            "head50F1": 0.24561403508771928,
+            "head70F1": 0.2807017543859649,
+            "clock50F1": 0.2222222222222222,
+            "clock70F1": 0.4074074074074074,
+            "clockConfidence": 0.1429141594862035,
+            "usesActualClock": false
+          }
+        }
+      },
+      {
+        "name": "disco.00031",
+        "arms": {
+          "B": {
+            "status": "ANALYZED",
+            "head50F1": 0.9180327868852459,
+            "head70F1": 0.9836065573770492,
+            "clock50F1": 0.9193548387096774,
+            "clock70F1": 1,
+            "clockConfidence": 0.3626741049434748,
+            "usesActualClock": false
+          },
+          "T": {
+            "status": "ANALYZED",
+            "head50F1": 0.9180327868852459,
+            "head70F1": 0.9836065573770492,
+            "clock50F1": 0.9193548387096774,
+            "clock70F1": 1,
+            "clockConfidence": 0.38262136589926543,
+            "usesActualClock": false
+          }
+        }
+      }
+    ],
+    "formula": "Original strength/reference plus SAME-event lowFraction*lowRise*lowDecay, then original Gaussian/max. No-profile/unknown/boundary/masked events receive0 bonus.",
+    "strictTypeScript": {
+      "passed": false,
+      "code": "TS6133",
+      "reason": "Frozen rhythm destructures oldEnvelope and bonuses without using them. Preserved research patch; not a compilable production delivery.",
+      "candidateNotModified": true,
+      "errors": [
+        {
+          "code": "TS6133",
+          "file": "stock/T/src/core/rhythm.ts",
+          "line": 16,
+          "column": 23,
+          "message": "'oldEnvelope' is declared but its value is never read."
+        },
+        {
+          "code": "TS6133",
+          "file": "stock/T/src/core/rhythm.ts",
+          "line": 16,
+          "column": 36,
+          "message": "'bonuses' is declared but its value is never read."
+        }
+      ]
+    },
+    "broadRun": false,
+    "rejected": true
+  },
+  "T2": {
+    "scope": {
+      "controls": 36,
+      "previouslyObservedSongs": 5,
+      "broad210": false
+    },
+    "freezeSHA": "c4b0299317bcdb64256503f51614dc95adf3a1555f596a15f3a154337df899da",
+    "summarySHA": "76a81c04c1cecb91b05cd8f9b31d71ee26514af10f870ac2f82bb55646a42623",
+    "assertions": {
+      "stockTraceAnalysis": 72,
+      "stockTraceCharts": 288,
+      "deterministic": 288,
+      "physical": 288,
+      "baselineAnalysisGolden": 36,
+      "baselineChartGolden": 144,
+      "sourceAndPhysicalFields": 36,
+      "clockInputAndEnvelope": 36,
+      "boundaryExcluded": 72,
+      "legacyConfidence": 72,
+      "noFakeDpResult": 36
+    },
+    "observedMacro": {
+      "H50": {
+        "B": 0.43745908430331265,
+        "T2": 0.5565390239714876,
+        "delta": 0.11907993966817496
+      },
+      "H70": {
+        "B": 0.5128174756638428,
+        "T2": 0.6318974153320177,
+        "delta": 0.11907993966817496
+      },
+      "C50": {
+        "B": 0.39469373422911047,
+        "T2": 0.5136960190729795,
+        "delta": 0.11900228484386899
+      },
+      "C70": {
+        "B": 0.4802933626696003,
+        "T2": 0.5992956475134693,
+        "delta": 0.11900228484386899
+      }
+    },
+    "gate": {
+      "scope": "Fixed small screen only; five already-observedclips, each its one-clip genre proxy. No210/fresh/release qualification. Rules inherited unchanged19b PULSE.",
+      "thresholds": {
+        "minimumMacroHead70Gain": 0.02,
+        "minimumMacroHead50Gain": 0,
+        "minimumMacroClock70Gain": 0.02,
+        "minimumGenreHead70Delta": -0.03,
+        "minimumClipHead70Delta": -0.15,
+        "minimumEveryClipFourMeasuredHeadCountRatio": 0.95
+      },
+      "checks": {
+        "macroH70": true,
+        "macroH50": true,
+        "macroC70": true,
+        "eachObservedGenreProxy": true,
+        "eachObservedClip": true,
+        "eachFourCount": true,
+        "primaryMinuteHandoff": true,
+        "allFourPlayableDeterministic": true,
+        "normalRejectsPreserved": true,
+        "originalFieldsAndEExact": true,
+        "noF0InInference": true
+      },
+      "passed": true,
+      "failures": []
+    },
+    "allModeF1NegativeEntries": 2,
+    "normalRejects": [
+      {
+        "id": "14-primary-dynamics-subthreshold",
+        "statuses": {
+          "B": "SILENCE",
+          "T2": "SILENCE"
+        }
+      },
+      {
+        "id": "24-old10-stationary-noise-amp0.008-seed101",
+        "statuses": {
+          "B": "INSUFFICIENT_ONSETS",
+          "T2": "INSUFFICIENT_ONSETS"
+        }
+      },
+      {
+        "id": "25-old10-silence",
+        "statuses": {
+          "B": "SILENCE",
+          "T2": "SILENCE"
+        }
+      },
+      {
+        "id": "26-abstention-stationary-noise-seed101-amp008",
+        "statuses": {
+          "B": "INSUFFICIENT_ONSETS",
+          "T2": "INSUFFICIENT_ONSETS"
+        }
+      },
+      {
+        "id": "32-abstention-persistent-vibrato-amp006",
+        "statuses": {
+          "B": "INSUFFICIENT_ONSETS",
+          "T2": "INSUFFICIENT_ONSETS"
+        }
+      }
+    ],
+    "observed": [
+      {
+        "name": "country.00022",
+        "arms": {
+          "B": {
+            "status": "ANALYZED",
+            "head50F1": 0.42105263157894735,
+            "head70F1": 0.5,
+            "clock50F1": 0.3368421052631579,
+            "clock70F1": 0.4,
+            "clockConfidence": 0.22411109619476924,
+            "usesActualClock": false
+          },
+          "T2": {
+            "status": "ANALYZED",
+            "head50F1": 0.42105263157894735,
+            "head70F1": 0.5,
+            "clock50F1": 0.3368421052631579,
+            "clock70F1": 0.4,
+            "clockConfidence": 0.3746465699326984,
+            "usesActualClock": false
+          }
+        }
+      },
+      {
+        "name": "hiphop.00013",
+        "arms": {
+          "B": {
+            "status": "ANALYZED",
+            "head50F1": 0.0392156862745098,
+            "head70F1": 0.0392156862745098,
+            "clock50F1": 0.039603960396039604,
+            "clock70F1": 0.039603960396039604,
+            "clockConfidence": 0.4100891548117389,
+            "usesActualClock": false
+          },
+          "T2": {
+            "status": "ANALYZED",
+            "head50F1": 0.6346153846153846,
+            "head70F1": 0.6346153846153846,
+            "clock50F1": 0.6346153846153846,
+            "clock70F1": 0.6346153846153846,
+            "clockConfidence": 0.4232840928578905,
+            "usesActualClock": false
+          }
+        }
+      },
+      {
+        "name": "jazz.00035",
+        "arms": {
+          "B": {
+            "status": "ANALYZED",
+            "head50F1": 0.5633802816901409,
+            "head70F1": 0.7605633802816901,
+            "clock50F1": 0.45544554455445546,
+            "clock70F1": 0.5544554455445545,
+            "clockConfidence": 0.1560537981496399,
+            "usesActualClock": false
+          },
+          "T2": {
+            "status": "ANALYZED",
+            "head50F1": 0.5633802816901409,
+            "head70F1": 0.7605633802816901,
+            "clock50F1": 0.45544554455445546,
+            "clock70F1": 0.5544554455445545,
+            "clockConfidence": 0.20022461013589646,
+            "usesActualClock": false
+          }
+        }
+      },
+      {
+        "name": "classical.00011",
+        "arms": {
+          "B": {
+            "status": "ANALYZED",
+            "head50F1": 0.24561403508771928,
+            "head70F1": 0.2807017543859649,
+            "clock50F1": 0.2222222222222222,
+            "clock70F1": 0.4074074074074074,
+            "clockConfidence": 0.1404347160968567,
+            "usesActualClock": false
+          },
+          "T2": {
+            "status": "ANALYZED",
+            "head50F1": 0.24561403508771928,
+            "head70F1": 0.2807017543859649,
+            "clock50F1": 0.2222222222222222,
+            "clock70F1": 0.4074074074074074,
+            "clockConfidence": 0.1447724915295104,
+            "usesActualClock": false
+          }
+        }
+      },
+      {
+        "name": "disco.00031",
+        "arms": {
+          "B": {
+            "status": "ANALYZED",
+            "head50F1": 0.9180327868852459,
+            "head70F1": 0.9836065573770492,
+            "clock50F1": 0.9193548387096774,
+            "clock70F1": 1,
+            "clockConfidence": 0.3626741049434748,
+            "usesActualClock": false
+          },
+          "T2": {
+            "status": "ANALYZED",
+            "head50F1": 0.9180327868852459,
+            "head70F1": 0.9836065573770492,
+            "clock50F1": 0.9193548387096774,
+            "clock70F1": 1,
+            "clockConfidence": 0.7129814928543977,
+            "usesActualClock": true
+          }
+        }
+      }
+    ],
+    "formula": "Consume only nestedlowTransient powerFraction*rise*decay using known complete context, add to SAME-event amplitude before originalGaussian/max. Legacycurrent-frame fields not fallback evidence.",
+    "broad": {
+      "tracks": 210,
+      "executionFreezeSHA": "30f900b88b68a6ade838e02625a02ab3f5b01ffef96fa89f676ae1d3f954bcd6",
+      "sidecarFreezeSHA": "77a5e7caaef7ec7e75e18124f51fb41457191caa55154cb874980aebf7a2e716",
+      "qualificationSHA": "19b1377a6cde8002d962316330bb7f647ed7dfe145ef37c2de0c7eea687f5d65",
+      "qualificationArtifact": "clock-selection-qualification-nov1.json",
+      "aggregate": {
+        "before": {
+          "head50F1": 0.6330618640188252,
+          "head50Precision": 0.6988000630578702,
+          "head50Recall": 0.6061024553121058,
+          "head70F1": 0.6927436792043614,
+          "head70Precision": 0.7677891525319195,
+          "head70Recall": 0.6619190788294079,
+          "clock50F1": 0.654195092196321,
+          "clock50Precision": 0.6745215289392703,
+          "clock50Recall": 0.6631462542656215,
+          "clock70F1": 0.7235445138311929,
+          "clock70Precision": 0.7460183364605467,
+          "clock70Recall": 0.7339423205288194,
+          "pulse50F1": 0.5219400760144308,
+          "pulse50Precision": 0.43668544280684635,
+          "pulse50Recall": 0.7216822689534594,
+          "pulse70F1": 0.5731518633250184,
+          "pulse70Precision": 0.4809126807465697,
+          "pulse70Recall": 0.7901323145702064
+        },
+        "after": {
+          "head50F1": 0.6200729081188706,
+          "head50Precision": 0.6829251437713448,
+          "head50Recall": 0.5948984255374509,
+          "head70F1": 0.6779049749215829,
+          "head70Precision": 0.7497672252348732,
+          "head70Recall": 0.648897145811415,
+          "clock50F1": 0.6409003937018294,
+          "clock50Precision": 0.6597608119355134,
+          "clock50Recall": 0.6503575112572844,
+          "clock70F1": 0.7084827683477866,
+          "clock70Precision": 0.7293249945685789,
+          "clock70Recall": 0.7194006925043589,
+          "pulse50F1": 0.5213540581392223,
+          "pulse50Precision": 0.43620802808287473,
+          "pulse50Recall": 0.7206642680737206,
+          "pulse70F1": 0.5727079429403628,
+          "pulse70Precision": 0.4805440168695341,
+          "pulse70Recall": 0.789309705765338
+        }
+      },
+      "delta": {
+        "head50F1": -0.012988955899954668,
+        "head50Precision": -0.015874919286525242,
+        "head50Recall": -0.01120402977465486,
+        "head70F1": -0.014838704282778958,
+        "head70Precision": -0.0180219272970462,
+        "head70Recall": -0.013021933017993044,
+        "clock50F1": -0.01329469849449141,
+        "clock50Precision": -0.014760717003756925,
+        "clock50Recall": -0.012788743008336996,
+        "clock70F1": -0.015061745483406237,
+        "clock70Precision": -0.016693341891967833,
+        "clock70Recall": -0.014541628024460483,
+        "pulse50F1": -0.0005860178752083292,
+        "pulse50Precision": -0.00047741472397197027,
+        "pulse50Recall": -0.0010180008797386604,
+        "pulse70F1": -0.0004439203846557294,
+        "pulse70Precision": -0.00036866387703558335,
+        "pulse70Recall": -0.0008226088048683086
+      },
+      "confidence": {
+        "head50F1": {
+          "mean": -0.012988955899954668,
+          "low95": -0.026644770055286683,
+          "high95": 0.0011413021080531407,
+          "seed": 20261030,
+          "replicates": 10000,
+          "method": "paired within-genre percentile bootstrap; conditional on the fixed ten genres"
+        },
+        "head50Precision": {
+          "mean": -0.015874919286525242,
+          "low95": -0.030641365271628317,
+          "high95": -0.0008054327458780955,
+          "seed": 20261030,
+          "replicates": 10000,
+          "method": "paired within-genre percentile bootstrap; conditional on the fixed ten genres"
+        },
+        "head50Recall": {
+          "mean": -0.01120402977465486,
+          "low95": -0.02423326275645346,
+          "high95": 0.0024738570542365687,
+          "seed": 20261030,
+          "replicates": 10000,
+          "method": "paired within-genre percentile bootstrap; conditional on the fixed ten genres"
+        },
+        "head70F1": {
+          "mean": -0.014838704282778958,
+          "low95": -0.029332092640786022,
+          "high95": 0.000306518671442971,
+          "seed": 20261030,
+          "replicates": 10000,
+          "method": "paired within-genre percentile bootstrap; conditional on the fixed ten genres"
+        },
+        "head70Precision": {
+          "mean": -0.0180219272970462,
+          "low95": -0.03379370715237518,
+          "high95": -0.0018694745130730665,
+          "seed": 20261030,
+          "replicates": 10000,
+          "method": "paired within-genre percentile bootstrap; conditional on the fixed ten genres"
+        },
+        "head70Recall": {
+          "mean": -0.013021933017993044,
+          "low95": -0.027004805673725298,
+          "high95": 0.001630441819300726,
+          "seed": 20261030,
+          "replicates": 10000,
+          "method": "paired within-genre percentile bootstrap; conditional on the fixed ten genres"
+        },
+        "clock50F1": {
+          "mean": -0.01329469849449141,
+          "low95": -0.028776763160199944,
+          "high95": 0.002319466468296926,
+          "seed": 20261030,
+          "replicates": 10000,
+          "method": "paired within-genre percentile bootstrap; conditional on the fixed ten genres"
+        },
+        "clock50Precision": {
+          "mean": -0.014760717003756925,
+          "low95": -0.030453692554727005,
+          "high95": 0.0009506956003924788,
+          "seed": 20261030,
+          "replicates": 10000,
+          "method": "paired within-genre percentile bootstrap; conditional on the fixed ten genres"
+        },
+        "clock50Recall": {
+          "mean": -0.012788743008336996,
+          "low95": -0.028343305499101874,
+          "high95": 0.002914046656374434,
+          "seed": 20261030,
+          "replicates": 10000,
+          "method": "paired within-genre percentile bootstrap; conditional on the fixed ten genres"
+        },
+        "clock70F1": {
+          "mean": -0.015061745483406237,
+          "low95": -0.031294635782081685,
+          "high95": 0.0014609371841953524,
+          "seed": 20261030,
+          "replicates": 10000,
+          "method": "paired within-genre percentile bootstrap; conditional on the fixed ten genres"
+        },
+        "clock70Precision": {
+          "mean": -0.016693341891967833,
+          "low95": -0.03329685681656565,
+          "high95": 0.00009878127072109733,
+          "seed": 20261030,
+          "replicates": 10000,
+          "method": "paired within-genre percentile bootstrap; conditional on the fixed ten genres"
+        },
+        "clock70Recall": {
+          "mean": -0.014541628024460483,
+          "low95": -0.030920770535712495,
+          "high95": 0.0022248106008504786,
+          "seed": 20261030,
+          "replicates": 10000,
+          "method": "paired within-genre percentile bootstrap; conditional on the fixed ten genres"
+        },
+        "pulse50F1": {
+          "mean": -0.0005860178752083292,
+          "low95": -0.0018680230351109774,
+          "high95": 0.0006709498711578782,
+          "seed": 20261030,
+          "replicates": 10000,
+          "method": "paired within-genre percentile bootstrap; conditional on the fixed ten genres"
+        },
+        "pulse50Precision": {
+          "mean": -0.00047741472397197027,
+          "low95": -0.0015234954116117643,
+          "high95": 0.0005727337878409761,
+          "seed": 20261030,
+          "replicates": 10000,
+          "method": "paired within-genre percentile bootstrap; conditional on the fixed ten genres"
+        },
+        "pulse50Recall": {
+          "mean": -0.0010180008797386604,
+          "low95": -0.003324217762677369,
+          "high95": 0.0012253412401107668,
+          "seed": 20261030,
+          "replicates": 10000,
+          "method": "paired within-genre percentile bootstrap; conditional on the fixed ten genres"
+        },
+        "pulse70F1": {
+          "mean": -0.0004439203846557294,
+          "low95": -0.0017294728552201021,
+          "high95": 0.0008262213750017531,
+          "seed": 20261030,
+          "replicates": 10000,
+          "method": "paired within-genre percentile bootstrap; conditional on the fixed ten genres"
+        },
+        "pulse70Precision": {
+          "mean": -0.00036866387703558335,
+          "low95": -0.001507847374059104,
+          "high95": 0.000724792267512619,
+          "seed": 20261030,
+          "replicates": 10000,
+          "method": "paired within-genre percentile bootstrap; conditional on the fixed ten genres"
+        },
+        "pulse70Recall": {
+          "mean": -0.0008226088048683086,
+          "low95": -0.003030262761900068,
+          "high95": 0.0014136290233437696,
+          "seed": 20261030,
+          "replicates": 10000,
+          "method": "paired within-genre percentile bootstrap; conditional on the fixed ten genres"
+        }
+      },
+      "head70Cases": {
+        "improved": 36,
+        "unchanged": 118,
+        "worse": 56
+      },
+      "genreMeans": {
+        "blues": {
+          "tracks": 21,
+          "before": {
+            "head50F1": 0.5370263642227607,
+            "head50Precision": 0.5495010458739215,
+            "head50Recall": 0.5496204044025008,
+            "head70F1": 0.6376688350940821,
+            "head70Precision": 0.6576314078111449,
+            "head70Recall": 0.6478600761211822,
+            "clock50F1": 0.5167129362858139,
+            "clock50Precision": 0.5067433610633495,
+            "clock50Recall": 0.5650715297556906,
+            "clock70F1": 0.630216260299524,
+            "clock70Precision": 0.6213723051969483,
+            "clock70Recall": 0.6844021209893209,
+            "pulse50F1": 0.4580792790681838,
+            "pulse50Precision": 0.3505726660937639,
+            "pulse50Recall": 0.6944981653432302,
+            "pulse70F1": 0.5383254247753357,
+            "pulse70Precision": 0.41371067376921794,
+            "pulse70Recall": 0.8112665913255845
+          },
+          "after": {
+            "head50F1": 0.5632513236688464,
+            "head50Precision": 0.575961806634777,
+            "head50Recall": 0.5764346661404354,
+            "head70F1": 0.6599277195635009,
+            "head70Precision": 0.6800515776371752,
+            "head70Recall": 0.6701894965454077,
+            "clock50F1": 0.5426564003531616,
+            "clock50Precision": 0.5324729177343731,
+            "clock50Recall": 0.5918688296619358,
+            "clock70F1": 0.651540686441089,
+            "clock70Precision": 0.6428099575543997,
+            "clock70Recall": 0.7064397029805559,
+            "pulse50F1": 0.4575614751594676,
+            "pulse50Precision": 0.34971340979554527,
+            "pulse50Recall": 0.6966838219699915,
+            "pulse70F1": 0.5366281103162066,
+            "pulse70Precision": 0.41221242736684194,
+            "pulse70Recall": 0.8111520754394074
+          },
+          "delta": {
+            "head50F1": 0.026224959446085744,
+            "head50Precision": 0.026460760760855583,
+            "head50Recall": 0.02681426173793429,
+            "head70F1": 0.022258884469418656,
+            "head70Precision": 0.022420169826030206,
+            "head70Recall": 0.022329420424225522,
+            "clock50F1": 0.025943464067347606,
+            "clock50Precision": 0.02572955667102373,
+            "clock50Recall": 0.02679729990624505,
+            "clock70F1": 0.021324426141565093,
+            "clock70Precision": 0.021437652357451546,
+            "clock70Recall": 0.022037581991235195,
+            "pulse50F1": -0.000517803908716173,
+            "pulse50Precision": -0.0008592562982186826,
+            "pulse50Recall": 0.0021856566267613956,
+            "pulse70F1": -0.0016973144591290973,
+            "pulse70Precision": -0.0014982464023759468,
+            "pulse70Recall": -0.00011451588617707638
+          }
+        },
+        "classical": {
+          "tracks": 21,
+          "before": {
+            "head50F1": 0.32329434891956577,
+            "head50Precision": 0.5048158254478903,
+            "head50Recall": 0.2544199695640102,
+            "head70F1": 0.37188937078038614,
+            "head70Precision": 0.5841913891323215,
+            "head70Recall": 0.2919059040881069,
+            "clock50F1": 0.3939378092695075,
+            "clock50Precision": 0.43763026560840795,
+            "clock50Recall": 0.3789451780156671,
+            "clock70F1": 0.479081584275341,
+            "clock70Precision": 0.527153321284738,
+            "clock70Recall": 0.4656911678064656,
+            "pulse50F1": 0.35309754906709495,
+            "pulse50Precision": 0.4056619184484626,
+            "pulse50Recall": 0.3589998007172635,
+            "pulse70F1": 0.4032266754807549,
+            "pulse70Precision": 0.46512532274705715,
+            "pulse70Recall": 0.40812367256852927
+          },
+          "after": {
+            "head50F1": 0.3116465724715792,
+            "head50Precision": 0.4881757582830091,
+            "head50Recall": 0.24621870489920003,
+            "head70F1": 0.3603816762766327,
+            "head70Precision": 0.5673467786457607,
+            "head70Recall": 0.2841602477164414,
+            "clock50F1": 0.3815119133564505,
+            "clock50Precision": 0.4239905498703988,
+            "clock50Recall": 0.367954047640782,
+            "clock70F1": 0.46233632506934524,
+            "clock70Precision": 0.5098330551173953,
+            "clock70Recall": 0.44974047902570885,
+            "pulse50F1": 0.3524285801505342,
+            "pulse50Precision": 0.40558273277433116,
+            "pulse50Recall": 0.35666208453626375,
+            "pulse70F1": 0.4040390862864036,
+            "pulse70Precision": 0.46641871782124045,
+            "pulse70Recall": 0.4074887519336086
+          },
+          "delta": {
+            "head50F1": -0.011647776447986685,
+            "head50Precision": -0.01664006716488105,
+            "head50Recall": -0.008201264664810207,
+            "head70F1": -0.011507694503753427,
+            "head70Precision": -0.016844610486560798,
+            "head70Recall": -0.007745656371665464,
+            "clock50F1": -0.01242589591305703,
+            "clock50Precision": -0.01363971573800918,
+            "clock50Recall": -0.010991130374885099,
+            "clock70F1": -0.016745259205995667,
+            "clock70Precision": -0.017320266167342894,
+            "clock70Recall": -0.015950688780756752,
+            "pulse50F1": -0.0006689689165607928,
+            "pulse50Precision": -0.00007918567413145583,
+            "pulse50Recall": -0.0023377161809997656,
+            "pulse70F1": 0.0008124108056486445,
+            "pulse70Precision": 0.0012933950741832536,
+            "pulse70Recall": -0.000634920634920639
+          }
+        },
+        "country": {
+          "tracks": 21,
+          "before": {
+            "head50F1": 0.6910548774044583,
+            "head50Precision": 0.8057778937168026,
+            "head50Recall": 0.631605297638245,
+            "head70F1": 0.7533894467094555,
+            "head70Precision": 0.8730486981708917,
+            "head70Recall": 0.6916558403482687,
+            "clock50F1": 0.7266251708203522,
+            "clock50Precision": 0.7857167425287971,
+            "clock50Recall": 0.7207916875082857,
+            "clock70F1": 0.7964370773273566,
+            "clock70Precision": 0.8580786828282383,
+            "clock70Recall": 0.7913275357908232,
+            "pulse50F1": 0.6386814431687933,
+            "pulse50Precision": 0.5735803945423777,
+            "pulse50Recall": 0.7642851727691804,
+            "pulse70F1": 0.6926295389950605,
+            "pulse70Precision": 0.6195700007610137,
+            "pulse70Recall": 0.8334834637406113
+          },
+          "after": {
+            "head50F1": 0.6841164916067733,
+            "head50Precision": 0.7991067135145163,
+            "head50Recall": 0.6246366565232624,
+            "head70F1": 0.7440059221682556,
+            "head70Precision": 0.8638441610285665,
+            "head70Recall": 0.6823643188616252,
+            "clock50F1": 0.7171672296083693,
+            "clock50Precision": 0.7760314992858935,
+            "clock50Recall": 0.711717068915466,
+            "clock70F1": 0.7824847912662269,
+            "clock70Precision": 0.8438723009747976,
+            "clock70Recall": 0.7777787539493582,
+            "pulse50F1": 0.6385805557192986,
+            "pulse50Precision": 0.5742371226991059,
+            "pulse50Recall": 0.7631237325833501,
+            "pulse70F1": 0.6928251046819601,
+            "pulse70Precision": 0.6207411719321849,
+            "pulse70Recall": 0.832322023554781
+          },
+          "delta": {
+            "head50F1": -0.006938385797684962,
+            "head50Precision": -0.006671180202286192,
+            "head50Recall": -0.006968641114982579,
+            "head70F1": -0.009383524541199936,
+            "head70Precision": -0.00920453714232516,
+            "head70Recall": -0.009291521486643436,
+            "clock50F1": -0.00945794121198292,
+            "clock50Precision": -0.009685243242903605,
+            "clock50Recall": -0.009074618592819631,
+            "clock70F1": -0.013952286061129592,
+            "clock70Precision": -0.014206381853440671,
+            "clock70Recall": -0.01354878184146477,
+            "pulse50F1": -0.00010088744949473168,
+            "pulse50Precision": 0.0006567281567281522,
+            "pulse50Recall": -0.0011614401858304308,
+            "pulse70F1": 0.00019556568689953796,
+            "pulse70Precision": 0.0011711711711711698,
+            "pulse70Recall": -0.0011614401858304308
+          }
+        },
+        "disco": {
+          "tracks": 21,
+          "before": {
+            "head50F1": 0.8688958290870381,
+            "head50Precision": 0.8909815860906891,
+            "head50Recall": 0.8546750930466578,
+            "head70F1": 0.9124544744639406,
+            "head70Precision": 0.9351458883021733,
+            "head70Recall": 0.8976897566675079,
+            "clock50F1": 0.8833865684208345,
+            "clock50Precision": 0.8960344684701143,
+            "clock50Recall": 0.8777753117314027,
+            "clock70F1": 0.9255702494697676,
+            "clock70Precision": 0.9380713826950188,
+            "clock70Recall": 0.9201114823390588,
+            "pulse50F1": 0.566618518168524,
+            "pulse50Precision": 0.41807389045858867,
+            "pulse50Recall": 0.914178901403043,
+            "pulse70F1": 0.5986381988170475,
+            "pulse70Precision": 0.4415768790089737,
+            "pulse70Recall": 0.9665139886968463
+          },
+          "after": {
+            "head50F1": 0.8538417445901574,
+            "head50Precision": 0.877126066657827,
+            "head50Recall": 0.8390836415733195,
+            "head70F1": 0.8987443093138671,
+            "head70Precision": 0.9230664565587112,
+            "head70Recall": 0.8830953943371553,
+            "clock50F1": 0.870477917991782,
+            "clock50Precision": 0.8832208085107802,
+            "clock50Recall": 0.8650896699010977,
+            "clock70F1": 0.9145881379174092,
+            "clock70Precision": 0.9271059413276591,
+            "clock70Recall": 0.909436100877677,
+            "pulse50F1": 0.5661201092568724,
+            "pulse50Precision": 0.41801668285143245,
+            "pulse50Recall": 0.912508057626936,
+            "pulse70F1": 0.5982257106884538,
+            "pulse70Precision": 0.4416275366318101,
+            "pulse70Recall": 0.9648431449207393
+          },
+          "delta": {
+            "head50F1": -0.015054084496880702,
+            "head50Precision": -0.013855519432862343,
+            "head50Recall": -0.015591451473338278,
+            "head70F1": -0.013710165150073424,
+            "head70Precision": -0.012079431743461974,
+            "head70Recall": -0.014594362330352485,
+            "clock50F1": -0.012908650429052652,
+            "clock50Precision": -0.01281365995933405,
+            "clock50Recall": -0.012685641830304881,
+            "clock70F1": -0.010982111552358387,
+            "clock70Precision": -0.010965441367359673,
+            "clock70Recall": -0.010675381461381896,
+            "pulse50F1": -0.0004984089116517175,
+            "pulse50Precision": -0.00005720760715619925,
+            "pulse50Recall": -0.001670843776106934,
+            "pulse70F1": -0.00041248812859367724,
+            "pulse70Precision": 0.000050657622836461225,
+            "pulse70Recall": -0.001670843776106934
+          }
+        },
+        "hiphop": {
+          "tracks": 21,
+          "before": {
+            "head50F1": 0.6735873308848753,
+            "head50Precision": 0.6892707779577448,
+            "head50Recall": 0.6622671197503526,
+            "head70F1": 0.7409133374739225,
+            "head70Precision": 0.7593190224203061,
+            "head70Recall": 0.7277947028277355,
+            "clock50F1": 0.6849750875253159,
+            "clock50Precision": 0.6796923998556055,
+            "clock50Recall": 0.697233591320846,
+            "clock70F1": 0.7607590334870489,
+            "clock70Precision": 0.7566347820505618,
+            "clock70Recall": 0.7728116020396725,
+            "pulse50F1": 0.4507580225561983,
+            "pulse50Precision": 0.31738022363914303,
+            "pulse50Recall": 0.8156919733663828,
+            "pulse70F1": 0.49160618893783614,
+            "pulse70Precision": 0.3465392623514174,
+            "pulse70Recall": 0.8893002835051738
+          },
+          "after": {
+            "head50F1": 0.5871266058157742,
+            "head50Precision": 0.5925917677626309,
+            "head50Recall": 0.5845273693881441,
+            "head70F1": 0.6498740163125549,
+            "head70Precision": 0.6573010774318306,
+            "head70Recall": 0.6460363210072745,
+            "clock50F1": 0.5969862885642826,
+            "clock50Precision": 0.5909943677521058,
+            "clock50Recall": 0.6073283859545411,
+            "clock70F1": 0.6687865457092249,
+            "clock70Precision": 0.6633973521639269,
+            "clock70Recall": 0.6794511454968055,
+            "pulse50F1": 0.4476487718673196,
+            "pulse50Precision": 0.31477936536668877,
+            "pulse50Recall": 0.8095021815542855,
+            "pulse70F1": 0.4892332901028295,
+            "pulse70Precision": 0.3442315837472786,
+            "pulse70Recall": 0.8847335634569935
+          },
+          "delta": {
+            "head50F1": -0.08646072506910107,
+            "head50Precision": -0.0966790101951138,
+            "head50Recall": -0.07773975036220862,
+            "head70F1": -0.09103932116136751,
+            "head70Precision": -0.10201794498847547,
+            "head70Recall": -0.08175838182046118,
+            "clock50F1": -0.08798879896103318,
+            "clock50Precision": -0.08869803210349977,
+            "clock50Recall": -0.08990520536630478,
+            "clock70F1": -0.09197248777782403,
+            "clock70Precision": -0.09323742988663493,
+            "clock70Recall": -0.09336045654286718,
+            "pulse50F1": -0.003109250688878803,
+            "pulse50Precision": -0.0026008582724542503,
+            "pulse50Recall": -0.006189791812097072,
+            "pulse70F1": -0.002372898835006658,
+            "pulse70Precision": -0.002307678604138798,
+            "pulse70Recall": -0.004566720048180236
+          }
+        },
+        "jazz": {
+          "tracks": 21,
+          "before": {
+            "head50F1": 0.3640601558767327,
+            "head50Precision": 0.4244793330864229,
+            "head50Recall": 0.3375410335240416,
+            "head70F1": 0.4537067919564911,
+            "head70Precision": 0.5282307933082122,
+            "head70Recall": 0.42117887715011537,
+            "clock50F1": 0.3500654194266757,
+            "clock50Precision": 0.37638664461429006,
+            "clock50Recall": 0.3637945435885997,
+            "clock70F1": 0.4476586139561786,
+            "clock70Precision": 0.4771764970872776,
+            "clock70Recall": 0.46837864310846344,
+            "pulse50F1": 0.4502102149230288,
+            "pulse50Precision": 0.3823845741936494,
+            "pulse50Recall": 0.588771217830029,
+            "pulse70F1": 0.5430329949397856,
+            "pulse70Precision": 0.46139416402361355,
+            "pulse70Recall": 0.707415057619077
+          },
+          "after": {
+            "head50F1": 0.39809592422730544,
+            "head50Precision": 0.46555985592840504,
+            "head50Recall": 0.3658299890906555,
+            "head70F1": 0.48453461724178337,
+            "head70Precision": 0.566859147537204,
+            "head70Recall": 0.4449386796216147,
+            "clock50F1": 0.39457792754438764,
+            "clock50Precision": 0.41700006584780425,
+            "clock50Recall": 0.40862823214673305,
+            "clock70F1": 0.4937691670958679,
+            "clock70Precision": 0.5193332953378418,
+            "clock70Recall": 0.5136653419861403,
+            "pulse50F1": 0.4524286866138167,
+            "pulse50Precision": 0.38400749167724546,
+            "pulse50Recall": 0.5944224593400064,
+            "pulse70F1": 0.546139980790978,
+            "pulse70Precision": 0.46290869957985864,
+            "pulse70Recall": 0.7159262749934494
+          },
+          "delta": {
+            "head50F1": 0.034035768350572704,
+            "head50Precision": 0.04108052284198201,
+            "head50Recall": 0.028288955566613958,
+            "head70F1": 0.030827825285292272,
+            "head70Precision": 0.03862835422899178,
+            "head70Recall": 0.023759802471499385,
+            "clock50F1": 0.044512508117711916,
+            "clock50Precision": 0.040613421233514156,
+            "clock50Recall": 0.0448336885581335,
+            "clock70F1": 0.046110553139689286,
+            "clock70Precision": 0.04215679825056421,
+            "clock70Recall": 0.045286698877676834,
+            "pulse50F1": 0.002218471690787863,
+            "pulse50Precision": 0.001622917483596072,
+            "pulse50Recall": 0.0056512415099774175,
+            "pulse70F1": 0.0031069858511924694,
+            "pulse70Precision": 0.0015145355562450956,
+            "pulse70Recall": 0.008511217374372488
+          }
+        },
+        "metal": {
+          "tracks": 21,
+          "before": {
+            "head50F1": 0.5903200941637591,
+            "head50Precision": 0.6953379604909214,
+            "head50Recall": 0.5318207108294197,
+            "head70F1": 0.6550851847238572,
+            "head70Precision": 0.7760373840282416,
+            "head70Recall": 0.5885347300077047,
+            "clock50F1": 0.6450121312700465,
+            "clock50Precision": 0.6973415144382311,
+            "clock50Recall": 0.6178459161556319,
+            "clock70F1": 0.7089259018317148,
+            "clock70Precision": 0.7682464464666675,
+            "clock70Recall": 0.6778605270951589,
+            "pulse50F1": 0.5507709564837256,
+            "pulse50Precision": 0.4995607615192106,
+            "pulse50Recall": 0.6433876609886188,
+            "pulse70F1": 0.6139278608387856,
+            "pulse70Precision": 0.5550233153613827,
+            "pulse70Recall": 0.7231762747167312
+          },
+          "after": {
+            "head50F1": 0.5569245529353152,
+            "head50Precision": 0.6456789932620446,
+            "head50Recall": 0.5064600370379578,
+            "head70F1": 0.6181023583849038,
+            "head70Precision": 0.7211023850545134,
+            "head70Recall": 0.5604341747482101,
+            "clock50F1": 0.6097195654976355,
+            "clock50Precision": 0.6506706075415887,
+            "clock50Recall": 0.5885533265711219,
+            "clock70F1": 0.668872968345004,
+            "clock70Precision": 0.7145692538200326,
+            "clock70Recall": 0.6449379803861854,
+            "pulse50F1": 0.5495628567013586,
+            "pulse50Precision": 0.49838128840526474,
+            "pulse50Recall": 0.6416967704149936,
+            "pulse70F1": 0.6104106920037955,
+            "pulse70Precision": 0.5519400367286055,
+            "pulse70Recall": 0.7182968036292641
+          },
+          "delta": {
+            "head50F1": -0.033395541228443903,
+            "head50Precision": -0.04965896722887699,
+            "head50Recall": -0.025360673791461844,
+            "head70F1": -0.036982826338953466,
+            "head70Precision": -0.05493499897372796,
+            "head70Recall": -0.0281005552594946,
+            "clock50F1": -0.035292565772411126,
+            "clock50Precision": -0.046670906896642585,
+            "clock50Recall": -0.029292589584509893,
+            "clock70F1": -0.040052933486710754,
+            "clock70Precision": -0.053677192646634946,
+            "clock70Recall": -0.032922546708973446,
+            "pulse50F1": -0.0012080997823671336,
+            "pulse50Precision": -0.0011794731139459212,
+            "pulse50Recall": -0.0016908905736251637,
+            "pulse70F1": -0.0035171688349900023,
+            "pulse70Precision": -0.0030832786327771827,
+            "pulse70Recall": -0.004879471087467098
+          }
+        },
+        "pop": {
+          "tracks": 21,
+          "before": {
+            "head50F1": 0.7685625299068393,
+            "head50Precision": 0.7619951205974235,
+            "head50Recall": 0.8009889235767746,
+            "head70F1": 0.7883461759961341,
+            "head70Precision": 0.7828843720491921,
+            "head70Recall": 0.8216477871959074,
+            "clock50F1": 0.7882641030762999,
+            "clock50Precision": 0.7545899136627275,
+            "clock50Recall": 0.8566527560488444,
+            "clock70F1": 0.8111214309067101,
+            "clock70Precision": 0.7768247469928142,
+            "clock70Recall": 0.882474772399519,
+            "pulse50F1": 0.5267552317301989,
+            "pulse50Precision": 0.39431978479709445,
+            "pulse50Recall": 0.8264655720861608,
+            "pulse70F1": 0.5417938162146174,
+            "pulse70Precision": 0.4070551540548789,
+            "pulse70Recall": 0.8481376069312306
+          },
+          "after": {
+            "head50F1": 0.752444672838702,
+            "head50Precision": 0.7474862953434198,
+            "head50Recall": 0.7825425851537753,
+            "head70F1": 0.7722658514857128,
+            "head70Precision": 0.768465107470186,
+            "head70Recall": 0.803201448772908,
+            "clock50F1": 0.77638958243798,
+            "clock50Precision": 0.7432697934953532,
+            "clock50Recall": 0.8441669610185423,
+            "clock70F1": 0.7993381852131055,
+            "clock70Precision": 0.7661387610063615,
+            "clock70Recall": 0.8698416070090802,
+            "pulse50F1": 0.527422587849851,
+            "pulse50Precision": 0.39543134753666154,
+            "pulse50Recall": 0.8256959073537301,
+            "pulse70F1": 0.5423987611674752,
+            "pulse70Precision": 0.40790174275984953,
+            "pulse70Recall": 0.8473679421988
+          },
+          "delta": {
+            "head50F1": -0.01611785706813748,
+            "head50Precision": -0.01450882525400369,
+            "head50Recall": -0.0184463384229993,
+            "head70F1": -0.016080324510421372,
+            "head70Precision": -0.014419264579006245,
+            "head70Recall": -0.018446338422999305,
+            "clock50F1": -0.011874520638320264,
+            "clock50Precision": -0.011320120167374445,
+            "clock50Recall": -0.012485795030302203,
+            "clock70F1": -0.011783245693604626,
+            "clock70Precision": -0.010685985986452711,
+            "clock70Recall": -0.012633165390438508,
+            "pulse50F1": 0.0006673561196521003,
+            "pulse50Precision": 0.0011115627395670807,
+            "pulse50Recall": -0.0007696647324306914,
+            "pulse70F1": 0.0006049449528577611,
+            "pulse70Precision": 0.0008465887049706902,
+            "pulse70Recall": -0.0007696647324306914
+          }
+        },
+        "reggae": {
+          "tracks": 21,
+          "before": {
+            "head50F1": 0.8558869822810725,
+            "head50Precision": 0.9283230192401538,
+            "head50Recall": 0.8183814966628705,
+            "head70F1": 0.8822886061084306,
+            "head70Precision": 0.9567792276473722,
+            "head70Recall": 0.8436527766641392,
+            "clock50F1": 0.8562847967988237,
+            "clock50Precision": 0.9183764314944456,
+            "clock50Recall": 0.8251715662697766,
+            "clock70F1": 0.8866171772380478,
+            "clock70Precision": 0.9500763321496135,
+            "clock70Recall": 0.854826501551253,
+            "pulse50F1": 0.6609421532239759,
+            "pulse50Precision": 0.520770121451011,
+            "pulse50Recall": 0.927140798378228,
+            "pulse70F1": 0.6840426418226002,
+            "pulse70Precision": 0.5393715257549268,
+            "pulse70Recall": 0.9582473711471642
+          },
+          "after": {
+            "head50F1": 0.8572413755925852,
+            "head50Precision": 0.9286894283544123,
+            "head50Recall": 0.8196859673910233,
+            "head70F1": 0.8843305802995625,
+            "head70Precision": 0.9582551309913399,
+            "head70Recall": 0.8454481654089834,
+            "clock50F1": 0.8568643277127335,
+            "clock50Precision": 0.9206977036578659,
+            "clock50Recall": 0.8246761373196809,
+            "clock70F1": 0.8904211657201626,
+            "clock70Precision": 0.9559468310737265,
+            "clock70Recall": 0.8573964633293075,
+            "pulse50F1": 0.6603944884477175,
+            "pulse50Precision": 0.5195313812754145,
+            "pulse50Recall": 0.9276713989346018,
+            "pulse70F1": 0.6834156442418272,
+            "pulse70Precision": 0.5380144771970862,
+            "pulse70Recall": 0.958777971703538
+          },
+          "delta": {
+            "head50F1": 0.001354393311512558,
+            "head50Precision": 0.0003664091142585062,
+            "head50Recall": 0.0013044707281528601,
+            "head70F1": 0.0020419741911320353,
+            "head70Precision": 0.0014759033439674266,
+            "head70Recall": 0.0017953887448440816,
+            "clock50F1": 0.0005795309139096887,
+            "clock50Precision": 0.0023212721634202522,
+            "clock50Recall": -0.0004954289500956359,
+            "clock70F1": 0.003803988482115019,
+            "clock70Precision": 0.005870498924113139,
+            "clock70Recall": 0.002569961778054585,
+            "pulse50F1": -0.0005476647762584444,
+            "pulse50Precision": -0.0012387401755964158,
+            "pulse50Recall": 0.0005306005563737461,
+            "pulse70F1": -0.000626997580772998,
+            "pulse70Precision": -0.001357048557840497,
+            "pulse70Recall": 0.0005306005563737461
+          }
+        },
+        "rock": {
+          "tracks": 21,
+          "before": {
+            "head50F1": 0.6579301274411484,
+            "head50Precision": 0.7375180680767303,
+            "head50Recall": 0.6197045041261877,
+            "head70F1": 0.7316945687369159,
+            "head70Precision": 0.8246233424493413,
+            "head70Recall": 0.6872703372234148,
+            "clock50F1": 0.6966868990695411,
+            "clock50Precision": 0.6927035476567371,
+            "clock50Recall": 0.7281804622614719,
+            "clock70F1": 0.7890578095202402,
+            "clock70Precision": 0.7865488678535895,
+            "clock70Recall": 0.8215388521684591,
+            "pulse50F1": 0.5634873917545792,
+            "pulse50Precision": 0.5045500929251655,
+            "pulse50Recall": 0.6834034266524591,
+            "pulse70F1": 0.6242952924283593,
+            "pulse70Precision": 0.5597605096332148,
+            "pulse70Recall": 0.7556588354511138
+          },
+          "after": {
+            "head50F1": 0.6360398174416654,
+            "head50Precision": 0.7088747519724057,
+            "head50Recall": 0.6035646381767388,
+            "head70F1": 0.7068826981690525,
+            "head70Precision": 0.7913804299934477,
+            "head70Recall": 0.6691032110945319,
+            "clock50F1": 0.6626527839515148,
+            "clock50Precision": 0.6592598056589734,
+            "clock50Recall": 0.6935924534429455,
+            "clock70F1": 0.7526897107004316,
+            "clock70Precision": 0.7502431973096481,
+            "clock70Recall": 0.7853193500027702,
+            "pulse50F1": 0.5613924696259838,
+            "pulse50Precision": 0.5023994584470575,
+            "pulse50Recall": 0.6786762664230501,
+            "pulse70F1": 0.623763049123696,
+            "pulse70Precision": 0.5594437749305847,
+            "pulse70Recall": 0.7521885058227975
+          },
+          "delta": {
+            "head50F1": -0.021890309999482854,
+            "head50Precision": -0.028643316104324374,
+            "head50Recall": -0.016139865949448867,
+            "head70F1": -0.02481187056786344,
+            "head70Precision": -0.03324291245589382,
+            "head70Recall": -0.01816712612888296,
+            "clock50F1": -0.03403411511802622,
+            "clock50Precision": -0.03344374199776375,
+            "clock50Recall": -0.0345880088185264,
+            "clock70F1": -0.03636809881980873,
+            "clock70Precision": -0.03630567054394148,
+            "clock70Recall": -0.0362195021656889,
+            "pulse50F1": -0.002094922128595459,
+            "pulse50Precision": -0.002150634478108083,
+            "pulse50Recall": -0.004727160229409106,
+            "pulse70F1": -0.0005322433046632745,
+            "pulse70Precision": -0.0003167347026300795,
+            "pulse70Recall": -0.003470329628316216
+          }
+        }
+      },
+      "physical": {
+        "charts": 1680,
+        "allValid": true,
+        "allDeterministic": true,
+        "allRouteChecked": true,
+        "oneHoldConflicts": 0
+      },
+      "fourFinger": {
+        "minimumCountRatio": 0.8888888888888888,
+        "minimumIdentityRatio": 0.8165137614678899,
+        "countLosses": 38,
+        "identityLosses": 87,
+        "countFailures": [
+          {
+            "name": "classical.00019",
+            "ratio": 0.9357798165137615
+          },
+          {
+            "name": "hiphop.00011",
+            "ratio": 0.9240506329113924
+          },
+          {
+            "name": "rock.00013",
+            "ratio": 0.8888888888888888
+          }
+        ]
+      },
+      "modeAggregate": {
+        "one": {
+          "50f1": {
+            "before": 0.6330618640188252,
+            "after": 0.6200729081188706,
+            "delta": -0.012988955899954668,
+            "improved": 40,
+            "unchanged": 115,
+            "worse": 55
+          },
+          "50precision": {
+            "before": 0.6988000630578702,
+            "after": 0.6829251437713448,
+            "delta": -0.015874919286525242,
+            "improved": 39,
+            "unchanged": 115,
+            "worse": 56
+          },
+          "50recall": {
+            "before": 0.6061024553121058,
+            "after": 0.5948984255374509,
+            "delta": -0.01120402977465486,
+            "improved": 34,
+            "unchanged": 125,
+            "worse": 51
+          },
+          "70f1": {
+            "before": 0.6927436792043614,
+            "after": 0.6779049749215829,
+            "delta": -0.014838704282778958,
+            "improved": 36,
+            "unchanged": 118,
+            "worse": 56
+          },
+          "70precision": {
+            "before": 0.7677891525319195,
+            "after": 0.7497672252348732,
+            "delta": -0.0180219272970462,
+            "improved": 32,
+            "unchanged": 119,
+            "worse": 59
+          },
+          "70recall": {
+            "before": 0.6619190788294079,
+            "after": 0.648897145811415,
+            "delta": -0.013021933017993044,
+            "improved": 30,
+            "unchanged": 130,
+            "worse": 50
+          }
+        },
+        "two": {
+          "50f1": {
+            "before": 0.6073716903258487,
+            "after": 0.5980811464202626,
+            "delta": -0.009290543905585836,
+            "improved": 46,
+            "unchanged": 112,
+            "worse": 52
+          },
+          "50precision": {
+            "before": 0.6023959383828303,
+            "after": 0.5934738325497896,
+            "delta": -0.008922105833040662,
+            "improved": 44,
+            "unchanged": 112,
+            "worse": 54
+          },
+          "50recall": {
+            "before": 0.6499274002603593,
+            "after": 0.639593291585905,
+            "delta": -0.01033410867445413,
+            "improved": 40,
+            "unchanged": 121,
+            "worse": 49
+          },
+          "70f1": {
+            "before": 0.6671187276162078,
+            "after": 0.6560402571234475,
+            "delta": -0.011078470492760409,
+            "improved": 40,
+            "unchanged": 114,
+            "worse": 56
+          },
+          "70precision": {
+            "before": 0.6641057098023632,
+            "after": 0.6533945989275332,
+            "delta": -0.01071111087483011,
+            "improved": 39,
+            "unchanged": 115,
+            "worse": 56
+          },
+          "70recall": {
+            "before": 0.7118931813606756,
+            "after": 0.6995525279543678,
+            "delta": -0.012340653406307805,
+            "improved": 36,
+            "unchanged": 122,
+            "worse": 52
+          }
+        },
+        "three": {
+          "50f1": {
+            "before": 0.5674579255816268,
+            "after": 0.5628328937049153,
+            "delta": -0.004625031876711674,
+            "improved": 48,
+            "unchanged": 119,
+            "worse": 43
+          },
+          "50precision": {
+            "before": 0.5180042308679156,
+            "after": 0.5140978685079501,
+            "delta": -0.003906362359965867,
+            "improved": 45,
+            "unchanged": 119,
+            "worse": 46
+          },
+          "50recall": {
+            "before": 0.6755442695579822,
+            "after": 0.668647513946347,
+            "delta": -0.006896755611635329,
+            "improved": 36,
+            "unchanged": 137,
+            "worse": 37
+          },
+          "70f1": {
+            "before": 0.6252317974189298,
+            "after": 0.6197162635429099,
+            "delta": -0.005515533876019787,
+            "improved": 46,
+            "unchanged": 117,
+            "worse": 47
+          },
+          "70precision": {
+            "before": 0.5734235304954374,
+            "after": 0.5687133560915345,
+            "delta": -0.004710174403902912,
+            "improved": 48,
+            "unchanged": 117,
+            "worse": 45
+          },
+          "70recall": {
+            "before": 0.7415553753154261,
+            "after": 0.7333315406280598,
+            "delta": -0.008223834687366332,
+            "improved": 34,
+            "unchanged": 134,
+            "worse": 42
+          }
+        },
+        "four": {
+          "50f1": {
+            "before": 0.5254496070799191,
+            "after": 0.52470698949685,
+            "delta": -0.0007426175830690915,
+            "improved": 39,
+            "unchanged": 115,
+            "worse": 56
+          },
+          "50precision": {
+            "before": 0.4496602162074161,
+            "after": 0.4488634043085876,
+            "delta": -0.0007968118988286374,
+            "improved": 38,
+            "unchanged": 115,
+            "worse": 57
+          },
+          "50recall": {
+            "before": 0.6987324662152433,
+            "after": 0.6971971345495119,
+            "delta": -0.0015353316657314058,
+            "improved": 25,
+            "unchanged": 149,
+            "worse": 36
+          },
+          "70f1": {
+            "before": 0.579567472663181,
+            "after": 0.5788629645551662,
+            "delta": -0.0007045081080147595,
+            "improved": 42,
+            "unchanged": 118,
+            "worse": 50
+          },
+          "70precision": {
+            "before": 0.49814762509812005,
+            "after": 0.4972446935207623,
+            "delta": -0.0009029315773576506,
+            "improved": 41,
+            "unchanged": 118,
+            "worse": 51
+          },
+          "70recall": {
+            "before": 0.7679238007744488,
+            "after": 0.7665059547423485,
+            "delta": -0.0014178460320999526,
+            "improved": 31,
+            "unchanged": 146,
+            "worse": 33
+          }
+        }
+      },
+      "modesMeta": {
+        "one": {
+          "before": {
+            "charts": 210,
+            "totalNotes": 10153,
+            "totalHeads": 10153,
+            "totalHolds": 249,
+            "totalTails": 249,
+            "maxHeads4s": 13,
+            "maxFingers": 1
+          },
+          "after": {
+            "charts": 210,
+            "totalNotes": 10238,
+            "totalHeads": 10238,
+            "totalHolds": 250,
+            "totalTails": 250,
+            "maxHeads4s": 13,
+            "maxFingers": 1
+          }
+        },
+        "two": {
+          "before": {
+            "charts": 210,
+            "totalNotes": 13785,
+            "totalHeads": 13009,
+            "totalHolds": 1492,
+            "totalTails": 1492,
+            "maxHeads4s": 17,
+            "maxFingers": 2
+          },
+          "after": {
+            "charts": 210,
+            "totalNotes": 13790,
+            "totalHeads": 13015,
+            "totalHolds": 1525,
+            "totalTails": 1525,
+            "maxHeads4s": 17,
+            "maxFingers": 2
+          }
+        },
+        "three": {
+          "before": {
+            "charts": 210,
+            "totalNotes": 17314,
+            "totalHeads": 16037,
+            "totalHolds": 1879,
+            "totalTails": 1879,
+            "maxHeads4s": 22,
+            "maxFingers": 3
+          },
+          "after": {
+            "charts": 210,
+            "totalNotes": 17273,
+            "totalHeads": 15992,
+            "totalHolds": 1906,
+            "totalTails": 1906,
+            "maxHeads4s": 22,
+            "maxFingers": 3
+          }
+        },
+        "four": {
+          "before": {
+            "charts": 210,
+            "totalNotes": 21339,
+            "totalHeads": 19865,
+            "totalHolds": 2049,
+            "totalTails": 2049,
+            "maxHeads4s": 32,
+            "maxFingers": 4
+          },
+          "after": {
+            "charts": 210,
+            "totalNotes": 21350,
+            "totalHeads": 19867,
+            "totalHolds": 2074,
+            "totalTails": 2074,
+            "maxHeads4s": 32,
+            "maxFingers": 4
+          }
+        }
+      },
+      "primaryMetricNegativeRows": 868,
+      "allModeNegativeRows": 1189,
+      "developmentScreen": {
+        "rules": {
+          "minimumMacroHead70Gain": 0.02,
+          "minimumMacroHead50Gain": 0,
+          "minimumMacroClock70Gain": 0.02,
+          "minimumGenreHead70Delta": -0.03,
+          "minimumClipHead70Delta": -0.15,
+          "minimumEveryClipFourMeasuredHeadCountRatio": 0.95
+        },
+        "checks": {
+          "head70Gain": false,
+          "head50NonDecrease": false,
+          "clock70Gain": false,
+          "physicalAndSourceInputsExact": true,
+          "worstGenre": false,
+          "worstClip": false,
+          "fourMeasuredCount": false,
+          "allModesPlayableDeterministicRouteChecked": true,
+          "primaryMinuteAndHandoffOneHead50And70NonDecrease": true
+        },
+        "passed": false,
+        "minimumGenreHead70Delta": -0.09103932116136751,
+        "minimumClipHead70Delta": -0.606060606060606,
+        "interpretation": "This fixed210 observed development screen is not fresh or release qualification. Passing requires every prewritten rule; independent fresh consumption still needs root authorization and actual-source freeze."
+      },
+      "analysisAssertions": {
+        "canonicalStockTraceBytePairs": 420,
+        "physicalAnalysisOldFieldPairs": 210,
+        "rawCandidatePairs": 210,
+        "sourceInputPairs": 210,
+        "sourcePathPairs": 210,
+        "oldClockInputPairs": 210,
+        "oldEnvelopePairs": 210,
+        "clockEarlyExitPairs": 0,
+        "noBoundaryInInference": 420,
+        "officialFullChartHashes": 1680,
+        "smallVersionOnlyMappings": 20
+      },
+      "equalityDiagnostics": {
+        "fullAnalysisAfterAcousticRemoval": {
+          "equal": 0,
+          "changed": 210
+        },
+        "clock": {
+          "equal": 0,
+          "changed": 210
+        },
+        "pulseAfterAcousticRemoval": {
+          "equal": 97,
+          "changed": 113
+        },
+        "canonicalPulseMembershipAfterRoleRemoval": {
+          "equal": 131,
+          "changed": 79
+        },
+        "usedGeometry": {
+          "equal": 109,
+          "changed": 101
+        }
+      },
+      "originalBaselineFullObjectsExact": 210,
+      "auxiliaryVersionMappings": 20,
+      "mainVersions": {
+        "before": 11,
+        "after": 12,
+        "mainOutputsNotNormalized": true
+      },
+      "worstHead70": [
+        {
+          "name": "hiphop.00011",
+          "before": 0.8888888888888888,
+          "after": 0.2828282828282828,
+          "delta": -0.606060606060606
+        },
+        {
+          "name": "hiphop.00000",
+          "before": 0.9830508474576272,
+          "after": 0.46875,
+          "delta": -0.5143008474576272
+        },
+        {
+          "name": "hiphop.00033",
+          "before": 0.3953488372093023,
+          "after": 0,
+          "delta": -0.3953488372093023
+        },
+        {
+          "name": "blues.00007",
+          "before": 0.946236559139785,
+          "after": 0.5957446808510638,
+          "delta": -0.3504918782887212
+        },
+        {
+          "name": "rock.00013",
+          "before": 0.6987951807228916,
+          "after": 0.35789473684210527,
+          "delta": -0.34090044388078633
+        },
+        {
+          "name": "disco.00011",
+          "before": 0.35789473684210527,
+          "after": 0.0425531914893617,
+          "delta": -0.31534154535274356
+        },
+        {
+          "name": "hiphop.00019",
+          "before": 0.8775510204081632,
+          "after": 0.5904761904761905,
+          "delta": -0.28707482993197275
+        },
+        {
+          "name": "classical.00035",
+          "before": 0.8235294117647058,
+          "after": 0.5441176470588235,
+          "delta": -0.27941176470588236
+        },
+        {
+          "name": "country.00023",
+          "before": 0.6666666666666666,
+          "after": 0.463768115942029,
+          "delta": -0.20289855072463764
+        },
+        {
+          "name": "hiphop.00034",
+          "before": 0.45871559633027525,
+          "after": 0.26666666666666666,
+          "delta": -0.1920489296636086
+        }
+      ],
+      "sameGenreCounterexamples": [
+        {
+          "name": "hiphop.00013",
+          "beforeHead70F1": 0.0392156862745098,
+          "afterHead70F1": 0.6346153846153846,
+          "beforeClockConfidence": 0.4100891548117389,
+          "afterClockConfidence": 0.4232840928578905
+        },
+        {
+          "name": "hiphop.00011",
+          "beforeHead70F1": 0.8888888888888888,
+          "afterHead70F1": 0.2828282828282828,
+          "beforeClockConfidence": 0.27533118954089036,
+          "afterClockConfidence": 0.3669311084458516
+        }
+      ]
+    },
+    "rejected": true
+  },
+  "validation": {
+    "draft12": {
+      "buildPassed": true,
+      "tests": {
+        "passed": 454,
+        "skipped": 1,
+        "total": 455
+      },
+      "rejectedDespiteTests": true
+    },
+    "browser": {
+      "version": 12,
+      "status": "REJECTED_DRAFT_ONLY",
+      "desktop": true,
+      "realPhoneTested": false,
+      "localSong": "九万字 - 黄诗扶",
+      "durationDisplay": "3:52",
+      "oneFingerNotes": 311,
+      "holds": 29,
+      "autoResults": {
+        "score": 1000000,
+        "perfectUnits": 340,
+        "accuracyPercent": 100
+      },
+      "cancelThenDemoReplacementVerified": true,
+      "interpretation": "AUTO follows its own generated chart. These results verify playback/input/judgment/settlement flow, not beat-detection accuracy or subjective musical alignment.",
+      "consoleErrorsOrWarnings": 0,
+      "fastDifficultySwitchVerified": true,
+      "demoPauseResumeCountdownVerified": true
+    },
+    "afterRollback": {
+      "sourceVersion": 11,
+      "restoredCommit": "ce301e0c9c99eab6b1adedca1515544d348b458d",
+      "newRuntimeNotReleased": true,
+      "postflightBeforeAuthorizedRollback": true,
+      "buildPassed": true,
+      "sourceConfigurationExactHEAD": true,
+      "tests": {
+        "passed": 449,
+        "skipped": 1,
+        "total": 450
+      },
+      "bundles": {
+        "index-CPHZHQjz.js": "516b68635422b89efbe9cf0805cd2475684f2f1a0e045647acc338881d7aec95",
+        "analysis.worker-1yjlGRJX.js": "be6db356a1d0d2cacc1bad05a0ec34c657f9caeb7f5da05d72ea7c08e9365aa6",
+        "chart.worker-1qL29Fd-.js": "8171c948b5d6844f04a3898ea3fc682d0baae8e6e0f03a33ed3c0283377c8c06"
+      },
+      "observedLedger": {
+        "originalClipRecordsExact": true,
+        "preservedDiagnosticPrefix": 75,
+        "totalDiagnosticRuns": 82
+      },
+      "fresh": {
+        "approval": false,
+        "readyManifestExact": true,
+        "officialAndSidecarPinnedToOld210": true
+      }
+    }
+  },
+  "limitations": [
+    "Head70 observed mean decreased; bootstrap95%[-0.02933209,+0.00030652] includes0, so no population-significance claim.",
+    "hiphop13 improves while hiphop11 sharply declines; no genre whitelist or old-score/confidence switch is qualified.",
+    "All210 complete clock objects differ partly through confidence; this does not say all210 beat paths changed.",
+    "Full-browser desktop check does not validate real-phone memory/touch/audio or subjective listening quality.",
+    "No rawaudio, reference/anchor timestamps, privatepaths, signedURLs or wrapper error stacks are exported."
+  ]
+}

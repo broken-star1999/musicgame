@@ -1,0 +1,3 @@
+id,name,kind,mode,metric,B,T2,delta
+00-primary-minute-layered,primary/minute-layered,control,four,H50,0.6818181818181818,0.6798866855524079,-0.0019314962657738244
+00-primary-minute-layered,primary/minute-layered,control,four,H70,0.6818181818181818,0.6798866855524079,-0.0019314962657738244
