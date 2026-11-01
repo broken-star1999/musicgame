@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as motion from 'motion/react-m';
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, AudioLines, Check, ChevronRight, CircleHelp, Disc3, Headphones, LoaderCircle, Music2, Play, Plus, Radio, RotateCcw, Settings2, ShieldCheck, SlidersHorizontal, Sparkles, Trophy, Upload, Volume2, X, Zap } from 'lucide-react';
-import type { Chart, Difficulty, RecognitionMode, Result, Settings, Track } from './types';
+import type { Chart, Difficulty, Result, Settings, Track } from './types';
 import { audioContext, decodeFile, prepareMono } from './core/audio';
 import { createDemoAsync } from './core/demo-service';
 import { waitForAudio } from './core/audio-work';
 import { analyzeMusic } from './core/analysis-service';
+import { releaseLegacyBeatAssets } from './core/legacy-assets';
 import { countTypes, DIFFICULTIES } from './core/chart';
 import { compileChart } from './core/chart-service';
 import { peakFingers } from './core/chart-constraints';
@@ -23,8 +24,6 @@ function Brand() { return <a className="brand" href="./" aria-label="节拍坠�
 
 export default function App() {
   const [settings, setSettings] = useState<Settings>(loadSettings);
-  const recognitionMode = useRef(settings.recognition);
-  const songSource = useRef<Pick<Track, 'name' | 'artist' | 'buffer' | 'demo'> | null>(null);
   const [track, setTrack] = useState<Track | null>(null), [busy, setBusy] = useState(false);
   const [progress, setProgress] = useState(0), [stage, setStage] = useState(''), [error, setError] = useState('');
   const [bpm, setBpm] = useState(''), [bpmOverride, setBpmOverride] = useState<number | undefined>();
@@ -32,7 +31,6 @@ export default function App() {
   const [result, setResult] = useState<Result | null>(null), [help, setHelp] = useState(false), [advanced, setAdvanced] = useState(false);
   const [dragging, setDragging] = useState(false), [best, setBest] = useState(0);
   const fileInput = useRef<HTMLInputElement>(null), serial = useRef(0), abort = useRef<(() => void) | null>(null);
-  const useBasic = useRef<(() => void) | null>(null);
   const [chart, setChart] = useState<Chart | null>(null), [compiling, setCompiling] = useState(false), [chartRevision, setChartRevision] = useState(0);
   const [compileProgress, setCompileProgress] = useState({ value: 0, stage: '' });
   const [starting, setStarting] = useState(false);
@@ -56,7 +54,6 @@ export default function App() {
     return values.length ? [Math.round(values[Math.floor(values.length * 0.1)]), Math.round(values[Math.floor(values.length * 0.9)])] : null;
   }, [track]);
   const rhythmSource = useMemo(() => {
-    if (track?.analysis.recognition?.engine === 'beat-this') return '模型辅助识别 · 已在本机完成';
     const sections = track?.analysis.pulse?.sections;
     if (!sections?.length) return '';
     const duration = { low: 0, mid: 0, high: 0, mixed: 0 };
@@ -89,45 +86,36 @@ export default function App() {
     return () => { active = false; job.cancel(); cancelCompilation.current = () => {}; };
   }, [track, settings.difficulty, bpmOverride, chartRevision]);
 
-  const cancel = useCallback(() => { invalidateStart(); serial.current++; abort.current?.(); abort.current = null; useBasic.current = null; songSource.current = null; setBusy(false); setStage(''); }, [invalidateStart]);
-  const load = useCallback(async (file?: File, reuse?: Pick<Track, 'name' | 'artist' | 'buffer' | 'demo'>) => {
+  const cancel = useCallback(() => { invalidateStart(); serial.current++; abort.current?.(); abort.current = null; setBusy(false); setStage(''); }, [invalidateStart]);
+  const load = useCallback(async (file?: File) => {
     invalidateStart();
-    const id = ++serial.current; abort.current?.(); abort.current = null; useBasic.current = null;
+    const id = ++serial.current; abort.current?.(); abort.current = null;
     const controller = new AbortController(); abort.current = () => controller.abort();
-    if (file) songSource.current = null;
     setTrack(null); setBpm(''); setBpmOverride(undefined); setError(''); setBusy(true); setProgress(0); setStage(file ? '正在解码你的音乐' : '正在合成演示曲'); setResult(null);
     try {
-      const buffer = file ? await decodeFile(file, { signal: controller.signal, progress: (n, text) => { if (id === serial.current) { setProgress(n * 0.08); setStage(text); } } }) : reuse?.buffer || await createDemoAsync({ signal: controller.signal, progress: (n, text) => { if (id === serial.current) { setProgress(n * 0.08); setStage(text); } } });
+      const buffer = file ? await decodeFile(file, { signal: controller.signal, progress: (n, text) => { if (id === serial.current) { setProgress(n * 0.08); setStage(text); } } }) : await createDemoAsync({ signal: controller.signal, progress: (n, text) => { if (id === serial.current) { setProgress(n * 0.08); setStage(text); } } });
       if (id !== serial.current) return;
-      songSource.current = { buffer, name: reuse?.name || (file ? file.name.replace(/\.[^.]+$/, '') : 'Neon Afterglow'), artist: reuse?.artist || (file ? '本地导入 · 仅在此设备处理' : 'BEATFALL ORIGINAL'), demo: reuse?.demo ?? !file };
       setStage('正在准备音频分析');
       const samples = await prepareMono(buffer, { signal: controller.signal, progress: (n, text) => { if (id === serial.current) { setProgress(0.08 + n * 0.12); setStage(text); } } });
       if (id !== serial.current) return;
-      const job = analyzeMusic(samples, recognitionMode.current, new URL('./', document.baseURI).href, (n, text) => { if (id === serial.current) { setProgress(0.2 + n * 0.8); setStage(text); } });
-      abort.current = () => { controller.abort(); job.cancel(); }; useBasic.current = job.useBasic;
+      const job = analyzeMusic(samples, (n, text) => { if (id === serial.current) { setProgress(0.2 + n * 0.8); setStage(text); } });
+      abort.current = () => { controller.abort(); job.cancel(); };
       const analysis = await job.promise;
       if (id !== serial.current) return;
-      setTrack({ name: reuse?.name || (file ? file.name.replace(/\.[^.]+$/, '') : 'Neon Afterglow'), artist: reuse?.artist || (file ? '本地导入 · 仅在此设备处理' : 'BEATFALL ORIGINAL · 内置演示曲'), buffer, analysis, demo: reuse?.demo ?? !file });
+      setTrack({ name: file ? file.name.replace(/\.[^.]+$/, '') : 'Neon Afterglow', artist: file ? '本地导入 · 仅在此设备处理' : 'BEATFALL ORIGINAL · 内置演示曲', buffer, analysis, demo: !file });
       setBpm(String(analysis.bpm));
     } catch (err) {
       if (id === serial.current) {
-        songSource.current = null;
         if (!(err instanceof DOMException && err.name === 'AbortError')) setError(err instanceof Error ? err.message : '音频处理失败，请重试。');
       }
-    } finally { if (id === serial.current) { setBusy(false); abort.current = null; useBasic.current = null; } }
+    } finally { if (id === serial.current) { setBusy(false); abort.current = null; } }
   }, [invalidateStart]);
 
   useEffect(() => { void load(); return () => { serial.current++; abort.current?.(); }; }, [load]);
+  useEffect(() => { releaseLegacyBeatAssets(); }, []);
   useEffect(() => saveSettings(settings), [settings]);
   useEffect(() => { setBest(bestScore(scoreKey)); }, [scoreKey]);
   const update = <K extends keyof Settings>(key: K, value: Settings[K]) => { if (key === 'difficulty') invalidateStart(); setSettings(previous => ({ ...previous, [key]: value })); };
-  const changeRecognition = (mode: RecognitionMode) => {
-    if (mode === recognitionMode.current) return;
-    recognitionMode.current = mode; update('recognition', mode);
-    if (busy && !useBasic.current) return;
-    if (mode === 'basic' && busy && useBasic.current) { useBasic.current(); return; }
-    if (songSource.current) void load(undefined, songSource.current);
-  };
   const finish = useCallback((value: Result) => { saveBest(scoreKey, value); setBest(bestScore(scoreKey)); setGame(null); setResult(value); }, [scoreKey]);
   const start = async (autoplay = false) => {
     if (!track || !chart || !chart.notes.length || !chartReady || pendingStart.current || latestStart.current.game || document.hidden) return;
@@ -170,9 +158,7 @@ export default function App() {
       <div className="workspace">
         <aside className="control-panel">
           <div className="section-label"><span><span className="step-number">01</span> 选择你的音乐</span><Music2 size={15} /></div>
-          <div className="recognition-choice"><span>节拍识别</span><div role="group" aria-label="节拍识别方式">{(['basic', 'enhanced'] as const).map(mode => <button key={mode} type="button" aria-pressed={settings.recognition === mode} onClick={() => changeRecognition(mode)}>{mode === 'basic' ? '纯算法' : '模型辅助'}</button>)}</div></div>
-          <p className="recognition-detail">{settings.recognition === 'enhanced' ? '首次下载约 24 MB 识别组件，缓存后可在本机复用。' : '直接分析声音起点，无需下载和运行模型。'}</p>
-          {busy && settings.recognition === 'enhanced' && <button type="button" className="text-button" onClick={() => changeRecognition('basic')}>立即用纯算法继续</button>}
+          <p className="analysis-detail">本地节奏分析 · 导入后自动生成谱面</p>
           <input ref={fileInput} id="audio-file" className="sr-only" type="file" accept=".mp3,.wav,.m4a,.ogg,.flac,audio/mpeg,audio/wav,audio/mp4,audio/ogg,audio/flac" onChange={e => { const file = e.target.files?.[0]; if (file) void load(file); e.target.value = ''; }} />
           <button className={`upload-zone ${dragging ? 'is-dragging' : ''}`} onClick={() => fileInput.current?.click()} onDragOver={e => { e.preventDefault(); setDragging(true); }} onDragLeave={() => setDragging(false)} onDrop={e => { e.preventDefault(); setDragging(false); const file = e.dataTransfer.files[0]; if (file) void load(file); }}><span className="upload-icon"><Upload size={19} /></span><strong>点击上传，或拖入音频</strong><span>MP3 / WAV / M4A / OGG / FLAC</span><small>最大 50 MB · 5 分钟以内</small><Plus className="upload-plus" size={12} /></button>
           {busy ? <div className="analysis-progress" role="status" aria-live="polite"><div><LoaderCircle className="spin" size={15} /><span>{stage}</span><button onClick={cancel} aria-label="取消分析"><X size={14} /></button></div><div className="progress-track"><i style={{ width: `${Math.max(4, progress * 100)}%` }} /></div><small>{Math.round(progress * 100)}% · 音频仅在本地处理</small></div> : track ? <div className="selected-track"><div className="album-art"><AudioLines size={25} /><i /><i /></div><div className="track-meta"><strong title={track.name}>{track.name}</strong><span>{track.demo ? '内置演示曲' : '本地音乐'} <i>·</i> {timeLabel(track.analysis.duration)}</span></div><span className="track-ready"><Check size={13} /></span></div> : <button className="demo-load" onClick={() => void load()}><Disc3 size={18} /><span>没有音乐？试试内置演示曲</span><ChevronRight size={14} /></button>}
@@ -188,7 +174,7 @@ export default function App() {
           <button className="primary-button start-button" aria-label="开始演奏" aria-busy={starting} disabled={starting || !chartReady || !chart?.notes.length} onClick={() => void start()}>{starting ? <LoaderCircle className="spin" size={17} /> : <Play size={17} fill="currentColor" />}<span>{starting ? '开始演奏 · 正在恢复声音' : '开始演奏'}</span><kbd>{starting ? 'WAIT' : 'PLAY'}</kbd></button><div className="start-caption" role={starting ? 'status' : undefined}><Headphones size={11} /> {starting ? '正在恢复声音，请稍候…' : <>默认横向显示 · {DIFFICULTIES[settings.difficulty].label}谱面</>}</div>
         </aside>
         <div className="stage-column"><fieldset disabled={starting} aria-busy={starting} aria-label="谱面预览与自动演示" style={{ border: 0, padding: 0, margin: 0, minWidth: 0 }}><Preview chart={chartReady ? chart : null} active={!busy && !compiling && !help && !result && !starting} speed={settings.speed} scrollMode={settings.scrollMode} onDemo={() => void start(true)} /></fieldset>
-          <div className="chart-info"><div className="chart-info-title"><span><Sparkles size={14} /> {busy ? '正在聆听你的音乐…' : compiling ? '正在编排乐句与指法…' : chart ? '你的谱面已就绪' : '等待一首好音乐'}</span><span className="chart-status">{chart && <><span className="small-dot" /> READY TO PLAY</>}</span></div><div className="chart-metrics"><div><span>节拍速度</span><strong>{chart?.bpm || '—'}<small>BPM</small></strong></div><div><span>音符总数</span><strong>{chart?.notes.length ?? '—'}<small>NOTES</small></strong></div><div><span>歌曲时长</span><strong>{track ? timeLabel(track.analysis.duration) : '—'}<small>MIN</small></strong></div><div><span>本地最佳</span><strong className="best-score" title="当前歌曲、指法与判定规则下的最佳成绩">{best ? formatScore(best) : '等待挑战'}{!!best && <Trophy size={12} />}</strong></div></div>{counts && <div className="note-distribution"><span>音符分布</span>{(['tap', 'hold', 'left', 'right', 'up'] as const).map(type => <span key={type} title={{ tap: '单点', hold: '长按', left: '左滑', right: '右滑', up: '上滑' }[type]}><NoteIcon type={type} size={12} /><b>{counts[type]}</b></span>)}</div>}{chart && <><p className="finger-summary" aria-live="polite">{DIFFICULTIES[chart.difficulty].label}谱面 · 同时最多 {chart.fingerLimit} 指 · 本谱峰值 {fingerPeak} 指{chart.fingering?.checked && ' · 动作路线已检查'}</p>{rhythmSource && <p className="rhythm-summary">{rhythmSource}</p>}{track?.analysis.rhythm && <p className="rhythm-summary">{bpmOverride !== undefined ? '原始分析：' : '检测到 '}{track.analysis.rhythm.beats.length} 个候选拍点{tempoRange && ` · 局部速度约 ${tempoRange[0]}–${tempoRange[1]} BPM`}{bpmOverride !== undefined ? ` · 编谱参考 ${bpmOverride} BPM` : track.analysis.rhythm.confidence < 0.45 && ' · 拍点把握较低，优先跟随清晰起音'}</p>}</>}{!!chart?.repetition?.reused && <p className="phrase-status"><Sparkles size={12} /> 已复用 {chart.repetition.reused} 段相似乐句的按键模板</p>}{track?.analysis.recognition?.warning && <div className="recognition-warning" role="status">{track.analysis.recognition.warning}<button type="button" onClick={() => void load(undefined, track)}>重新识别</button></div>}{track && (track.analysis.confidence < 0.45 || (track.analysis.rhythm?.confidence ?? 1) < 0.45) && <p className="confidence-tip"><Radio size={12} /> 节拍识别把握较低，复杂伴奏仍可能误识别。BPM 修正仅调整参考网格。</p>}</div>
+          <div className="chart-info"><div className="chart-info-title"><span><Sparkles size={14} /> {busy ? '正在聆听你的音乐…' : compiling ? '正在编排乐句与指法…' : chart ? '你的谱面已就绪' : '等待一首好音乐'}</span><span className="chart-status">{chart && <><span className="small-dot" /> READY TO PLAY</>}</span></div><div className="chart-metrics"><div><span>节拍速度</span><strong>{chart?.bpm || '—'}<small>BPM</small></strong></div><div><span>音符总数</span><strong>{chart?.notes.length ?? '—'}<small>NOTES</small></strong></div><div><span>歌曲时长</span><strong>{track ? timeLabel(track.analysis.duration) : '—'}<small>MIN</small></strong></div><div><span>本地最佳</span><strong className="best-score" title="当前歌曲、指法与判定规则下的最佳成绩">{best ? formatScore(best) : '等待挑战'}{!!best && <Trophy size={12} />}</strong></div></div>{counts && <div className="note-distribution"><span>音符分布</span>{(['tap', 'hold', 'left', 'right', 'up'] as const).map(type => <span key={type} title={{ tap: '单点', hold: '长按', left: '左滑', right: '右滑', up: '上滑' }[type]}><NoteIcon type={type} size={12} /><b>{counts[type]}</b></span>)}</div>}{chart && <><p className="finger-summary" aria-live="polite">{DIFFICULTIES[chart.difficulty].label}谱面 · 同时最多 {chart.fingerLimit} 指 · 本谱峰值 {fingerPeak} 指{chart.fingering?.checked && ' · 动作路线已检查'}</p>{rhythmSource && <p className="rhythm-summary">{rhythmSource}</p>}{track?.analysis.rhythm && <p className="rhythm-summary">{bpmOverride !== undefined ? '原始分析：' : '检测到 '}{track.analysis.rhythm.beats.length} 个候选拍点{tempoRange && ` · 局部速度约 ${tempoRange[0]}–${tempoRange[1]} BPM`}{bpmOverride !== undefined ? ` · 编谱参考 ${bpmOverride} BPM` : track.analysis.rhythm.confidence < 0.45 && ' · 拍点把握较低，优先跟随清晰起音'}</p>}</>}{!!chart?.repetition?.reused && <p className="phrase-status"><Sparkles size={12} /> 已复用 {chart.repetition.reused} 段相似乐句的按键模板</p>}{track && (track.analysis.confidence < 0.45 || (track.analysis.rhythm?.confidence ?? 1) < 0.45) && <p className="confidence-tip"><Radio size={12} /> 节拍识别把握较低，复杂伴奏仍可能误识别。BPM 修正仅调整参考网格。</p>}</div>
         </div>
       </div>
       {error && !result && <div className="error-banner" role="alert"><CircleHelp size={17} /><span>{error}</span><button aria-label="关闭提示" onClick={() => setError('')}><X size={15} /></button></div>}

@@ -66,7 +66,7 @@ export function timeAtBeat(beats: number[], position: number, fallbackBpm: numbe
     return beats[index] + (position - index) * (beats[index + 1] - beats[index]);
 }
 export function chartBeats(analysis: Analysis, bpmOverride?: number): number[] {
-    if (bpmOverride === undefined && analysis.rhythm && (analysis.rhythm.confidence >= 0.45 || analysis.recognition?.engine === 'beat-this') && analysis.rhythm.beats.length > 1)
+    if (bpmOverride === undefined && analysis.rhythm && analysis.rhythm.confidence >= 0.45 && analysis.rhythm.beats.length > 1)
         return analysis.rhythm.beats;
     // A possible recording-boundary cue has no measured rise. It must not seed
     // either an automatic fallback grid or an explicit BPM reference.
