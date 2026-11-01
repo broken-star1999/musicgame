@@ -1,0 +1,1222 @@
+{
+  "schema": 1,
+  "candidate": "SC2-slot/v2",
+  "state": "INACTIVE_CORRECTED_SOURCE_RESEARCH_ARCHIVE",
+  "runtimeActive": false,
+  "automaticallyApplied": false,
+  "numericalResultsIncluded": false,
+  "baselineCommit": "aeaf78284cb66601fd02bf9e40eaf99642285689",
+  "acceptedBaselineSourceCount": 24,
+  "candidateSourceCount": 31,
+  "changedFiles": 13,
+  "modifiedFiles": 6,
+  "addedFiles": 7,
+  "unchangedFiles": 18,
+  "chartVersion": 12,
+  "neuralComponents": false,
+  "patch": {
+    "proposedPublicPath": "benchmarks/prototypes/clock-slot-signed-evidence-v12.patch",
+    "sha256": "08f628cd91b86871c6fd360f72c661ff57f03ecaa5342035ff57b1526e1f9052",
+    "bytes": 114545,
+    "format": "ordinary git diff a/src b/src; git apply on accepted baseline, no QA path resolver or regeneration"
+  },
+  "compatibilityAliases": [],
+  "analysisMetadata": {
+    "property": "Analysis.slotClock",
+    "marker": "SC2-slot/v2",
+    "salienceProperty": "Analysis.arrangementSalience",
+    "salienceVersion": "baseline-canonical-first/v1",
+    "kernelMarker": "EC2-source-slot-affine/v1",
+    "purpose": "SC2 owns explicit slot-clock-* module paths; no historical rational-* filename alias."
+  },
+  "sourceReuse": {
+    "map": {
+      "schema": 2,
+      "status": "STATIC_V3_DOMAIN_FIX_ONLY_NOT_EXECUTED",
+      "algorithm": "SC2-slot/v2",
+      "analysisMetadata": "Analysis.slotClock",
+      "salienceMetadata": "Analysis.arrangementSalience",
+      "baselineCommit": "aeaf78284cb66601fd02bf9e40eaf99642285689",
+      "sourceRoots": {
+        "authored": ".qa/slot-clock-v3",
+        "application": ".qa/slot-clock-application-v3",
+        "cachedScreen": ".qa/slot-clock-cached-screen-v3"
+      },
+      "reused": [
+        {
+          "unit": "contracts.ts",
+          "origin": ".qa/slot-clock-v2/contracts.ts",
+          "originSHA256": "48881f854b63c41c35f920504f4d9de956d221359f7217d69f9357cadcdc3a8d",
+          "destination": ".qa/slot-clock-v3/contracts.ts",
+          "destinationSHA256": "30e47314eeb57b8e977a29095113eafa0c72b0ab426ca13176f2dd9b7fa1b172",
+          "byteIdentical": false,
+          "allowedTransforms": [
+            {
+              "kind": "version-marker-only",
+              "before": "SC2-slot/v1",
+              "after": "SC2-slot/v2",
+              "occurrences": 1
+            }
+          ]
+        },
+        {
+          "unit": "slot-affine.ts",
+          "origin": ".qa/slot-clock-v2/slot-affine.ts",
+          "originSHA256": "7b37314cde33614fdc96d9936b5915ac7d026154bd3b483a615b5d27fe29f3c2",
+          "destination": ".qa/slot-clock-v3/slot-affine.ts",
+          "destinationSHA256": "7b37314cde33614fdc96d9936b5915ac7d026154bd3b483a615b5d27fe29f3c2",
+          "byteIdentical": true,
+          "allowedTransforms": []
+        },
+        {
+          "unit": "barrier-path.ts",
+          "origin": ".qa/slot-clock-v2/barrier-path.ts",
+          "originSHA256": "ff3a2cda58b1c29d54eaa07d4b04c504847a6372bda8dc00edea0485959498a4",
+          "destination": ".qa/slot-clock-v3/barrier-path.ts",
+          "destinationSHA256": "ff3a2cda58b1c29d54eaa07d4b04c504847a6372bda8dc00edea0485959498a4",
+          "byteIdentical": true,
+          "allowedTransforms": []
+        },
+        {
+          "unit": "readout.ts",
+          "origin": ".qa/slot-clock-v2/readout.ts",
+          "originSHA256": "5939233c29e421881d57b1d0ca0302711bb926e1a277c4b6ee1566f3c5550728",
+          "destination": ".qa/slot-clock-v3/readout.ts",
+          "destinationSHA256": "0afef6d45f44e719937b82e214538cc2a9db98f1d57a9316794ce164cbddc08b",
+          "byteIdentical": false,
+          "allowedTransforms": [
+            {
+              "kind": "version-marker-only",
+              "before": "SC2-slot/v1",
+              "after": "SC2-slot/v2",
+              "occurrences": 1
+            },
+            {
+              "kind": "only-semantic-code-change",
+              "before": "(!Number.isFinite(hypothesis.totalEvidence) || hypothesis.totalEvidence < 0)",
+              "after": "!Number.isFinite(hypothesis.totalEvidence)",
+              "reason": "Original totalEvidence is finite signed directIOI + demeaned ACF"
+            }
+          ]
+        },
+        {
+          "unit": "salience.ts",
+          "origin": ".qa/slot-clock-v2/salience.ts",
+          "originSHA256": "2b21f7f5935773db2a1f3bdc82802d9e43192831b2a43f63aced5fb41459882a",
+          "destination": ".qa/slot-clock-v3/salience.ts",
+          "destinationSHA256": "2b21f7f5935773db2a1f3bdc82802d9e43192831b2a43f63aced5fb41459882a",
+          "byteIdentical": true,
+          "allowedTransforms": []
+        },
+        {
+          "unit": "application.ts",
+          "origin": ".qa/slot-clock-v2/application.ts",
+          "originSHA256": "ab776f15981471a486efba23af9ab9339d1ae19c53f01e808573ed05fb00253b",
+          "destination": ".qa/slot-clock-v3/application.ts",
+          "destinationSHA256": "57b4ba05d16f8589655655914d0097717cc9b8881dbbe630ee8f24844ca6de7c",
+          "byteIdentical": false,
+          "allowedTransforms": [
+            {
+              "kind": "version-marker-only",
+              "before": "SC2-slot/v1",
+              "after": "SC2-slot/v2",
+              "occurrences": 5
+            }
+          ]
+        },
+        {
+          "unit": "selection.ts",
+          "origin": ".qa/slot-clock-v2/selection.ts",
+          "originSHA256": "0ea0e339e3e235efdc7f0108c04396e70e309ec4ea248c5667d4a446e7fd2296",
+          "destination": ".qa/slot-clock-v3/selection.ts",
+          "destinationSHA256": "0ea0e339e3e235efdc7f0108c04396e70e309ec4ea248c5667d4a446e7fd2296",
+          "byteIdentical": true,
+          "allowedTransforms": []
+        }
+      ],
+      "fixtureOrigins": [
+        {
+          "unit": "bridge-fixtures.ts",
+          "origin": ".qa/slot-clock-v2/bridge-fixtures.ts",
+          "originSHA256": "df67f9d31871190793e8732d0476afdbc9b8ebd5936f0dccffe5661eb7a3563d",
+          "destination": ".qa/slot-clock-v3/bridge-fixtures.ts",
+          "destinationSHA256": "688c534010a77e53af5f909d007bad7238495aa7acc43eed1e28686593707de0",
+          "byteIdentical": false,
+          "allowedTransforms": [
+            {
+              "kind": "version-marker-only",
+              "before": "SC2-slot/v1",
+              "after": "SC2-slot/v2"
+            }
+          ]
+        },
+        {
+          "unit": "bridge-oracle.ts",
+          "origin": ".qa/slot-clock-v2/bridge-oracle.ts",
+          "originSHA256": "47eed9ce97ba7e1f6f8c551fbae63a9e1fc7dfae0eb206af2d5475aebb56bca6",
+          "destination": ".qa/slot-clock-v3/bridge-oracle.ts",
+          "destinationSHA256": "41b3eafa2497cfbb965980ef4a055b04d84d91bd5f2a78a8f1ecd54dacbe0032",
+          "byteIdentical": false,
+          "allowedTransforms": [
+            {
+              "kind": "version-marker-only",
+              "before": "SC2-slot/v1",
+              "after": "SC2-slot/v2"
+            }
+          ]
+        }
+      ],
+      "onlySemanticChange": "readout accepts finite signed original proposal totalEvidence; rejects nonfinite provided evidence. All fit/path/prior/objective/constants/data are unchanged.",
+      "requiredByteExact": [
+        "slot-affine.ts",
+        "barrier-path.ts",
+        "salience.ts",
+        "selection.ts"
+      ],
+      "sourceFunctionsCalled": 0,
+      "predecessorExecution": false,
+      "mathReuse": {
+        "kernel": ".qa/slot-clock-kernel-math-v2/report.json",
+        "path": ".qa/slot-clock-path-math-v2/report.json",
+        "readout": ".qa/slot-clock-readout-math-v3/report.json",
+        "bridge": ".qa/slot-clock-bridge-math-v3/report.json"
+      }
+    },
+    "mapSHA256": "75d22f6e20bf4b6ea25b6072342455d4e3a84c5e57f43499480a9eb948965970",
+    "originPins": {
+      ".qa/slot-clock-v2/contracts.ts": "48881f854b63c41c35f920504f4d9de956d221359f7217d69f9357cadcdc3a8d",
+      ".qa/slot-clock-v2/slot-affine.ts": "7b37314cde33614fdc96d9936b5915ac7d026154bd3b483a615b5d27fe29f3c2",
+      ".qa/slot-clock-v2/barrier-path.ts": "ff3a2cda58b1c29d54eaa07d4b04c504847a6372bda8dc00edea0485959498a4",
+      ".qa/slot-clock-v2/readout.ts": "5939233c29e421881d57b1d0ca0302711bb926e1a277c4b6ee1566f3c5550728",
+      ".qa/slot-clock-v2/salience.ts": "2b21f7f5935773db2a1f3bdc82802d9e43192831b2a43f63aced5fb41459882a",
+      ".qa/slot-clock-v2/application.ts": "ab776f15981471a486efba23af9ab9339d1ae19c53f01e808573ed05fb00253b",
+      ".qa/slot-clock-v2/selection.ts": "0ea0e339e3e235efdc7f0108c04396e70e309ec4ea248c5667d4a446e7fd2296"
+    },
+    "noExecutablePredecessorImports": true,
+    "scope": "The corrected reuse-map records the exact original-v1 origins and allowed marker/signed-domain transformations. Its zero-call fields are static preparation provenance only. The corrected graph imports its own explicit slot-clock modules, not old EC1/RME1/TC1 solvers."
+  },
+  "sourceContracts": {
+    "pins": {
+      ".qa/slot-clock-v3/DESIGN.md": "26bc1bc828c7214bfd4c03c134127be85e51109d390d14b6e3d03c53c1d90d93",
+      ".qa/slot-clock-v3/INTEGRATION_CONTRACT.md": "bbcbb30341b4511f7f13414821b305f87e7ba0b10e69f63ffade0acd2a548b9b",
+      ".qa/slot-clock-v3/SOURCE_MAP.md": "f2a05e273514c70478a89bfd9e08aecaa56c90df129eb93ec33f8f0182fbfad2",
+      ".qa/slot-clock-v3/reuse-map.json": "75d22f6e20bf4b6ea25b6072342455d4e3a84c5e57f43499480a9eb948965970",
+      ".qa/slot-clock-v3/INDEPENDENT_CORRECTION_REVIEW.md": "77d64b14e9d40a13f789299871725fe3982f77d2c3d2b4b3e9e8a777a999cb7e",
+      ".qa/slot-clock-v3/mechanical-source-correspondence.json": "aa6355a1a7cb11cb38ceb88a28d971f1faf3de83f687cedfdb31369a52f74ad1",
+      ".qa/slot-clock-v2/KERNEL_DESIGN.md": "d2e62ab9f5728e3c08588d5073a9364b4b96b9c0f1ddd1a25aac14f9e56b7939",
+      ".qa/slot-clock-v2/METRE_PRIOR_PROPOSAL.md": "1edf9c025ed08f06050c9013ef2d1bd6fa918a59abcfd5dd96f9ee3f9679f109",
+      ".qa/event-clock-barrier-v1/PROOF_PROPOSAL.md": "7ee4a6c0e6917ec1c0afa224c3f063a729b1c798f3a1b06383d5048f0a086e7c"
+    },
+    "physicalAxis": "Every visited observation model has a primitive physicalAxis; evaluationAxis preserves the exact target doubles and closed-window assignments. A numerical re-expression certificate is not rematching.",
+    "path": "Validated full-owner future-context saturation; exact six-integer objective, not old EC1 IEEE winner equivalence.",
+    "prior": "Original investigation fitted-period distance and original evidence rank are explicit lexicographic priors, never GT/genre/old-score selection.",
+    "qualityScope": "This source-only export makes no musical/metric or release claim. Original SC2 v1 technical failure remains separately archived. Admitting its signed input domain does not establish quality."
+  },
+  "correction": {
+    "id": "SIGNED_TOTAL_EVIDENCE_FINITE_DOMAIN",
+    "sourcePath": "src/core/slot-clock-readout.ts",
+    "description": "Accept finite signed original evidence; null/undefined remain unavailable, zero and negative remain available, nonfinite remains rejected. Dense ranks and raw provenance are unchanged. Only this guard and SC2 marker differ from original v1.",
+    "repairIncluded": true,
+    "independentSourceReview": {
+      "path": ".qa/slot-clock-v3/INDEPENDENT_CORRECTION_REVIEW.md",
+      "sha256": "77d64b14e9d40a13f789299871725fe3982f77d2c3d2b4b3e9e8a777a999cb7e"
+    },
+    "previousFailedArchive": {
+      "manifestSHA256": "8ddece328aab69b9f878c45aacd87055c9bfbc79cb0c55473404e97d502ee5c8",
+      "patchSHA256": "e443772f66a8400f1e02128aef6ed559fb643923e82ee9e369f5745061cecda9",
+      "sourceMarker": "SC2-slot/v1",
+      "unchanged": true
+    },
+    "previousVersionComparisons": [
+      {
+        "path": "src/core/analysis-fallback.ts",
+        "originalV1SHA256": "eda2ec9970bba7318c6cb1ce60520c54d2cee6ca7ff92f98416dfa781dbaff1e",
+        "correctedV2SHA256": "eda2ec9970bba7318c6cb1ce60520c54d2cee6ca7ff92f98416dfa781dbaff1e",
+        "byteExact": true,
+        "exactPermittedTransformation": true
+      },
+      {
+        "path": "src/core/analysis.ts",
+        "originalV1SHA256": "c88472cc97804003a83715e019a1c413c893e2de5be8779cc12b446bf1e3e5b9",
+        "correctedV2SHA256": "c88472cc97804003a83715e019a1c413c893e2de5be8779cc12b446bf1e3e5b9",
+        "byteExact": true,
+        "exactPermittedTransformation": true
+      },
+      {
+        "path": "src/core/chart-constraints.ts",
+        "originalV1SHA256": "35e4f304aed8eb2dfe49bb4dbae6d7b7db7b5deea34732a96dc7df05aeec1736",
+        "correctedV2SHA256": "35e4f304aed8eb2dfe49bb4dbae6d7b7db7b5deea34732a96dc7df05aeec1736",
+        "byteExact": true,
+        "exactPermittedTransformation": true
+      },
+      {
+        "path": "src/core/chart.ts",
+        "originalV1SHA256": "3721df1e86af87ed754904c6fc13faba33ca7ce3c10cff59bf0b498d8aae63ab",
+        "correctedV2SHA256": "3721df1e86af87ed754904c6fc13faba33ca7ce3c10cff59bf0b498d8aae63ab",
+        "byteExact": true,
+        "exactPermittedTransformation": true
+      },
+      {
+        "path": "src/core/chroma.ts",
+        "originalV1SHA256": "4172510959a332bfeff4970964dd5c8ad2a696d1725bbd1496481d8d82f84ded",
+        "correctedV2SHA256": "4172510959a332bfeff4970964dd5c8ad2a696d1725bbd1496481d8d82f84ded",
+        "byteExact": true,
+        "exactPermittedTransformation": true
+      },
+      {
+        "path": "src/core/clock-evidence.ts",
+        "originalV1SHA256": "128164a84bf29dc71667d9f82517dd0a595e6daf9b4045e69756c84e7e5b0c16",
+        "correctedV2SHA256": "128164a84bf29dc71667d9f82517dd0a595e6daf9b4045e69756c84e7e5b0c16",
+        "byteExact": true,
+        "exactPermittedTransformation": true
+      },
+      {
+        "path": "src/core/fingering.ts",
+        "originalV1SHA256": "797d6bc08a44163a261e4e02c22fe8ea4e57eff67bfd5fdc9a5d938b2b23d83e",
+        "correctedV2SHA256": "797d6bc08a44163a261e4e02c22fe8ea4e57eff67bfd5fdc9a5d938b2b23d83e",
+        "byteExact": true,
+        "exactPermittedTransformation": true
+      },
+      {
+        "path": "src/core/musical-events.ts",
+        "originalV1SHA256": "a4b51ea2fbb794656cbfabcaab3edbbe485925398f2afd2ccd82e991d2e3e185",
+        "correctedV2SHA256": "a4b51ea2fbb794656cbfabcaab3edbbe485925398f2afd2ccd82e991d2e3e185",
+        "byteExact": true,
+        "exactPermittedTransformation": true
+      },
+      {
+        "path": "src/core/onset-selection.ts",
+        "originalV1SHA256": "00a59956b5a27c49d78f6e8cb76fa1aa2bdde5d364d57a2815716a4b096c917f",
+        "correctedV2SHA256": "00a59956b5a27c49d78f6e8cb76fa1aa2bdde5d364d57a2815716a4b096c917f",
+        "byteExact": true,
+        "exactPermittedTransformation": true
+      },
+      {
+        "path": "src/core/patterns.ts",
+        "originalV1SHA256": "10966f254c5e5025ff8acd12986fa3218daa6e0467e75313768ce9833fe34ffc",
+        "correctedV2SHA256": "10966f254c5e5025ff8acd12986fa3218daa6e0467e75313768ce9833fe34ffc",
+        "byteExact": true,
+        "exactPermittedTransformation": true
+      },
+      {
+        "path": "src/core/phase-dp-kernel.ts",
+        "originalV1SHA256": "d0575991cc06e5470bb7ad420c1324d2b2f06909bb20e7ac82017ec499a8f438",
+        "correctedV2SHA256": "d0575991cc06e5470bb7ad420c1324d2b2f06909bb20e7ac82017ec499a8f438",
+        "byteExact": true,
+        "exactPermittedTransformation": true
+      },
+      {
+        "path": "src/core/phase-dp-types.ts",
+        "originalV1SHA256": "6e772327ea00d39b97d75e9a3e92fd471c0147a01008cb7a5de37d9e599b6abe",
+        "correctedV2SHA256": "6e772327ea00d39b97d75e9a3e92fd471c0147a01008cb7a5de37d9e599b6abe",
+        "byteExact": true,
+        "exactPermittedTransformation": true
+      },
+      {
+        "path": "src/core/phase-dp.ts",
+        "originalV1SHA256": "33165fa8deefc87d52c1b463a2dbd3ca08ecfad16e655b8fcfc365f839400ae6",
+        "correctedV2SHA256": "33165fa8deefc87d52c1b463a2dbd3ca08ecfad16e655b8fcfc365f839400ae6",
+        "byteExact": true,
+        "exactPermittedTransformation": true
+      },
+      {
+        "path": "src/core/phase-gate.ts",
+        "originalV1SHA256": "23f7a52d3a72076857868a8533995abaf0e009b16700514f3434ccb803901e01",
+        "correctedV2SHA256": "23f7a52d3a72076857868a8533995abaf0e009b16700514f3434ccb803901e01",
+        "byteExact": true,
+        "exactPermittedTransformation": true
+      },
+      {
+        "path": "src/core/phrases.ts",
+        "originalV1SHA256": "8d9029820b333c3f699cecf9998c950294f50d0fe72751cc3fd13b871c5dfc89",
+        "correctedV2SHA256": "8d9029820b333c3f699cecf9998c950294f50d0fe72751cc3fd13b871c5dfc89",
+        "byteExact": true,
+        "exactPermittedTransformation": true
+      },
+      {
+        "path": "src/core/rhythm-source.ts",
+        "originalV1SHA256": "878fe191a23b67d36545b06fd41428df5832f3ac53db6fbc29cb44ebe51c5a90",
+        "correctedV2SHA256": "878fe191a23b67d36545b06fd41428df5832f3ac53db6fbc29cb44ebe51c5a90",
+        "byteExact": true,
+        "exactPermittedTransformation": true
+      },
+      {
+        "path": "src/core/rhythm.ts",
+        "originalV1SHA256": "1303525b2a8ed07814d03bc4a7a57f4cc17ab7b62679ce6f9bf2430330238065",
+        "correctedV2SHA256": "764dc1cf4213bbd5f5eee47207346ea693a6348b528e95880c0fb88448f14cc2",
+        "byteExact": false,
+        "exactPermittedTransformation": true
+      },
+      {
+        "path": "src/core/signal-analysis.ts",
+        "originalV1SHA256": "d3f567273e7ded9c40da4cf6a32694b2360b062ef67519b6a144fc869e57eaeb",
+        "correctedV2SHA256": "d3f567273e7ded9c40da4cf6a32694b2360b062ef67519b6a144fc869e57eaeb",
+        "byteExact": true,
+        "exactPermittedTransformation": true
+      },
+      {
+        "path": "src/core/signal-binding.ts",
+        "originalV1SHA256": "93c9e516abe08a08a0a43c54f01591e2bd6f8f33ad6291f20ec946ce60e8e36d",
+        "correctedV2SHA256": "93c9e516abe08a08a0a43c54f01591e2bd6f8f33ad6291f20ec946ce60e8e36d",
+        "byteExact": true,
+        "exactPermittedTransformation": true
+      },
+      {
+        "path": "src/core/signal-events.ts",
+        "originalV1SHA256": "cfab9dd27bcd2d5a3daecce3ec4cf084e6897e5e72538ed3179d078ce6518c13",
+        "correctedV2SHA256": "cfab9dd27bcd2d5a3daecce3ec4cf084e6897e5e72538ed3179d078ce6518c13",
+        "byteExact": true,
+        "exactPermittedTransformation": true
+      },
+      {
+        "path": "src/core/signal-pool.ts",
+        "originalV1SHA256": "3d54e98503ada15b29f9018f2c23528bda98e2e8a30ad78cbc55272568c1855e",
+        "correctedV2SHA256": "3d54e98503ada15b29f9018f2c23528bda98e2e8a30ad78cbc55272568c1855e",
+        "byteExact": true,
+        "exactPermittedTransformation": true
+      },
+      {
+        "path": "src/core/slot-clock-affine.ts",
+        "originalV1SHA256": "7b37314cde33614fdc96d9936b5915ac7d026154bd3b483a615b5d27fe29f3c2",
+        "correctedV2SHA256": "7b37314cde33614fdc96d9936b5915ac7d026154bd3b483a615b5d27fe29f3c2",
+        "byteExact": true,
+        "exactPermittedTransformation": true
+      },
+      {
+        "path": "src/core/slot-clock-application.ts",
+        "originalV1SHA256": "6aada1c012c3099055e7916aace1d0153d01ac93a52244d2bf5f78aa0d57fe51",
+        "correctedV2SHA256": "1c07cf579bd3eda1f303509cfeb73d8571e85ac92bdfbec770cf7a61ddd0d710",
+        "byteExact": false,
+        "exactPermittedTransformation": true
+      },
+      {
+        "path": "src/core/slot-clock-contracts.ts",
+        "originalV1SHA256": "76a301afd260a474460e3a8f39dc69415ff56e886f654a420a9a0cbb845d6aea",
+        "correctedV2SHA256": "239ddd4713057bb73da8c1ab79278fcbf3c0ae08cdd4adaf9839eedd7c203fc0",
+        "byteExact": false,
+        "exactPermittedTransformation": true
+      },
+      {
+        "path": "src/core/slot-clock-path.ts",
+        "originalV1SHA256": "ff3a2cda58b1c29d54eaa07d4b04c504847a6372bda8dc00edea0485959498a4",
+        "correctedV2SHA256": "ff3a2cda58b1c29d54eaa07d4b04c504847a6372bda8dc00edea0485959498a4",
+        "byteExact": true,
+        "exactPermittedTransformation": true
+      },
+      {
+        "path": "src/core/slot-clock-readout.ts",
+        "originalV1SHA256": "96aa2fbecd175064708a5df77075f09dfc68aa88fc9ea9ad176dc98555abda1c",
+        "correctedV2SHA256": "088e109f59f21afa9f6a5e93efe06acfa0625e6095f33c05396ed0cce3260f6a",
+        "byteExact": false,
+        "exactPermittedTransformation": true
+      },
+      {
+        "path": "src/core/slot-clock-salience.ts",
+        "originalV1SHA256": "302b41f19762385d17f9b2b68a15d69e6113caf14dbc7c3a434611374bc7cc84",
+        "correctedV2SHA256": "302b41f19762385d17f9b2b68a15d69e6113caf14dbc7c3a434611374bc7cc84",
+        "byteExact": true,
+        "exactPermittedTransformation": true
+      },
+      {
+        "path": "src/core/slot-clock-selection.ts",
+        "originalV1SHA256": "1353cc7fb7f3a7e825cda025524aa94caba6b8a8d1dc662139a7f32bc5b3b580",
+        "correctedV2SHA256": "1353cc7fb7f3a7e825cda025524aa94caba6b8a8d1dc662139a7f32bc5b3b580",
+        "byteExact": true,
+        "exactPermittedTransformation": true
+      },
+      {
+        "path": "src/core/tempo-families.ts",
+        "originalV1SHA256": "b4181a948486c12a09ac81150b7bb6d095d3337768664d5ef5abb1889dd7920c",
+        "correctedV2SHA256": "b4181a948486c12a09ac81150b7bb6d095d3337768664d5ef5abb1889dd7920c",
+        "byteExact": true,
+        "exactPermittedTransformation": true
+      },
+      {
+        "path": "src/core/tempo-family-config.ts",
+        "originalV1SHA256": "3036bb40ce762546651cad5a890c54809b9264df6f45311b7ba1ae98f178d13d",
+        "correctedV2SHA256": "3036bb40ce762546651cad5a890c54809b9264df6f45311b7ba1ae98f178d13d",
+        "byteExact": true,
+        "exactPermittedTransformation": true
+      },
+      {
+        "path": "src/types.ts",
+        "originalV1SHA256": "fff7665b999a2132696fc147bde1841425786d3952b50fbb1cd106e8e7a5bbbd",
+        "correctedV2SHA256": "5f65bc3e27f583537924d1eda11f372ba41c6ec2c001553b08af115d157b0ff9",
+        "byteExact": false,
+        "exactPermittedTransformation": true
+      }
+    ]
+  },
+  "sourceGraph": {
+    "root": ".qa/slot-clock-application-v3/stock/C/",
+    "actualPreparationSHA256": "fd6bd356c3ede9d7af13c967b96b79f55daf4d7ef3691b61ab45bec3a545b603",
+    "staticBundleSHA256": "d89a313e4938ec61ee0614a8f8d58a9bc6c9627489110518526f08664a48c960",
+    "originalFailedPreparationSHA256": "0eeae1177fd69f49eb7dcc02c91379a99799e3e2b57cd2058dd787f1f237a175",
+    "originalFailureFreezeSHA256": "49eed757b29476be5532df76e159427db82de40f1a73d719d883afe7e9a1c7cd",
+    "numericalTrialBinding": null,
+    "noRegeneration": true,
+    "sourceRows": [
+      {
+        "path": "src/core/analysis-fallback.ts",
+        "bytes": 209,
+        "sha256": "eda2ec9970bba7318c6cb1ce60520c54d2cee6ca7ff92f98416dfa781dbaff1e",
+        "acceptedMainSHA256": "eda2ec9970bba7318c6cb1ce60520c54d2cee6ca7ff92f98416dfa781dbaff1e",
+        "status": "unchanged",
+        "origin": {
+          "kind": "accepted-main-unmodified",
+          "baselinePath": "src/core/analysis-fallback.ts"
+        }
+      },
+      {
+        "path": "src/core/analysis.ts",
+        "bytes": 858,
+        "sha256": "c88472cc97804003a83715e019a1c413c893e2de5be8779cc12b446bf1e3e5b9",
+        "acceptedMainSHA256": "e3f33c635510cbaf2c7f8d07a2d35230eca1617c03045ab58837d82d5f77b7e7",
+        "status": "modified",
+        "origin": {
+          "kind": "SC2-integration-on-accepted-main",
+          "baselinePath": "src/core/analysis.ts"
+        }
+      },
+      {
+        "path": "src/core/chart-constraints.ts",
+        "bytes": 1628,
+        "sha256": "35e4f304aed8eb2dfe49bb4dbae6d7b7db7b5deea34732a96dc7df05aeec1736",
+        "acceptedMainSHA256": "35e4f304aed8eb2dfe49bb4dbae6d7b7db7b5deea34732a96dc7df05aeec1736",
+        "status": "unchanged",
+        "origin": {
+          "kind": "accepted-main-unmodified",
+          "baselinePath": "src/core/chart-constraints.ts"
+        }
+      },
+      {
+        "path": "src/core/chart.ts",
+        "bytes": 10113,
+        "sha256": "3721df1e86af87ed754904c6fc13faba33ca7ce3c10cff59bf0b498d8aae63ab",
+        "acceptedMainSHA256": "25e9dfe901aac3248ff6e2d8d26d2ab465800094178b7090afc99bb2a6440c5f",
+        "status": "modified",
+        "origin": {
+          "kind": "SC2-integration-on-accepted-main",
+          "baselinePath": "src/core/chart.ts"
+        }
+      },
+      {
+        "path": "src/core/chroma.ts",
+        "bytes": 2431,
+        "sha256": "4172510959a332bfeff4970964dd5c8ad2a696d1725bbd1496481d8d82f84ded",
+        "acceptedMainSHA256": "4172510959a332bfeff4970964dd5c8ad2a696d1725bbd1496481d8d82f84ded",
+        "status": "unchanged",
+        "origin": {
+          "kind": "accepted-main-unmodified",
+          "baselinePath": "src/core/chroma.ts"
+        }
+      },
+      {
+        "path": "src/core/clock-evidence.ts",
+        "bytes": 2638,
+        "sha256": "128164a84bf29dc71667d9f82517dd0a595e6daf9b4045e69756c84e7e5b0c16",
+        "acceptedMainSHA256": "128164a84bf29dc71667d9f82517dd0a595e6daf9b4045e69756c84e7e5b0c16",
+        "status": "unchanged",
+        "origin": {
+          "kind": "accepted-main-unmodified",
+          "baselinePath": "src/core/clock-evidence.ts"
+        }
+      },
+      {
+        "path": "src/core/fingering.ts",
+        "bytes": 5318,
+        "sha256": "797d6bc08a44163a261e4e02c22fe8ea4e57eff67bfd5fdc9a5d938b2b23d83e",
+        "acceptedMainSHA256": "797d6bc08a44163a261e4e02c22fe8ea4e57eff67bfd5fdc9a5d938b2b23d83e",
+        "status": "unchanged",
+        "origin": {
+          "kind": "accepted-main-unmodified",
+          "baselinePath": "src/core/fingering.ts"
+        }
+      },
+      {
+        "path": "src/core/musical-events.ts",
+        "bytes": 6183,
+        "sha256": "a4b51ea2fbb794656cbfabcaab3edbbe485925398f2afd2ccd82e991d2e3e185",
+        "acceptedMainSHA256": "a4b51ea2fbb794656cbfabcaab3edbbe485925398f2afd2ccd82e991d2e3e185",
+        "status": "unchanged",
+        "origin": {
+          "kind": "accepted-main-unmodified",
+          "baselinePath": "src/core/musical-events.ts"
+        }
+      },
+      {
+        "path": "src/core/onset-selection.ts",
+        "bytes": 2099,
+        "sha256": "00a59956b5a27c49d78f6e8cb76fa1aa2bdde5d364d57a2815716a4b096c917f",
+        "acceptedMainSHA256": "00a59956b5a27c49d78f6e8cb76fa1aa2bdde5d364d57a2815716a4b096c917f",
+        "status": "unchanged",
+        "origin": {
+          "kind": "accepted-main-unmodified",
+          "baselinePath": "src/core/onset-selection.ts"
+        }
+      },
+      {
+        "path": "src/core/patterns.ts",
+        "bytes": 4133,
+        "sha256": "10966f254c5e5025ff8acd12986fa3218daa6e0467e75313768ce9833fe34ffc",
+        "acceptedMainSHA256": "10966f254c5e5025ff8acd12986fa3218daa6e0467e75313768ce9833fe34ffc",
+        "status": "unchanged",
+        "origin": {
+          "kind": "accepted-main-unmodified",
+          "baselinePath": "src/core/patterns.ts"
+        }
+      },
+      {
+        "path": "src/core/phase-dp-kernel.ts",
+        "bytes": 11547,
+        "sha256": "d0575991cc06e5470bb7ad420c1324d2b2f06909bb20e7ac82017ec499a8f438",
+        "acceptedMainSHA256": "d0575991cc06e5470bb7ad420c1324d2b2f06909bb20e7ac82017ec499a8f438",
+        "status": "unchanged",
+        "origin": {
+          "kind": "accepted-main-unmodified",
+          "baselinePath": "src/core/phase-dp-kernel.ts"
+        }
+      },
+      {
+        "path": "src/core/phase-dp-types.ts",
+        "bytes": 2398,
+        "sha256": "6e772327ea00d39b97d75e9a3e92fd471c0147a01008cb7a5de37d9e599b6abe",
+        "acceptedMainSHA256": "737c54e98f9f614ed997a207624d1556b666df2fe40fbfb8d1f5532c1eae798f",
+        "status": "modified",
+        "origin": {
+          "kind": "SC2-integration-on-accepted-main",
+          "baselinePath": "src/core/phase-dp-types.ts"
+        }
+      },
+      {
+        "path": "src/core/phase-dp.ts",
+        "bytes": 1725,
+        "sha256": "33165fa8deefc87d52c1b463a2dbd3ca08ecfad16e655b8fcfc365f839400ae6",
+        "acceptedMainSHA256": "33165fa8deefc87d52c1b463a2dbd3ca08ecfad16e655b8fcfc365f839400ae6",
+        "status": "unchanged",
+        "origin": {
+          "kind": "accepted-main-unmodified",
+          "baselinePath": "src/core/phase-dp.ts"
+        }
+      },
+      {
+        "path": "src/core/phase-gate.ts",
+        "bytes": 1777,
+        "sha256": "23f7a52d3a72076857868a8533995abaf0e009b16700514f3434ccb803901e01",
+        "acceptedMainSHA256": "23f7a52d3a72076857868a8533995abaf0e009b16700514f3434ccb803901e01",
+        "status": "unchanged",
+        "origin": {
+          "kind": "accepted-main-unmodified",
+          "baselinePath": "src/core/phase-gate.ts"
+        }
+      },
+      {
+        "path": "src/core/phrases.ts",
+        "bytes": 9223,
+        "sha256": "8d9029820b333c3f699cecf9998c950294f50d0fe72751cc3fd13b871c5dfc89",
+        "acceptedMainSHA256": "8d9029820b333c3f699cecf9998c950294f50d0fe72751cc3fd13b871c5dfc89",
+        "status": "unchanged",
+        "origin": {
+          "kind": "accepted-main-unmodified",
+          "baselinePath": "src/core/phrases.ts"
+        }
+      },
+      {
+        "path": "src/core/rhythm-source.ts",
+        "bytes": 8488,
+        "sha256": "878fe191a23b67d36545b06fd41428df5832f3ac53db6fbc29cb44ebe51c5a90",
+        "acceptedMainSHA256": "878fe191a23b67d36545b06fd41428df5832f3ac53db6fbc29cb44ebe51c5a90",
+        "status": "unchanged",
+        "origin": {
+          "kind": "accepted-main-unmodified",
+          "baselinePath": "src/core/rhythm-source.ts"
+        }
+      },
+      {
+        "path": "src/core/rhythm.ts",
+        "bytes": 5998,
+        "sha256": "764dc1cf4213bbd5f5eee47207346ea693a6348b528e95880c0fb88448f14cc2",
+        "acceptedMainSHA256": "f79cdafab5bc406f50c6bff63506fbf46f15db8ec2a83b2d8e702250b3a28dd9",
+        "status": "modified",
+        "origin": {
+          "kind": "SC2-integration-on-accepted-main",
+          "baselinePath": "src/core/rhythm.ts"
+        }
+      },
+      {
+        "path": "src/core/signal-analysis.ts",
+        "bytes": 11057,
+        "sha256": "d3f567273e7ded9c40da4cf6a32694b2360b062ef67519b6a144fc869e57eaeb",
+        "acceptedMainSHA256": "51ae75faeebee18a8c1f4a0e22e063d0067c0e5cd1f37fb8a5b045471682ce98",
+        "status": "modified",
+        "origin": {
+          "kind": "SC2-integration-on-accepted-main",
+          "baselinePath": "src/core/signal-analysis.ts"
+        }
+      },
+      {
+        "path": "src/core/signal-binding.ts",
+        "bytes": 2448,
+        "sha256": "93c9e516abe08a08a0a43c54f01591e2bd6f8f33ad6291f20ec946ce60e8e36d",
+        "acceptedMainSHA256": "93c9e516abe08a08a0a43c54f01591e2bd6f8f33ad6291f20ec946ce60e8e36d",
+        "status": "unchanged",
+        "origin": {
+          "kind": "accepted-main-unmodified",
+          "baselinePath": "src/core/signal-binding.ts"
+        }
+      },
+      {
+        "path": "src/core/signal-events.ts",
+        "bytes": 1474,
+        "sha256": "cfab9dd27bcd2d5a3daecce3ec4cf084e6897e5e72538ed3179d078ce6518c13",
+        "acceptedMainSHA256": "cfab9dd27bcd2d5a3daecce3ec4cf084e6897e5e72538ed3179d078ce6518c13",
+        "status": "unchanged",
+        "origin": {
+          "kind": "accepted-main-unmodified",
+          "baselinePath": "src/core/signal-events.ts"
+        }
+      },
+      {
+        "path": "src/core/signal-pool.ts",
+        "bytes": 2135,
+        "sha256": "3d54e98503ada15b29f9018f2c23528bda98e2e8a30ad78cbc55272568c1855e",
+        "acceptedMainSHA256": "3d54e98503ada15b29f9018f2c23528bda98e2e8a30ad78cbc55272568c1855e",
+        "status": "unchanged",
+        "origin": {
+          "kind": "accepted-main-unmodified",
+          "baselinePath": "src/core/signal-pool.ts"
+        }
+      },
+      {
+        "path": "src/core/slot-clock-affine.ts",
+        "bytes": 36341,
+        "sha256": "7b37314cde33614fdc96d9936b5915ac7d026154bd3b483a615b5d27fe29f3c2",
+        "acceptedMainSHA256": null,
+        "status": "added",
+        "origin": {
+          "kind": "SC2-explicit-helper-reuse-or-adaptation",
+          "path": ".qa/slot-clock-v3/slot-affine.ts",
+          "sha256": "7b37314cde33614fdc96d9936b5915ac7d026154bd3b483a615b5d27fe29f3c2",
+          "generatedRelativeImports": true,
+          "derivation": {
+            "unit": "slot-affine.ts",
+            "origin": ".qa/slot-clock-v2/slot-affine.ts",
+            "originSHA256": "7b37314cde33614fdc96d9936b5915ac7d026154bd3b483a615b5d27fe29f3c2",
+            "destination": ".qa/slot-clock-v3/slot-affine.ts",
+            "destinationSHA256": "7b37314cde33614fdc96d9936b5915ac7d026154bd3b483a615b5d27fe29f3c2",
+            "byteIdentical": true,
+            "allowedTransforms": []
+          }
+        }
+      },
+      {
+        "path": "src/core/slot-clock-application.ts",
+        "bytes": 15094,
+        "sha256": "1c07cf579bd3eda1f303509cfeb73d8571e85ac92bdfbec770cf7a61ddd0d710",
+        "acceptedMainSHA256": null,
+        "status": "added",
+        "origin": {
+          "kind": "SC2-explicit-helper-reuse-or-adaptation",
+          "path": ".qa/slot-clock-v3/application.ts",
+          "sha256": "57b4ba05d16f8589655655914d0097717cc9b8881dbbe630ee8f24844ca6de7c",
+          "generatedRelativeImports": true,
+          "derivation": {
+            "unit": "application.ts",
+            "origin": ".qa/slot-clock-v2/application.ts",
+            "originSHA256": "ab776f15981471a486efba23af9ab9339d1ae19c53f01e808573ed05fb00253b",
+            "destination": ".qa/slot-clock-v3/application.ts",
+            "destinationSHA256": "57b4ba05d16f8589655655914d0097717cc9b8881dbbe630ee8f24844ca6de7c",
+            "byteIdentical": false,
+            "allowedTransforms": [
+              {
+                "kind": "version-marker-only",
+                "before": "SC2-slot/v1",
+                "after": "SC2-slot/v2",
+                "occurrences": 5
+              }
+            ]
+          }
+        }
+      },
+      {
+        "path": "src/core/slot-clock-contracts.ts",
+        "bytes": 5338,
+        "sha256": "239ddd4713057bb73da8c1ab79278fcbf3c0ae08cdd4adaf9839eedd7c203fc0",
+        "acceptedMainSHA256": null,
+        "status": "added",
+        "origin": {
+          "kind": "SC2-explicit-helper-reuse-or-adaptation",
+          "path": ".qa/slot-clock-v3/contracts.ts",
+          "sha256": "30e47314eeb57b8e977a29095113eafa0c72b0ab426ca13176f2dd9b7fa1b172",
+          "generatedRelativeImports": true,
+          "derivation": {
+            "unit": "contracts.ts",
+            "origin": ".qa/slot-clock-v2/contracts.ts",
+            "originSHA256": "48881f854b63c41c35f920504f4d9de956d221359f7217d69f9357cadcdc3a8d",
+            "destination": ".qa/slot-clock-v3/contracts.ts",
+            "destinationSHA256": "30e47314eeb57b8e977a29095113eafa0c72b0ab426ca13176f2dd9b7fa1b172",
+            "byteIdentical": false,
+            "allowedTransforms": [
+              {
+                "kind": "version-marker-only",
+                "before": "SC2-slot/v1",
+                "after": "SC2-slot/v2",
+                "occurrences": 1
+              }
+            ]
+          }
+        }
+      },
+      {
+        "path": "src/core/slot-clock-path.ts",
+        "bytes": 14547,
+        "sha256": "ff3a2cda58b1c29d54eaa07d4b04c504847a6372bda8dc00edea0485959498a4",
+        "acceptedMainSHA256": null,
+        "status": "added",
+        "origin": {
+          "kind": "SC2-explicit-helper-reuse-or-adaptation",
+          "path": ".qa/slot-clock-v3/barrier-path.ts",
+          "sha256": "ff3a2cda58b1c29d54eaa07d4b04c504847a6372bda8dc00edea0485959498a4",
+          "generatedRelativeImports": true,
+          "derivation": {
+            "unit": "barrier-path.ts",
+            "origin": ".qa/slot-clock-v2/barrier-path.ts",
+            "originSHA256": "ff3a2cda58b1c29d54eaa07d4b04c504847a6372bda8dc00edea0485959498a4",
+            "destination": ".qa/slot-clock-v3/barrier-path.ts",
+            "destinationSHA256": "ff3a2cda58b1c29d54eaa07d4b04c504847a6372bda8dc00edea0485959498a4",
+            "byteIdentical": true,
+            "allowedTransforms": []
+          }
+        }
+      },
+      {
+        "path": "src/core/slot-clock-readout.ts",
+        "bytes": 18529,
+        "sha256": "088e109f59f21afa9f6a5e93efe06acfa0625e6095f33c05396ed0cce3260f6a",
+        "acceptedMainSHA256": null,
+        "status": "added",
+        "origin": {
+          "kind": "SC2-explicit-helper-reuse-or-adaptation",
+          "path": ".qa/slot-clock-v3/readout.ts",
+          "sha256": "0afef6d45f44e719937b82e214538cc2a9db98f1d57a9316794ce164cbddc08b",
+          "generatedRelativeImports": true,
+          "derivation": {
+            "unit": "readout.ts",
+            "origin": ".qa/slot-clock-v2/readout.ts",
+            "originSHA256": "5939233c29e421881d57b1d0ca0302711bb926e1a277c4b6ee1566f3c5550728",
+            "destination": ".qa/slot-clock-v3/readout.ts",
+            "destinationSHA256": "0afef6d45f44e719937b82e214538cc2a9db98f1d57a9316794ce164cbddc08b",
+            "byteIdentical": false,
+            "allowedTransforms": [
+              {
+                "kind": "version-marker-only",
+                "before": "SC2-slot/v1",
+                "after": "SC2-slot/v2",
+                "occurrences": 1
+              },
+              {
+                "kind": "only-semantic-code-change",
+                "before": "(!Number.isFinite(hypothesis.totalEvidence) || hypothesis.totalEvidence < 0)",
+                "after": "!Number.isFinite(hypothesis.totalEvidence)",
+                "reason": "Original totalEvidence is finite signed directIOI + demeaned ACF"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "path": "src/core/slot-clock-salience.ts",
+        "bytes": 9635,
+        "sha256": "302b41f19762385d17f9b2b68a15d69e6113caf14dbc7c3a434611374bc7cc84",
+        "acceptedMainSHA256": null,
+        "status": "added",
+        "origin": {
+          "kind": "SC2-explicit-helper-reuse-or-adaptation",
+          "path": ".qa/slot-clock-v3/salience.ts",
+          "sha256": "2b21f7f5935773db2a1f3bdc82802d9e43192831b2a43f63aced5fb41459882a",
+          "generatedRelativeImports": true,
+          "derivation": {
+            "unit": "salience.ts",
+            "origin": ".qa/slot-clock-v2/salience.ts",
+            "originSHA256": "2b21f7f5935773db2a1f3bdc82802d9e43192831b2a43f63aced5fb41459882a",
+            "destination": ".qa/slot-clock-v3/salience.ts",
+            "destinationSHA256": "2b21f7f5935773db2a1f3bdc82802d9e43192831b2a43f63aced5fb41459882a",
+            "byteIdentical": true,
+            "allowedTransforms": []
+          }
+        }
+      },
+      {
+        "path": "src/core/slot-clock-selection.ts",
+        "bytes": 1508,
+        "sha256": "1353cc7fb7f3a7e825cda025524aa94caba6b8a8d1dc662139a7f32bc5b3b580",
+        "acceptedMainSHA256": null,
+        "status": "added",
+        "origin": {
+          "kind": "SC2-explicit-helper-reuse-or-adaptation",
+          "path": ".qa/slot-clock-v3/selection.ts",
+          "sha256": "0ea0e339e3e235efdc7f0108c04396e70e309ec4ea248c5667d4a446e7fd2296",
+          "generatedRelativeImports": true,
+          "derivation": {
+            "unit": "selection.ts",
+            "origin": ".qa/slot-clock-v2/selection.ts",
+            "originSHA256": "0ea0e339e3e235efdc7f0108c04396e70e309ec4ea248c5667d4a446e7fd2296",
+            "destination": ".qa/slot-clock-v3/selection.ts",
+            "destinationSHA256": "0ea0e339e3e235efdc7f0108c04396e70e309ec4ea248c5667d4a446e7fd2296",
+            "byteIdentical": true,
+            "allowedTransforms": []
+          }
+        }
+      },
+      {
+        "path": "src/core/tempo-families.ts",
+        "bytes": 17285,
+        "sha256": "b4181a948486c12a09ac81150b7bb6d095d3337768664d5ef5abb1889dd7920c",
+        "acceptedMainSHA256": "b4181a948486c12a09ac81150b7bb6d095d3337768664d5ef5abb1889dd7920c",
+        "status": "unchanged",
+        "origin": {
+          "kind": "accepted-main-unmodified",
+          "baselinePath": "src/core/tempo-families.ts"
+        }
+      },
+      {
+        "path": "src/core/tempo-family-config.ts",
+        "bytes": 727,
+        "sha256": "3036bb40ce762546651cad5a890c54809b9264df6f45311b7ba1ae98f178d13d",
+        "acceptedMainSHA256": "3036bb40ce762546651cad5a890c54809b9264df6f45311b7ba1ae98f178d13d",
+        "status": "unchanged",
+        "origin": {
+          "kind": "accepted-main-unmodified",
+          "baselinePath": "src/core/tempo-family-config.ts"
+        }
+      },
+      {
+        "path": "src/types.ts",
+        "bytes": 2545,
+        "sha256": "5f65bc3e27f583537924d1eda11f372ba41c6ec2c001553b08af115d157b0ff9",
+        "acceptedMainSHA256": "37cad5619425d6d7387ba0024e03eb5a116a2f21dc377c1990ec0622393d1390",
+        "status": "modified",
+        "origin": {
+          "kind": "SC2-integration-on-accepted-main",
+          "baselinePath": "src/types.ts"
+        }
+      }
+    ],
+    "relativeImportEdges": [
+      {
+        "from": "src/core/analysis-fallback.ts",
+        "to": "src/types.ts"
+      },
+      {
+        "from": "src/core/analysis.ts",
+        "to": "src/core/signal-analysis.ts"
+      },
+      {
+        "from": "src/core/analysis.ts",
+        "to": "src/core/signal-binding.ts"
+      },
+      {
+        "from": "src/core/analysis.ts",
+        "to": "src/core/slot-clock-application.ts"
+      },
+      {
+        "from": "src/core/analysis.ts",
+        "to": "src/types.ts"
+      },
+      {
+        "from": "src/core/analysis.ts",
+        "to": "src/core/signal-analysis.ts"
+      },
+      {
+        "from": "src/core/chart-constraints.ts",
+        "to": "src/types.ts"
+      },
+      {
+        "from": "src/core/chart.ts",
+        "to": "src/core/slot-clock-salience.ts"
+      },
+      {
+        "from": "src/core/chart.ts",
+        "to": "src/core/slot-clock-application.ts"
+      },
+      {
+        "from": "src/core/chart.ts",
+        "to": "src/core/slot-clock-selection.ts"
+      },
+      {
+        "from": "src/core/chart.ts",
+        "to": "src/types.ts"
+      },
+      {
+        "from": "src/core/chart.ts",
+        "to": "src/core/phrases.ts"
+      },
+      {
+        "from": "src/core/chart.ts",
+        "to": "src/core/chart-constraints.ts"
+      },
+      {
+        "from": "src/core/chart.ts",
+        "to": "src/core/rhythm.ts"
+      },
+      {
+        "from": "src/core/chart.ts",
+        "to": "src/core/patterns.ts"
+      },
+      {
+        "from": "src/core/chart.ts",
+        "to": "src/core/fingering.ts"
+      },
+      {
+        "from": "src/core/chart.ts",
+        "to": "src/core/onset-selection.ts"
+      },
+      {
+        "from": "src/core/chart.ts",
+        "to": "src/core/signal-events.ts"
+      },
+      {
+        "from": "src/core/clock-evidence.ts",
+        "to": "src/types.ts"
+      },
+      {
+        "from": "src/core/fingering.ts",
+        "to": "src/types.ts"
+      },
+      {
+        "from": "src/core/fingering.ts",
+        "to": "src/core/chart-constraints.ts"
+      },
+      {
+        "from": "src/core/musical-events.ts",
+        "to": "src/types.ts"
+      },
+      {
+        "from": "src/core/musical-events.ts",
+        "to": "src/core/rhythm.ts"
+      },
+      {
+        "from": "src/core/onset-selection.ts",
+        "to": "src/types.ts"
+      },
+      {
+        "from": "src/core/patterns.ts",
+        "to": "src/types.ts"
+      },
+      {
+        "from": "src/core/patterns.ts",
+        "to": "src/core/rhythm.ts"
+      },
+      {
+        "from": "src/core/phase-dp-kernel.ts",
+        "to": "src/core/phase-dp-types.ts"
+      },
+      {
+        "from": "src/core/phase-dp.ts",
+        "to": "src/core/phase-dp-types.ts"
+      },
+      {
+        "from": "src/core/phase-dp.ts",
+        "to": "src/core/phase-dp-kernel.ts"
+      },
+      {
+        "from": "src/core/phase-gate.ts",
+        "to": "src/types.ts"
+      },
+      {
+        "from": "src/core/phase-gate.ts",
+        "to": "src/core/tempo-families.ts"
+      },
+      {
+        "from": "src/core/phase-gate.ts",
+        "to": "src/core/clock-evidence.ts"
+      },
+      {
+        "from": "src/core/phrases.ts",
+        "to": "src/types.ts"
+      },
+      {
+        "from": "src/core/phrases.ts",
+        "to": "src/core/chart-constraints.ts"
+      },
+      {
+        "from": "src/core/phrases.ts",
+        "to": "src/core/rhythm.ts"
+      },
+      {
+        "from": "src/core/phrases.ts",
+        "to": "src/core/patterns.ts"
+      },
+      {
+        "from": "src/core/rhythm-source.ts",
+        "to": "src/types.ts"
+      },
+      {
+        "from": "src/core/rhythm.ts",
+        "to": "src/core/phase-gate.ts"
+      },
+      {
+        "from": "src/core/rhythm.ts",
+        "to": "src/core/phase-dp.ts"
+      },
+      {
+        "from": "src/core/rhythm.ts",
+        "to": "src/core/tempo-families.ts"
+      },
+      {
+        "from": "src/core/rhythm.ts",
+        "to": "src/types.ts"
+      },
+      {
+        "from": "src/core/signal-analysis.ts",
+        "to": "src/core/slot-clock-application.ts"
+      },
+      {
+        "from": "src/core/signal-analysis.ts",
+        "to": "src/core/clock-evidence.ts"
+      },
+      {
+        "from": "src/core/signal-analysis.ts",
+        "to": "src/core/clock-evidence.ts"
+      },
+      {
+        "from": "src/core/signal-analysis.ts",
+        "to": "src/types.ts"
+      },
+      {
+        "from": "src/core/signal-analysis.ts",
+        "to": "src/core/rhythm.ts"
+      },
+      {
+        "from": "src/core/signal-analysis.ts",
+        "to": "src/core/chroma.ts"
+      },
+      {
+        "from": "src/core/signal-analysis.ts",
+        "to": "src/core/rhythm-source.ts"
+      },
+      {
+        "from": "src/core/signal-analysis.ts",
+        "to": "src/core/signal-events.ts"
+      },
+      {
+        "from": "src/core/signal-binding.ts",
+        "to": "src/types.ts"
+      },
+      {
+        "from": "src/core/signal-binding.ts",
+        "to": "src/core/musical-events.ts"
+      },
+      {
+        "from": "src/core/signal-binding.ts",
+        "to": "src/core/signal-pool.ts"
+      },
+      {
+        "from": "src/core/signal-binding.ts",
+        "to": "src/core/clock-evidence.ts"
+      },
+      {
+        "from": "src/core/signal-binding.ts",
+        "to": "src/core/signal-pool.ts"
+      },
+      {
+        "from": "src/core/signal-binding.ts",
+        "to": "src/core/signal-pool.ts"
+      },
+      {
+        "from": "src/core/signal-events.ts",
+        "to": "src/types.ts"
+      },
+      {
+        "from": "src/core/signal-events.ts",
+        "to": "src/core/musical-events.ts"
+      },
+      {
+        "from": "src/core/signal-pool.ts",
+        "to": "src/types.ts"
+      },
+      {
+        "from": "src/core/signal-pool.ts",
+        "to": "src/core/clock-evidence.ts"
+      },
+      {
+        "from": "src/core/slot-clock-application.ts",
+        "to": "src/types.ts"
+      },
+      {
+        "from": "src/core/slot-clock-application.ts",
+        "to": "src/core/slot-clock-contracts.ts"
+      },
+      {
+        "from": "src/core/slot-clock-application.ts",
+        "to": "src/core/slot-clock-readout.ts"
+      },
+      {
+        "from": "src/core/slot-clock-application.ts",
+        "to": "src/core/slot-clock-salience.ts"
+      },
+      {
+        "from": "src/core/slot-clock-contracts.ts",
+        "to": "src/core/slot-clock-affine.ts"
+      },
+      {
+        "from": "src/core/slot-clock-readout.ts",
+        "to": "src/core/slot-clock-affine.ts"
+      },
+      {
+        "from": "src/core/slot-clock-readout.ts",
+        "to": "src/core/slot-clock-path.ts"
+      },
+      {
+        "from": "src/core/slot-clock-readout.ts",
+        "to": "src/core/slot-clock-contracts.ts"
+      },
+      {
+        "from": "src/core/slot-clock-salience.ts",
+        "to": "src/types.ts"
+      },
+      {
+        "from": "src/core/slot-clock-selection.ts",
+        "to": "src/core/slot-clock-application.ts"
+      },
+      {
+        "from": "src/core/tempo-families.ts",
+        "to": "src/core/tempo-family-config.ts"
+      },
+      {
+        "from": "src/core/tempo-families.ts",
+        "to": "src/core/tempo-family-config.ts"
+      },
+      {
+        "from": "src/types.ts",
+        "to": "src/core/slot-clock-application.ts"
+      },
+      {
+        "from": "src/types.ts",
+        "to": "src/core/slot-clock-salience.ts"
+      }
+    ],
+    "externalImports": [
+      "fft.js"
+    ],
+    "excludedPredecessorModules": [
+      "event-clock-affine",
+      "event-clock-path",
+      "event-clock-readout",
+      "rational-metre",
+      "metrical-matching",
+      "conditional-content",
+      "tactus-readout",
+      "tactus-carrier"
+    ],
+    "commentsMayMentionRejectedPredecessor": true
+  },
+  "scope": "Source-only passive archive of the corrected SC2-slot/v2 static source graph. No numerical trial binding or quality claim. No candidate/source/helper/optimizer/Chart/analyzer/FFT/metric calls, audio/PCM reads, tracked writes, commits or publication by these scripts. Original failed v1 archive is preserved separately.",
+  "expectedIndependentVerification": {
+    "baselineSourceCount": 24,
+    "actualCandidateSourceCount": 31,
+    "command": "ordinary git apply --check then git apply in a separate QA baseline tree",
+    "compare": "all applied TypeScript source bytes and exact inventory versus actual corrected static C31",
+    "report": "source-verification.json"
+  }
+}

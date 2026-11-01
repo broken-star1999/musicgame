@@ -1,0 +1,220 @@
+{
+  "schema": 1,
+  "passiveSourceVerification": true,
+  "complete": true,
+  "passed": true,
+  "numericalCalls": 0,
+  "baselineCommit": "aeaf78284cb66601fd02bf9e40eaf99642285689",
+  "candidate": "SC2-slot/v2",
+  "ordinaryGitApplyCheck": true,
+  "ordinaryGitApply": true,
+  "scratchCommit": false,
+  "acceptedBaselineFiles": 24,
+  "allActualCSourceFilesCompared": 31,
+  "byteIdenticalFiles": 31,
+  "exactInventory": true,
+  "analysisMetadataProperty": "Analysis.slotClock",
+  "salienceMetadataProperty": "Analysis.arrangementSalience",
+  "compatibilityFilenameAliases": 0,
+  "signedFiniteDomainCorrectionIncluded": true,
+  "originalFailedV1ArchivePreserved": true,
+  "all31ExactPermittedV1Transformations": true,
+  "numericalTrialBinding": null,
+  "runtimeSrcDependenciesPublicUnchanged": true,
+  "noSourceGraphRegeneration": true,
+  "independentTree": ".qa/slot-clock-public-archive-v3/apply-check-tree",
+  "patchSHA256": "08f628cd91b86871c6fd360f72c661ff57f03ecaa5342035ff57b1526e1f9052",
+  "sourceManifestSHA256": "b8d886c44e21728adaa748b2cff77fcedfbcb6ba5dd30caf70fc6b24bb0c4191",
+  "actualPreparationSHA256": "fd6bd356c3ede9d7af13c967b96b79f55daf4d7ef3691b61ab45bec3a545b603",
+  "staticBundleSHA256": "d89a313e4938ec61ee0614a8f8d58a9bc6c9627489110518526f08664a48c960",
+  "originalFailureFreezeSHA256": "49eed757b29476be5532df76e159427db82de40f1a73d719d883afe7e9a1c7cd",
+  "comparisons": [
+    {
+      "path": "src/core/analysis-fallback.ts",
+      "bytes": 209,
+      "sha256": "eda2ec9970bba7318c6cb1ce60520c54d2cee6ca7ff92f98416dfa781dbaff1e",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/analysis.ts",
+      "bytes": 858,
+      "sha256": "c88472cc97804003a83715e019a1c413c893e2de5be8779cc12b446bf1e3e5b9",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/chart-constraints.ts",
+      "bytes": 1628,
+      "sha256": "35e4f304aed8eb2dfe49bb4dbae6d7b7db7b5deea34732a96dc7df05aeec1736",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/chart.ts",
+      "bytes": 10113,
+      "sha256": "3721df1e86af87ed754904c6fc13faba33ca7ce3c10cff59bf0b498d8aae63ab",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/chroma.ts",
+      "bytes": 2431,
+      "sha256": "4172510959a332bfeff4970964dd5c8ad2a696d1725bbd1496481d8d82f84ded",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/clock-evidence.ts",
+      "bytes": 2638,
+      "sha256": "128164a84bf29dc71667d9f82517dd0a595e6daf9b4045e69756c84e7e5b0c16",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/fingering.ts",
+      "bytes": 5318,
+      "sha256": "797d6bc08a44163a261e4e02c22fe8ea4e57eff67bfd5fdc9a5d938b2b23d83e",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/musical-events.ts",
+      "bytes": 6183,
+      "sha256": "a4b51ea2fbb794656cbfabcaab3edbbe485925398f2afd2ccd82e991d2e3e185",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/onset-selection.ts",
+      "bytes": 2099,
+      "sha256": "00a59956b5a27c49d78f6e8cb76fa1aa2bdde5d364d57a2815716a4b096c917f",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/patterns.ts",
+      "bytes": 4133,
+      "sha256": "10966f254c5e5025ff8acd12986fa3218daa6e0467e75313768ce9833fe34ffc",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/phase-dp-kernel.ts",
+      "bytes": 11547,
+      "sha256": "d0575991cc06e5470bb7ad420c1324d2b2f06909bb20e7ac82017ec499a8f438",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/phase-dp-types.ts",
+      "bytes": 2398,
+      "sha256": "6e772327ea00d39b97d75e9a3e92fd471c0147a01008cb7a5de37d9e599b6abe",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/phase-dp.ts",
+      "bytes": 1725,
+      "sha256": "33165fa8deefc87d52c1b463a2dbd3ca08ecfad16e655b8fcfc365f839400ae6",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/phase-gate.ts",
+      "bytes": 1777,
+      "sha256": "23f7a52d3a72076857868a8533995abaf0e009b16700514f3434ccb803901e01",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/phrases.ts",
+      "bytes": 9223,
+      "sha256": "8d9029820b333c3f699cecf9998c950294f50d0fe72751cc3fd13b871c5dfc89",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/rhythm-source.ts",
+      "bytes": 8488,
+      "sha256": "878fe191a23b67d36545b06fd41428df5832f3ac53db6fbc29cb44ebe51c5a90",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/rhythm.ts",
+      "bytes": 5998,
+      "sha256": "764dc1cf4213bbd5f5eee47207346ea693a6348b528e95880c0fb88448f14cc2",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/signal-analysis.ts",
+      "bytes": 11057,
+      "sha256": "d3f567273e7ded9c40da4cf6a32694b2360b062ef67519b6a144fc869e57eaeb",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/signal-binding.ts",
+      "bytes": 2448,
+      "sha256": "93c9e516abe08a08a0a43c54f01591e2bd6f8f33ad6291f20ec946ce60e8e36d",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/signal-events.ts",
+      "bytes": 1474,
+      "sha256": "cfab9dd27bcd2d5a3daecce3ec4cf084e6897e5e72538ed3179d078ce6518c13",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/signal-pool.ts",
+      "bytes": 2135,
+      "sha256": "3d54e98503ada15b29f9018f2c23528bda98e2e8a30ad78cbc55272568c1855e",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/slot-clock-affine.ts",
+      "bytes": 36341,
+      "sha256": "7b37314cde33614fdc96d9936b5915ac7d026154bd3b483a615b5d27fe29f3c2",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/slot-clock-application.ts",
+      "bytes": 15094,
+      "sha256": "1c07cf579bd3eda1f303509cfeb73d8571e85ac92bdfbec770cf7a61ddd0d710",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/slot-clock-contracts.ts",
+      "bytes": 5338,
+      "sha256": "239ddd4713057bb73da8c1ab79278fcbf3c0ae08cdd4adaf9839eedd7c203fc0",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/slot-clock-path.ts",
+      "bytes": 14547,
+      "sha256": "ff3a2cda58b1c29d54eaa07d4b04c504847a6372bda8dc00edea0485959498a4",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/slot-clock-readout.ts",
+      "bytes": 18529,
+      "sha256": "088e109f59f21afa9f6a5e93efe06acfa0625e6095f33c05396ed0cce3260f6a",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/slot-clock-salience.ts",
+      "bytes": 9635,
+      "sha256": "302b41f19762385d17f9b2b68a15d69e6113caf14dbc7c3a434611374bc7cc84",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/slot-clock-selection.ts",
+      "bytes": 1508,
+      "sha256": "1353cc7fb7f3a7e825cda025524aa94caba6b8a8d1dc662139a7f32bc5b3b580",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/tempo-families.ts",
+      "bytes": 17285,
+      "sha256": "b4181a948486c12a09ac81150b7bb6d095d3337768664d5ef5abb1889dd7920c",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/tempo-family-config.ts",
+      "bytes": 727,
+      "sha256": "3036bb40ce762546651cad5a890c54809b9264df6f45311b7ba1ae98f178d13d",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/types.ts",
+      "bytes": 2545,
+      "sha256": "5f65bc3e27f583537924d1eda11f372ba41c6ec2c001553b08af115d157b0ff9",
+      "byteIdentical": true
+    }
+  ],
+  "verificationScope": "Only filesystem/git reconstruction and source/provenance byte checks. No source or candidate imports/calls, helper, Chart, analyzer, FFT, optimizer, PCM, metrics, tracked writes, commits or publication."
+}

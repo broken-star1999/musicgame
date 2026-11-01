@@ -1,0 +1,1675 @@
+diff --git a/src/core/analysis.ts b/src/core/analysis.ts
+index ff70260..4ed996c 100644
+--- a/src/core/analysis.ts
++++ b/src/core/analysis.ts
+@@ -1,4 +1,11 @@
+ import { analyzeAudio as source } from './signal-analysis';
+ import { bindCanonical } from './signal-binding';
++import { applySlotClockAnalysis, type SlotClockContext } from './slot-clock-application';
++import type { Analysis } from '../types';
+ export { fingerprint, estimateTempo } from './signal-analysis';
+-export function analyzeAudio(...args: Parameters<typeof source>): ReturnType<typeof source> { return bindCanonical(source(...args)); }
++export function analyzeAudio(samples: Float32Array, sampleRate: number, progress?: (value: number, stage: string) => void): Analysis {
++  const holder: { value?: SlotClockContext } = {};
++  const baseline = bindCanonical(source(samples, sampleRate, (fraction, stage) => progress?.(fraction * .8, stage), context => { holder.value = context; }));
++  if (!holder.value) throw Error('Original physical context was not returned');
++  return applySlotClockAnalysis(baseline, holder.value, (fraction, stage) => progress?.(.8 + fraction * .2, stage)).analysis;
++}
+diff --git a/src/core/chart.ts b/src/core/chart.ts
+index 009cc9b..9e42fc2 100644
+--- a/src/core/chart.ts
++++ b/src/core/chart.ts
+@@ -1,3 +1,6 @@
++import { fixedSalienceThreshold } from './slot-clock-salience';
++import { slotClockNoteTime, slotClockSingleFingerEvents } from './slot-clock-application';
++import { selectSlotClockOnsets } from './slot-clock-selection';
+ import type { Analysis, Chart, Difficulty, Note, NoteType } from '../types';
+ import { reusePhraseTemplates } from './phrases';
+ import { fingerReleaseTime } from './chart-constraints';
+@@ -33,11 +36,17 @@ export function generateChart(analysis: Analysis, difficulty: Difficulty, bpmOve
+       events = annotateSignalEvents({ ...analysis, rhythm: reference, pulse: { ...analysis.pulse, onsets: raw } }).pulse!.onsets;
+     }
+   }
+-  const sourceOnsets = events.filter(onset => !onset.role || onset.role === 'beat' || (config.max >= 2 && onset.role === 'half') || (config.max >= 3 && onset.role === 'quarter') || config.max === 4);
++  if (analysis.slotClock && bpmOverride === undefined && config.max === 1) events = slotClockSingleFingerEvents(events, analysis.slotClock, config.gap);
++  const sourceOnsets = events.filter(onset => !onset.role || onset.role === 'beat' || (config.max >= 2 && (onset.role === 'half' || onset.role === 'third')) || (config.max >= 3 && onset.role === 'quarter') || config.max === 4);
+   const strengthSorted = sourceOnsets.map(x => x.strength).sort((a, b) => a - b);
+-  const threshold = Math.min(config.threshold, (strengthSorted[Math.floor(strengthSorted.length * 0.75)] || config.threshold) * 0.55);
+-  const noteTime = (onset: Analysis['onsets'][number]) => onset.role || onset.boundary ? onset.time : bpmOverride !== undefined || (analysis.rhythm?.confidence ?? 1) >= 0.45 ? snapToBeat(onset.time, beats, bpm) : onset.time;
+-  const selected = selectMusicalOnsets(sourceOnsets.filter(onset => onset.time <= analysis.duration - 0.18), config.gap, threshold, noteTime);
++  const legacyThreshold = Math.min(config.threshold, (strengthSorted[Math.floor(strengthSorted.length * 0.75)] || config.threshold) * 0.55);
++  const threshold = fixedSalienceThreshold(analysis, difficulty, legacyThreshold);
++  const legacyNoteTime = (onset: Analysis['onsets'][number]) => onset.role || onset.boundary ? onset.time : bpmOverride !== undefined || (analysis.rhythm?.confidence ?? 1) >= 0.45 ? snapToBeat(onset.time, beats, bpm) : onset.time;
++  const noteTime = (onset: Analysis['onsets'][number]) => slotClockNoteTime(onset, analysis.slotClock, bpmOverride, legacyNoteTime);
++  const eligible = sourceOnsets.filter(onset => onset.time <= analysis.duration - 0.18);
++  const selected = analysis.slotClock && bpmOverride === undefined
++    ? selectSlotClockOnsets(eligible, config.gap, threshold, noteTime, analysis.slotClock)
++    : selectMusicalOnsets(eligible, config.gap, threshold, noteTime);
+   // Motif progression and repetition compare the same retained musical layer,
+   // rather than letting rejected ornaments change every subsequent lane.
+   const musicalAnalysis = { ...analysis, onsets: selected };
+diff --git a/src/core/phase-dp-types.ts b/src/core/phase-dp-types.ts
+index fc23de2..24f8388 100644
+--- a/src/core/phase-dp-types.ts
++++ b/src/core/phase-dp-types.ts
+@@ -4,7 +4,7 @@ export interface Onset {
+     band: number;
+     attack?: number;
+     boundary?: true;
+-    role?: 'beat' | 'half' | 'quarter' | 'free';
++    role?: 'beat' | 'half' | 'third' | 'quarter' | 'free';
+ }
+ export interface Rhythm {
+     beats: number[];
+diff --git a/src/core/rhythm.ts b/src/core/rhythm.ts
+index 7534f26..61c9a03 100644
+--- a/src/core/rhythm.ts
++++ b/src/core/rhythm.ts
+@@ -1,14 +1,15 @@
+ import { gateClockEvidence } from './phase-gate';
+ import { phaseDP } from './phase-dp';
+-import { investigateTempo } from './tempo-families';
++import { investigateTempo, type TempoInvestigation } from './tempo-families';
+ import type { Analysis, Onset, Rhythm } from '../types';
+ const STEP = 0.01;
+ /** Onset-envelope autocorrelation + a tempo-continuity dynamic program.
+  * All positions are in recording time; the grid never creates chart notes. */
+-export function trackBeats(onsets: Onset[], duration: number, bpm: number, sourceOnsets?: Onset[]): Rhythm {
++export function trackBeats(onsets: Onset[], duration: number, bpm: number, sourceOnsets?: Onset[], capture?: (value: TempoInvestigation) => void): Rhythm {
+     if (onsets.length < 4)
+         return { beats: [], tempo: [], confidence: 0, downbeats: [], meterConfidence: 0 };
+     const investigation = investigateTempo(onsets, duration, bpm);
++    capture?.(investigation);
+     const projected = gateClockEvidence(onsets, investigation.blocks, sourceOnsets);
+     const frames = Math.ceil(duration / STEP) + 1, envelope = new Float64Array(frames);
+     const reference = Math.max(1e-8, ...onsets.map(onset => onset.strength));
+@@ -78,6 +79,7 @@ export function timeAtBeat(beats: number[], position: number, fallbackBpm: numbe
+     return beats[index] + (position - index) * (beats[index + 1] - beats[index]);
+ }
+ export function chartBeats(analysis: Analysis, bpmOverride?: number): number[] {
++    if (bpmOverride === undefined && analysis.rhythm?.method === 'SC2-slot/v2' && analysis.rhythm.beats.length > 1) return analysis.rhythm.beats;
+     if (bpmOverride === undefined && analysis.rhythm && analysis.rhythm.confidence >= 0.45 && analysis.rhythm.beats.length > 1)
+         return analysis.rhythm.beats;
+     // A possible recording-boundary cue has no measured rise. It must not seed
+diff --git a/src/core/signal-analysis.ts b/src/core/signal-analysis.ts
+index 13ef671..9e977d6 100644
+--- a/src/core/signal-analysis.ts
++++ b/src/core/signal-analysis.ts
+@@ -1,3 +1,4 @@
++import type { SlotClockContext } from './slot-clock-application';
+ import { mergeClockOnsets } from './clock-evidence';
+ import { reinforceCoincidentOnsets } from './clock-evidence';
+ import type { Analysis, Onset } from '../types';
+@@ -52,7 +53,7 @@ export function estimateTempo(onsets: Onset[]): {
+     }
+     return { bpm: best, confidence: Math.min(1, aligned / Math.max(total, 1e-8)) };
+ }
+-export function analyzeAudio(samples: Float32Array, sampleRate: number, progress?: (value: number, stage: string) => void): Analysis {
++export function analyzeAudio(samples: Float32Array, sampleRate: number, progress?: (value: number, stage: string) => void, capture?: (value: SlotClockContext) => void): Analysis {
+     const n = 1024, hop = Math.round(sampleRate * 0.01);
+     const frames = Math.max(0, Math.floor((samples.length - n) / hop) + 1);
+     if (!frames)
+@@ -173,7 +174,8 @@ export function analyzeAudio(samples: Float32Array, sampleRate: number, progress
+     progress?.(0.83, '正在提取乐句音高与持续声音特征');
+     const { chroma, tonalEnergy } = extractTonalFeatures(samples, sampleRate, hop, rms);
+     progress?.(0.86, '正在跟踪连续拍点与局部速度');
+-    const rhythm = trackBeats(reinforceCoincidentOnsets(mergeClockOnsets(onsets, musicalOnsets), streams, 'weighted'), samples.length / sampleRate, tempo.bpm, musicalOnsets);
++    let originalBlocks: SlotClockContext['blocks'] = [];
++    const rhythm = trackBeats(reinforceCoincidentOnsets(mergeClockOnsets(onsets, musicalOnsets), streams, 'weighted'), samples.length / sampleRate, tempo.bpm, musicalOnsets, result => { originalBlocks = result.blocks; });
+     const energy: number[] = [];
+     for (let i = 0; i < frames; i += 5)
+         energy.push(rms[i] / maxRms);
+@@ -197,5 +199,6 @@ export function analyzeAudio(samples: Float32Array, sampleRate: number, progress
+         ? [boundary, ...musicalOnsets] : musicalOnsets;
+     const rawOnsets = boundaryOnset ? [boundaryOnset, ...onsets] : onsets;
+     const candidates = [...rawOnsets, ...streams.flat(), ...boundaryStreams.flatMap(event => event ? [event] : [])].sort((a, b) => a.time - b.time);
++    capture?.({ streams: [onsets, ...streams], blocks: originalBlocks, sampleRate });
+     return annotateSignalEvents({ duration: samples.length / sampleRate, ...tempo, rhythm, pulse: { ...pulse, onsets: pulseOnsets }, candidates, onsets: rawOnsets, energy, energyStep: hop * 5 / sampleRate, chroma, tonalEnergy, chromaStep: hop * 5 / sampleRate, waveform: waveform.map(x => x / maxWave), fingerprint: fingerprint(samples) });
+ }
+diff --git a/src/core/slot-clock-affine.ts b/src/core/slot-clock-affine.ts
+new file mode 100644
+index 0000000..6433061
+--- /dev/null
++++ b/src/core/slot-clock-affine.ts
+@@ -0,0 +1,571 @@
++/** EC2 source-specific all-explained-slot alternating affine fit. Static preparation only until
++ * ROOT's independent mathematical freeze. No audio, FFT, GT or old clock path. */
++export type SlotSourceId = 0 | 1 | 2 | 3;
++export interface SlotSourceEvent {
++  readonly time: number;
++  readonly strength?: number;
++  readonly boundary?: boolean;
++  /** Original member index, if supplied; otherwise the original array index. */
++  readonly index?: number;
++}
++export interface FitSlotClockInput {
++  readonly duration: number;
++  readonly events: readonly SlotSourceEvent[];
++  readonly period: number;
++  readonly anchor: number;
++  readonly from: number;
++  readonly to: number;
++  readonly ownerFrom: number;
++  readonly ownerTo: number;
++  readonly source: SlotSourceId;
++}
++export interface SlotClock {
++  readonly period: number;
++  /** Conventional n=0 anchor, supplied for external phase comparison. */
++  readonly anchor: number;
++  /** Primary-frame projection; exact emitted records use evaluationAxis. */
++  readonly pivotOrdinal: number;
++  readonly pivotTime: number;
++  readonly tolerance: number;
++  readonly subdivisionTolerance: number;
++  /** Primitive observation view normalized from this visit's actual fit rows. */
++  readonly physicalAxis: SlotPhysicalAxis;
++  /** Exact axis used to evaluate this visit's records before view normalization. */
++  readonly evaluationAxis: SlotPhysicalAxis;
++  readonly axisCertificate: { readonly checkedTargets: number; readonly maximumPredictionDifference: number; readonly toleranceSeconds: 1e-10 };
++}
++export interface SlotPhysicalAxis {
++  readonly originTick: number;
++  readonly coordinateGCD: number;
++  /** Primitive physical seconds per canonical integer coordinate, not tactus P. */
++  readonly period: number;
++  readonly pivotOrdinal: number;
++  readonly pivotTime: number;
++}
++export type SlotPhaseTick = 0 | 3 | 4 | 6 | 8 | 9;
++export interface SlotPrimaryTarget {
++  readonly localOrdinal: number;
++  readonly virtualTime: number;
++  readonly sourceMemberIndex: number | null;
++  readonly actualTime: number | null;
++  readonly residual: number | null;
++  readonly compatibility: number | null;
++  readonly inFitWindow: boolean;
++  readonly fitOpportunity: boolean;
++  readonly targetInOwner: boolean;
++  readonly ownerOpportunity: boolean;
++  readonly recordingUncensored: boolean;
++}
++export interface SlotBinding {
++  readonly source: SlotSourceId;
++  readonly sourceMemberIndex: number;
++  readonly time: number;
++  readonly targetTime: number;
++  readonly denominator: 1 | 2 | 3 | 4;
++  readonly compatibility: number;
++  readonly localOrdinal: number;
++  readonly fraction: number;
++  readonly primary: boolean;
++  readonly phaseTick: SlotPhaseTick;
++  readonly coordinateNumerator: number;
++  readonly coordinateDenominator: 12;
++}
++export interface SlotDomainCounts {
++  readonly rawMembers: number;
++  readonly sourceCues: number;
++  readonly duplicateMembers: number;
++  readonly primaryOpportunities: number;
++  readonly matchedPrimaryOpportunities: number;
++  readonly coverage: number | null;
++  readonly matchedPrimarySpan: number;
++  readonly explainedCues: number;
++  readonly unexplainedCues: number;
++  readonly primaryBindings: number;
++  readonly subdivisionBindings: number;
++}
++export interface SlotLoss {
++  /** Metrical diagnostic, explicitly excluded from physical total. */
++  readonly missingPrimaryFraction: number;
++  readonly unexplainedSourceFraction: number;
++  /** Legacy timing diagnostic only; never an EC2 objective or fit weight. */
++  readonly meanPrimaryNormalizedResidual: number;
++  readonly physicalScaleSeconds: .09;
++  readonly allCueResidualSumSeconds: number;
++  readonly meanExplainedAbsoluteResidualSeconds: number;
++  readonly allCueSquaredNormalizedResidualSum: number;
++  /** sum(explained (residual seconds/.09)^2) / all actual unique source cues. */
++  readonly allCueSquaredResidualContribution: number;
++  readonly total: number;
++  /** Fit total is unscaled; owner total is additionally scaled by width/2. */
++  readonly scaledTotal: number;
++}
++export interface SlotFitPoint {
++  readonly sourceMemberIndex: number;
++  readonly time: number;
++  readonly targetTime: number;
++  readonly localOrdinal: number;
++  readonly phaseTick: SlotPhaseTick;
++  readonly coordinateNumerator: number;
++  readonly canonicalIndex: number;
++}
++export interface SlotCanonicalRows {
++  readonly originTick: number;
++  readonly coordinateGCD: number;
++  readonly points: readonly SlotFitPoint[];
++}
++export interface SlotFitTrial {
++  readonly iteration: number;
++  readonly proposalKind: 'initial' | 'all-slots' | 'primary-seed';
++  readonly clock: SlotClock;
++  readonly eligible: boolean;
++  readonly reason: string;
++  readonly counts: SlotDomainCounts;
++  readonly loss: SlotLoss;
++  readonly primaryTargets: readonly SlotPrimaryTarget[];
++  readonly fitBindings: readonly SlotBinding[];
++  readonly fitRows: SlotCanonicalRows | null;
++  readonly olsFromIteration: number | null;
++  readonly unconstrainedPeriod: number | null;
++  readonly unconstrainedPhysicalStepSeconds: number | null;
++  readonly periodClamped: boolean;
++}
++export interface SlotClockWork {
++  inputReads: number;
++  boundaryMembersExcluded: number;
++  regularMembers: number;
++  uniqueCues: number;
++  duplicateMembers: number;
++  evaluations: number;
++  leastSquaresProposals: number;
++  leastSquaresPointReads: number;
++  leastSquaresDegenerate: number;
++  leastSquaresClamped: number;
++  repeatedClockStops: number;
++  primaryTargetRecords: number;
++  subdivisionSlotRecords: number;
++  nearestQueries: number;
++  binaryComparisons: number;
++  distanceComparisons: number;
++  assignedPrimaryCues: number;
++  assignedSubdivisionCues: number;
++  domainCueReads: number;
++  domainMemberReads: number;
++  bindingsCreated: number;
++  trialRecords: number;
++  maximumPrimaryRecords: number;
++  maximumSubdivisionRecords: number;
++  physicalFitPointReads: number;
++  gcdSteps: number;
++  canonicalFitPoints: number;
++  maximumCanonicalFitPoints: number;
++  canonicalAxisNormalizations: number;
++  axisCertificateTargets: number;
++  maximumAxisPredictionDifference: number;
++  proposalAttempts: number;
++  allSlotProposalAttempts: number;
++  primarySeedProposalAttempts: number;
++  skippedDegenerateProposals: number;
++  skippedRepeatedProposals: number;
++  explicitTypedBytes: 0;
++}
++export interface FitSlotClockResult {
++  readonly version: 'EC2-source-slot-affine/v1';
++  readonly source: SlotSourceId;
++  readonly duration: number;
++  readonly from: number;
++  readonly to: number;
++  readonly ownerFrom: number;
++  readonly ownerTo: number;
++  readonly eligible: boolean;
++  readonly reason: string;
++  readonly period: number;
++  readonly anchor: number;
++  readonly clock: SlotClock;
++  readonly primaryTargets: readonly SlotPrimaryTarget[];
++  /** All bound cues with actual time in [from,to). */
++  readonly fitBindings: readonly SlotBinding[];
++  /** All bound cues with actual time in [ownerFrom,ownerTo), including halos. */
++  readonly ownerBindings: readonly SlotBinding[];
++  readonly fitCounts: SlotDomainCounts;
++  readonly ownerCounts: SlotDomainCounts;
++  readonly fitLoss: SlotLoss;
++  readonly ownerLoss: SlotLoss;
++  readonly fitRows: SlotCanonicalRows | null;
++  readonly trials: readonly SlotFitTrial[];
++  readonly selectedIteration: number;
++  readonly stopReason: 'maximum-updates' | 'degenerate-least-squares' | 'repeated-clock';
++  readonly work: SlotClockWork;
++}
++
++export const SLOT_CLOCK_LIMITS = Object.freeze({ minimumPeriod: .27, maximumPeriod: 1.2,
++  maximumWindowSeconds: 8, maximumUpdates: 4, minimumOpportunities: 4, minimumMatched: 4,
++  minimumMatchedSpan: 1, minimumCoverage: .5, maximumRawEvents: 200000,
++  maximumPrimaryRecords: 128, maximumSubdivisionRecords: 1024, maximumAbsOrdinal: 2147482624,
++  maximumFitPoints: 1152, physicalScaleSeconds: .09, maximumCoordinateGCD: 1536, maximumCanonicalPivot: 4096 });
++
++interface Cue { readonly time: number; readonly sourceMemberIndex: number; readonly cueIndex: number }
++interface RegularMember { readonly time: number; readonly sourceMemberIndex: number }
++interface Slot { readonly time: number; readonly localOrdinal: number; readonly fraction: number; readonly denominator: 2 | 3 | 4; readonly phaseTick: SlotPhaseTick }
++interface Evaluation {
++  readonly clock: SlotClock;
++  readonly primaryTargets: readonly SlotPrimaryTarget[];
++  readonly fitBindings: readonly SlotBinding[];
++  readonly ownerBindings: readonly SlotBinding[];
++  readonly fitCounts: SlotDomainCounts;
++  readonly ownerCounts: SlotDomainCounts;
++  readonly fitLoss: SlotLoss;
++  readonly ownerLoss: SlotLoss;
++  readonly fitRows: SlotCanonicalRows | null;
++  readonly eligible: boolean;
++  readonly reason: string;
++}
++const FRACTIONS = [{ fraction: 1 / 4, denominator: 4, phaseTick: 3 }, { fraction: 1 / 3, denominator: 3, phaseTick: 4 },
++  { fraction: 1 / 2, denominator: 2, phaseTick: 6 }, { fraction: 2 / 3, denominator: 3, phaseTick: 8 },
++  { fraction: 3 / 4, denominator: 4, phaseTick: 9 }] as const;
++
++function newWork(): SlotClockWork {
++  return { inputReads: 0, boundaryMembersExcluded: 0, regularMembers: 0, uniqueCues: 0, duplicateMembers: 0,
++    evaluations: 0, leastSquaresProposals: 0, leastSquaresPointReads: 0, leastSquaresDegenerate: 0,
++    leastSquaresClamped: 0, repeatedClockStops: 0, primaryTargetRecords: 0, subdivisionSlotRecords: 0,
++    nearestQueries: 0, binaryComparisons: 0, distanceComparisons: 0, assignedPrimaryCues: 0,
++    assignedSubdivisionCues: 0, domainCueReads: 0, domainMemberReads: 0, bindingsCreated: 0,
++    trialRecords: 0, maximumPrimaryRecords: 0, maximumSubdivisionRecords: 0, physicalFitPointReads: 0,
++    gcdSteps: 0, canonicalFitPoints: 0, maximumCanonicalFitPoints: 0, canonicalAxisNormalizations: 0,
++    axisCertificateTargets: 0, maximumAxisPredictionDifference: 0, proposalAttempts: 0,
++    allSlotProposalAttempts: 0, primarySeedProposalAttempts: 0, skippedDegenerateProposals: 0,
++    skippedRepeatedProposals: 0, explicitTypedBytes: 0 };
++}
++function validOrdinal(value: number): void {
++  if (!Number.isSafeInteger(value) || Math.abs(value) > SLOT_CLOCK_LIMITS.maximumAbsOrdinal) throw Error('Unsafe affine target ordinal');
++}
++function finite(value: number, name: string): void { if (!Number.isFinite(value)) throw Error(`${name} must be finite`); }
++function validate(input: FitSlotClockInput): void {
++  if (!input || !Array.isArray(input.events) || input.events.length > SLOT_CLOCK_LIMITS.maximumRawEvents) throw Error('Invalid or excessive raw source inventory');
++  for (const key of ['duration', 'period', 'anchor', 'from', 'to', 'ownerFrom', 'ownerTo'] as const) finite(input[key], key);
++  if (input.duration <= 0 || input.period < SLOT_CLOCK_LIMITS.minimumPeriod || input.period > SLOT_CLOCK_LIMITS.maximumPeriod)
++    throw Error('Duration/initial period outside finite clock domain');
++  if (input.from < 0 || input.to <= input.from || input.to > input.duration || input.to - input.from > SLOT_CLOCK_LIMITS.maximumWindowSeconds
++    || input.ownerFrom < input.from || input.ownerTo > input.to || input.ownerTo <= input.ownerFrom)
++    throw Error('Fit/owner intervals must be nonempty observed half-open domains of at most eight seconds');
++  if (!Number.isInteger(input.source) || input.source < 0 || input.source > 3) throw Error('Four-source identifier required');
++}
++
++/** At most initial+four centered OLS visits. All assignments use immutable raw
++ * times. Source amplitude, old roles, genre and any reference labels are absent
++ * from qualification, loss, nearest choice and best-visit selection. */
++export function fitSlotClock(input: FitSlotClockInput): FitSlotClockResult {
++  validate(input);
++  const work = newWork(), cues: Cue[] = [], members: RegularMember[] = [];
++  let previousTime = -Infinity, previousIndex = -1;
++  input.events.forEach((event, arrayIndex) => {
++    work.inputReads++;
++    const originalIndex = event?.index ?? arrayIndex;
++    if (!event || !Number.isFinite(event.time) || event.time < 0 || event.time >= input.duration || event.time < previousTime
++      || event.strength !== undefined && (!Number.isFinite(event.strength) || event.strength < 0)
++      || event.boundary !== undefined && typeof event.boundary !== 'boolean'
++      || !Number.isSafeInteger(originalIndex) || originalIndex < 0 || originalIndex <= previousIndex)
++      throw Error('Original source times and member indices must be finite and ordered');
++    previousTime = event.time; previousIndex = originalIndex;
++    // Exclude boundary BEFORE deduplication: a boundary-first duplicate cannot
++    // suppress a later actual regular rise at the same recording time.
++    if (event.boundary) { work.boundaryMembersExcluded++; return; }
++    members.push({ time: event.time, sourceMemberIndex: originalIndex }); work.regularMembers++;
++    const previous = cues[cues.length - 1];
++    if (previous && previous.time === event.time) { work.duplicateMembers++; return; }
++    cues.push({ time: event.time, sourceMemberIndex: originalIndex, cueIndex: cues.length }); work.uniqueCues++;
++  });
++  const lowerBound = <T extends { readonly time: number }>(rows: readonly T[], time: number, start = 0, memberReads = false): number => {
++    let low = start, high = rows.length;
++    while (low < high) {
++      const middle = (low + high) >>> 1; work.binaryComparisons++; if (memberReads) work.domainMemberReads++;
++      if (rows[middle].time < time) low = middle + 1; else high = middle;
++    }
++    return low;
++  };
++  const domains = [
++    { from: input.from, to: input.to, cueFrom: lowerBound(cues, input.from), cueTo: lowerBound(cues, input.to),
++      rawFrom: lowerBound(members, input.from, 0, true), rawTo: lowerBound(members, input.to, 0, true) },
++    { from: input.ownerFrom, to: input.ownerTo, cueFrom: lowerBound(cues, input.ownerFrom), cueTo: lowerBound(cues, input.ownerTo),
++      rawFrom: lowerBound(members, input.ownerFrom, 0, true), rawTo: lowerBound(members, input.ownerTo, 0, true) },
++  ] as const;
++  const nearest = (target: number, tolerance: number, firstAllowed = 0, forbidden?: ReadonlySet<number>): Cue | null => {
++    work.nearestQueries++;
++    const right = lowerBound(cues, target, firstAllowed);
++    let left = right - 1, later = right;
++    // Earlier subslot windows can touch the next window at one exact point.
++    // Prefix exclusion removes that used cue before lookup. A forbidden primary
++    // cannot lie inside a subwindow mathematically; these scans also enforce
++    // uniqueness under finite arithmetic without nearest-then-filter hiding.
++    while (left >= firstAllowed && forbidden?.has(left)) {
++      work.distanceComparisons++; if (Math.abs(cues[left].time - target) > tolerance) break; left--;
++    }
++    while (later < cues.length && forbidden?.has(later)) {
++      work.distanceComparisons++; if (Math.abs(cues[later].time - target) > tolerance) break; later++;
++    }
++    let chosen: Cue | null = null, distance = Infinity;
++    for (const position of [left, later]) {
++      if (position < firstAllowed || position >= cues.length || forbidden?.has(position)) continue;
++      const cue = cues[position], difference = Math.abs(cue.time - target); work.distanceComparisons++;
++      if (difference > tolerance) continue;
++      if (difference < distance || difference === distance && (!chosen || cue.time < chosen.time
++        || cue.time === chosen.time && cue.sourceMemberIndex < chosen.sourceMemberIndex)) { chosen = cue; distance = difference; }
++    }
++    return chosen;
++  };
++  const clockOf = (period: number, pivotOrdinal: number, pivotTime: number, anchor: number, physicalAxis: SlotPhysicalAxis): SlotClock => {
++    finite(period, 'fitted period'); finite(pivotTime, 'fitted pivot'); finite(anchor, 'fitted anchor'); validOrdinal(pivotOrdinal);
++    if (period < SLOT_CLOCK_LIMITS.minimumPeriod || period > SLOT_CLOCK_LIMITS.maximumPeriod) throw Error('Constrained period left global bounds');
++    if (!Number.isSafeInteger(physicalAxis.originTick) || !Number.isSafeInteger(physicalAxis.coordinateGCD) || physicalAxis.coordinateGCD <= 0
++      || physicalAxis.coordinateGCD > SLOT_CLOCK_LIMITS.maximumCoordinateGCD
++      || !Number.isSafeInteger(physicalAxis.pivotOrdinal) || Math.abs(physicalAxis.pivotOrdinal) > SLOT_CLOCK_LIMITS.maximumCanonicalPivot
++      || !Number.isFinite(physicalAxis.pivotTime) || !Number.isFinite(physicalAxis.period) || physicalAxis.period <= 0)
++      throw Error('Invalid canonical physical affine axis');
++    const tolerance = Math.min(.09, .2 * period);
++    return { period, anchor, pivotOrdinal, pivotTime, tolerance, subdivisionTolerance: Math.min(tolerance, period / 24), physicalAxis,
++      evaluationAxis: physicalAxis, axisCertificate: { checkedTargets: 0, maximumPredictionDifference: 0, toleranceSeconds: 1e-10 } };
++  };
++  const evaluate = (clock: SlotClock): Evaluation => {
++    work.evaluations++;
++    const coordinate = (ordinal: number, phaseTick: SlotPhaseTick): number => {
++      const numerator = 12 * ordinal + phaseTick;
++      if (!Number.isSafeInteger(numerator)) throw Error('Unsafe rational physical slot coordinate');
++      return numerator;
++    };
++    const at = (ordinal: number, phaseTick: SlotPhaseTick = 0): number => {
++      const axis = clock.physicalAxis;
++      return axis.pivotTime + ((coordinate(ordinal, phaseTick) - axis.originTick) / axis.coordinateGCD - axis.pivotOrdinal) * axis.period;
++    };
++    // Padding ordinals are only a numerical enumeration guard. Actual records
++    // retain the exact direct-subtraction halo predicates below.
++    const first = Math.floor((input.from - clock.pivotTime - clock.tolerance) / clock.period) + clock.pivotOrdinal - 2;
++    const last = Math.ceil((input.to - clock.pivotTime + clock.tolerance) / clock.period) + clock.pivotOrdinal + 2;
++    validOrdinal(first); validOrdinal(last);
++    if (last - first + 1 > SLOT_CLOCK_LIMITS.maximumPrimaryRecords) throw Error('Slot target enumeration allocation bound exceeded');
++    const primaryTargets: SlotPrimaryTarget[] = [], slots: Slot[] = [], bindings = new Map<number, SlotBinding>(), used = new Set<number>();
++    let previousTarget = -Infinity;
++    for (let ordinal = first; ordinal <= last; ordinal++) {
++      const target = at(ordinal); finite(target, 'primary target');
++      if (target <= previousTarget) throw Error('Slot primary targets do not progress at this numerical scale');
++      previousTarget = target;
++      if (target - input.from >= -clock.tolerance && target - input.to < clock.tolerance) {
++        const cue = nearest(target, clock.tolerance);
++        if (cue && used.has(cue.cueIndex)) throw Error('Nonoverlapping primary windows reused one physical cue');
++        const inFitWindow = target >= input.from && target < input.to;
++        const fitOpportunity = inFitWindow && target - input.from >= clock.tolerance && input.to - target > clock.tolerance;
++        const recordingUncensored = target >= clock.tolerance && input.duration - target > clock.tolerance;
++        const targetInOwner = target >= input.ownerFrom && target < input.ownerTo;
++        const residual = cue ? cue.time - target : null, compatibility = cue ? 1 - Math.abs(residual!) / clock.tolerance : null;
++        primaryTargets.push({ localOrdinal: ordinal, virtualTime: target, sourceMemberIndex: cue?.sourceMemberIndex ?? null,
++          actualTime: cue?.time ?? null, residual, compatibility, inFitWindow, fitOpportunity, targetInOwner,
++          ownerOpportunity: targetInOwner && recordingUncensored, recordingUncensored }); work.primaryTargetRecords++;
++        if (cue) {
++          used.add(cue.cueIndex); work.assignedPrimaryCues++;
++          bindings.set(cue.cueIndex, { source: input.source, sourceMemberIndex: cue.sourceMemberIndex, time: cue.time,
++            targetTime: target, denominator: 1, compatibility: compatibility!, localOrdinal: ordinal, fraction: 0, primary: true,
++            phaseTick: 0, coordinateNumerator: coordinate(ordinal, 0), coordinateDenominator: 12 }); work.bindingsCreated++;
++        }
++      }
++      for (const fraction of FRACTIONS) {
++        const time = at(ordinal, fraction.phaseTick); finite(time, 'subdivision target');
++        if (time - input.from < -clock.subdivisionTolerance || time - input.to >= clock.subdivisionTolerance) continue;
++        slots.push({ time, localOrdinal: ordinal, fraction: fraction.fraction, denominator: fraction.denominator, phaseTick: fraction.phaseTick }); work.subdivisionSlotRecords++;
++      }
++    }
++    if (slots.length > SLOT_CLOCK_LIMITS.maximumSubdivisionRecords) throw Error('Slot subdivision allocation bound exceeded');
++    work.maximumPrimaryRecords = Math.max(work.maximumPrimaryRecords, primaryTargets.length);
++    work.maximumSubdivisionRecords = Math.max(work.maximumSubdivisionRecords, slots.length);
++    let lastSubdivisionCue = -1, previousSlot = -Infinity;
++    for (const slot of slots) {
++      if (slot.time <= previousSlot) throw Error('Slot subdivision slots do not progress numerically'); previousSlot = slot.time;
++      const cue = nearest(slot.time, clock.subdivisionTolerance, lastSubdivisionCue + 1, used);
++      if (!cue) continue;
++      if (used.has(cue.cueIndex)) throw Error('Subdivision reused an explained physical cue');
++      used.add(cue.cueIndex); lastSubdivisionCue = cue.cueIndex; work.assignedSubdivisionCues++;
++      bindings.set(cue.cueIndex, { source: input.source, sourceMemberIndex: cue.sourceMemberIndex, time: cue.time,
++        targetTime: slot.time, denominator: slot.denominator, compatibility: 1 - Math.abs(cue.time - slot.time) / clock.subdivisionTolerance,
++        localOrdinal: slot.localOrdinal, fraction: slot.fraction, primary: false, phaseTick: slot.phaseTick,
++        coordinateNumerator: coordinate(slot.localOrdinal, slot.phaseTick), coordinateDenominator: 12 }); work.bindingsCreated++;
++    }
++    const describe = (owner: boolean): { counts: SlotDomainCounts; loss: SlotLoss; bindings: SlotBinding[] } => {
++      const domain = domains[owner ? 1 : 0], found: SlotBinding[] = [];
++      let primaryBindings = 0;
++      for (let i = domain.cueFrom; i < domain.cueTo; i++) {
++        work.domainCueReads++; const binding = bindings.get(i); if (binding) { found.push(binding); if (binding.primary) primaryBindings++; }
++      }
++      let opportunities = 0, matched = 0, residualSum = 0, firstActual: number | null = null, lastActual: number | null = null;
++      for (const target of primaryTargets) {
++        if (!(owner ? target.ownerOpportunity : target.fitOpportunity)) continue;
++        opportunities++;
++        if (target.actualTime !== null) {
++          matched++; residualSum += Math.abs(target.residual!) / clock.tolerance;
++          if (firstActual === null) firstActual = target.actualTime; lastActual = target.actualTime;
++        }
++      }
++      const rawMembers = domain.rawTo - domain.rawFrom, sourceCues = domain.cueTo - domain.cueFrom;
++      const counts: SlotDomainCounts = { rawMembers, sourceCues, duplicateMembers: rawMembers - sourceCues,
++        primaryOpportunities: opportunities, matchedPrimaryOpportunities: matched, coverage: opportunities ? matched / opportunities : null,
++        matchedPrimarySpan: firstActual === null ? 0 : lastActual! - firstActual,
++        explainedCues: found.length, unexplainedCues: sourceCues - found.length, primaryBindings, subdivisionBindings: found.length - primaryBindings };
++      let allCueResidualSumSeconds = 0, allCueSquaredNormalizedResidualSum = 0;
++      for (const binding of found) {
++        const seconds = Math.abs(binding.time - binding.targetTime);
++        allCueResidualSumSeconds += seconds;
++        const normalized = seconds / SLOT_CLOCK_LIMITS.physicalScaleSeconds;
++        allCueSquaredNormalizedResidualSum += normalized * normalized;
++      }
++      const physicalScaleSeconds = SLOT_CLOCK_LIMITS.physicalScaleSeconds;
++      const missingPrimaryFraction = opportunities ? (opportunities - matched) / opportunities : 0,
++        unexplainedSourceFraction = sourceCues ? (sourceCues - found.length) / sourceCues : 0,
++        meanPrimaryNormalizedResidual = matched ? residualSum / matched : 0;
++      const allCueSquaredResidualContribution = sourceCues ? allCueSquaredNormalizedResidualSum / sourceCues : 0;
++      const meanExplainedAbsoluteResidualSeconds = found.length ? allCueResidualSumSeconds / found.length : 0;
++      // Sum per-cue normalized penalties before division. Each is <=1 because
++      // role match windows are no larger than the fixed physical .09 scale.
++      // This preserves the bound at exact endpoints without an empirical epsilon.
++      const total = sourceCues ? (counts.unexplainedCues + allCueSquaredNormalizedResidualSum) / sourceCues : 0;
++      if (!Number.isFinite(total) || total < 0 || total > 1) throw Error('Slot physical explanation loss outside its finite domain');
++      return { counts, loss: { missingPrimaryFraction, unexplainedSourceFraction, meanPrimaryNormalizedResidual,
++        physicalScaleSeconds, allCueResidualSumSeconds, meanExplainedAbsoluteResidualSeconds,
++        allCueSquaredNormalizedResidualSum, allCueSquaredResidualContribution, total,
++        scaledTotal: owner ? total * (input.ownerTo - input.ownerFrom) / 2 : total }, bindings: found };
++    };
++    const fit = describe(false), owner = describe(true), p = SLOT_CLOCK_LIMITS;
++    const reason = fit.counts.primaryOpportunities < p.minimumOpportunities ? 'insufficient-primary-opportunities'
++      : fit.counts.matchedPrimaryOpportunities < p.minimumMatched ? 'insufficient-primary-matches'
++      : fit.counts.matchedPrimarySpan < p.minimumMatchedSpan ? 'insufficient-primary-span'
++      : fit.counts.coverage === null || fit.counts.coverage < p.minimumCoverage ? 'insufficient-primary-coverage' : 'eligible';
++    // Every actually fit-owned explained unique cue participates, regardless of
++    // primary/subdivision role or physical proximity to a recording/window edge.
++    const physicalRows = fit.bindings; work.physicalFitPointReads += physicalRows.length;
++    if (physicalRows.length > p.maximumFitPoints) throw Error('All-slot canonical fit allocation bound exceeded');
++    let fitRows: SlotCanonicalRows | null = null;
++    if (physicalRows.length) {
++      const originTick = physicalRows[0].coordinateNumerator;
++      let coordinateGCD = 0, previousNumerator = originTick - 1;
++      for (const binding of physicalRows) {
++        if (binding.coordinateNumerator <= previousNumerator) throw Error('Physical source order and assigned rational slots disagree');
++        previousNumerator = binding.coordinateNumerator;
++        let a = coordinateGCD, b = binding.coordinateNumerator - originTick;
++        while (b) { work.gcdSteps++; const remainder = a % b; a = b; b = remainder; }
++        coordinateGCD = a;
++      }
++      if (!coordinateGCD) coordinateGCD = 12; // A single point has no slope; its x=0 remains canonical.
++      if (coordinateGCD > p.maximumCoordinateGCD) throw Error('Canonical source coordinate GCD exceeds its finite domain');
++      const points = physicalRows.map(binding => ({ sourceMemberIndex: binding.sourceMemberIndex, time: binding.time,
++        targetTime: binding.targetTime, localOrdinal: binding.localOrdinal, phaseTick: binding.phaseTick,
++        coordinateNumerator: binding.coordinateNumerator, canonicalIndex: (binding.coordinateNumerator - originTick) / coordinateGCD }));
++      if (points.some(point => !Number.isSafeInteger(point.canonicalIndex))) throw Error('GCD failed to produce integral physical coordinates');
++      fitRows = { originTick, coordinateGCD, points }; work.canonicalFitPoints += points.length;
++      work.maximumCanonicalFitPoints = Math.max(work.maximumCanonicalFitPoints, points.length);
++    }
++    let canonicalAxis = clock.physicalAxis;
++    if (fitRows) {
++      work.canonicalAxisNormalizations++;
++      const old = clock.physicalAxis;
++      const meanIndex = fitRows.points.reduce((sum, point) => sum + point.canonicalIndex, 0) / fitRows.points.length;
++      const canonicalPivot = Math.round(meanIndex);
++      const pivotTick = fitRows.originTick + fitRows.coordinateGCD * canonicalPivot;
++      const canonicalPivotTime = old.pivotTime + ((pivotTick - old.originTick) / old.coordinateGCD - old.pivotOrdinal) * old.period;
++      canonicalAxis = { originTick: fitRows.originTick, coordinateGCD: fitRows.coordinateGCD,
++        period: old.coordinateGCD === fitRows.coordinateGCD ? old.period : old.period * fitRows.coordinateGCD / old.coordinateGCD,
++        pivotOrdinal: canonicalPivot, pivotTime: canonicalPivotTime };
++      if (!Number.isSafeInteger(canonicalPivot) || Math.abs(canonicalPivot) > p.maximumCanonicalPivot
++        || !Number.isFinite(canonicalPivotTime) || !Number.isFinite(canonicalAxis.period) || canonicalAxis.period <= 0)
++        throw Error('Canonical observation view left its finite domain');
++    }
++    let maximumPredictionDifference = 0, checkedTargets = 0;
++    const certify = (tick: number, original: number): void => {
++      const reexpressed = canonicalAxis.pivotTime + ((tick - canonicalAxis.originTick) / canonicalAxis.coordinateGCD - canonicalAxis.pivotOrdinal) * canonicalAxis.period;
++      const difference = Math.abs(reexpressed - original); checkedTargets++;
++      if (!Number.isFinite(difference) || difference > 1e-10) throw Error('Canonical observation view does not preserve evaluated physical slots');
++      maximumPredictionDifference = Math.max(maximumPredictionDifference, difference);
++    };
++    for (const target of primaryTargets) certify(coordinate(target.localOrdinal, 0), target.virtualTime);
++    for (const slot of slots) certify(coordinate(slot.localOrdinal, slot.phaseTick), slot.time);
++    work.axisCertificateTargets += checkedTargets;
++    work.maximumAxisPredictionDifference = Math.max(work.maximumAxisPredictionDifference, maximumPredictionDifference);
++    // Pure view normalization: retain the original matched records and their
++    // exact evaluation doubles. Do not rematch a closed boundary through the
++    // mathematically equivalent, but potentially last-bit different, new axis.
++    const normalizedClock: SlotClock = { ...clock, physicalAxis: canonicalAxis, evaluationAxis: clock.physicalAxis,
++      axisCertificate: { checkedTargets, maximumPredictionDifference, toleranceSeconds: 1e-10 } };
++    return { clock: normalizedClock, primaryTargets, fitBindings: fit.bindings, ownerBindings: owner.bindings,
++      fitCounts: fit.counts, ownerCounts: owner.counts, fitLoss: fit.loss, ownerLoss: owner.loss, fitRows, eligible: reason === 'eligible', reason };
++  };
++
++  const middle = input.from + (input.to - input.from) / 2;
++  const pivotOrdinal = Math.round((middle - input.anchor) / input.period); validOrdinal(pivotOrdinal);
++  const initialPivotTime = input.anchor + pivotOrdinal * input.period;
++  const initialClock = clockOf(input.period, pivotOrdinal, initialPivotTime, input.anchor,
++    { originTick: 12 * pivotOrdinal, coordinateGCD: 12, period: input.period, pivotOrdinal: 0, pivotTime: initialPivotTime });
++  const evaluations: Evaluation[] = [evaluate(initialClock)];
++  const trials: SlotFitTrial[] = [{ iteration: 0, proposalKind: 'initial', clock: evaluations[0].clock, eligible: evaluations[0].eligible, reason: evaluations[0].reason,
++    counts: evaluations[0].fitCounts, loss: evaluations[0].fitLoss, primaryTargets: evaluations[0].primaryTargets,
++    fitBindings: evaluations[0].fitBindings, fitRows: evaluations[0].fitRows,
++    olsFromIteration: null, unconstrainedPeriod: null, unconstrainedPhysicalStepSeconds: null, periodClamped: false }]; work.trialRecords++;
++  const signatureOf = (clock: SlotClock): string => JSON.stringify([clock.period, clock.pivotOrdinal, clock.pivotTime, clock.physicalAxis]);
++  const seen = new Set([signatureOf(evaluations[0].clock)]);
++  const bestIndex = (): number => {
++    let best = 0;
++    for (let i = 1; i < evaluations.length; i++) {
++      const value = evaluations[i], old = evaluations[best];
++      if (value.eligible && !old.eligible || value.eligible === old.eligible && value.fitLoss.total < old.fitLoss.total) best = i;
++    }
++    return best;
++  };
++  const initialPrimaryMembers = new Set(evaluations[0].primaryTargets.filter(target => target.fitOpportunity
++    && target.sourceMemberIndex !== null).map(target => target.sourceMemberIndex!));
++  // Fixed multistart schedule, still exactly four proposal opportunities. A
++  // primary-only seed proposes a starting clock, never a different likelihood.
++  const stopReason: FitSlotClockResult['stopReason'] = 'maximum-updates';
++  for (let iteration = 1; iteration <= SLOT_CLOCK_LIMITS.maximumUpdates; iteration++) {
++    work.proposalAttempts++;
++    const proposalKind: SlotFitTrial['proposalKind'] = iteration === 2 ? 'primary-seed' : 'all-slots';
++    if (proposalKind === 'primary-seed') work.primarySeedProposalAttempts++; else work.allSlotProposalAttempts++;
++    const sourceIndex = iteration <= 2 ? 0 : bestIndex();
++    const previous = evaluations[sourceIndex], rows = previous.fitRows;
++    const points = proposalKind === 'primary-seed' ? (rows?.points ?? []).filter(point => initialPrimaryMembers.has(point.sourceMemberIndex)) : rows?.points ?? [];
++    if (points.length < 2) { work.leastSquaresDegenerate++; work.skippedDegenerateProposals++; continue; }
++    work.leastSquaresProposals++;
++    const originTime = points[0].time;
++    let sx = 0, sy = 0;
++    for (const point of points) { work.leastSquaresPointReads++; sx += point.canonicalIndex; sy += point.time - originTime; }
++    const meanX = sx / points.length, meanY = sy / points.length;
++    let xx = 0, xy = 0;
++    for (const point of points) {
++      work.leastSquaresPointReads++;
++      const dx = point.canonicalIndex - meanX, dy = point.time - originTime - meanY;
++      xx += dx * dx; xy += dx * dy;
++    }
++    if (!Number.isFinite(xx) || !Number.isFinite(xy) || xx <= 0) { work.leastSquaresDegenerate++; work.skippedDegenerateProposals++; continue; }
++    const unconstrainedPhysicalStepSeconds = xy / xx;
++    const unconstrainedPeriod = unconstrainedPhysicalStepSeconds * 12 / rows!.coordinateGCD;
++    if (!Number.isFinite(unconstrainedPeriod) || unconstrainedPeriod <= 0) throw Error('Centered OLS produced an invalid positive period');
++    const period = Math.max(SLOT_CLOCK_LIMITS.minimumPeriod, Math.min(SLOT_CLOCK_LIMITS.maximumPeriod, unconstrainedPeriod));
++    const periodClamped = period !== unconstrainedPeriod; if (periodClamped) work.leastSquaresClamped++;
++    // With a constrained slope the least-squares intercept is re-estimated,
++    // rather than clamping P while retaining an incompatible old intercept.
++    const stepSeconds = periodClamped ? period * rows!.coordinateGCD / 12 : unconstrainedPhysicalStepSeconds;
++    const canonicalPivot = Math.round(meanX);
++    const physicalPivotTime = originTime + meanY + stepSeconds * (canonicalPivot - meanX);
++    const physicalAxis = { originTick: rows!.originTick, coordinateGCD: rows!.coordinateGCD, period: stepSeconds,
++      pivotOrdinal: canonicalPivot, pivotTime: physicalPivotTime };
++    const pivotTime = physicalPivotTime + ((12 * pivotOrdinal - rows!.originTick) / rows!.coordinateGCD - canonicalPivot) * stepSeconds;
++    const clock = clockOf(period, pivotOrdinal, pivotTime, pivotTime - pivotOrdinal * period, physicalAxis);
++    const signature = signatureOf(clock);
++    if (seen.has(signature)) { work.repeatedClockStops++; work.skippedRepeatedProposals++; continue; }
++    seen.add(signature);
++    const value = evaluate(clock); evaluations.push(value);
++    seen.add(signatureOf(value.clock));
++    trials.push({ iteration, proposalKind, clock: value.clock, eligible: value.eligible, reason: value.reason, counts: value.fitCounts, loss: value.fitLoss,
++      primaryTargets: value.primaryTargets, fitBindings: value.fitBindings, fitRows: value.fitRows,
++      olsFromIteration: trials[sourceIndex].iteration, unconstrainedPeriod, unconstrainedPhysicalStepSeconds, periodClamped }); work.trialRecords++;
++  }
++  const best = bestIndex();
++  const value = evaluations[best];
++  return { version: 'EC2-source-slot-affine/v1', source: input.source, duration: input.duration,
++    from: input.from, to: input.to, ownerFrom: input.ownerFrom, ownerTo: input.ownerTo, eligible: value.eligible, reason: value.reason,
++    period: value.clock.period, anchor: value.clock.anchor, clock: value.clock, primaryTargets: value.primaryTargets,
++    fitBindings: value.fitBindings, ownerBindings: value.ownerBindings, fitCounts: value.fitCounts, ownerCounts: value.ownerCounts,
++    fitLoss: value.fitLoss, ownerLoss: value.ownerLoss, fitRows: value.fitRows, trials, selectedIteration: trials[best].iteration, stopReason, work };
++}
+diff --git a/src/core/slot-clock-application.ts b/src/core/slot-clock-application.ts
+new file mode 100644
+index 0000000..b4f7103
+--- /dev/null
++++ b/src/core/slot-clock-application.ts
+@@ -0,0 +1,203 @@
++import type { Analysis, Onset, Rhythm, RhythmSection } from '../types';
++import type { ClockInput, ClockResult, RoleBinding } from './slot-clock-contracts';
++import { readoutSlotClock } from './slot-clock-readout';
++import { compactSalience, prepareSalience, type ArrangementSalience, type SaliencePreparation } from './slot-clock-salience';
++
++export type SlotClockRole = 'beat' | 'half' | 'third' | 'quarter' | 'free';
++export interface SlotClockOnset extends Omit<Onset, 'role'> { role?: SlotClockRole }
++export interface SlotClockEvidence {
++  time: number; eventId: number; denominator: 1 | 2 | 3 | 4; fraction: number; compatibility: number;
++  source: 0 | 1 | 2 | 3; sourceMemberIndex: number; sourceStrength: number; sourceBand: number;
++  candidateId: string; localOrdinal: number;
++}
++export interface SlotClockMetadata {
++  version: 'SC2-slot/v2';
++  primaryHeads: { time: number; targetTime: number; ordinal: number; chain: number; period: number }[];
++  roleEvidence: SlotClockEvidence[];
++  unknownIntervals: { from: number; to: number }[];
++  knownSegments: number; sourceFrames: number; assignments: number;
++}
++export interface SlotClockAnalysis extends Omit<Analysis, 'pulse' | 'rhythm'> {
++  pulse?: { onsets: SlotClockOnset[]; sections: RhythmSection[] };
++  rhythm?: Rhythm & { method?: 'SC2-slot/v2' };
++  slotClock?: SlotClockMetadata;
++  arrangementSalience: ArrangementSalience;
++}
++export interface SlotClockContext {
++  readonly streams: readonly (readonly Onset[])[];
++  readonly blocks: ClockInput['blocks'];
++  readonly sampleRate: number;
++}
++export interface SlotClockMember { readonly source: 0 | 1 | 2 | 3; readonly index: number; readonly time: number; readonly strength: number }
++export interface SlotClockBundle { readonly id: number; readonly time: number; readonly strength: number; readonly sourceMask: number; readonly members: readonly SlotClockMember[] }
++export interface SlotClockBundlePreparation {
++  readonly events: readonly SlotClockBundle[]; readonly representatives: readonly Onset[];
++  readonly memberCount: number; readonly boundaryMembersExcluded: number;
++}
++
++/** Exact union for physical identity only. Max salience does not select clocks. */
++export function prepareSlotClockBundles(streams: readonly (readonly Onset[])[], duration: number): SlotClockBundlePreparation {
++  if (!Array.isArray(streams) || streams.length !== 4 || !Number.isFinite(duration) || duration <= 0)
++    throw Error('Four original streams and finite duration are required');
++  const groups = new Map<number, { members: SlotClockMember[]; representative: Onset }>();
++  let memberCount = 0, boundaryMembersExcluded = 0;
++  streams.forEach((stream, sourceIndex) => {
++    if (!Array.isArray(stream)) throw Error('Original source must be an array');
++    let previous = -Infinity;
++    stream.forEach((event, index) => {
++      if (!event || !Number.isFinite(event.time) || event.time < 0 || event.time >= duration || event.time < previous
++        || !Number.isFinite(event.strength) || event.strength < 0 || !Number.isSafeInteger(event.band) || event.band < 0 || event.band > 2)
++        throw Error('Invalid original physical member');
++      previous = event.time;
++      if (event.boundary) { boundaryMembersExcluded++; return; }
++      const member: SlotClockMember = { source: sourceIndex as 0 | 1 | 2 | 3, index, time: event.time, strength: event.strength };
++      const copy = { ...event }; delete copy.role;
++      const old = groups.get(event.time);
++      if (!old) groups.set(event.time, { members: [member], representative: copy });
++      else { old.members.push(member); if (copy.strength > old.representative.strength) old.representative = copy; }
++      memberCount++;
++    });
++  });
++  const representatives: Onset[] = [];
++  const events = [...groups].sort((a, b) => a[0] - b[0]).map(([time, group], id): SlotClockBundle => {
++    let sourceMask = 0, strength = 0;
++    for (const member of group.members) { sourceMask |= 1 << member.source; strength = Math.max(strength, Math.min(1, member.strength)); }
++    representatives.push({ ...group.representative });
++    return { id, time, strength, sourceMask, members: group.members };
++  });
++  return { events, representatives, memberCount, boundaryMembersExcluded };
++}
++
++export function slotClockNoteTime(onset: SlotClockOnset, metadata: SlotClockMetadata | undefined, bpmOverride: number | undefined,
++  legacyTiming: (onset: SlotClockOnset) => number): number {
++  return metadata && bpmOverride === undefined ? onset.time : legacyTiming(onset);
++}
++export function slotClockSingleFingerEvents(events: readonly SlotClockOnset[], metadata: SlotClockMetadata, gap: number): SlotClockOnset[] {
++  const heads = new Map(metadata.primaryHeads.map(head => [head.time, head]));
++  return events.filter(event => {
++    const head = event.role === 'beat' ? heads.get(event.time) : undefined;
++    return !head || head.ordinal % Math.max(1, Math.ceil((gap - 1e-6) / head.period)) === 0;
++  });
++}
++function tempoFrom(beats: readonly number[]): { time: number; bpm: number }[] {
++  return beats.slice(1).map((time, i) => {
++    const from = Math.max(0, i - 1), to = Math.min(beats.length - 1, i + 2);
++    return { time, bpm: Math.round(60 * (to - from) / (beats[to] - beats[from]) * 10) / 10 };
++  });
++}
++function bindingRole(binding: RoleBinding): Exclude<SlotClockRole, 'free'> {
++  const allowed = binding.denominator === 1 ? [0] : binding.denominator === 2 ? [.5]
++    : binding.denominator === 3 ? [1 / 3, 2 / 3] : binding.denominator === 4 ? [.25, .75] : [];
++  if (!allowed.includes(binding.fraction) || binding.primary !== (binding.denominator === 1)) throw Error('Invalid selected role binding');
++  return binding.denominator === 1 ? 'beat' : binding.denominator === 2 ? 'half' : binding.denominator === 3 ? 'third' : 'quarter';
++}
++
++/** One real readout, then direct materialization. No second fit or role binder. */
++export function applySlotClockAnalysis(baseline: Analysis, context: SlotClockContext,
++  progress?: (fraction: number, stage: string) => void): {
++    analysis: SlotClockAnalysis; readout: ClockResult; bundles: SlotClockBundlePreparation; salience: SaliencePreparation;
++  } {
++  if (!Number.isFinite(context.sampleRate) || context.sampleRate <= 0) throw Error('Invalid original sample rate');
++  const salience = prepareSalience(baseline, context.streams);
++  const bundles = prepareSlotClockBundles(context.streams, baseline.duration);
++  const readout = readoutSlotClock({ duration: baseline.duration, streams: context.streams, physical: bundles.events, blocks: context.blocks,
++    progress: (owner, total) => progress?.((owner + 1) / Math.max(1, total), '正在对齐真实起音与局部节拍') });
++  return { analysis: overlaySlotClockAnalysis(baseline, context, readout, bundles, salience), readout, bundles, salience };
++}
++
++/** Actual pure materialization seam used by apply; fixtures do not invoke the clock. */
++export function overlaySlotClockAnalysis(baseline: Analysis, context: SlotClockContext, readout: ClockResult,
++  bundles: SlotClockBundlePreparation, salience: SaliencePreparation): SlotClockAnalysis {
++  if (salience.fingerprint !== baseline.fingerprint || salience.duration !== baseline.duration) throw Error('Salience input identity differs');
++  const arrangementSalience = compactSalience(salience);
++  if (readout.version !== 'SC2-slot/v2' || readout.duration !== baseline.duration) throw Error('Unexpected SC2 result identity');
++  const unknown = readout.unknownIntervals.map(interval => ({ from: interval.from, to: interval.to }));
++  let covered = 0, previousTo = -Infinity;
++  for (const interval of unknown) {
++    if (!Number.isFinite(interval.from) || !Number.isFinite(interval.to) || interval.from < 0 || interval.to > baseline.duration
++      || interval.to <= interval.from || interval.from < previousTo) throw Error('Invalid SC2 unknown interval');
++    if (interval.from <= covered) covered = interval.to;
++    previousTo = interval.to;
++  }
++  if (!readout.heads.length && !readout.knownSegments.length && covered === baseline.duration) {
++    if (readout.roleBindings.length || readout.geometry.length || readout.primaryIds.length) throw Error('Wholly unknown output contains selected evidence');
++    return { ...baseline, arrangementSalience };
++  }
++  if (readout.heads.length < 2 || !readout.knownSegments.length || readout.geometry.length < 2)
++    throw Error('局部节拍拟合没有建立足够的真实起点，请更换节奏更清楚的音乐。');
++  const isUnknown = (time: number): boolean => unknown.some(interval => time >= interval.from && time < interval.to);
++  previousTo = -Infinity;
++  for (const segment of readout.knownSegments) {
++    if (!Number.isFinite(segment.from) || !Number.isFinite(segment.to) || segment.from < 0 || segment.to > baseline.duration
++      || segment.to <= segment.from || segment.from < previousTo || !Number.isFinite(segment.period) || segment.period <= 0
++      || !Number.isInteger(segment.source) || segment.source < 0 || segment.source > 3
++      || !Number.isSafeInteger(segment.chain) || segment.chain < 0) throw Error('Invalid SC2 known segment');
++    previousTo = segment.to;
++  }
++  const byTime = new Map<number, SlotClockOnset>();
++  for (const event of salience.basePool) {
++    const copy: SlotClockOnset = { ...event };
++    if (!event.boundary && !isUnknown(event.time)) copy.role = 'free';
++    byTime.set(event.time, copy);
++  }
++  if (readout.primaryIds.length !== readout.heads.length || readout.primaryIds.some((id, index) => id !== readout.heads[index].eventId))
++    throw Error('SC2 primary ID tape differs from actual heads');
++  const primary = new Map<number, typeof readout.heads[number]>(), geometryByOrdinal = new Map<string, typeof readout.geometry[number]>();
++  let previousGeometry = -Infinity;
++  for (const target of readout.geometry) {
++    const key = `${target.chain}:${target.ordinal}`;
++    if (!Number.isFinite(target.time) || target.time < 0 || target.time >= baseline.duration || target.time <= previousGeometry
++      || geometryByOrdinal.has(key)) throw Error('Invalid SC2 actual/interpolated geometry');
++    previousGeometry = target.time; geometryByOrdinal.set(key, target);
++  }
++  let previousId = -1, previousHeadTime = -Infinity;
++  for (const head of readout.heads) {
++    const frame = bundles.events[head.eventId], member = context.streams[head.source]?.[head.sourceMemberIndex];
++    const target = geometryByOrdinal.get(`${head.chain}:${head.ordinal}`), tolerance = Math.min(.09, .2 * head.period);
++    if (!frame || frame.time !== head.time || !member || member.boundary || member.time !== head.time || primary.has(head.eventId)
++      || head.eventId <= previousId || head.time <= previousHeadTime || !Number.isFinite(head.period) || head.period <= 0
++      || !Number.isSafeInteger(head.ordinal) || !Number.isSafeInteger(head.chain) || !Number.isFinite(head.targetTime)
++      || !target || target.eventId !== head.eventId || target.time !== head.time || target.kind !== 'observed'
++      || !Number.isFinite(target.period) || target.period <= 0 || target.source !== head.source
++      || head.compatibility !== 1 - Math.abs(head.time - head.targetTime) / tolerance
++      || !Number.isFinite(head.compatibility) || head.compatibility < 0 || head.compatibility > 1)
++      throw Error('SC2 primary lost its physical/source/model/geometry identity');
++    primary.set(head.eventId, head); previousId = head.eventId; previousHeadTime = head.time;
++  }
++  const roleEvidence: SlotClockEvidence[] = [], boundIds = new Set<number>();
++  for (const binding of readout.roleBindings) {
++    const frame = bundles.events[binding.eventId], member = context.streams[binding.source]?.[binding.sourceMemberIndex];
++    const canonical = salience.byTime.get(binding.time), role = bindingRole(binding), head = primary.get(binding.eventId);
++    if (!frame || frame.time !== binding.time || !member || member.boundary || member.time !== binding.time || !canonical
++      || !frame.members.some(value => value.source === binding.source && value.index === binding.sourceMemberIndex)
++      || boundIds.has(binding.eventId) || !Number.isFinite(binding.compatibility) || binding.compatibility < 0 || binding.compatibility > 1
++      || !!head !== binding.primary || head && (head.source !== binding.source || head.sourceMemberIndex !== binding.sourceMemberIndex
++        || head.compatibility !== binding.compatibility || head.localOrdinal !== binding.localOrdinal || head.candidateId !== binding.candidateId))
++      throw Error('SC2 role binding lost its original member or primary reservation');
++    const copy: SlotClockOnset = { ...canonical, role }; delete copy.boundary;
++    byTime.set(binding.time, copy); boundIds.add(binding.eventId);
++    roleEvidence.push({ time: binding.time, eventId: binding.eventId, denominator: binding.denominator, fraction: binding.fraction,
++      compatibility: binding.compatibility, source: binding.source, sourceMemberIndex: binding.sourceMemberIndex,
++      sourceStrength: member.strength, sourceBand: member.band, candidateId: binding.candidateId, localOrdinal: binding.localOrdinal });
++  }
++  if (readout.heads.some(head => !boundIds.has(head.eventId))) throw Error('SC2 selected head has no original role binding');
++  const regular = [...byTime.values()].filter(event => !event.boundary);
++  for (const event of byTime.values()) if (event.boundary && regular.some(other => Math.abs(other.time - event.time) <= .085)) byTime.delete(event.time);
++  const onsets = [...byTime.values()].sort((a, b) => a.time - b.time);
++  const geometry = readout.geometry.map(target => target.time);
++  for (const time of baseline.rhythm?.beats ?? []) if (isUnknown(time)) geometry.push(time);
++  geometry.sort((a, b) => a - b);
++  const beats = geometry.filter((time, index) => index === 0 || time > geometry[index - 1]);
++  if (beats.length < 2) throw Error('局部节拍拟合没有形成可用的参考时间线。');
++  const confidence = Math.max(0, Math.min(1, readout.heads.reduce((sum, head) => sum + head.compatibility, 0) / readout.geometry.length));
++  const periods = readout.knownSegments.map(segment => ({ period: segment.period, weight: segment.to - segment.from })).sort((a, b) => a.period - b.period);
++  const halfWeight = periods.reduce((sum, value) => sum + value.weight, 0) / 2;
++  let accumulated = 0, dominantPeriod = periods[0].period;
++  for (const value of periods) { accumulated += value.weight; dominantPeriod = value.period; if (accumulated >= halfWeight) break; }
++  const slotClock: SlotClockMetadata = { version: 'SC2-slot/v2', primaryHeads: readout.heads.map(head => ({ time: head.time,
++    targetTime: head.targetTime, ordinal: head.ordinal, chain: head.chain, period: head.period })), roleEvidence, unknownIntervals: unknown,
++    knownSegments: readout.knownSegments.length, sourceFrames: bundles.events.length, assignments: roleEvidence.length };
++  return { ...baseline, bpm: Math.round(60 / dominantPeriod * 10) / 10, confidence,
++    rhythm: { beats, tempo: tempoFrom(beats), confidence, downbeats: [], meterConfidence: 0, method: 'SC2-slot/v2' },
++    pulse: { ...(baseline.pulse ?? { sections: [] }), onsets }, slotClock, arrangementSalience };
++}
+diff --git a/src/core/slot-clock-contracts.ts b/src/core/slot-clock-contracts.ts
+new file mode 100644
+index 0000000..58c546e
+--- /dev/null
++++ b/src/core/slot-clock-contracts.ts
+@@ -0,0 +1,74 @@
++export type SourceId = 0 | 1 | 2 | 3;
++export interface SourceEvent { readonly time: number; readonly strength: number; readonly band: number; readonly boundary?: boolean }
++export interface PhaseProposal { readonly anchor: number | null; readonly meanResidual: number | null; readonly supported: boolean; readonly unknown: boolean }
++export interface PeriodProposal { readonly period: number | null; readonly totalEvidence?: number | null; readonly phases: readonly PhaseProposal[] }
++export interface InputBlock { readonly time: number; readonly from: number; readonly to: number; readonly preferredPeriod?: number | null; readonly hypotheses: readonly PeriodProposal[] }
++export interface PhysicalIdentity { readonly id: number; readonly time: number }
++export interface ClockInput {
++  readonly duration: number;
++  readonly streams: readonly (readonly SourceEvent[])[];
++  readonly physical: readonly PhysicalIdentity[];
++  readonly blocks: readonly InputBlock[];
++  readonly progress?: (owner: number, total: number) => void;
++}
++export interface ClockHead {
++  readonly eventId: number; readonly time: number; readonly targetTime: number;
++  readonly ordinal: number; readonly chain: number; readonly period: number;
++  readonly source: SourceId; readonly sourceMemberIndex: number; readonly compatibility: number;
++  readonly blockIndex: number; readonly candidateId: string; readonly localOrdinal: number;
++}
++export interface RoleBinding {
++  readonly eventId: number; readonly time: number; readonly source: SourceId; readonly sourceMemberIndex: number;
++  readonly denominator: 1 | 2 | 3 | 4; readonly compatibility: number; readonly fraction: number;
++  readonly primary: boolean; readonly localOrdinal: number; readonly candidateId: string; readonly blockIndex: number;
++  readonly targetTime: number; readonly phaseTick: 0 | 3 | 4 | 6 | 8 | 9;
++  readonly coordinateNumerator: number; readonly coordinateDenominator: 12;
++}
++export interface GeometryTarget {
++  readonly time: number; readonly ordinal: number; readonly chain: number; readonly period: number;
++  readonly source: SourceId; readonly eventId: number | null; readonly blockIndex: number;
++  readonly kind: 'observed' | 'interpolated-rest';
++}
++export interface KnownSegment { readonly from: number; readonly to: number; readonly chain: number; readonly period: number; readonly source: SourceId }
++export interface UnknownInterval { readonly from: number; readonly to: number; readonly reason: string; readonly blockIndex: number }
++export interface ClockChange {
++  readonly kind: 'tempo-update' | 'phase-reset' | 'source-relay'; readonly from: number;
++  readonly beforePeriod: number; readonly afterPeriod: number; readonly beforeSource: SourceId; readonly afterSource: SourceId;
++  readonly phaseDistance: number;
++}
++export interface MetrePrior {
++  readonly preferredPeriod: number | null;
++  readonly preferredAvailable: boolean;
++  readonly proposalPeriod: number;
++  readonly proposalTotalEvidence: number | null;
++  readonly evidenceAvailable: boolean;
++  readonly evidenceRank: number;
++  readonly distanceTicks: number;
++  readonly evidenceRankTicks: number;
++}
++export interface OwnerSummary {
++  readonly blockIndex: number; readonly from: number; readonly to: number; readonly inputBlockIndex: number | null;
++  readonly fitCandidates: number; readonly eligibleCandidates: number; readonly frontier: number;
++  readonly selectedId: string | null; readonly selectedLoss: number; readonly selectedRank: number; readonly source: SourceId | null;
++  readonly period: number | null; readonly heads: number; readonly roleBindings: number;
++  readonly selectedPrior: MetrePrior | null;
++  readonly selectedPhysicalAxis: import('./slot-clock-affine').SlotPhysicalAxis | null;
++  readonly transition: { readonly shift: number; readonly reset: boolean; readonly phaseDistance: number; readonly physicalPhaseDistance: number; readonly cost: number; readonly costTicks: number } | null;
++}
++export interface ClockWork {
++  physicalReads: number; sourceReads: number; originalBlocks: number; ownedBlocks: number;
++  proposals: number; finiteProposals: number; fitCalls: number; eligibleCandidates: number;
++  edgeTrials: number; validEdges: number; candidateMerges: number; barrierMergedContexts: number; maximumFrontier: number;
++  retainedStates: number; geometryRestTargets: number; selectedHeads: number; selectedBindings: number;
++  fitWork: Record<string, number>; pathWork: Record<string, number>;
++}
++export interface ClockResult {
++  readonly version: 'SC2-slot/v2'; readonly selection: 'validated-barrier-dynamic-programming';
++  readonly duration: number; readonly primaryIds: readonly number[]; readonly heads: readonly ClockHead[];
++  readonly roleBindings: readonly RoleBinding[]; readonly geometry: readonly GeometryTarget[];
++  readonly knownSegments: readonly KnownSegment[]; readonly unknownIntervals: readonly UnknownInterval[];
++  readonly owners: readonly OwnerSummary[]; readonly changes: readonly ClockChange[]; readonly work: ClockWork;
++  readonly pathObjective: { readonly physicalTimingTicks: number; readonly metreDistanceTicks: number; readonly evidenceRankTicks: number; readonly primaryResetCount: number; readonly sourceChangeCount: number; readonly originalRankSum: number };
++  readonly priorPolicy: 'original-investigation-fitted-period-and-evidence-rank/v1';
++  readonly exactScope: string;
++}
+diff --git a/src/core/slot-clock-path.ts b/src/core/slot-clock-path.ts
+new file mode 100644
+index 0000000..7713639
+--- /dev/null
++++ b/src/core/slot-clock-path.ts
+@@ -0,0 +1,203 @@
++/** SC2 finite path over validated recording owners. No neural observations,
++ * source-volume reward, beam pruning or enlarged historical-state frontier. */
++export interface PhysicalAxis {
++  readonly originTick: number; readonly coordinateGCD: number; readonly period: number;
++  readonly pivotOrdinal: number; readonly pivotTime: number;
++}
++export interface SlotPathHead { readonly eventId: number; readonly time: number; readonly targetTime: number; readonly localOrdinal: number }
++export interface SlotPathCandidate {
++  readonly id: string; readonly period: number; readonly source: 0 | 1 | 2 | 3;
++  readonly physicalAxis: PhysicalAxis; readonly loss: number; readonly rank: number;
++  readonly metreDistanceTicks: number; readonly evidenceRankTicks: number;
++  readonly heads: readonly SlotPathHead[];
++}
++export interface SlotPathOwner { readonly from: number; readonly to: number; readonly candidates: readonly SlotPathCandidate[] }
++export interface SlotPathInput {
++  readonly duration: number; readonly owners: readonly SlotPathOwner[];
++  readonly physical: readonly { readonly id: number; readonly time: number; readonly boundary?: boolean }[];
++}
++export interface SlotPathEdge {
++  readonly shift: number; readonly reset: boolean; readonly phaseDistance: number;
++  readonly physicalPhaseDistance: number; readonly cost: number; readonly costTicks: number;
++}
++export interface SlotPathChoice { readonly candidateId: string | null; readonly edge: SlotPathEdge; readonly loss: number }
++export interface SlotObjective {
++  readonly timingTicks: number; readonly metreDistanceTicks: number; readonly evidenceRankTicks: number;
++  readonly resets: number; readonly sourceChanges: number; readonly rank: number;
++}
++export interface SlotPathWork {
++  physicalReads: number; candidateReads: number; headReads: number; edgeTrials: number; validEdges: number;
++  candidateMerges: number; maximumFrontier: number; retainedStates: number; barrierMergedContexts: number;
++}
++export interface SlotPathResult {
++  readonly choices: readonly SlotPathChoice[]; readonly objective: SlotObjective;
++  readonly frontiers: readonly number[]; readonly work: SlotPathWork;
++  readonly exactScope: string;
++}
++export const SLOT_PATH_LIMITS = Object.freeze({ ticksPerUnit: 1000000000, maximumOwners: 150,
++  maximumCandidatesPerOwner: 4096, maximumPhysical: 200000, maximumEdges: 100000000,
++  maximumAbsOrdinal: 2147482624, maximumGCD: 1536, maximumPhysicalPivot: 4096,
++  maximumCertifiedPhase: 268435456,
++  latticeToleranceSeconds: 1e-10, maximumDistanceTicks: 2000000000,
++  maximumEvidenceTicks: 64000000000, maximumAccumulatedTicks: 20000000000000 });
++
++interface State {
++  readonly owner: number; readonly candidate: SlotPathCandidate | null; readonly cursor: number;
++  readonly lastOrdinal: number | null; readonly lastTarget: number; readonly objective: SlotObjective;
++  readonly previous: State | null; readonly edge: SlotPathEdge;
++}
++const OBJECTIVE_KEYS = ['timingTicks', 'metreDistanceTicks', 'evidenceRankTicks', 'resets', 'sourceChanges', 'rank'] as const;
++const integer = (value: number): boolean => Number.isSafeInteger(value);
++export function objectiveTicks(value: number): number {
++  if (!Number.isFinite(value) || value < 0) throw Error('SC2 objective term must be finite and nonnegative');
++  const ticks = Math.round(value * SLOT_PATH_LIMITS.ticksPerUnit);
++  if (!integer(ticks) || ticks > SLOT_PATH_LIMITS.maximumAccumulatedTicks) throw Error('SC2 objective term exceeds integer domain');
++  return ticks;
++}
++function better(a: State, b: State | null): boolean {
++  if (!b) return true;
++  for (const key of OBJECTIVE_KEYS) {
++    if (a.objective[key] < b.objective[key]) return true;
++    if (a.objective[key] > b.objective[key]) return false;
++  }
++  return false;
++}
++function primaryFrame(axis: PhysicalAxis): { whole: number; fraction: number } {
++  const ticks = axis.originTick + axis.coordinateGCD * axis.pivotOrdinal;
++  const whole = Math.floor(ticks / 12);
++  return { whole, fraction: (ticks - whole * 12) / 12 };
++}
++function primaryDelta(previous: SlotPathCandidate, current: SlotPathCandidate, boundary: number): { shift: number; distance: number } {
++  const a = primaryFrame(previous.physicalAxis), b = primaryFrame(current.physicalAxis);
++  const fractional = (a.fraction + (boundary - previous.physicalAxis.pivotTime) / previous.period)
++    - (b.fraction + (boundary - current.physicalAxis.pivotTime) / current.period);
++  const rounded = Math.round(fractional), shift = a.whole - b.whole + rounded;
++  if (!integer(shift) || Math.abs(shift) > SLOT_PATH_LIMITS.maximumAbsOrdinal) throw Error('Unsafe primary phase transport');
++  return { shift, distance: Math.abs(fractional - rounded) };
++}
++
++/** Strong input domain is part of the algorithm. The two-second empty-owner
++ * barrier proof does not apply to arbitrary short internal owners or invented
++ * physical labels. Keep real prefix contexts/backpointers while merging only
++ * their future equivalence. All six objective components add exact integers.
++ */
++export function chooseSlotClockPath(input: SlotPathInput): SlotPathResult {
++  const L = SLOT_PATH_LIMITS;
++  if (!input || !Number.isFinite(input.duration) || input.duration <= 0 || input.duration > 300
++    || !Array.isArray(input.owners) || input.owners.length !== Math.ceil(input.duration / 2)
++    || input.owners.length > L.maximumOwners || !Array.isArray(input.physical) || input.physical.length > L.maximumPhysical)
++    throw Error('SC2 requires complete regular recording owners and physical inventory');
++  const work: SlotPathWork = { physicalReads: 0, candidateReads: 0, headReads: 0, edgeTrials: 0,
++    validEdges: 0, candidateMerges: 0, maximumFrontier: 0, retainedStates: 0, barrierMergedContexts: 0 };
++  const physical = new Map<number, number>(); let lastId = -1, lastTime = -Infinity;
++  for (const p of input.physical) {
++    work.physicalReads++;
++    if (!p || !integer(p.id) || p.id <= lastId || !Number.isFinite(p.time) || p.time <= lastTime
++      || p.time < 0 || p.time >= input.duration || p.boundary !== undefined && typeof p.boundary !== 'boolean' || p.boundary)
++      throw Error('SC2 physical ID/time inventory must be unique, monotone and regular');
++    physical.set(p.id, p.time); lastId = p.id; lastTime = p.time;
++  }
++  const ids = new Set<string>();
++  input.owners.forEach((owner, index) => {
++    if (!owner || owner.from !== 2 * index || owner.to !== Math.min(input.duration, owner.from + 2)
++      || !Array.isArray(owner.candidates) || owner.candidates.length > L.maximumCandidatesPerOwner)
++      throw Error('SC2 cannot saturate arbitrary short internal owners');
++    for (const c of owner.candidates) {
++      work.candidateReads++;
++      if (!c || typeof c.id !== 'string' || !c.id || ids.has(c.id) || !Number.isFinite(c.period) || c.period < .27 || c.period > 1.2
++        || !Number.isInteger(c.source) || c.source < 0 || c.source > 3 || !Number.isFinite(c.loss) || c.loss < 0 || c.loss > 1
++        || !integer(c.rank) || c.rank < 0 || c.rank > L.maximumCandidatesPerOwner
++        || !integer(c.metreDistanceTicks) || c.metreDistanceTicks < 0 || c.metreDistanceTicks > L.maximumDistanceTicks
++        || !integer(c.evidenceRankTicks) || c.evidenceRankTicks < 0 || c.evidenceRankTicks > L.maximumEvidenceTicks || !Array.isArray(c.heads))
++        throw Error('Invalid SC2 immutable local candidate or integer prior');
++      ids.add(c.id);
++      const a = c.physicalAxis;
++      if (!a || !integer(a.originTick) || Math.abs(a.originTick) > 12 * L.maximumAbsOrdinal + 1536
++        || !integer(a.coordinateGCD) || a.coordinateGCD < 1 || a.coordinateGCD > L.maximumGCD
++        || !Number.isFinite(a.period) || a.period <= 0 || !integer(a.pivotOrdinal) || Math.abs(a.pivotOrdinal) > L.maximumPhysicalPivot
++        || !Number.isFinite(a.pivotTime) || a.pivotTime < -1000 || a.pivotTime > input.duration + 1000)
++        throw Error('SC2 physical affine axis exceeds its validated numerical domain');
++      const derivedPeriod = a.period * 12 / a.coordinateGCD;
++      if (Math.abs(derivedPeriod - c.period) > 8 * Number.EPSILON * Math.max(1, c.period)) throw Error('Physical and primary periods disagree');
++      const frame = primaryFrame(a);
++      const q0 = frame.whole + frame.fraction - a.pivotTime / c.period;
++      const qEnd = frame.whole + frame.fraction + (input.duration - a.pivotTime) / c.period;
++      if (Math.abs(frame.whole) > L.maximumCertifiedPhase || !Number.isFinite(q0) || !Number.isFinite(qEnd)
++        || Math.abs(q0) > L.maximumCertifiedPhase || Math.abs(qEnd) > L.maximumCertifiedPhase)
++        throw Error('SC2 primary coordinate certificate lacks transport headroom');
++      lastId = -1; lastTime = -Infinity; let lastOrdinal = -Infinity, lastTarget = -Infinity;
++      for (const h of c.heads) {
++        work.headReads++;
++        if (!h || !integer(h.eventId) || h.eventId <= lastId || physical.get(h.eventId) !== h.time
++          || !Number.isFinite(h.time) || h.time < owner.from || h.time >= owner.to || h.time <= lastTime
++          || !integer(h.localOrdinal) || Math.abs(h.localOrdinal) > L.maximumCertifiedPhase + 2 || h.localOrdinal <= lastOrdinal
++          || !Number.isFinite(h.targetTime) || h.targetTime <= lastTarget)
++          throw Error('SC2 head is not an owned ordered physical primary');
++        const k = (12 * h.localOrdinal - a.originTick) / a.coordinateGCD;
++        const expected = a.pivotTime + (k - a.pivotOrdinal) * a.period;
++        if (!Number.isSafeInteger(k) || !Number.isFinite(expected) || Math.abs(k - a.pivotOrdinal) > 4096
++          || Math.abs(expected - h.targetTime) > L.latticeToleranceSeconds
++          || Math.abs(h.time - h.targetTime) > Math.min(.09, .2 * c.period))
++          throw Error('SC2 head is not consistent with its primary affine lattice/tolerance');
++        lastId = h.eventId; lastTime = h.time; lastOrdinal = h.localOrdinal; lastTarget = h.targetTime;
++      }
++    }
++  });
++  let frontier: State[] = [{ owner: -1, candidate: null, cursor: -1, lastOrdinal: null, lastTarget: -Infinity,
++    objective: { timingTicks: 0, metreDistanceTicks: 0, evidenceRankTicks: 0, resets: 0, sourceChanges: 0, rank: 0 },
++    previous: null, edge: { shift: 0, reset: true, phaseDistance: 0, physicalPhaseDistance: 0, cost: 0, costTicks: 0 } }];
++  const frontiers: number[] = [];
++  input.owners.forEach((owner, ownerIndex) => {
++    const next = new Map<string | null, State>();
++    for (const current of [...owner.candidates, null]) for (const prior of frontier) {
++      if (++work.edgeTrials > L.maximumEdges) throw Error('SC2 finite candidate edge budget exceeded');
++      let shift = 0, reset = false, phaseDistance = 0, physicalPhaseDistance = 0, cost = 0;
++      let cursor = prior.cursor, lastTarget = prior.lastTarget, lastOrdinal: number | null = null;
++      if (current) {
++        if (prior.candidate) {
++          const transport = primaryDelta(prior.candidate, current, owner.from);
++          shift = transport.shift; phaseDistance = transport.distance; reset = phaseDistance > .25;
++          const a = prior.candidate.physicalAxis, b = current.physicalAxis;
++          const d = (owner.from - a.pivotTime) / a.period - (owner.from - b.pivotTime) / b.period;
++          physicalPhaseDistance = Math.abs(d - Math.round(d));
++          cost = Math.abs(Math.log(b.period / a.period)) + 4 * physicalPhaseDistance;
++          if (!reset && prior.lastOrdinal !== null) lastOrdinal = prior.lastOrdinal - shift;
++        } else { reset = true; if (prior.owner >= 0) cost = 1; }
++        const first = current.heads[0], last = current.heads[current.heads.length - 1];
++        if (first && (first.eventId <= cursor || first.targetTime <= lastTarget || lastOrdinal !== null && first.localOrdinal <= lastOrdinal)) continue;
++        if (last) { cursor = last.eventId; lastTarget = last.targetTime; lastOrdinal = last.localOrdinal; }
++        if (lastOrdinal !== null && (!integer(lastOrdinal) || Math.abs(lastOrdinal) > L.maximumAbsOrdinal)) throw Error('Unsafe transported SC2 ordinal');
++      } else if (prior.candidate) cost = 1;
++      const costTicks = objectiveTicks(cost), emissionTicks = objectiveTicks((current?.loss ?? 1) * (owner.to - owner.from) / 2);
++      const objective: SlotObjective = { timingTicks: prior.objective.timingTicks + emissionTicks + costTicks,
++        metreDistanceTicks: prior.objective.metreDistanceTicks + (current?.metreDistanceTicks ?? 0),
++        evidenceRankTicks: prior.objective.evidenceRankTicks + (current?.evidenceRankTicks ?? 0),
++        resets: prior.objective.resets + Number(reset && prior.owner >= 0),
++        sourceChanges: prior.objective.sourceChanges + Number(!!current && !!prior.candidate && current.source !== prior.candidate.source),
++        rank: prior.objective.rank + (current?.rank ?? 0) };
++      if (OBJECTIVE_KEYS.some(k => !integer(objective[k]) || objective[k] < 0 || objective[k] > L.maximumAccumulatedTicks)) throw Error('SC2 cumulative integer objective exceeded');
++      const state: State = { owner: ownerIndex, candidate: current, cursor, lastOrdinal, lastTarget, objective,
++        previous: prior, edge: { shift, reset, phaseDistance, physicalPhaseDistance, cost, costTicks } };
++      work.validEdges++;
++      const id = current?.id ?? null, old = next.get(id) ?? null;
++      if (old) {
++        work.candidateMerges++;
++        if (state.cursor !== old.cursor || state.lastTarget !== old.lastTarget || state.lastOrdinal !== old.lastOrdinal) work.barrierMergedContexts++;
++      }
++      if (better(state, old)) next.set(id, state);
++    }
++    if (!next.size || next.size > owner.candidates.length + 1) throw Error('SC2 saturated frontier invariant failed');
++    frontier = [...next.values()]; frontiers.push(frontier.length);
++    work.maximumFrontier = Math.max(work.maximumFrontier, frontier.length); work.retainedStates += frontier.length;
++  });
++  let best: State | null = null;
++  for (const state of frontier) if (better(state, best)) best = state;
++  if (!best) throw Error('SC2 path has no terminal state');
++  const terminal = best, choices: SlotPathChoice[] = [];
++  while (best && best.owner >= 0) {
++    choices.push({ candidateId: best.candidate?.id ?? null, edge: best.edge, loss: best.candidate?.loss ?? 1 }); best = best.previous;
++  }
++  choices.reverse(); if (choices.length !== input.owners.length) throw Error('Incomplete SC2 backtrace');
++  return { choices, objective: terminal.objective, frontiers, work,
++    exactScope: 'Exact integer-objective DP over supplied finite validated candidates, with full-owner future-context saturation; not old IEEE winner equivalence or a continuous/human-tactus optimum.' };
++}
+diff --git a/src/core/slot-clock-readout.ts b/src/core/slot-clock-readout.ts
+new file mode 100644
+index 0000000..0d07c93
+--- /dev/null
++++ b/src/core/slot-clock-readout.ts
+@@ -0,0 +1,240 @@
++import { fitSlotClock, type SlotBinding, type SlotPhysicalAxis } from './slot-clock-affine';
++import { chooseSlotClockPath } from './slot-clock-path';
++import type { ClockInput, ClockResult, ClockWork, ClockHead, RoleBinding, GeometryTarget, KnownSegment,
++  UnknownInterval, OwnerSummary, ClockChange, SourceId, PeriodProposal, PhaseProposal, MetrePrior } from './slot-clock-contracts';
++
++interface Candidate {
++  readonly id: string; readonly ownerIndex: number; readonly source: SourceId; readonly period: number;
++  readonly loss: number; readonly rank: number; readonly metreDistanceTicks: number; readonly evidenceRankTicks: number;
++  readonly physicalAxis: SlotPhysicalAxis; readonly prior: MetrePrior;
++  readonly heads: readonly { readonly eventId: number; readonly time: number; readonly targetTime: number; readonly localOrdinal: number }[];
++  readonly ownedBindings: readonly SlotBinding[];
++}
++interface PathOwner { readonly from: number; readonly to: number; readonly candidates: readonly Candidate[] }
++
++const LIMITS = { maximumDuration: 300, maximumPhysical: 200000, maximumBlocks: 512,
++  maximumHypotheses: 64, maximumPhases: 16, maximumGeometry: 20000, maximumAbsOrdinal: 2147482624 } as const;
++function adjacent(value: number, direction: 1 | -1): number {
++  const scratch = new DataView(new ArrayBuffer(8));
++  scratch.setFloat64(0, value); const bits = scratch.getBigUint64(0);
++  scratch.setBigUint64(0, value > 0 ? bits + BigInt(direction) : bits - BigInt(direction));
++  return scratch.getFloat64(0);
++}
++function fitWindow(from: number, to: number, duration: number): readonly [number, number] {
++  let a = Math.max(0, Math.min(from + (to - from) / 2 - 4, duration - 8)), b = Math.min(duration, a + 8);
++  if (b - a > 8) {
++    if (b === duration) a = adjacent(a, 1); else b = adjacent(b, -1);
++  }
++  if (b - a > 8 || b <= a) throw Error('Invalid bounded fit window');
++  return [a, b];
++}
++function workRecord(): ClockWork {
++  return { physicalReads: 0, sourceReads: 0, originalBlocks: 0, ownedBlocks: 0, proposals: 0,
++    finiteProposals: 0, fitCalls: 0, eligibleCandidates: 0, edgeTrials: 0, validEdges: 0,
++    candidateMerges: 0, barrierMergedContexts: 0, maximumFrontier: 0, retainedStates: 0, geometryRestTargets: 0,
++    selectedHeads: 0, selectedBindings: 0, fitWork: {}, pathWork: {} };
++}
++
++/** New SC2 pipeline: fit all-slot original source hypotheses, compare their
++ * owner emissions over a complete finite path, then reconstruct an explicitly
++ * labelled reference clock. Physical note times and source identities are never
++ * interpolated; only missing reference beat labels may become virtual rests.
++ */
++export function readoutSlotClock(input: ClockInput): ClockResult {
++  if (!input || !Number.isFinite(input.duration) || input.duration <= 0 || input.duration > LIMITS.maximumDuration
++    || !Array.isArray(input.streams) || input.streams.length !== 4 || !Array.isArray(input.physical)
++    || input.physical.length > LIMITS.maximumPhysical || !Array.isArray(input.blocks) || input.blocks.length > LIMITS.maximumBlocks)
++    throw Error('Invalid SC2 physical input');
++  const work = workRecord(), physicalByTime = new Map<number, number>(), physicalById = new Map<number, number>();
++  let previousId = -1, previousTime = -Infinity;
++  for (const event of input.physical) {
++    work.physicalReads++;
++    if (!event || !Number.isSafeInteger(event.id) || event.id <= previousId || !Number.isFinite(event.time)
++      || event.time < 0 || event.time >= input.duration || event.time <= previousTime) throw Error('Invalid ordered physical identity inventory');
++    physicalByTime.set(event.time, event.id); physicalById.set(event.id, event.time);
++    previousId = event.id; previousTime = event.time;
++  }
++  const actualTimes = new Set<number>();
++  for (const stream of input.streams) {
++    if (!Array.isArray(stream) || stream.length > LIMITS.maximumPhysical) throw Error('Invalid original SC2 source stream');
++    let previous = -Infinity;
++    for (const event of stream) {
++      work.sourceReads++;
++      if (!event || !Number.isFinite(event.time) || event.time < previous || event.time < 0 || event.time >= input.duration
++        || !Number.isFinite(event.strength) || event.strength < 0 || !Number.isInteger(event.band) || event.band < 0 || event.band > 2
++        || event.boundary !== undefined && typeof event.boundary !== 'boolean')
++        throw Error('Invalid original source member');
++      previous = event.time;
++      if (!event.boundary) {
++        if (!physicalByTime.has(event.time)) throw Error('Original source member missing from physical inventory');
++        actualTimes.add(event.time);
++      }
++    }
++  }
++  if (actualTimes.size !== physicalByTime.size) throw Error('Physical inventory contains an invented event');
++  const blockByOwner = new Map<number, number>();
++  input.blocks.forEach((block, index) => {
++    work.originalBlocks++;
++    if (!block || !Number.isFinite(block.time) || !Number.isFinite(block.from) || !Number.isFinite(block.to)
++      || block.from < 0 || block.to > input.duration || block.to < block.from || !Array.isArray(block.hypotheses)
++      || block.hypotheses.length > LIMITS.maximumHypotheses) throw Error('Invalid original SC2 proposal block');
++    if (block.preferredPeriod !== undefined && block.preferredPeriod !== null
++      && (!Number.isFinite(block.preferredPeriod) || block.preferredPeriod < .27 || block.preferredPeriod > 1.2))
++      throw Error('Invalid original SC2 preferred period');
++    for (const hypothesis of block.hypotheses) if (!hypothesis || hypothesis.totalEvidence !== undefined && hypothesis.totalEvidence !== null
++      && !Number.isFinite(hypothesis.totalEvidence)) throw Error('Invalid original SC2 proposal evidence');
++    if (block.time >= 0 && block.time < input.duration) {
++      const owner = Math.round(block.time / 2);
++      if (Math.abs(block.time - owner * 2) > 1e-9 || blockByOwner.has(owner)) throw Error('Duplicate/noncanonical original owner block');
++      blockByOwner.set(owner, index);
++    }
++  });
++  const ownerCount = Math.ceil(input.duration / 2), pathOwners: PathOwner[] = [], candidatesById = new Map<string, Candidate>();
++  const summaries: OwnerSummary[] = [];
++  for (let ownerIndex = 0; ownerIndex < ownerCount; ownerIndex++) {
++    const from = ownerIndex * 2, to = Math.min(input.duration, from + 2), originalIndex = blockByOwner.get(ownerIndex) ?? null;
++    const [windowFrom, windowTo] = fitWindow(from, to, input.duration);
++    const candidates: Candidate[] = []; let fitCandidates = 0, rank = 0;
++    const block = originalIndex === null ? null : input.blocks[originalIndex];
++    const evidenceLevels = block ? [...new Set<number>(block.hypotheses.filter((h: PeriodProposal) => h.period !== null && Number.isFinite(h.period)
++      && h.period >= .27 && h.period <= 1.2 && h.totalEvidence !== undefined && h.totalEvidence !== null)
++      .map((h: PeriodProposal) => h.totalEvidence!))].sort((a, b) => b - a) : [];
++    const preferredPeriod = block?.preferredPeriod ?? null;
++    if (block) block.hypotheses.forEach((hypothesis: PeriodProposal, hypothesisIndex: number) => {
++      if (!hypothesis || !Array.isArray(hypothesis.phases) || hypothesis.phases.length > LIMITS.maximumPhases) throw Error('Invalid original phase proposals');
++      hypothesis.phases.forEach((proposal: PhaseProposal, phaseIndex: number) => {
++        work.proposals++;
++        if (!proposal || typeof proposal !== 'object') throw Error('Invalid original phase record');
++        if (proposal.meanResidual !== null && !Number.isFinite(proposal.meanResidual)) throw Error('Invalid original phase residual');
++        const period = hypothesis.period, anchor = proposal.anchor === null ? NaN : proposal.anchor + (proposal.meanResidual ?? 0);
++        if (period === null || !Number.isFinite(period) || period < .27 || period > 1.2 || !Number.isFinite(anchor)) return;
++        work.finiteProposals++;
++        for (let source = 0; source < 4; source++) {
++          work.fitCalls++; fitCandidates++;
++          const fit = fitSlotClock({ duration: input.duration, events: input.streams[source], period, anchor,
++            from: windowFrom, to: windowTo, ownerFrom: from, ownerTo: to, source: source as SourceId });
++          for (const [key, value] of Object.entries(fit.work)) if (typeof value === 'number')
++            work.fitWork[key] = key.startsWith('maximum') ? Math.max(work.fitWork[key] ?? 0, value) : (work.fitWork[key] ?? 0) + value;
++          const candidateRank = rank++;
++          if (!fit.eligible) continue;
++          if (fit.version !== 'EC2-source-slot-affine/v1' || fit.source !== source) throw Error('Unexpected source fit identity');
++          const id = `${ownerIndex}:${hypothesisIndex}:${phaseIndex}:${source}`;
++          const heads = fit.ownerBindings.filter(binding => binding.primary).map(binding => {
++            const eventId = physicalByTime.get(binding.time), original = input.streams[source][binding.sourceMemberIndex];
++            if (eventId === undefined || !original || original.boundary || original.time !== binding.time || binding.source !== source)
++              throw Error('Fitted head lost its original source identity');
++            return { eventId, time: binding.time, targetTime: binding.targetTime, localOrdinal: binding.localOrdinal };
++          }).sort((a, b) => a.time - b.time);
++          const evidenceAvailable = hypothesis.totalEvidence !== undefined && hypothesis.totalEvidence !== null;
++          const evidenceRank = evidenceAvailable ? evidenceLevels.indexOf(hypothesis.totalEvidence!) : 0;
++          const distanceTicks = preferredPeriod === null ? 0 : Math.round(Math.abs(Math.log(fit.period / preferredPeriod)) * (to - from) / 2 * 1e9);
++          const evidenceRankTicks = Math.round(evidenceRank * (to - from) / 2 * 1e9);
++          if (!Number.isSafeInteger(distanceTicks) || distanceTicks < 0 || !Number.isSafeInteger(evidenceRankTicks) || evidenceRankTicks < 0)
++            throw Error('Unsafe SC2 integer metre prior');
++          const prior: MetrePrior = { preferredPeriod, preferredAvailable: preferredPeriod !== null, proposalPeriod: period,
++            proposalTotalEvidence: hypothesis.totalEvidence ?? null, evidenceAvailable, evidenceRank, distanceTicks, evidenceRankTicks };
++          const c: Candidate = { id, ownerIndex, source: source as SourceId, period: fit.period,
++            physicalAxis: fit.clock.physicalAxis, loss: fit.ownerLoss.total, rank: candidateRank,
++            metreDistanceTicks: distanceTicks, evidenceRankTicks, prior, heads, ownedBindings: fit.ownerBindings };
++          candidates.push(c); candidatesById.set(id, c); work.eligibleCandidates++;
++        }
++      });
++    });
++    pathOwners.push({ from, to, candidates });
++    summaries.push({ blockIndex: ownerIndex, from, to, inputBlockIndex: originalIndex,
++      fitCandidates, eligibleCandidates: candidates.length, frontier: 0, selectedId: null, selectedRank: 0,
++      selectedLoss: 1, source: null, period: null, heads: 0, roleBindings: 0, selectedPrior: null, selectedPhysicalAxis: null, transition: null });
++    work.ownedBlocks++;
++    input.progress?.(ownerIndex, ownerCount);
++  }
++  const path = chooseSlotClockPath({ duration: input.duration, owners: pathOwners, physical: input.physical });
++  work.pathWork = { ...path.work };
++  for (const name of ['edgeTrials', 'validEdges', 'candidateMerges', 'barrierMergedContexts', 'maximumFrontier', 'retainedStates'] as const)
++    work[name] = path.work[name];
++  for (let index = 0; index < summaries.length; index++) summaries[index] = { ...summaries[index], frontier: path.frontiers[index] };
++  const rawHeads: ClockHead[] = [], rawBindings: RoleBinding[] = [], knownSegments: KnownSegment[] = [], unknownIntervals: UnknownInterval[] = [], changes: ClockChange[] = [];
++  let chain = -1, offset = 0, previous: Candidate | null = null;
++  path.choices.forEach((choice, ownerIndex) => {
++    summaries[ownerIndex] = { ...summaries[ownerIndex], transition: choice.edge };
++    const owner = pathOwners[ownerIndex], candidate = choice.candidateId === null ? null : candidatesById.get(choice.candidateId);
++    if (choice.candidateId !== null && !candidate) throw Error('Backtrace references a missing actual fit');
++    if (!candidate) {
++      unknownIntervals.push({ from: owner.from, to: owner.to, blockIndex: ownerIndex,
++        reason: owner.candidates.length ? 'unknown-selected-by-finite-objective' : 'no-eligible-affine-fit' });
++      previous = null; return;
++    }
++    if (!previous || choice.edge.reset) { chain++; offset = 0; }
++    else offset += choice.edge.shift;
++    if (!Number.isSafeInteger(offset) || Math.abs(offset) > LIMITS.maximumAbsOrdinal) throw Error('Unsafe composed beat ordinal');
++    if (previous) {
++      const base = { from: owner.from, beforePeriod: previous.period, afterPeriod: candidate.period,
++        beforeSource: previous.source, afterSource: candidate.source, phaseDistance: choice.edge.phaseDistance };
++      if (choice.edge.reset) changes.push({ ...base, kind: 'phase-reset' });
++      else if (Math.abs(candidate.period - previous.period) > 1e-10) changes.push({ ...base, kind: 'tempo-update' });
++      if (candidate.source !== previous.source) changes.push({ ...base, kind: 'source-relay' });
++    }
++    for (const h of candidate.heads) {
++      const binding = candidate.ownedBindings.find(b => b.primary && b.time === h.time);
++      if (!binding) throw Error('Missing exact selected primary binding');
++      rawHeads.push({ ...h, ordinal: h.localOrdinal + offset, chain, period: candidate.period, source: candidate.source,
++        sourceMemberIndex: binding.sourceMemberIndex, compatibility: binding.compatibility, blockIndex: ownerIndex, candidateId: candidate.id });
++    }
++    for (const b of candidate.ownedBindings) {
++      const eventId = physicalByTime.get(b.time), original = input.streams[candidate.source][b.sourceMemberIndex];
++      if (eventId === undefined || !original || original.time !== b.time || original.boundary) throw Error('Role binding invented a physical source member');
++      rawBindings.push({ eventId, time: b.time, source: candidate.source, sourceMemberIndex: b.sourceMemberIndex,
++        denominator: b.denominator, compatibility: b.compatibility, fraction: b.fraction, primary: b.primary,
++        localOrdinal: b.localOrdinal, candidateId: candidate.id, blockIndex: ownerIndex, targetTime: b.targetTime,
++        phaseTick: b.phaseTick, coordinateNumerator: b.coordinateNumerator, coordinateDenominator: b.coordinateDenominator });
++    }
++    knownSegments.push({ from: owner.from, to: owner.to, chain, period: candidate.period, source: candidate.source });
++    summaries[ownerIndex] = { ...summaries[ownerIndex], selectedId: candidate.id, selectedLoss: candidate.loss, selectedRank: candidate.rank,
++      source: candidate.source, period: candidate.period, heads: candidate.heads.length, roleBindings: candidate.ownedBindings.length,
++      selectedPrior: candidate.prior, selectedPhysicalAxis: candidate.physicalAxis };
++    previous = candidate;
++  });
++  const originByChain = new Map<number, number>();
++  for (const head of rawHeads) if (!originByChain.has(head.chain)) originByChain.set(head.chain, head.ordinal);
++  const heads = rawHeads.map(head => ({ ...head, ordinal: head.ordinal - originByChain.get(head.chain)! }));
++  let lastId = -1, lastTime = -Infinity, lastChain = -1, lastOrdinal = -1;
++  for (const head of heads) {
++    if (head.eventId <= lastId || head.time <= lastTime || physicalById.get(head.eventId) !== head.time
++      || !Number.isSafeInteger(head.ordinal) || head.ordinal < 0 || head.chain === lastChain && head.ordinal <= lastOrdinal)
++      throw Error('Inconsistent global physical/ordinal head sequence');
++    lastId = head.eventId; lastTime = head.time; lastChain = head.chain; lastOrdinal = head.ordinal;
++  }
++  const primaryIds = new Set(heads.map(head => head.eventId)), bindingIds = new Set<number>();
++  const roleBindings = rawBindings.filter(binding => {
++    if (bindingIds.has(binding.eventId) || primaryIds.has(binding.eventId) && !binding.primary) return false;
++    bindingIds.add(binding.eventId); return true;
++  }).sort((a, b) => a.time - b.time);
++  const geometry: GeometryTarget[] = [];
++  for (let index = 0; index < heads.length; index++) {
++    const head = heads[index], next = heads[index + 1];
++    const sameChain = next?.chain === head.chain, gap = sameChain ? next.ordinal - head.ordinal : 1;
++    const step = sameChain ? (next.time - head.time) / gap : head.period;
++    geometry.push({ time: head.time, ordinal: head.ordinal, chain: head.chain, period: step,
++      source: head.source, eventId: head.eventId, blockIndex: head.blockIndex, kind: 'observed' });
++    if (sameChain) for (let ordinal = head.ordinal + 1; ordinal < next.ordinal; ordinal++) {
++      if (geometry.length >= LIMITS.maximumGeometry) throw Error('SC2 reference geometry budget exceeded');
++      const time = head.time + (ordinal - head.ordinal) / gap * (next.time - head.time);
++      geometry.push({ time, ordinal, chain: head.chain, period: step, source: head.source,
++        eventId: null, blockIndex: Math.min(ownerCount - 1, Math.floor(time / 2)), kind: 'interpolated-rest' });
++      work.geometryRestTargets++;
++    }
++  }
++  let lastGeometry = -Infinity;
++  for (const target of geometry) {
++    if (!Number.isFinite(target.time) || target.time < 0 || target.time >= input.duration || target.time <= lastGeometry)
++      throw Error('SC2 reference geometry is not strictly recording-ordered');
++    lastGeometry = target.time;
++  }
++  work.selectedHeads = heads.length; work.selectedBindings = roleBindings.length;
++  return { version: 'SC2-slot/v2', selection: 'validated-barrier-dynamic-programming', duration: input.duration,
++    primaryIds: heads.map(head => head.eventId), heads, roleBindings, geometry, knownSegments, unknownIntervals,
++    owners: summaries, changes, work,
++    pathObjective: { physicalTimingTicks: path.objective.timingTicks, metreDistanceTicks: path.objective.metreDistanceTicks,
++      evidenceRankTicks: path.objective.evidenceRankTicks, primaryResetCount: path.objective.resets, sourceChangeCount: path.objective.sourceChanges,
++      originalRankSum: path.objective.rank }, priorPolicy: 'original-investigation-fitted-period-and-evidence-rank/v1',
++    exactScope: 'Validated-barrier DP over generated finite all-slot fits; no continuous/global musical optimum. Integer physical/prior objective is declared, not a tactus proof. Kernel work is self-reported, top-level fit calls explicit. Reference rests are declared interpolation, not physical note heads.' };
++}
+diff --git a/src/core/slot-clock-salience.ts b/src/core/slot-clock-salience.ts
+new file mode 100644
+index 0000000..0ff694e
+--- /dev/null
++++ b/src/core/slot-clock-salience.ts
+@@ -0,0 +1,169 @@
++import type { Analysis, Difficulty, Onset } from '../types';
++
++export const SALIENCE_VERSION = 'baseline-canonical-first/v1' as const;
++const MODES = ['one', 'two', 'three', 'four'] as const;
++const SPECS = Object.freeze({
++  one: Object.freeze({ max: 1, threshold: .23 }),
++  two: Object.freeze({ max: 2, threshold: .16 }),
++  three: Object.freeze({ max: 3, threshold: .105 }),
++  four: Object.freeze({ max: 4, threshold: .055 }),
++});
++
++export interface SalienceOrigin {
++  readonly kind: 'baseline-canonical' | 'raw-member-max';
++  readonly baseIndex: number | null;
++  /** Arrangement representative only; never a selected clock-source witness. */
++  readonly source: 0 | 1 | 2 | 3 | null;
++  readonly memberIndex: number | null;
++}
++export interface SalienceDomain {
++  readonly mode: Difficulty;
++  readonly basis: 'baseline-pulse' | 'baseline-onsets';
++  /** Frozen OLD automatic-role membership, before new bindings/manual rebind. */
++  readonly baseIndices: readonly number[];
++  readonly count: number;
++  readonly q75: number | null;
++  readonly threshold: number;
++}
++export interface SaliencePreparation {
++  readonly version: typeof SALIENCE_VERSION;
++  readonly fingerprint: string;
++  readonly duration: number;
++  readonly byTime: ReadonlyMap<number, Readonly<Onset>>;
++  readonly originsByTime: ReadonlyMap<number, SalienceOrigin>;
++  readonly basePool: readonly Readonly<Onset>[];
++  readonly domains: Readonly<Record<Difficulty, SalienceDomain>>;
++  readonly thresholds: Readonly<Record<Difficulty, number>>;
++  readonly regularFrames: number;
++  readonly originalMembers: number;
++  readonly excludedBoundaryMembers: number;
++}
++/** Small structured-clone-safe context, carried even for wholly unknown clocks. */
++export interface ArrangementSalience {
++  readonly version: typeof SALIENCE_VERSION;
++  readonly fingerprint: string;
++  readonly duration: number;
++  readonly domains: Readonly<Record<Difficulty, { readonly count: number; readonly q75: number | null; readonly threshold: number }>>;
++}
++
++export function compactSalience(prepared: SaliencePreparation): ArrangementSalience {
++  const domains = {} as Record<Difficulty, { readonly count: number; readonly q75: number | null; readonly threshold: number }>;
++  for (const mode of MODES) {
++    const value = prepared.domains[mode];
++    domains[mode] = Object.freeze({ count: value.count, q75: value.q75, threshold: value.threshold });
++  }
++  return Object.freeze({ version: SALIENCE_VERSION, fingerprint: prepared.fingerprint, duration: prepared.duration, domains: Object.freeze(domains) });
++}
++
++/** Auto AND manual use the same pre-bridge domain after worker transport. An
++ * absent field means original B behavior; a malformed present field is an error.
++ */
++export function fixedSalienceThreshold(analysis: Pick<Analysis, 'duration' | 'fingerprint'> & { arrangementSalience?: ArrangementSalience }, mode: Difficulty,
++  legacyThreshold: number): number {
++  const value = analysis.arrangementSalience;
++  if (value === undefined) return legacyThreshold;
++  if (value.version !== SALIENCE_VERSION || value.fingerprint !== analysis.fingerprint || value.duration !== analysis.duration || !value.domains)
++    throw Error('Arrangement salience belongs to a different input/version');
++  for (const difficulty of MODES) {
++    const domain = value.domains[difficulty], cap = SPECS[difficulty].threshold;
++    if (!domain || !Number.isSafeInteger(domain.count) || domain.count < 0
++      || domain.q75 !== null && (!Number.isFinite(domain.q75) || domain.q75 < 0)
++      || (domain.count === 0) !== (domain.q75 === null)
++      || domain.threshold !== Math.min(cap, (domain.q75 || cap) * .55)) throw Error('Invalid fixed arrangement salience domain');
++  }
++  return value.domains[mode].threshold;
++}
++
++/** Read-only lookup facade: callbacks do not expose the mutable backing Map. */
++class FixedIndex<K, V> implements ReadonlyMap<K, V> {
++  readonly #map: Map<K, V>;
++  constructor(entries: Iterable<readonly [K, V]>) { this.#map = new Map(entries); Object.freeze(this); }
++  get size(): number { return this.#map.size; }
++  get(key: K): V | undefined { return this.#map.get(key); }
++  has(key: K): boolean { return this.#map.has(key); }
++  keys() { return this.#map.keys(); }
++  values() { return this.#map.values(); }
++  entries() { return this.#map.entries(); }
++  [Symbol.iterator]() { return this.#map[Symbol.iterator](); }
++  forEach(callback: (value: V, key: K, map: ReadonlyMap<K, V>) => void, thisArg?: unknown): void {
++    for (const [key, value] of this.#map) callback.call(thisArg, value, key, this);
++  }
++}
++
++function validEvent(event: Onset, duration: number): void {
++  if (!event || !Number.isFinite(event.time) || event.time < 0 || event.time >= duration
++    || !Number.isFinite(event.strength) || event.strength < 0
++    || !Number.isSafeInteger(event.band) || event.band < 0 || event.band > 2)
++    throw Error('Invalid physical/canonical salience event');
++}
++function oldRoleEligible(event: Onset, maximum: number): boolean {
++  return !event.role || event.role === 'beat' || maximum >= 2 && event.role === 'half'
++    || maximum >= 3 && event.role === 'quarter' || maximum === 4;
++}
++
++/** Prepare once BEFORE any new clock/source/role decision. No score, target,
++ * new role, BPM override, genre or quality result is an input to this function.
++ * Old physical frames retain the canonical arrangement strength/band; new frame
++ * times get the greatest original regular member strength with fixed source/index
++ * ties. All original source evidence remains separately owned by the caller.
++ */
++export function prepareSalience(baseline: Analysis, streams: readonly (readonly Onset[])[]): SaliencePreparation {
++  if (!baseline || !Number.isFinite(baseline.duration) || baseline.duration <= 0
++    || !Array.isArray(streams) || streams.length !== 4) throw Error('Baseline and four original streams are required');
++  const duration = baseline.duration;
++  const maxima = new Map<number, { event: Onset; source: 0 | 1 | 2 | 3; memberIndex: number }>();
++  let originalMembers = 0, excludedBoundaryMembers = 0;
++  streams.forEach((stream, sourceIndex) => {
++    if (!Array.isArray(stream)) throw Error('Original source stream must be an array');
++    let previous = -Infinity;
++    stream.forEach((event, memberIndex) => {
++      validEvent(event, duration);
++      if (event.time < previous) throw Error('Original source times must be ordered');
++      previous = event.time;
++      if (event.boundary) { excludedBoundaryMembers++; return; }
++      originalMembers++;
++      const old = maxima.get(event.time);
++      // Traversal is source0..3 then original member index; strict > therefore
++      // keeps the earliest source/index when raw strengths are exactly equal.
++      if (!old || event.strength > old.event.strength)
++        maxima.set(event.time, { event, source: sourceIndex as 0 | 1 | 2 | 3, memberIndex });
++    });
++  });
++  const base = baseline.pulse?.onsets ?? baseline.onsets;
++  if (!Array.isArray(base)) throw Error('Canonical baseline pool must be an array');
++  const canonical = new Map<number, Readonly<Onset>>(), origins = new Map<number, SalienceOrigin>();
++  const basePool: Readonly<Onset>[] = [];
++  let previousBase = -Infinity;
++  base.forEach((event, baseIndex) => {
++    validEvent(event, duration);
++    if (event.time < previousBase || canonical.has(event.time)) throw Error('Canonical baseline times must be ordered and unique');
++    previousBase = event.time;
++    // A new third-role overlay is not an acceptable pre-bridge baseline.
++    if (event.role !== undefined && !['beat', 'half', 'quarter', 'free'].includes(event.role)) throw Error('Expected original baseline roles');
++    if (!event.boundary && !maxima.has(event.time)) throw Error('Baseline regular onset lacks an original physical member');
++    const copy = Object.freeze({ ...event }); basePool.push(copy); canonical.set(copy.time, copy);
++    origins.set(copy.time, Object.freeze({ kind: 'baseline-canonical', baseIndex, source: null, memberIndex: null }));
++  });
++  for (const [time, winner] of maxima) if (!canonical.has(time)) {
++    const copy = { ...winner.event }; delete copy.role; delete copy.boundary;
++    canonical.set(time, Object.freeze(copy));
++    origins.set(time, Object.freeze({ kind: 'raw-member-max', baseIndex: null, source: winner.source, memberIndex: winner.memberIndex }));
++  }
++  const domains = {} as Record<Difficulty, SalienceDomain>, thresholds = {} as Record<Difficulty, number>;
++  for (const mode of MODES) {
++    const spec = SPECS[mode], baseIndices: number[] = [];
++    basePool.forEach((event, index) => { if (oldRoleEligible(event, spec.max)) baseIndices.push(index); });
++    const sorted = baseIndices.map(index => basePool[index].strength).sort((a, b) => a - b);
++    const value = sorted[Math.floor(sorted.length * .75)];
++    // Preserve the ORIGINAL zero/empty fallback and arithmetic grouping exactly.
++    const threshold = Math.min(spec.threshold, (value || spec.threshold) * .55);
++    domains[mode] = Object.freeze({ mode, basis: baseline.pulse ? 'baseline-pulse' : 'baseline-onsets',
++      baseIndices: Object.freeze(baseIndices), count: baseIndices.length, q75: value ?? null, threshold });
++    thresholds[mode] = threshold;
++  }
++  const ordered = [...canonical.entries()].sort((a, b) => a[0] - b[0]);
++  return Object.freeze({ version: SALIENCE_VERSION, fingerprint: baseline.fingerprint, duration,
++    byTime: new FixedIndex(ordered), originsByTime: new FixedIndex(ordered.map(([time]) => [time, origins.get(time)!] as const)),
++    basePool: Object.freeze(basePool), domains: Object.freeze(domains), thresholds: Object.freeze(thresholds),
++    regularFrames: maxima.size, originalMembers, excludedBoundaryMembers });
++}
+diff --git a/src/core/slot-clock-selection.ts b/src/core/slot-clock-selection.ts
+new file mode 100644
+index 0000000..aa1171c
+--- /dev/null
++++ b/src/core/slot-clock-selection.ts
+@@ -0,0 +1,20 @@
++import type { SlotClockMetadata, SlotClockOnset } from './slot-clock-application';
++
++/** Finite role evidence plus immutable chart salience; no source amplitude term. */
++export function selectSlotClockOnsets(onsets: readonly SlotClockOnset[], gap: number, threshold: number,
++  timing: (onset: SlotClockOnset) => number, metadata: SlotClockMetadata): SlotClockOnset[] {
++  const evidence = new Map(metadata.roleEvidence.map(value => [value.time, value]));
++  const events = onsets.filter(onset => onset.strength >= threshold || onset.role === 'beat').slice().sort((a, b) => a.time - b.time);
++  const times = events.map(timing), scores = new Float64Array(events.length + 1), previous = new Int32Array(events.length), take = new Uint8Array(events.length);
++  for (let i = 0; i < events.length; i++) {
++    let low = 0, high = i;
++    while (low < high) { const middle = (low + high) >>> 1; if (times[i] - times[middle] >= gap - 1e-6) low = middle + 1; else high = middle; }
++    previous[i] = low;
++    const observation = evidence.get(events[i].time), roleValue = observation ? observation.compatibility / observation.denominator : 0;
++    const value = scores[low] + events[i].strength ** 2 + .005 + roleValue, choose = value > scores[i] + 1e-10;
++    scores[i + 1] = choose ? value : scores[i]; take[i] = Number(choose);
++  }
++  const selected: SlotClockOnset[] = [];
++  for (let i = events.length - 1; i >= 0;) { if (take[i]) { selected.push(events[i]); i = previous[i] - 1; } else i--; }
++  return selected.reverse();
++}
+diff --git a/src/types.ts b/src/types.ts
+index 813c05c..7cc9049 100644
+--- a/src/types.ts
++++ b/src/types.ts
+@@ -2,9 +2,10 @@ export type Difficulty = 'one' | 'two' | 'three' | 'four';
+ export type ScrollMode = 'perspective' | 'screen';
+ export type NoteType = 'tap' | 'hold' | 'left' | 'right' | 'up';
+ export type Grade = 'perfect' | 'great' | 'good' | 'miss';
+-export interface Onset { time: number; strength: number; band: number; attack?: number; boundary?: true; role?: 'beat' | 'half' | 'quarter' | 'free' }
++export interface Onset { time: number; strength: number; band: number; attack?: number; boundary?: true; role?: 'beat' | 'half' | 'third' | 'quarter' | 'free' }
+ export interface RhythmSection { start: number; end: number; band: 'low' | 'mid' | 'high' | 'mixed'; support: number }
+ export interface Rhythm {
++  method?: 'SC2-slot/v2';
+   beats: number[];
+   tempo: { time: number; bpm: number }[];
+   confidence: number;
+@@ -12,6 +13,8 @@ export interface Rhythm {
+   meterConfidence: number;
+ }
+ export interface Analysis {
++  slotClock?: import('./core/slot-clock-application').SlotClockMetadata;
++  arrangementSalience?: import('./core/slot-clock-salience').ArrangementSalience;
+   duration: number;
+   bpm: number;
+   confidence: number;
