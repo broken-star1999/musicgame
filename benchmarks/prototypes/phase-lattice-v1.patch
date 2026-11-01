@@ -1,0 +1,230 @@
+diff --git a/src/core/phase-lattice.ts b/src/core/phase-lattice.ts
+new file mode 100644
+index 0000000..fbdffe3
+--- /dev/null
++++ b/src/core/phase-lattice.ts
+@@ -0,0 +1,196 @@
++/** A phase-only continuity prior. All positions and periods are in seconds.
++ * Coverage and continuity select among existing supported phases of the one
++ * existing preferred period. This helper never reads audio or creates onsets. */
++export interface PhaseLatticeEvidence {
++  readonly anchor: number;
++  readonly meanResidual: number;
++  readonly coverage: number;
++  readonly unknown: boolean;
++  readonly supported: boolean;
++}
++export interface PhaseLatticeBlock {
++  readonly time: number;
++  readonly preferredPeriod: number | null;
++  readonly hypotheses: readonly {
++    readonly period: number;
++    readonly phases: readonly PhaseLatticeEvidence[];
++  }[];
++}
++export interface PhaseLatticeStateProfile {
++  phaseIndex: number;
++  anchor: number;
++  coverage: number;
++  forward: number;
++  backward: number;
++  maxMarginal: number;
++}
++export interface PhaseLatticeBlockProfile {
++  index: number;
++  time: number;
++  period: number | null;
++  hypothesisIndex: number | null;
++  reason: 'missing-period' | 'missing-hypothesis' | 'no-supported-phase' | 'eligible';
++  states: PhaseLatticeStateProfile[];
++  chosenState: number | null;
++  chosenPhaseIndex: number | null;
++  chosenAnchor: number | null;
++  chainIndex: number | null;
++  chainScore: number | null;
++  otherScore: number | null;
++  margin: number | null;
++  reliability: number;
++}
++export interface PhaseLatticeWork {
++  frames: number;
++  blocks: number;
++  eligibleBlocks: number;
++  eligibleStates: number;
++  maximumStates: number;
++  chains: number;
++  forwardTransitions: number;
++  backwardTransitions: number;
++  positiveFrames: number;
++  alignmentEvaluations: number;
++  changedFrames: number;
++  typedBytes: number;
++  returnedTypedBytes: number;
++  scratchTypedBytes: number;
++  profileBlocks: number;
++  profileStates: number;
++}
++export interface PhaseLatticeResult {
++  effectiveEnvelope: Float64Array;
++  blocks: PhaseLatticeBlockProfile[];
++  /** Eligible-state slots in original phase order; -1 means a chain break. */
++  path: Int8Array;
++  /** Sum of independent chain best scores; each block also records its Z. */
++  score: number;
++  reliability: Float64Array;
++  work: PhaseLatticeWork;
++}
++const STEP = .01, BLOCK_SECONDS = 2, TOLERANCE = .05, EPS = 1e-9, MAX_STATES = 4;
++
++export function applyPhaseLattice(envelope: Float64Array, input: readonly PhaseLatticeBlock[]): PhaseLatticeResult {
++  if (!(envelope instanceof Float64Array)) throw Error('Phase lattice requires a Float64 envelope');
++  for (const value of envelope)
++    if (!(Number.isFinite(value) && value >= 0)) throw Error('Invalid original phase envelope');
++  const n = input.length, slots = n * MAX_STATES;
++  const effectiveEnvelope = envelope.slice(), counts = new Uint8Array(n), periods = new Float64Array(n);
++  const anchors = new Float64Array(slots), coverage = new Float64Array(slots), phaseIndices = new Int8Array(slots);
++  const forward = new Float64Array(slots), backward = new Float64Array(slots), predecessor = new Int8Array(slots);
++  const path = new Int8Array(n), reliability = new Float64Array(n);
++  path.fill(-1); predecessor.fill(-1);
++  const profiles: PhaseLatticeBlockProfile[] = [];
++  const work: PhaseLatticeWork = { frames: envelope.length, blocks: n, eligibleBlocks: 0, eligibleStates: 0,
++    maximumStates: 0, chains: 0, forwardTransitions: 0, backwardTransitions: 0, positiveFrames: 0,
++    alignmentEvaluations: 0, changedFrames: 0, typedBytes: 0, returnedTypedBytes: 0,
++    scratchTypedBytes: 0, profileBlocks: n, profileStates: 0 };
++  for (let i = 0; i < n; i++) {
++    const block = input[i];
++    if (!Number.isFinite(block.time)) throw Error('Invalid phase block time');
++    const profile: PhaseLatticeBlockProfile = { index: i, time: block.time, period: null, hypothesisIndex: null,
++      reason: 'missing-period', states: [], chosenState: null, chosenPhaseIndex: null, chosenAnchor: null,
++      chainIndex: null, chainScore: null, otherScore: null, margin: null, reliability: 0 };
++    profiles.push(profile);
++    const period = block.preferredPeriod;
++    if (!(period !== null && Number.isFinite(period) && period > 0)) continue;
++    profile.period = period; periods[i] = period;
++    const hypothesisIndex = block.hypotheses.findIndex(h => Number.isFinite(h.period) && Math.abs(h.period - period) <= EPS);
++    if (hypothesisIndex < 0) { profile.reason = 'missing-hypothesis'; continue; }
++    profile.hypothesisIndex = hypothesisIndex;
++    const phases = block.hypotheses[hypothesisIndex].phases;
++    if (phases.length > MAX_STATES) throw Error('Phase hypothesis exceeds the original four-state bound');
++    profile.reason = 'no-supported-phase';
++    for (let j = 0; j < phases.length; j++) {
++      const phase = phases[j], anchor = phase.anchor + phase.meanResidual;
++      if (!phase.supported || phase.unknown || !Number.isFinite(phase.anchor) || !Number.isFinite(phase.meanResidual)
++        || !Number.isFinite(anchor) || !Number.isFinite(phase.coverage) || phase.coverage < 0 || phase.coverage > 1) continue;
++      const at = i * MAX_STATES + counts[i]++;
++      anchors[at] = anchor; coverage[at] = phase.coverage; phaseIndices[at] = j;
++    }
++    if (counts[i]) { profile.reason = 'eligible'; work.eligibleBlocks++; }
++    work.eligibleStates += counts[i]; work.maximumStates = Math.max(work.maximumStates, counts[i]);
++  }
++  const transition = (previous: number, previousState: number, current: number, currentState: number): number => {
++    const midpoint = (input[previous].time + input[current].time) / 2;
++    const z = (midpoint - anchors[current * MAX_STATES + currentState]) / periods[current]
++      - (midpoint - anchors[previous * MAX_STATES + previousState]) / periods[previous];
++    if (!Number.isFinite(z)) throw Error('Nonfinite phase transition arithmetic');
++    const d = z - Math.round(z);
++    return 4 * d * d;
++  };
++  let score = 0, begin = 0;
++  while (begin < n) {
++    if (!counts[begin]) { begin++; continue; }
++    let end = begin;
++    while (end + 1 < n && counts[end + 1]) end++;
++    const chainIndex = work.chains++;
++    for (let i = begin; i <= end; i++) for (let s = 0; s < counts[i]; s++) {
++      const at = i * MAX_STATES + s;
++      if (i === begin) { forward[at] = coverage[at]; continue; }
++      let best = -Infinity, bestState = -1;
++      for (let p = 0; p < counts[i - 1]; p++) {
++        work.forwardTransitions++;
++        const value = forward[(i - 1) * MAX_STATES + p] - transition(i - 1, p, i, s);
++        if (value > best) { best = value; bestState = p; }
++      }
++      forward[at] = coverage[at] + best; predecessor[at] = bestState;
++    }
++    for (let i = end - 1; i >= begin; i--) for (let s = 0; s < counts[i]; s++) {
++      let best = -Infinity;
++      for (let u = 0; u < counts[i + 1]; u++) {
++        work.backwardTransitions++;
++        const at = (i + 1) * MAX_STATES + u;
++        const value = coverage[at] - transition(i, s, i + 1, u) + backward[at];
++        if (value > best) best = value;
++      }
++      backward[i * MAX_STATES + s] = best;
++    }
++    let z = -Infinity, state = -1;
++    for (let s = 0; s < counts[end]; s++) if (forward[end * MAX_STATES + s] > z) {
++      z = forward[end * MAX_STATES + s]; state = s;
++    }
++    score += z;
++    for (let i = end; i >= begin; i--) {
++      path[i] = state;
++      state = predecessor[i * MAX_STATES + state];
++    }
++    for (let i = begin; i <= end; i++) {
++      const profile = profiles[i], chosen = i * MAX_STATES + path[i];
++      let other = -Infinity;
++      for (let s = 0; s < counts[i]; s++) {
++        const at = i * MAX_STATES + s;
++        profile.states.push({ phaseIndex: phaseIndices[at], anchor: anchors[at], coverage: coverage[at],
++          forward: forward[at], backward: backward[at], maxMarginal: forward[at] + backward[at] });
++        if (s !== path[i]) other = Math.max(other, forward[at] + backward[at]);
++      }
++      const margin = Math.max(0, z - other);
++      reliability[i] = counts[i] === 1 ? 1 : margin <= EPS ? 0 : margin / (1 + margin);
++      Object.assign(profile, { chosenState: path[i], chosenPhaseIndex: phaseIndices[chosen], chosenAnchor: anchors[chosen],
++        chainIndex, chainScore: z, otherScore: Number.isFinite(other) ? other : null,
++        margin: Number.isFinite(margin) ? margin : null, reliability: reliability[i] });
++    }
++    begin = end + 1;
++  }
++  for (let frame = 0; frame < envelope.length; frame++) {
++    if (!(envelope[frame] > 0)) continue;
++    work.positiveFrames++;
++    const block = Math.min(n - 1, Math.round(frame * STEP / BLOCK_SECONDS));
++    if (block < 0 || path[block] < 0 || !(reliability[block] > 0)) continue;
++    work.alignmentEvaluations++;
++    const anchor = anchors[block * MAX_STATES + path[block]], period = periods[block], time = frame * STEP;
++    const closest = anchor + Math.round((time - anchor) / period) * period;
++    const errorSeconds = Math.abs(time - closest);
++    if (!Number.isFinite(errorSeconds)) throw Error('Nonfinite phase alignment arithmetic');
++    const alignment = Math.exp(-.5 * (errorSeconds / TOLERANCE) ** 2);
++    effectiveEnvelope[frame] = envelope[frame] + reliability[block] * alignment;
++    if (!Number.isFinite(effectiveEnvelope[frame])) throw Error('Nonfinite effective phase envelope');
++    if (effectiveEnvelope[frame] !== envelope[frame]) work.changedFrames++;
++  }
++  const arrays = [effectiveEnvelope, counts, periods, anchors, coverage, phaseIndices, forward, backward, predecessor, path, reliability];
++  work.typedBytes = arrays.reduce((sum, array) => sum + array.byteLength, 0);
++  work.returnedTypedBytes = effectiveEnvelope.byteLength + path.byteLength + reliability.byteLength;
++  work.scratchTypedBytes = work.typedBytes - work.returnedTypedBytes;
++  work.profileStates = work.eligibleStates;
++  return { effectiveEnvelope, blocks: profiles, path, score, reliability, work };
++}
+diff --git a/src/core/rhythm.ts b/src/core/rhythm.ts
+index 7534f26..0ffd783 100644
+--- a/src/core/rhythm.ts
++++ b/src/core/rhythm.ts
+@@ -1,3 +1,4 @@
++import { applyPhaseLattice } from './phase-lattice';
+ import { gateClockEvidence } from './phase-gate';
+ import { phaseDP } from './phase-dp';
+ import { investigateTempo } from './tempo-families';
+@@ -10,14 +11,16 @@ export function trackBeats(onsets: Onset[], duration: number, bpm: number, sourc
+         return { beats: [], tempo: [], confidence: 0, downbeats: [], meterConfidence: 0 };
+     const investigation = investigateTempo(onsets, duration, bpm);
+     const projected = gateClockEvidence(onsets, investigation.blocks, sourceOnsets);
+-    const frames = Math.ceil(duration / STEP) + 1, envelope = new Float64Array(frames);
++    const frames = Math.ceil(duration / STEP) + 1, oldEnvelope = new Float64Array(frames);
+     const reference = Math.max(1e-8, ...onsets.map(onset => onset.strength));
+     for (const onset of projected) {
+         const center = Math.round(onset.time / STEP);
+         for (let d = -4; d <= 4; d++)
+             if (center + d >= 0 && center + d < frames)
+-                envelope[center + d] = Math.max(envelope[center + d], onset.strength / reference * Math.exp(-d * d / 5));
++                oldEnvelope[center + d] = Math.max(oldEnvelope[center + d], onset.strength / reference * Math.exp(-d * d / 5));
+     }
++    const lattice = applyPhaseLattice(oldEnvelope, investigation.blocks);
++    const envelope = lattice.effectiveEnvelope;
+     const base = 60 / bpm / STEP;
+     void base;
+     const local = Float64Array.from(investigation.blocks, block => (block.preferredPeriod ?? block.rememberedPeriod ?? 60 / bpm) / STEP);

@@ -1,0 +1,3432 @@
+{
+  "schema": 1,
+  "experiment": "phase-lattice-v1",
+  "date": "2026-11-01",
+  "status": "rejected_fixed_small_screen_no_runtime_promotion",
+  "recognition": {
+    "engine": "pure_DSP",
+    "neuralRuntime": false,
+    "modelAssets": false,
+    "audioUpload": false
+  },
+  "baselineCommit": "aeaf78284cb66601fd02bf9e40eaf99642285689",
+  "chartVersions": {
+    "B": 12,
+    "C": 12,
+    "mainNormalized": false
+  },
+  "candidate": {
+    "helperSHA256": "f26394775038d289af90462366840c294aa65acb9a7c6d7650708c96d66e97c7",
+    "periodSelection": "first_original_hypothesis_matching_existing_preferredPeriod_within_1e-9",
+    "eligiblePhase": "original_supported_and_not_unknown;finite_anchor_and_residual_sum;coverage_in_closed_0_1",
+    "maximumStatesPerBlock": 4,
+    "emission": "original_unit_event_coverage",
+    "referenceAnchor": "anchor_plus_meanResidual",
+    "transition": "4*squared_wrapped_cycle_difference_at_adjacent_block_midpoint",
+    "noEligiblePhaseBreaksChain": true,
+    "exactTiePath": "strict_greater_first_predecessor_and_first_final_state;reverse_lexicographic",
+    "engineeringReliability": "unique_state:1;otherwise_margin<=1e-9:0;else_margin/(1+margin)",
+    "calibratedCorrectnessProbability": false,
+    "effectiveEnvelope": "only_E0>0:E1=E0+r*exp(-.5*(nearest_lattice_error_seconds/.05)^2);otherwise_exact_E0",
+    "originalE0Unmodified": true,
+    "positiveSupportIdentical": true,
+    "singleActualDPConsumesSameHelperResult": true,
+    "noNewFFTOnsetSourceTempoOrEndingRule": true,
+    "explicitTypedBytes": "8*frames+154*blocks;plain_profiles_and_runtime_overhead_excluded",
+    "prototypePatch": "prototypes/phase-lattice-v1.patch",
+    "prototypePatchSHA256": "4d2c68c8301d1be2a68706accd015d3c2f1d0e80e65afc4e7799d7e63eb99fa4",
+    "prototypePatchBytes": 11788,
+    "independentGitApplyCheck": true,
+    "independentAppliedExactSHA256": {
+      "src/core/rhythm.ts": "f5635b85295649a37ff0023374792a25c68228a1548886c75c8407a814d61a28",
+      "src/core/phase-lattice.ts": "f26394775038d289af90462366840c294aa65acb9a7c6d7650708c96d66e97c7"
+    },
+    "patchBaseline": "aeaf78284cb66601fd02bf9e40eaf99642285689",
+    "deployed": false
+  },
+  "scope": {
+    "inputs": 41,
+    "synthetic": 36,
+    "observedMusic": 5,
+    "successfulSynthetic": 31,
+    "successfulMusic": 5,
+    "normalRejects": 5,
+    "observedMusicPreviouslyUsedForDevelopment": true,
+    "newBlindHoldout": false,
+    "broader210": false,
+    "fresh": false,
+    "ASAP": false,
+    "publicLedgerWrites": 0,
+    "runtimeChanges": 0,
+    "chartVersionBump": false
+  },
+  "fixedGate": {
+    "scope": "Fixed PULSE-style small development screen. Each observed clip is its own genre proxy; no rounding or negative exemption.",
+    "thresholds": {
+      "minimumMacroHead70Gain": 0.02,
+      "minimumMacroHead50Gain": 0,
+      "minimumMacroClock70Gain": 0.02,
+      "minimumGenreHead70Delta": -0.03,
+      "minimumClipHead70Delta": -0.15,
+      "minimumEveryClipFourMeasuredHeadCountRatio": 0.95
+    },
+    "checks": {
+      "macroHead70Gain": false,
+      "macroClock70Gain": false,
+      "macroHead50NonDecrease": true,
+      "everyObservedGenreProxy": false,
+      "everyObservedClip": true,
+      "everyFourMeasuredCount": true,
+      "primaryMinuteHandoffOne50And70NonDecrease": true,
+      "allModesPlayableDeterministicAndFingerChecked": true,
+      "normalRejectParity": true,
+      "allFrozenSourceEnvelopeLocalAndSupportAssertions": true,
+      "mathematicalOracleAndActualDPConsumption": true
+    },
+    "passed": false,
+    "failures": [
+      "macroHead70Gain",
+      "macroClock70Gain",
+      "everyObservedGenreProxy"
+    ]
+  },
+  "allCandidateRules": {
+    "allFourModesPlayableDeterministicRouteChecked": true,
+    "noF0CueInInference": true,
+    "originalMeasuredEventTimesOnly": true,
+    "primaryMinuteAndHandoffSingleFingerHead50And70MustNotDecrease": true,
+    "noReferenceRescalingOffsetSearchOrPredictionClipping": true,
+    "noNegativeExemption": true
+  },
+  "mathematicalGate": {
+    "physicalIncompleteQuarterC70HitsMustExceedB": true,
+    "equalCompletePhasesZeroPriorAndWholeClockExact": true,
+    "stopBefore41OnAnyMathFailure": true
+  },
+  "observedMacro": {
+    "head50F1": {
+      "B": 0.43745908430331265,
+      "C": 0.4381700992470926,
+      "delta": 0.000711014943779964
+    },
+    "head50Precision": {
+      "B": 0.45041623667010666,
+      "C": 0.4507207272071553,
+      "delta": 0.0003044905370486739
+    },
+    "head50Recall": {
+      "B": 0.44284192454570964,
+      "C": 0.44284192454570964,
+      "delta": 0
+    },
+    "head70F1": {
+      "B": 0.5128174756638428,
+      "C": 0.5025966914993967,
+      "delta": -0.010220784164446129
+    },
+    "head70Precision": {
+      "B": 0.5264981080151359,
+      "C": 0.5170693769584979,
+      "delta": -0.00942873105663804
+    },
+    "head70Recall": {
+      "B": 0.5203631469565755,
+      "C": 0.5074599211501238,
+      "delta": -0.012903225806451623
+    },
+    "clock50F1": {
+      "B": 0.39469373422911047,
+      "C": 0.3963213106485666,
+      "delta": 0.001627576419456056
+    },
+    "clock50Precision": {
+      "B": 0.34585365172461946,
+      "C": 0.34771956359053136,
+      "delta": 0.0018659118659118622
+    },
+    "clock50Recall": {
+      "B": 0.48952637761386386,
+      "C": 0.48952637761386386,
+      "delta": 0
+    },
+    "clock70F1": {
+      "B": 0.4802933626696003,
+      "C": 0.4819980182415405,
+      "delta": 0.0017046555719401502
+    },
+    "clock70Precision": {
+      "B": 0.4150806277056277,
+      "C": 0.4172307692307692,
+      "delta": 0.0021501415251415244
+    },
+    "clock70Recall": {
+      "B": 0.6062132561004028,
+      "C": 0.6054759289114627,
+      "delta": -0.0007373271889400846
+    },
+    "pulse50F1": {
+      "B": 0.42947559031969157,
+      "C": 0.43198859919633675,
+      "delta": 0.0025130088766452396
+    },
+    "pulse50Precision": {
+      "B": 0.3452799401856006,
+      "C": 0.3470913123340514,
+      "delta": 0.001811372148450796
+    },
+    "pulse50Recall": {
+      "B": 0.6941186933177346,
+      "C": 0.6980402619451855,
+      "delta": 0.003921568627450989
+    },
+    "pulse70F1": {
+      "B": 0.4813671027372381,
+      "C": 0.48396275624198254,
+      "delta": 0.0025956535047444106
+    },
+    "pulse70Precision": {
+      "B": 0.39018252188063507,
+      "C": 0.39206880039612707,
+      "delta": 0.0018862785154920014
+    },
+    "pulse70Recall": {
+      "B": 0.7659256300143147,
+      "C": 0.7698471986417657,
+      "delta": 0.003921568627450989
+    }
+  },
+  "observed": [
+    {
+      "id": "country.00022",
+      "metricValues": {
+        "B": {
+          "head50F1": 0.42105263157894735,
+          "head50Precision": 0.35555555555555557,
+          "head50Recall": 0.5161290322580645,
+          "head70F1": 0.5,
+          "head70Precision": 0.4222222222222222,
+          "head70Recall": 0.6129032258064516,
+          "clock50F1": 0.3368421052631579,
+          "clock50Precision": 0.25,
+          "clock50Recall": 0.5161290322580645,
+          "clock70F1": 0.4,
+          "clock70Precision": 0.296875,
+          "clock70Recall": 0.6129032258064516,
+          "pulse50F1": 0.39669421487603307,
+          "pulse50Precision": 0.26666666666666666,
+          "pulse50Recall": 0.7741935483870968,
+          "pulse70F1": 0.4462809917355372,
+          "pulse70Precision": 0.3,
+          "pulse70Recall": 0.8709677419354839
+        },
+        "C": {
+          "head50F1": 0.43243243243243246,
+          "head50Precision": 0.37209302325581395,
+          "head50Recall": 0.5161290322580645,
+          "head70F1": 0.4594594594594595,
+          "head70Precision": 0.3953488372093023,
+          "head70Recall": 0.5483870967741935,
+          "clock50F1": 0.3404255319148936,
+          "clock50Precision": 0.25396825396825395,
+          "clock50Recall": 0.5161290322580645,
+          "clock70F1": 0.3829787234042553,
+          "clock70Precision": 0.2857142857142857,
+          "clock70Recall": 0.5806451612903226,
+          "pulse50F1": 0.4,
+          "pulse50Precision": 0.2696629213483146,
+          "pulse50Recall": 0.7741935483870968,
+          "pulse70F1": 0.45,
+          "pulse70Precision": 0.30337078651685395,
+          "pulse70Recall": 0.8709677419354839
+        }
+      },
+      "deltas": {
+        "head50F1": 0.011379800853485111,
+        "head50Precision": 0.01653746770025838,
+        "head50Recall": 0,
+        "head70F1": -0.040540540540540515,
+        "head70Precision": -0.026873385012919915,
+        "head70Recall": -0.06451612903225812,
+        "clock50F1": 0.0035834266517357216,
+        "clock50Precision": 0.003968253968253954,
+        "clock50Recall": 0,
+        "clock70F1": -0.017021276595744705,
+        "clock70Precision": -0.011160714285714302,
+        "clock70Recall": -0.032258064516129004,
+        "pulse50F1": 0.0033057851239669533,
+        "pulse50Precision": 0.0029962546816479363,
+        "pulse50Recall": 0,
+        "pulse70F1": 0.0037190082644628086,
+        "pulse70Precision": 0.003370786516853963,
+        "pulse70Recall": 0
+      },
+      "arms": {
+        "B": {
+          "oneHeadScores": {
+            "50": {
+              "hits": 16,
+              "predicted": 45,
+              "reference": 31,
+              "precision": 0.35555555555555557,
+              "recall": 0.5161290322580645,
+              "f1": 0.42105263157894735
+            },
+            "70": {
+              "hits": 19,
+              "predicted": 45,
+              "reference": 31,
+              "precision": 0.4222222222222222,
+              "recall": 0.6129032258064516,
+              "f1": 0.5
+            }
+          },
+          "clockScores": {
+            "50": {
+              "hits": 16,
+              "predicted": 64,
+              "reference": 31,
+              "precision": 0.25,
+              "recall": 0.5161290322580645,
+              "f1": 0.3368421052631579
+            },
+            "70": {
+              "hits": 19,
+              "predicted": 64,
+              "reference": 31,
+              "precision": 0.296875,
+              "recall": 0.6129032258064516,
+              "f1": 0.4
+            }
+          },
+          "pulseScores": {
+            "50": {
+              "hits": 24,
+              "predicted": 90,
+              "reference": 31,
+              "precision": 0.26666666666666666,
+              "recall": 0.7741935483870968,
+              "f1": 0.39669421487603307
+            },
+            "70": {
+              "hits": 27,
+              "predicted": 90,
+              "reference": 31,
+              "precision": 0.3,
+              "recall": 0.8709677419354839,
+              "f1": 0.4462809917355372
+            }
+          },
+          "clockConfidence": 0.22411109619476924,
+          "geometryChoice": "fallback",
+          "modes": {
+            "one": {
+              "notes": 45,
+              "heads": 45,
+              "holds": 1,
+              "maxHeads4s": 10,
+              "peakFingers": 1,
+              "measuredOnsetHeads": 45,
+              "valid": true,
+              "deterministic": true,
+              "routeChecked": true,
+              "oneHoldConflicts": 0,
+              "scores": {
+                "50": {
+                  "hits": 16,
+                  "predicted": 45,
+                  "reference": 31,
+                  "precision": 0.35555555555555557,
+                  "recall": 0.5161290322580645,
+                  "f1": 0.42105263157894735
+                },
+                "70": {
+                  "hits": 19,
+                  "predicted": 45,
+                  "reference": 31,
+                  "precision": 0.4222222222222222,
+                  "recall": 0.6129032258064516,
+                  "f1": 0.5
+                }
+              }
+            },
+            "two": {
+              "notes": 61,
+              "heads": 60,
+              "holds": 5,
+              "maxHeads4s": 11,
+              "peakFingers": 2,
+              "measuredOnsetHeads": 60,
+              "valid": true,
+              "deterministic": true,
+              "routeChecked": true,
+              "oneHoldConflicts": 0,
+              "scores": {
+                "50": {
+                  "hits": 24,
+                  "predicted": 60,
+                  "reference": 31,
+                  "precision": 0.4,
+                  "recall": 0.7741935483870968,
+                  "f1": 0.5274725274725275
+                },
+                "70": {
+                  "hits": 27,
+                  "predicted": 60,
+                  "reference": 31,
+                  "precision": 0.45,
+                  "recall": 0.8709677419354839,
+                  "f1": 0.5934065934065934
+                }
+              }
+            },
+            "three": {
+              "notes": 74,
+              "heads": 72,
+              "holds": 8,
+              "maxHeads4s": 13,
+              "peakFingers": 3,
+              "measuredOnsetHeads": 72,
+              "valid": true,
+              "deterministic": true,
+              "routeChecked": true,
+              "oneHoldConflicts": 0,
+              "scores": {
+                "50": {
+                  "hits": 24,
+                  "predicted": 72,
+                  "reference": 31,
+                  "precision": 0.3333333333333333,
+                  "recall": 0.7741935483870968,
+                  "f1": 0.46601941747572817
+                },
+                "70": {
+                  "hits": 27,
+                  "predicted": 72,
+                  "reference": 31,
+                  "precision": 0.375,
+                  "recall": 0.8709677419354839,
+                  "f1": 0.5242718446601942
+                }
+              }
+            },
+            "four": {
+              "notes": 90,
+              "heads": 87,
+              "holds": 9,
+              "maxHeads4s": 18,
+              "peakFingers": 4,
+              "measuredOnsetHeads": 87,
+              "valid": true,
+              "deterministic": true,
+              "routeChecked": true,
+              "oneHoldConflicts": 0,
+              "scores": {
+                "50": {
+                  "hits": 24,
+                  "predicted": 87,
+                  "reference": 31,
+                  "precision": 0.27586206896551724,
+                  "recall": 0.7741935483870968,
+                  "f1": 0.4067796610169492
+                },
+                "70": {
+                  "hits": 27,
+                  "predicted": 87,
+                  "reference": 31,
+                  "precision": 0.3103448275862069,
+                  "recall": 0.8709677419354839,
+                  "f1": 0.4576271186440678
+                }
+              }
+            }
+          }
+        },
+        "C": {
+          "oneHeadScores": {
+            "50": {
+              "hits": 16,
+              "predicted": 43,
+              "reference": 31,
+              "precision": 0.37209302325581395,
+              "recall": 0.5161290322580645,
+              "f1": 0.43243243243243246
+            },
+            "70": {
+              "hits": 17,
+              "predicted": 43,
+              "reference": 31,
+              "precision": 0.3953488372093023,
+              "recall": 0.5483870967741935,
+              "f1": 0.4594594594594595
+            }
+          },
+          "clockScores": {
+            "50": {
+              "hits": 16,
+              "predicted": 63,
+              "reference": 31,
+              "precision": 0.25396825396825395,
+              "recall": 0.5161290322580645,
+              "f1": 0.3404255319148936
+            },
+            "70": {
+              "hits": 18,
+              "predicted": 63,
+              "reference": 31,
+              "precision": 0.2857142857142857,
+              "recall": 0.5806451612903226,
+              "f1": 0.3829787234042553
+            }
+          },
+          "pulseScores": {
+            "50": {
+              "hits": 24,
+              "predicted": 89,
+              "reference": 31,
+              "precision": 0.2696629213483146,
+              "recall": 0.7741935483870968,
+              "f1": 0.4
+            },
+            "70": {
+              "hits": 27,
+              "predicted": 89,
+              "reference": 31,
+              "precision": 0.30337078651685395,
+              "recall": 0.8709677419354839,
+              "f1": 0.45
+            }
+          },
+          "clockConfidence": 0.5413210592159039,
+          "geometryChoice": "clock",
+          "modes": {
+            "one": {
+              "notes": 43,
+              "heads": 43,
+              "holds": 2,
+              "maxHeads4s": 10,
+              "peakFingers": 1,
+              "measuredOnsetHeads": 43,
+              "valid": true,
+              "deterministic": true,
+              "routeChecked": true,
+              "oneHoldConflicts": 0,
+              "scores": {
+                "50": {
+                  "hits": 16,
+                  "predicted": 43,
+                  "reference": 31,
+                  "precision": 0.37209302325581395,
+                  "recall": 0.5161290322580645,
+                  "f1": 0.43243243243243246
+                },
+                "70": {
+                  "hits": 17,
+                  "predicted": 43,
+                  "reference": 31,
+                  "precision": 0.3953488372093023,
+                  "recall": 0.5483870967741935,
+                  "f1": 0.4594594594594595
+                }
+              }
+            },
+            "two": {
+              "notes": 59,
+              "heads": 58,
+              "holds": 6,
+              "maxHeads4s": 11,
+              "peakFingers": 2,
+              "measuredOnsetHeads": 58,
+              "valid": true,
+              "deterministic": true,
+              "routeChecked": true,
+              "oneHoldConflicts": 0,
+              "scores": {
+                "50": {
+                  "hits": 24,
+                  "predicted": 58,
+                  "reference": 31,
+                  "precision": 0.41379310344827586,
+                  "recall": 0.7741935483870968,
+                  "f1": 0.5393258426966292
+                },
+                "70": {
+                  "hits": 26,
+                  "predicted": 58,
+                  "reference": 31,
+                  "precision": 0.4482758620689655,
+                  "recall": 0.8387096774193549,
+                  "f1": 0.5842696629213483
+                }
+              }
+            },
+            "three": {
+              "notes": 74,
+              "heads": 72,
+              "holds": 9,
+              "maxHeads4s": 13,
+              "peakFingers": 3,
+              "measuredOnsetHeads": 72,
+              "valid": true,
+              "deterministic": true,
+              "routeChecked": true,
+              "oneHoldConflicts": 0,
+              "scores": {
+                "50": {
+                  "hits": 24,
+                  "predicted": 72,
+                  "reference": 31,
+                  "precision": 0.3333333333333333,
+                  "recall": 0.7741935483870968,
+                  "f1": 0.46601941747572817
+                },
+                "70": {
+                  "hits": 27,
+                  "predicted": 72,
+                  "reference": 31,
+                  "precision": 0.375,
+                  "recall": 0.8709677419354839,
+                  "f1": 0.5242718446601942
+                }
+              }
+            },
+            "four": {
+              "notes": 90,
+              "heads": 87,
+              "holds": 9,
+              "maxHeads4s": 18,
+              "peakFingers": 4,
+              "measuredOnsetHeads": 87,
+              "valid": true,
+              "deterministic": true,
+              "routeChecked": true,
+              "oneHoldConflicts": 0,
+              "scores": {
+                "50": {
+                  "hits": 24,
+                  "predicted": 87,
+                  "reference": 31,
+                  "precision": 0.27586206896551724,
+                  "recall": 0.7741935483870968,
+                  "f1": 0.4067796610169492
+                },
+                "70": {
+                  "hits": 27,
+                  "predicted": 87,
+                  "reference": 31,
+                  "precision": 0.3103448275862069,
+                  "recall": 0.8709677419354839,
+                  "f1": 0.4576271186440678
+                }
+              }
+            }
+          }
+        }
+      },
+      "fourMeasuredCountRatio": 1,
+      "fourIdentity20": 1
+    },
+    {
+      "id": "hiphop.00013",
+      "metricValues": {
+        "B": {
+          "head50F1": 0.0392156862745098,
+          "head50Precision": 0.0392156862745098,
+          "head50Recall": 0.0392156862745098,
+          "head70F1": 0.0392156862745098,
+          "head70Precision": 0.0392156862745098,
+          "head70Recall": 0.0392156862745098,
+          "clock50F1": 0.039603960396039604,
+          "clock50Precision": 0.04,
+          "clock50Recall": 0.0392156862745098,
+          "clock70F1": 0.039603960396039604,
+          "clock70Precision": 0.04,
+          "clock70Recall": 0.0392156862745098,
+          "pulse50F1": 0.46296296296296297,
+          "pulse50Precision": 0.30303030303030304,
+          "pulse50Recall": 0.9803921568627451,
+          "pulse70F1": 0.46296296296296297,
+          "pulse70Precision": 0.30303030303030304,
+          "pulse70Recall": 0.9803921568627451
+        },
+        "C": {
+          "head50F1": 0.0392156862745098,
+          "head50Precision": 0.0392156862745098,
+          "head50Recall": 0.0392156862745098,
+          "head70F1": 0.0392156862745098,
+          "head70Precision": 0.0392156862745098,
+          "head70Recall": 0.0392156862745098,
+          "clock50F1": 0.039603960396039604,
+          "clock50Precision": 0.04,
+          "clock50Recall": 0.0392156862745098,
+          "clock70F1": 0.039603960396039604,
+          "clock70Precision": 0.04,
+          "clock70Recall": 0.0392156862745098,
+          "pulse50F1": 0.4722222222222222,
+          "pulse50Precision": 0.3090909090909091,
+          "pulse50Recall": 1,
+          "pulse70F1": 0.4722222222222222,
+          "pulse70Precision": 0.3090909090909091,
+          "pulse70Recall": 1
+        }
+      },
+      "deltas": {
+        "head50F1": 0,
+        "head50Precision": 0,
+        "head50Recall": 0,
+        "head70F1": 0,
+        "head70Precision": 0,
+        "head70Recall": 0,
+        "clock50F1": 0,
+        "clock50Precision": 0,
+        "clock50Recall": 0,
+        "clock70F1": 0,
+        "clock70Precision": 0,
+        "clock70Recall": 0,
+        "pulse50F1": 0.009259259259259245,
+        "pulse50Precision": 0.006060606060606044,
+        "pulse50Recall": 0.019607843137254943,
+        "pulse70F1": 0.009259259259259245,
+        "pulse70Precision": 0.006060606060606044,
+        "pulse70Recall": 0.019607843137254943
+      },
+      "arms": {
+        "B": {
+          "oneHeadScores": {
+            "50": {
+              "hits": 2,
+              "predicted": 51,
+              "reference": 51,
+              "precision": 0.0392156862745098,
+              "recall": 0.0392156862745098,
+              "f1": 0.0392156862745098
+            },
+            "70": {
+              "hits": 2,
+              "predicted": 51,
+              "reference": 51,
+              "precision": 0.0392156862745098,
+              "recall": 0.0392156862745098,
+              "f1": 0.0392156862745098
+            }
+          },
+          "clockScores": {
+            "50": {
+              "hits": 2,
+              "predicted": 50,
+              "reference": 51,
+              "precision": 0.04,
+              "recall": 0.0392156862745098,
+              "f1": 0.039603960396039604
+            },
+            "70": {
+              "hits": 2,
+              "predicted": 50,
+              "reference": 51,
+              "precision": 0.04,
+              "recall": 0.0392156862745098,
+              "f1": 0.039603960396039604
+            }
+          },
+          "pulseScores": {
+            "50": {
+              "hits": 50,
+              "predicted": 165,
+              "reference": 51,
+              "precision": 0.30303030303030304,
+              "recall": 0.9803921568627451,
+              "f1": 0.46296296296296297
+            },
+            "70": {
+              "hits": 50,
+              "predicted": 165,
+              "reference": 51,
+              "precision": 0.30303030303030304,
+              "recall": 0.9803921568627451,
+              "f1": 0.46296296296296297
+            }
+          },
+          "clockConfidence": 0.4100891548117389,
+          "geometryChoice": "fallback",
+          "modes": {
+            "one": {
+              "notes": 51,
+              "heads": 51,
+              "holds": 0,
+              "maxHeads4s": 8,
+              "peakFingers": 1,
+              "measuredOnsetHeads": 51,
+              "valid": true,
+              "deterministic": true,
+              "routeChecked": true,
+              "oneHoldConflicts": 0,
+              "scores": {
+                "50": {
+                  "hits": 2,
+                  "predicted": 51,
+                  "reference": 51,
+                  "precision": 0.0392156862745098,
+                  "recall": 0.0392156862745098,
+                  "f1": 0.0392156862745098
+                },
+                "70": {
+                  "hits": 2,
+                  "predicted": 51,
+                  "reference": 51,
+                  "precision": 0.0392156862745098,
+                  "recall": 0.0392156862745098,
+                  "f1": 0.0392156862745098
+                }
+              }
+            },
+            "two": {
+              "notes": 88,
+              "heads": 81,
+              "holds": 2,
+              "maxHeads4s": 14,
+              "peakFingers": 2,
+              "measuredOnsetHeads": 81,
+              "valid": true,
+              "deterministic": true,
+              "routeChecked": true,
+              "oneHoldConflicts": 0,
+              "scores": {
+                "50": {
+                  "hits": 32,
+                  "predicted": 81,
+                  "reference": 51,
+                  "precision": 0.3950617283950617,
+                  "recall": 0.6274509803921569,
+                  "f1": 0.48484848484848486
+                },
+                "70": {
+                  "hits": 32,
+                  "predicted": 81,
+                  "reference": 51,
+                  "precision": 0.3950617283950617,
+                  "recall": 0.6274509803921569,
+                  "f1": 0.48484848484848486
+                }
+              }
+            },
+            "three": {
+              "notes": 96,
+              "heads": 87,
+              "holds": 2,
+              "maxHeads4s": 14,
+              "peakFingers": 3,
+              "measuredOnsetHeads": 87,
+              "valid": true,
+              "deterministic": true,
+              "routeChecked": true,
+              "oneHoldConflicts": 0,
+              "scores": {
+                "50": {
+                  "hits": 36,
+                  "predicted": 87,
+                  "reference": 51,
+                  "precision": 0.41379310344827586,
+                  "recall": 0.7058823529411765,
+                  "f1": 0.5217391304347826
+                },
+                "70": {
+                  "hits": 36,
+                  "predicted": 87,
+                  "reference": 51,
+                  "precision": 0.41379310344827586,
+                  "recall": 0.7058823529411765,
+                  "f1": 0.5217391304347826
+                }
+              }
+            },
+            "four": {
+              "notes": 173,
+              "heads": 163,
+              "holds": 4,
+              "maxHeads4s": 28,
+              "peakFingers": 4,
+              "measuredOnsetHeads": 163,
+              "valid": true,
+              "deterministic": true,
+              "routeChecked": true,
+              "oneHoldConflicts": 0,
+              "scores": {
+                "50": {
+                  "hits": 49,
+                  "predicted": 163,
+                  "reference": 51,
+                  "precision": 0.3006134969325153,
+                  "recall": 0.9607843137254902,
+                  "f1": 0.45794392523364486
+                },
+                "70": {
+                  "hits": 49,
+                  "predicted": 163,
+                  "reference": 51,
+                  "precision": 0.3006134969325153,
+                  "recall": 0.9607843137254902,
+                  "f1": 0.45794392523364486
+                }
+              }
+            }
+          }
+        },
+        "C": {
+          "oneHeadScores": {
+            "50": {
+              "hits": 2,
+              "predicted": 51,
+              "reference": 51,
+              "precision": 0.0392156862745098,
+              "recall": 0.0392156862745098,
+              "f1": 0.0392156862745098
+            },
+            "70": {
+              "hits": 2,
+              "predicted": 51,
+              "reference": 51,
+              "precision": 0.0392156862745098,
+              "recall": 0.0392156862745098,
+              "f1": 0.0392156862745098
+            }
+          },
+          "clockScores": {
+            "50": {
+              "hits": 2,
+              "predicted": 50,
+              "reference": 51,
+              "precision": 0.04,
+              "recall": 0.0392156862745098,
+              "f1": 0.039603960396039604
+            },
+            "70": {
+              "hits": 2,
+              "predicted": 50,
+              "reference": 51,
+              "precision": 0.04,
+              "recall": 0.0392156862745098,
+              "f1": 0.039603960396039604
+            }
+          },
+          "pulseScores": {
+            "50": {
+              "hits": 51,
+              "predicted": 165,
+              "reference": 51,
+              "precision": 0.3090909090909091,
+              "recall": 1,
+              "f1": 0.4722222222222222
+            },
+            "70": {
+              "hits": 51,
+              "predicted": 165,
+              "reference": 51,
+              "precision": 0.3090909090909091,
+              "recall": 1,
+              "f1": 0.4722222222222222
+            }
+          },
+          "clockConfidence": 0.4618851572323179,
+          "geometryChoice": "clock",
+          "modes": {
+            "one": {
+              "notes": 51,
+              "heads": 51,
+              "holds": 0,
+              "maxHeads4s": 8,
+              "peakFingers": 1,
+              "measuredOnsetHeads": 51,
+              "valid": true,
+              "deterministic": true,
+              "routeChecked": true,
+              "oneHoldConflicts": 0,
+              "scores": {
+                "50": {
+                  "hits": 2,
+                  "predicted": 51,
+                  "reference": 51,
+                  "precision": 0.0392156862745098,
+                  "recall": 0.0392156862745098,
+                  "f1": 0.0392156862745098
+                },
+                "70": {
+                  "hits": 2,
+                  "predicted": 51,
+                  "reference": 51,
+                  "precision": 0.0392156862745098,
+                  "recall": 0.0392156862745098,
+                  "f1": 0.0392156862745098
+                }
+              }
+            },
+            "two": {
+              "notes": 89,
+              "heads": 83,
+              "holds": 2,
+              "maxHeads4s": 14,
+              "peakFingers": 2,
+              "measuredOnsetHeads": 83,
+              "valid": true,
+              "deterministic": true,
+              "routeChecked": true,
+              "oneHoldConflicts": 0,
+              "scores": {
+                "50": {
+                  "hits": 34,
+                  "predicted": 83,
+                  "reference": 51,
+                  "precision": 0.40963855421686746,
+                  "recall": 0.6666666666666666,
+                  "f1": 0.5074626865671642
+                },
+                "70": {
+                  "hits": 34,
+                  "predicted": 83,
+                  "reference": 51,
+                  "precision": 0.40963855421686746,
+                  "recall": 0.6666666666666666,
+                  "f1": 0.5074626865671642
+                }
+              }
+            },
+            "three": {
+              "notes": 96,
+              "heads": 88,
+              "holds": 2,
+              "maxHeads4s": 15,
+              "peakFingers": 3,
+              "measuredOnsetHeads": 88,
+              "valid": true,
+              "deterministic": true,
+              "routeChecked": true,
+              "oneHoldConflicts": 0,
+              "scores": {
+                "50": {
+                  "hits": 38,
+                  "predicted": 88,
+                  "reference": 51,
+                  "precision": 0.4318181818181818,
+                  "recall": 0.7450980392156863,
+                  "f1": 0.5467625899280576
+                },
+                "70": {
+                  "hits": 38,
+                  "predicted": 88,
+                  "reference": 51,
+                  "precision": 0.4318181818181818,
+                  "recall": 0.7450980392156863,
+                  "f1": 0.5467625899280576
+                }
+              }
+            },
+            "four": {
+              "notes": 168,
+              "heads": 159,
+              "holds": 4,
+              "maxHeads4s": 27,
+              "peakFingers": 4,
+              "measuredOnsetHeads": 159,
+              "valid": true,
+              "deterministic": true,
+              "routeChecked": true,
+              "oneHoldConflicts": 0,
+              "scores": {
+                "50": {
+                  "hits": 50,
+                  "predicted": 159,
+                  "reference": 51,
+                  "precision": 0.31446540880503143,
+                  "recall": 0.9803921568627451,
+                  "f1": 0.47619047619047616
+                },
+                "70": {
+                  "hits": 50,
+                  "predicted": 159,
+                  "reference": 51,
+                  "precision": 0.31446540880503143,
+                  "recall": 0.9803921568627451,
+                  "f1": 0.47619047619047616
+                }
+              }
+            }
+          }
+        }
+      },
+      "fourMeasuredCountRatio": 0.9754601226993865,
+      "fourIdentity20": 0.9693251533742331
+    },
+    {
+      "id": "jazz.00035",
+      "metricValues": {
+        "B": {
+          "head50F1": 0.5633802816901409,
+          "head50Precision": 0.5555555555555556,
+          "head50Recall": 0.5714285714285714,
+          "head70F1": 0.7605633802816901,
+          "head70Precision": 0.75,
+          "head70Recall": 0.7714285714285715,
+          "clock50F1": 0.45544554455445546,
+          "clock50Precision": 0.3484848484848485,
+          "clock50Recall": 0.6571428571428571,
+          "clock70F1": 0.5544554455445545,
+          "clock70Precision": 0.42424242424242425,
+          "clock70Recall": 0.8,
+          "pulse50F1": 0.5,
+          "pulse50Precision": 0.41509433962264153,
+          "pulse50Recall": 0.6285714285714286,
+          "pulse70F1": 0.6363636363636364,
+          "pulse70Precision": 0.5283018867924528,
+          "pulse70Recall": 0.8
+        },
+        "C": {
+          "head50F1": 0.5555555555555556,
+          "head50Precision": 0.5405405405405406,
+          "head50Recall": 0.5714285714285714,
+          "head70F1": 0.75,
+          "head70Precision": 0.7297297297297297,
+          "head70Recall": 0.7714285714285715,
+          "clock50F1": 0.46,
+          "clock50Precision": 0.35384615384615387,
+          "clock50Recall": 0.6571428571428571,
+          "clock70F1": 0.58,
+          "clock70Precision": 0.4461538461538462,
+          "clock70Recall": 0.8285714285714286,
+          "pulse50F1": 0.5,
+          "pulse50Precision": 0.41509433962264153,
+          "pulse50Recall": 0.6285714285714286,
+          "pulse70F1": 0.6363636363636364,
+          "pulse70Precision": 0.5283018867924528,
+          "pulse70Recall": 0.8
+        }
+      },
+      "deltas": {
+        "head50F1": -0.007824726134585291,
+        "head50Precision": -0.01501501501501501,
+        "head50Recall": 0,
+        "head70F1": -0.010563380281690127,
+        "head70Precision": -0.020270270270270285,
+        "head70Recall": 0,
+        "clock50F1": 0.0045544554455445585,
+        "clock50Precision": 0.005361305361305357,
+        "clock50Recall": 0,
+        "clock70F1": 0.025544554455445456,
+        "clock70Precision": 0.021911421911421924,
+        "clock70Recall": 0.02857142857142858,
+        "pulse50F1": 0,
+        "pulse50Precision": 0,
+        "pulse50Recall": 0,
+        "pulse70F1": 0,
+        "pulse70Precision": 0,
+        "pulse70Recall": 0
+      },
+      "arms": {
+        "B": {
+          "oneHeadScores": {
+            "50": {
+              "hits": 20,
+              "predicted": 36,
+              "reference": 35,
+              "precision": 0.5555555555555556,
+              "recall": 0.5714285714285714,
+              "f1": 0.5633802816901409
+            },
+            "70": {
+              "hits": 27,
+              "predicted": 36,
+              "reference": 35,
+              "precision": 0.75,
+              "recall": 0.7714285714285715,
+              "f1": 0.7605633802816901
+            }
+          },
+          "clockScores": {
+            "50": {
+              "hits": 23,
+              "predicted": 66,
+              "reference": 35,
+              "precision": 0.3484848484848485,
+              "recall": 0.6571428571428571,
+              "f1": 0.45544554455445546
+            },
+            "70": {
+              "hits": 28,
+              "predicted": 66,
+              "reference": 35,
+              "precision": 0.42424242424242425,
+              "recall": 0.8,
+              "f1": 0.5544554455445545
+            }
+          },
+          "pulseScores": {
+            "50": {
+              "hits": 22,
+              "predicted": 53,
+              "reference": 35,
+              "precision": 0.41509433962264153,
+              "recall": 0.6285714285714286,
+              "f1": 0.5
+            },
+            "70": {
+              "hits": 28,
+              "predicted": 53,
+              "reference": 35,
+              "precision": 0.5283018867924528,
+              "recall": 0.8,
+              "f1": 0.6363636363636364
+            }
+          },
+          "clockConfidence": 0.1560537981496399,
+          "geometryChoice": "fallback",
+          "modes": {
+            "one": {
+              "notes": 36,
+              "heads": 36,
+              "holds": 8,
+              "maxHeads4s": 8,
+              "peakFingers": 1,
+              "measuredOnsetHeads": 36,
+              "valid": true,
+              "deterministic": true,
+              "routeChecked": true,
+              "oneHoldConflicts": 0,
+              "scores": {
+                "50": {
+                  "hits": 20,
+                  "predicted": 36,
+                  "reference": 35,
+                  "precision": 0.5555555555555556,
+                  "recall": 0.5714285714285714,
+                  "f1": 0.5633802816901409
+                },
+                "70": {
+                  "hits": 27,
+                  "predicted": 36,
+                  "reference": 35,
+                  "precision": 0.75,
+                  "recall": 0.7714285714285715,
+                  "f1": 0.7605633802816901
+                }
+              }
+            },
+            "two": {
+              "notes": 42,
+              "heads": 41,
+              "holds": 12,
+              "maxHeads4s": 10,
+              "peakFingers": 2,
+              "measuredOnsetHeads": 41,
+              "valid": true,
+              "deterministic": true,
+              "routeChecked": true,
+              "oneHoldConflicts": 0,
+              "scores": {
+                "50": {
+                  "hits": 20,
+                  "predicted": 41,
+                  "reference": 35,
+                  "precision": 0.4878048780487805,
+                  "recall": 0.5714285714285714,
+                  "f1": 0.5263157894736842
+                },
+                "70": {
+                  "hits": 27,
+                  "predicted": 41,
+                  "reference": 35,
+                  "precision": 0.6585365853658537,
+                  "recall": 0.7714285714285715,
+                  "f1": 0.7105263157894737
+                }
+              }
+            },
+            "three": {
+              "notes": 49,
+              "heads": 47,
+              "holds": 14,
+              "maxHeads4s": 10,
+              "peakFingers": 3,
+              "measuredOnsetHeads": 47,
+              "valid": true,
+              "deterministic": true,
+              "routeChecked": true,
+              "oneHoldConflicts": 0,
+              "scores": {
+                "50": {
+                  "hits": 20,
+                  "predicted": 47,
+                  "reference": 35,
+                  "precision": 0.425531914893617,
+                  "recall": 0.5714285714285714,
+                  "f1": 0.4878048780487805
+                },
+                "70": {
+                  "hits": 27,
+                  "predicted": 47,
+                  "reference": 35,
+                  "precision": 0.574468085106383,
+                  "recall": 0.7714285714285715,
+                  "f1": 0.6585365853658537
+                }
+              }
+            },
+            "four": {
+              "notes": 53,
+              "heads": 50,
+              "holds": 14,
+              "maxHeads4s": 11,
+              "peakFingers": 4,
+              "measuredOnsetHeads": 50,
+              "valid": true,
+              "deterministic": true,
+              "routeChecked": true,
+              "oneHoldConflicts": 0,
+              "scores": {
+                "50": {
+                  "hits": 20,
+                  "predicted": 50,
+                  "reference": 35,
+                  "precision": 0.4,
+                  "recall": 0.5714285714285714,
+                  "f1": 0.47058823529411764
+                },
+                "70": {
+                  "hits": 27,
+                  "predicted": 50,
+                  "reference": 35,
+                  "precision": 0.54,
+                  "recall": 0.7714285714285715,
+                  "f1": 0.6352941176470588
+                }
+              }
+            }
+          }
+        },
+        "C": {
+          "oneHeadScores": {
+            "50": {
+              "hits": 20,
+              "predicted": 37,
+              "reference": 35,
+              "precision": 0.5405405405405406,
+              "recall": 0.5714285714285714,
+              "f1": 0.5555555555555556
+            },
+            "70": {
+              "hits": 27,
+              "predicted": 37,
+              "reference": 35,
+              "precision": 0.7297297297297297,
+              "recall": 0.7714285714285715,
+              "f1": 0.75
+            }
+          },
+          "clockScores": {
+            "50": {
+              "hits": 23,
+              "predicted": 65,
+              "reference": 35,
+              "precision": 0.35384615384615387,
+              "recall": 0.6571428571428571,
+              "f1": 0.46
+            },
+            "70": {
+              "hits": 29,
+              "predicted": 65,
+              "reference": 35,
+              "precision": 0.4461538461538462,
+              "recall": 0.8285714285714286,
+              "f1": 0.58
+            }
+          },
+          "pulseScores": {
+            "50": {
+              "hits": 22,
+              "predicted": 53,
+              "reference": 35,
+              "precision": 0.41509433962264153,
+              "recall": 0.6285714285714286,
+              "f1": 0.5
+            },
+            "70": {
+              "hits": 28,
+              "predicted": 53,
+              "reference": 35,
+              "precision": 0.5283018867924528,
+              "recall": 0.8,
+              "f1": 0.6363636363636364
+            }
+          },
+          "clockConfidence": 0.2407243885344762,
+          "geometryChoice": "fallback",
+          "modes": {
+            "one": {
+              "notes": 37,
+              "heads": 37,
+              "holds": 8,
+              "maxHeads4s": 8,
+              "peakFingers": 1,
+              "measuredOnsetHeads": 37,
+              "valid": true,
+              "deterministic": true,
+              "routeChecked": true,
+              "oneHoldConflicts": 0,
+              "scores": {
+                "50": {
+                  "hits": 20,
+                  "predicted": 37,
+                  "reference": 35,
+                  "precision": 0.5405405405405406,
+                  "recall": 0.5714285714285714,
+                  "f1": 0.5555555555555556
+                },
+                "70": {
+                  "hits": 27,
+                  "predicted": 37,
+                  "reference": 35,
+                  "precision": 0.7297297297297297,
+                  "recall": 0.7714285714285715,
+                  "f1": 0.75
+                }
+              }
+            },
+            "two": {
+              "notes": 43,
+              "heads": 42,
+              "holds": 12,
+              "maxHeads4s": 10,
+              "peakFingers": 2,
+              "measuredOnsetHeads": 42,
+              "valid": true,
+              "deterministic": true,
+              "routeChecked": true,
+              "oneHoldConflicts": 0,
+              "scores": {
+                "50": {
+                  "hits": 20,
+                  "predicted": 42,
+                  "reference": 35,
+                  "precision": 0.47619047619047616,
+                  "recall": 0.5714285714285714,
+                  "f1": 0.5194805194805194
+                },
+                "70": {
+                  "hits": 27,
+                  "predicted": 42,
+                  "reference": 35,
+                  "precision": 0.6428571428571429,
+                  "recall": 0.7714285714285715,
+                  "f1": 0.7012987012987013
+                }
+              }
+            },
+            "three": {
+              "notes": 50,
+              "heads": 48,
+              "holds": 14,
+              "maxHeads4s": 10,
+              "peakFingers": 3,
+              "measuredOnsetHeads": 48,
+              "valid": true,
+              "deterministic": true,
+              "routeChecked": true,
+              "oneHoldConflicts": 0,
+              "scores": {
+                "50": {
+                  "hits": 21,
+                  "predicted": 48,
+                  "reference": 35,
+                  "precision": 0.4375,
+                  "recall": 0.6,
+                  "f1": 0.5060240963855421
+                },
+                "70": {
+                  "hits": 28,
+                  "predicted": 48,
+                  "reference": 35,
+                  "precision": 0.5833333333333334,
+                  "recall": 0.8,
+                  "f1": 0.6746987951807228
+                }
+              }
+            },
+            "four": {
+              "notes": 54,
+              "heads": 51,
+              "holds": 14,
+              "maxHeads4s": 11,
+              "peakFingers": 4,
+              "measuredOnsetHeads": 51,
+              "valid": true,
+              "deterministic": true,
+              "routeChecked": true,
+              "oneHoldConflicts": 0,
+              "scores": {
+                "50": {
+                  "hits": 21,
+                  "predicted": 51,
+                  "reference": 35,
+                  "precision": 0.4117647058823529,
+                  "recall": 0.6,
+                  "f1": 0.4883720930232558
+                },
+                "70": {
+                  "hits": 28,
+                  "predicted": 51,
+                  "reference": 35,
+                  "precision": 0.5490196078431373,
+                  "recall": 0.8,
+                  "f1": 0.6511627906976745
+                }
+              }
+            }
+          }
+        }
+      },
+      "fourMeasuredCountRatio": 1.02,
+      "fourIdentity20": 0.98
+    },
+    {
+      "id": "classical.00011",
+      "metricValues": {
+        "B": {
+          "head50F1": 0.24561403508771928,
+          "head50Precision": 0.3684210526315789,
+          "head50Recall": 0.18421052631578946,
+          "head70F1": 0.2807017543859649,
+          "head70Precision": 0.42105263157894735,
+          "head70Recall": 0.21052631578947367,
+          "clock50F1": 0.2222222222222222,
+          "clock50Precision": 0.17142857142857143,
+          "clock50Recall": 0.3157894736842105,
+          "clock70F1": 0.4074074074074074,
+          "clock70Precision": 0.3142857142857143,
+          "clock70Recall": 0.5789473684210527,
+          "pulse50F1": 0.2413793103448276,
+          "pulse50Precision": 0.35,
+          "pulse50Recall": 0.18421052631578946,
+          "pulse70F1": 0.27586206896551724,
+          "pulse70Precision": 0.4,
+          "pulse70Recall": 0.21052631578947367
+        },
+        "C": {
+          "head50F1": 0.24561403508771928,
+          "head50Precision": 0.3684210526315789,
+          "head50Recall": 0.18421052631578946,
+          "head70F1": 0.2807017543859649,
+          "head70Precision": 0.42105263157894735,
+          "head70Recall": 0.21052631578947367,
+          "clock50F1": 0.2222222222222222,
+          "clock50Precision": 0.17142857142857143,
+          "clock50Recall": 0.3157894736842105,
+          "clock70F1": 0.4074074074074074,
+          "clock70Precision": 0.3142857142857143,
+          "clock70Recall": 0.5789473684210527,
+          "pulse50F1": 0.2413793103448276,
+          "pulse50Precision": 0.35,
+          "pulse50Recall": 0.18421052631578946,
+          "pulse70F1": 0.27586206896551724,
+          "pulse70Precision": 0.4,
+          "pulse70Recall": 0.21052631578947367
+        }
+      },
+      "deltas": {
+        "head50F1": 0,
+        "head50Precision": 0,
+        "head50Recall": 0,
+        "head70F1": 0,
+        "head70Precision": 0,
+        "head70Recall": 0,
+        "clock50F1": 0,
+        "clock50Precision": 0,
+        "clock50Recall": 0,
+        "clock70F1": 0,
+        "clock70Precision": 0,
+        "clock70Recall": 0,
+        "pulse50F1": 0,
+        "pulse50Precision": 0,
+        "pulse50Recall": 0,
+        "pulse70F1": 0,
+        "pulse70Precision": 0,
+        "pulse70Recall": 0
+      },
+      "arms": {
+        "B": {
+          "oneHeadScores": {
+            "50": {
+              "hits": 7,
+              "predicted": 19,
+              "reference": 38,
+              "precision": 0.3684210526315789,
+              "recall": 0.18421052631578946,
+              "f1": 0.24561403508771928
+            },
+            "70": {
+              "hits": 8,
+              "predicted": 19,
+              "reference": 38,
+              "precision": 0.42105263157894735,
+              "recall": 0.21052631578947367,
+              "f1": 0.2807017543859649
+            }
+          },
+          "clockScores": {
+            "50": {
+              "hits": 12,
+              "predicted": 70,
+              "reference": 38,
+              "precision": 0.17142857142857143,
+              "recall": 0.3157894736842105,
+              "f1": 0.2222222222222222
+            },
+            "70": {
+              "hits": 22,
+              "predicted": 70,
+              "reference": 38,
+              "precision": 0.3142857142857143,
+              "recall": 0.5789473684210527,
+              "f1": 0.4074074074074074
+            }
+          },
+          "pulseScores": {
+            "50": {
+              "hits": 7,
+              "predicted": 20,
+              "reference": 38,
+              "precision": 0.35,
+              "recall": 0.18421052631578946,
+              "f1": 0.2413793103448276
+            },
+            "70": {
+              "hits": 8,
+              "predicted": 20,
+              "reference": 38,
+              "precision": 0.4,
+              "recall": 0.21052631578947367,
+              "f1": 0.27586206896551724
+            }
+          },
+          "clockConfidence": 0.1404347160968567,
+          "geometryChoice": "fallback",
+          "modes": {
+            "one": {
+              "notes": 19,
+              "heads": 19,
+              "holds": 5,
+              "maxHeads4s": 6,
+              "peakFingers": 1,
+              "measuredOnsetHeads": 19,
+              "valid": true,
+              "deterministic": true,
+              "routeChecked": true,
+              "oneHoldConflicts": 0,
+              "scores": {
+                "50": {
+                  "hits": 7,
+                  "predicted": 19,
+                  "reference": 38,
+                  "precision": 0.3684210526315789,
+                  "recall": 0.18421052631578946,
+                  "f1": 0.24561403508771928
+                },
+                "70": {
+                  "hits": 8,
+                  "predicted": 19,
+                  "reference": 38,
+                  "precision": 0.42105263157894735,
+                  "recall": 0.21052631578947367,
+                  "f1": 0.2807017543859649
+                }
+              }
+            },
+            "two": {
+              "notes": 21,
+              "heads": 20,
+              "holds": 7,
+              "maxHeads4s": 7,
+              "peakFingers": 2,
+              "measuredOnsetHeads": 20,
+              "valid": true,
+              "deterministic": true,
+              "routeChecked": true,
+              "oneHoldConflicts": 0,
+              "scores": {
+                "50": {
+                  "hits": 7,
+                  "predicted": 20,
+                  "reference": 38,
+                  "precision": 0.35,
+                  "recall": 0.18421052631578946,
+                  "f1": 0.2413793103448276
+                },
+                "70": {
+                  "hits": 8,
+                  "predicted": 20,
+                  "reference": 38,
+                  "precision": 0.4,
+                  "recall": 0.21052631578947367,
+                  "f1": 0.27586206896551724
+                }
+              }
+            },
+            "three": {
+              "notes": 22,
+              "heads": 20,
+              "holds": 8,
+              "maxHeads4s": 7,
+              "peakFingers": 3,
+              "measuredOnsetHeads": 20,
+              "valid": true,
+              "deterministic": true,
+              "routeChecked": true,
+              "oneHoldConflicts": 0,
+              "scores": {
+                "50": {
+                  "hits": 7,
+                  "predicted": 20,
+                  "reference": 38,
+                  "precision": 0.35,
+                  "recall": 0.18421052631578946,
+                  "f1": 0.2413793103448276
+                },
+                "70": {
+                  "hits": 8,
+                  "predicted": 20,
+                  "reference": 38,
+                  "precision": 0.4,
+                  "recall": 0.21052631578947367,
+                  "f1": 0.27586206896551724
+                }
+              }
+            },
+            "four": {
+              "notes": 23,
+              "heads": 20,
+              "holds": 8,
+              "maxHeads4s": 7,
+              "peakFingers": 4,
+              "measuredOnsetHeads": 20,
+              "valid": true,
+              "deterministic": true,
+              "routeChecked": true,
+              "oneHoldConflicts": 0,
+              "scores": {
+                "50": {
+                  "hits": 7,
+                  "predicted": 20,
+                  "reference": 38,
+                  "precision": 0.35,
+                  "recall": 0.18421052631578946,
+                  "f1": 0.2413793103448276
+                },
+                "70": {
+                  "hits": 8,
+                  "predicted": 20,
+                  "reference": 38,
+                  "precision": 0.4,
+                  "recall": 0.21052631578947367,
+                  "f1": 0.27586206896551724
+                }
+              }
+            }
+          }
+        },
+        "C": {
+          "oneHeadScores": {
+            "50": {
+              "hits": 7,
+              "predicted": 19,
+              "reference": 38,
+              "precision": 0.3684210526315789,
+              "recall": 0.18421052631578946,
+              "f1": 0.24561403508771928
+            },
+            "70": {
+              "hits": 8,
+              "predicted": 19,
+              "reference": 38,
+              "precision": 0.42105263157894735,
+              "recall": 0.21052631578947367,
+              "f1": 0.2807017543859649
+            }
+          },
+          "clockScores": {
+            "50": {
+              "hits": 12,
+              "predicted": 70,
+              "reference": 38,
+              "precision": 0.17142857142857143,
+              "recall": 0.3157894736842105,
+              "f1": 0.2222222222222222
+            },
+            "70": {
+              "hits": 22,
+              "predicted": 70,
+              "reference": 38,
+              "precision": 0.3142857142857143,
+              "recall": 0.5789473684210527,
+              "f1": 0.4074074074074074
+            }
+          },
+          "pulseScores": {
+            "50": {
+              "hits": 7,
+              "predicted": 20,
+              "reference": 38,
+              "precision": 0.35,
+              "recall": 0.18421052631578946,
+              "f1": 0.2413793103448276
+            },
+            "70": {
+              "hits": 8,
+              "predicted": 20,
+              "reference": 38,
+              "precision": 0.4,
+              "recall": 0.21052631578947367,
+              "f1": 0.27586206896551724
+            }
+          },
+          "clockConfidence": 0.1404347160968567,
+          "geometryChoice": "fallback",
+          "modes": {
+            "one": {
+              "notes": 19,
+              "heads": 19,
+              "holds": 5,
+              "maxHeads4s": 6,
+              "peakFingers": 1,
+              "measuredOnsetHeads": 19,
+              "valid": true,
+              "deterministic": true,
+              "routeChecked": true,
+              "oneHoldConflicts": 0,
+              "scores": {
+                "50": {
+                  "hits": 7,
+                  "predicted": 19,
+                  "reference": 38,
+                  "precision": 0.3684210526315789,
+                  "recall": 0.18421052631578946,
+                  "f1": 0.24561403508771928
+                },
+                "70": {
+                  "hits": 8,
+                  "predicted": 19,
+                  "reference": 38,
+                  "precision": 0.42105263157894735,
+                  "recall": 0.21052631578947367,
+                  "f1": 0.2807017543859649
+                }
+              }
+            },
+            "two": {
+              "notes": 21,
+              "heads": 20,
+              "holds": 7,
+              "maxHeads4s": 7,
+              "peakFingers": 2,
+              "measuredOnsetHeads": 20,
+              "valid": true,
+              "deterministic": true,
+              "routeChecked": true,
+              "oneHoldConflicts": 0,
+              "scores": {
+                "50": {
+                  "hits": 7,
+                  "predicted": 20,
+                  "reference": 38,
+                  "precision": 0.35,
+                  "recall": 0.18421052631578946,
+                  "f1": 0.2413793103448276
+                },
+                "70": {
+                  "hits": 8,
+                  "predicted": 20,
+                  "reference": 38,
+                  "precision": 0.4,
+                  "recall": 0.21052631578947367,
+                  "f1": 0.27586206896551724
+                }
+              }
+            },
+            "three": {
+              "notes": 22,
+              "heads": 20,
+              "holds": 8,
+              "maxHeads4s": 7,
+              "peakFingers": 3,
+              "measuredOnsetHeads": 20,
+              "valid": true,
+              "deterministic": true,
+              "routeChecked": true,
+              "oneHoldConflicts": 0,
+              "scores": {
+                "50": {
+                  "hits": 7,
+                  "predicted": 20,
+                  "reference": 38,
+                  "precision": 0.35,
+                  "recall": 0.18421052631578946,
+                  "f1": 0.2413793103448276
+                },
+                "70": {
+                  "hits": 8,
+                  "predicted": 20,
+                  "reference": 38,
+                  "precision": 0.4,
+                  "recall": 0.21052631578947367,
+                  "f1": 0.27586206896551724
+                }
+              }
+            },
+            "four": {
+              "notes": 23,
+              "heads": 20,
+              "holds": 8,
+              "maxHeads4s": 7,
+              "peakFingers": 4,
+              "measuredOnsetHeads": 20,
+              "valid": true,
+              "deterministic": true,
+              "routeChecked": true,
+              "oneHoldConflicts": 0,
+              "scores": {
+                "50": {
+                  "hits": 7,
+                  "predicted": 20,
+                  "reference": 38,
+                  "precision": 0.35,
+                  "recall": 0.18421052631578946,
+                  "f1": 0.2413793103448276
+                },
+                "70": {
+                  "hits": 8,
+                  "predicted": 20,
+                  "reference": 38,
+                  "precision": 0.4,
+                  "recall": 0.21052631578947367,
+                  "f1": 0.27586206896551724
+                }
+              }
+            }
+          }
+        }
+      },
+      "fourMeasuredCountRatio": 1,
+      "fourIdentity20": 1
+    },
+    {
+      "id": "disco.00031",
+      "metricValues": {
+        "B": {
+          "head50F1": 0.9180327868852459,
+          "head50Precision": 0.9333333333333333,
+          "head50Recall": 0.9032258064516129,
+          "head70F1": 0.9836065573770492,
+          "head70Precision": 1,
+          "head70Recall": 0.967741935483871,
+          "clock50F1": 0.9193548387096774,
+          "clock50Precision": 0.9193548387096774,
+          "clock50Recall": 0.9193548387096774,
+          "clock70F1": 1,
+          "clock70Precision": 1,
+          "clock70Recall": 1,
+          "pulse50F1": 0.5463414634146342,
+          "pulse50Precision": 0.3916083916083916,
+          "pulse50Recall": 0.9032258064516129,
+          "pulse70F1": 0.5853658536585366,
+          "pulse70Precision": 0.4195804195804196,
+          "pulse70Recall": 0.967741935483871
+        },
+        "C": {
+          "head50F1": 0.9180327868852459,
+          "head50Precision": 0.9333333333333333,
+          "head50Recall": 0.9032258064516129,
+          "head70F1": 0.9836065573770492,
+          "head70Precision": 1,
+          "head70Recall": 0.967741935483871,
+          "clock50F1": 0.9193548387096774,
+          "clock50Precision": 0.9193548387096774,
+          "clock50Recall": 0.9193548387096774,
+          "clock70F1": 1,
+          "clock70Precision": 1,
+          "clock70Recall": 1,
+          "pulse50F1": 0.5463414634146342,
+          "pulse50Precision": 0.3916083916083916,
+          "pulse50Recall": 0.9032258064516129,
+          "pulse70F1": 0.5853658536585366,
+          "pulse70Precision": 0.4195804195804196,
+          "pulse70Recall": 0.967741935483871
+        }
+      },
+      "deltas": {
+        "head50F1": 0,
+        "head50Precision": 0,
+        "head50Recall": 0,
+        "head70F1": 0,
+        "head70Precision": 0,
+        "head70Recall": 0,
+        "clock50F1": 0,
+        "clock50Precision": 0,
+        "clock50Recall": 0,
+        "clock70F1": 0,
+        "clock70Precision": 0,
+        "clock70Recall": 0,
+        "pulse50F1": 0,
+        "pulse50Precision": 0,
+        "pulse50Recall": 0,
+        "pulse70F1": 0,
+        "pulse70Precision": 0,
+        "pulse70Recall": 0
+      },
+      "arms": {
+        "B": {
+          "oneHeadScores": {
+            "50": {
+              "hits": 56,
+              "predicted": 60,
+              "reference": 62,
+              "precision": 0.9333333333333333,
+              "recall": 0.9032258064516129,
+              "f1": 0.9180327868852459
+            },
+            "70": {
+              "hits": 60,
+              "predicted": 60,
+              "reference": 62,
+              "precision": 1,
+              "recall": 0.967741935483871,
+              "f1": 0.9836065573770492
+            }
+          },
+          "clockScores": {
+            "50": {
+              "hits": 57,
+              "predicted": 62,
+              "reference": 62,
+              "precision": 0.9193548387096774,
+              "recall": 0.9193548387096774,
+              "f1": 0.9193548387096774
+            },
+            "70": {
+              "hits": 62,
+              "predicted": 62,
+              "reference": 62,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            }
+          },
+          "pulseScores": {
+            "50": {
+              "hits": 56,
+              "predicted": 143,
+              "reference": 62,
+              "precision": 0.3916083916083916,
+              "recall": 0.9032258064516129,
+              "f1": 0.5463414634146342
+            },
+            "70": {
+              "hits": 60,
+              "predicted": 143,
+              "reference": 62,
+              "precision": 0.4195804195804196,
+              "recall": 0.967741935483871,
+              "f1": 0.5853658536585366
+            }
+          },
+          "clockConfidence": 0.3626741049434748,
+          "geometryChoice": "fallback",
+          "modes": {
+            "one": {
+              "notes": 60,
+              "heads": 60,
+              "holds": 1,
+              "maxHeads4s": 9,
+              "peakFingers": 1,
+              "measuredOnsetHeads": 60,
+              "valid": true,
+              "deterministic": true,
+              "routeChecked": true,
+              "oneHoldConflicts": 0,
+              "scores": {
+                "50": {
+                  "hits": 56,
+                  "predicted": 60,
+                  "reference": 62,
+                  "precision": 0.9333333333333333,
+                  "recall": 0.9032258064516129,
+                  "f1": 0.9180327868852459
+                },
+                "70": {
+                  "hits": 60,
+                  "predicted": 60,
+                  "reference": 62,
+                  "precision": 1,
+                  "recall": 0.967741935483871,
+                  "f1": 0.9836065573770492
+                }
+              }
+            },
+            "two": {
+              "notes": 81,
+              "heads": 75,
+              "holds": 11,
+              "maxHeads4s": 13,
+              "peakFingers": 2,
+              "measuredOnsetHeads": 75,
+              "valid": true,
+              "deterministic": true,
+              "routeChecked": true,
+              "oneHoldConflicts": 0,
+              "scores": {
+                "50": {
+                  "hits": 56,
+                  "predicted": 75,
+                  "reference": 62,
+                  "precision": 0.7466666666666667,
+                  "recall": 0.9032258064516129,
+                  "f1": 0.8175182481751825
+                },
+                "70": {
+                  "hits": 60,
+                  "predicted": 75,
+                  "reference": 62,
+                  "precision": 0.8,
+                  "recall": 0.967741935483871,
+                  "f1": 0.8759124087591241
+                }
+              }
+            },
+            "three": {
+              "notes": 92,
+              "heads": 86,
+              "holds": 12,
+              "maxHeads4s": 17,
+              "peakFingers": 3,
+              "measuredOnsetHeads": 86,
+              "valid": true,
+              "deterministic": true,
+              "routeChecked": true,
+              "oneHoldConflicts": 0,
+              "scores": {
+                "50": {
+                  "hits": 56,
+                  "predicted": 86,
+                  "reference": 62,
+                  "precision": 0.6511627906976745,
+                  "recall": 0.9032258064516129,
+                  "f1": 0.7567567567567568
+                },
+                "70": {
+                  "hits": 60,
+                  "predicted": 86,
+                  "reference": 62,
+                  "precision": 0.6976744186046512,
+                  "recall": 0.967741935483871,
+                  "f1": 0.8108108108108109
+                }
+              }
+            },
+            "four": {
+              "notes": 129,
+              "heads": 123,
+              "holds": 13,
+              "maxHeads4s": 20,
+              "peakFingers": 3,
+              "measuredOnsetHeads": 123,
+              "valid": true,
+              "deterministic": true,
+              "routeChecked": true,
+              "oneHoldConflicts": 0,
+              "scores": {
+                "50": {
+                  "hits": 56,
+                  "predicted": 123,
+                  "reference": 62,
+                  "precision": 0.45528455284552843,
+                  "recall": 0.9032258064516129,
+                  "f1": 0.6054054054054054
+                },
+                "70": {
+                  "hits": 60,
+                  "predicted": 123,
+                  "reference": 62,
+                  "precision": 0.4878048780487805,
+                  "recall": 0.967741935483871,
+                  "f1": 0.6486486486486487
+                }
+              }
+            }
+          }
+        },
+        "C": {
+          "oneHeadScores": {
+            "50": {
+              "hits": 56,
+              "predicted": 60,
+              "reference": 62,
+              "precision": 0.9333333333333333,
+              "recall": 0.9032258064516129,
+              "f1": 0.9180327868852459
+            },
+            "70": {
+              "hits": 60,
+              "predicted": 60,
+              "reference": 62,
+              "precision": 1,
+              "recall": 0.967741935483871,
+              "f1": 0.9836065573770492
+            }
+          },
+          "clockScores": {
+            "50": {
+              "hits": 57,
+              "predicted": 62,
+              "reference": 62,
+              "precision": 0.9193548387096774,
+              "recall": 0.9193548387096774,
+              "f1": 0.9193548387096774
+            },
+            "70": {
+              "hits": 62,
+              "predicted": 62,
+              "reference": 62,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            }
+          },
+          "pulseScores": {
+            "50": {
+              "hits": 56,
+              "predicted": 143,
+              "reference": 62,
+              "precision": 0.3916083916083916,
+              "recall": 0.9032258064516129,
+              "f1": 0.5463414634146342
+            },
+            "70": {
+              "hits": 60,
+              "predicted": 143,
+              "reference": 62,
+              "precision": 0.4195804195804196,
+              "recall": 0.967741935483871,
+              "f1": 0.5853658536585366
+            }
+          },
+          "clockConfidence": 0.8207465713901293,
+          "geometryChoice": "clock",
+          "modes": {
+            "one": {
+              "notes": 60,
+              "heads": 60,
+              "holds": 1,
+              "maxHeads4s": 9,
+              "peakFingers": 1,
+              "measuredOnsetHeads": 60,
+              "valid": true,
+              "deterministic": true,
+              "routeChecked": true,
+              "oneHoldConflicts": 0,
+              "scores": {
+                "50": {
+                  "hits": 56,
+                  "predicted": 60,
+                  "reference": 62,
+                  "precision": 0.9333333333333333,
+                  "recall": 0.9032258064516129,
+                  "f1": 0.9180327868852459
+                },
+                "70": {
+                  "hits": 60,
+                  "predicted": 60,
+                  "reference": 62,
+                  "precision": 1,
+                  "recall": 0.967741935483871,
+                  "f1": 0.9836065573770492
+                }
+              }
+            },
+            "two": {
+              "notes": 81,
+              "heads": 76,
+              "holds": 12,
+              "maxHeads4s": 14,
+              "peakFingers": 2,
+              "measuredOnsetHeads": 76,
+              "valid": true,
+              "deterministic": true,
+              "routeChecked": true,
+              "oneHoldConflicts": 0,
+              "scores": {
+                "50": {
+                  "hits": 56,
+                  "predicted": 76,
+                  "reference": 62,
+                  "precision": 0.7368421052631579,
+                  "recall": 0.9032258064516129,
+                  "f1": 0.8115942028985508
+                },
+                "70": {
+                  "hits": 60,
+                  "predicted": 76,
+                  "reference": 62,
+                  "precision": 0.7894736842105263,
+                  "recall": 0.967741935483871,
+                  "f1": 0.8695652173913043
+                }
+              }
+            },
+            "three": {
+              "notes": 92,
+              "heads": 86,
+              "holds": 13,
+              "maxHeads4s": 17,
+              "peakFingers": 3,
+              "measuredOnsetHeads": 86,
+              "valid": true,
+              "deterministic": true,
+              "routeChecked": true,
+              "oneHoldConflicts": 0,
+              "scores": {
+                "50": {
+                  "hits": 56,
+                  "predicted": 86,
+                  "reference": 62,
+                  "precision": 0.6511627906976745,
+                  "recall": 0.9032258064516129,
+                  "f1": 0.7567567567567568
+                },
+                "70": {
+                  "hits": 60,
+                  "predicted": 86,
+                  "reference": 62,
+                  "precision": 0.6976744186046512,
+                  "recall": 0.967741935483871,
+                  "f1": 0.8108108108108109
+                }
+              }
+            },
+            "four": {
+              "notes": 129,
+              "heads": 123,
+              "holds": 14,
+              "maxHeads4s": 20,
+              "peakFingers": 3,
+              "measuredOnsetHeads": 123,
+              "valid": true,
+              "deterministic": true,
+              "routeChecked": true,
+              "oneHoldConflicts": 0,
+              "scores": {
+                "50": {
+                  "hits": 56,
+                  "predicted": 123,
+                  "reference": 62,
+                  "precision": 0.45528455284552843,
+                  "recall": 0.9032258064516129,
+                  "f1": 0.6054054054054054
+                },
+                "70": {
+                  "hits": 60,
+                  "predicted": 123,
+                  "reference": 62,
+                  "precision": 0.4878048780487805,
+                  "recall": 0.967741935483871,
+                  "f1": 0.6486486486486487
+                }
+              }
+            }
+          }
+        }
+      },
+      "fourMeasuredCountRatio": 1,
+      "fourIdentity20": 1
+    }
+  ],
+  "negatives": {
+    "primary18MetricCells": 22,
+    "allModePRFCells": 38,
+    "byMode": {
+      "one": 11,
+      "two": 15,
+      "three": 4,
+      "four": 8
+    },
+    "exemptions": 0,
+    "retainedInFull": true
+  },
+  "fourFinger": {
+    "countRatio": {
+      "n": 36,
+      "min": 0.9754601226993865,
+      "median": 1,
+      "mean": 1.0013825129868605,
+      "max": 1.05
+    },
+    "identity20": {
+      "n": 36,
+      "min": 0.9693251533742331,
+      "median": 1,
+      "mean": 0.9985923653715064,
+      "max": 1
+    },
+    "identityDiagnosticOnly": true,
+    "countLosses": [
+      {
+        "id": "hiphop.00013",
+        "name": "hiphop.00013",
+        "kind": "observed",
+        "B": 163,
+        "C": 159,
+        "countRatio": 0.9754601226993865,
+        "zeroBaselineNonemptyValid": null,
+        "identity20": 0.9693251533742331,
+        "passed": true
+      }
+    ]
+  },
+  "functional": {
+    "assertions": {
+      "stockTraceAnalysis": 72,
+      "stockTraceCharts": 288,
+      "deterministicCharts": 288,
+      "physicalCharts": 288,
+      "goldenAnalysis": 36,
+      "goldenCharts": 144,
+      "physicalAndSource": 36,
+      "rawClockInputLocalE0": 36,
+      "E1SupportInvariant": 36,
+      "actualDPConsumption": 36,
+      "boundaryExcluded": 72,
+      "legacyConfidence": 72,
+      "normalRejectStockTrace": 10
+    },
+    "physical": {
+      "stockTraceAnalysis": 72,
+      "fullCharts": 288,
+      "allValid": true,
+      "allDeterministic": true,
+      "fingerCheckedByActualPhysicalPredicate": true
+    },
+    "postflightChecks": {
+      "physicalSourcePairs": 36,
+      "E0LocalProjectedPairs": 36,
+      "E1MaskAndActualDPInput": 36,
+      "baselineAnalysis": 36,
+      "actualV12GoldenCharts": 144,
+      "capturedAnalysisHashes": 72,
+      "capturedChartHashes": 288,
+      "scoreFormulaValues": 2592
+    },
+    "changes": {
+      "timingArrays": 13,
+      "wholeObjectsIncludingConfidence": 35,
+      "pulseObjects": 5,
+      "geometry": 14
+    },
+    "primary": {
+      "total": 16,
+      "analyzed": 15,
+      "silence": 1,
+      "minuteHandoffOneNoDecline": true
+    },
+    "allNormalRejectStatusAndMessagesEqual": true,
+    "baselineActualV12GoldenNormalization": false
+  },
+  "mathematics": {
+    "identities": [
+      {
+        "kind": "no-blocks",
+        "EExact": true,
+        "wholeActualDPExact": true,
+        "inputUnchanged": true
+      },
+      {
+        "kind": "unknown",
+        "EExact": true,
+        "wholeActualDPExact": true,
+        "inputUnchanged": true
+      },
+      {
+        "kind": "equal-ambiguous",
+        "EExact": true,
+        "wholeActualDPExact": true,
+        "inputUnchanged": true
+      },
+      {
+        "kind": "zero-envelope",
+        "EExact": true,
+        "wholeActualDPExact": true,
+        "inputUnchanged": true
+      }
+    ],
+    "directPositiveDP": {
+      "oldObjective": 15,
+      "newObjective": 30,
+      "changedFrames": 135,
+      "work": {
+        "frames": 801,
+        "blocks": 5,
+        "eligibleBlocks": 5,
+        "eligibleStates": 5,
+        "maximumStates": 1,
+        "chains": 1,
+        "forwardTransitions": 4,
+        "backwardTransitions": 4,
+        "positiveFrames": 135,
+        "alignmentEvaluations": 135,
+        "changedFrames": 135,
+        "typedBytes": 7178,
+        "returnedTypedBytes": 6453,
+        "scratchTypedBytes": 725,
+        "profileBlocks": 5,
+        "profileStates": 5
+      }
+    },
+    "actualPositiveConsumer": {
+      "oldObjective": 20,
+      "newObjective": 40,
+      "oldEExact": true,
+      "localInvestigationExact": true,
+      "sameHelperInvocation": true,
+      "changedFrames": 180
+    },
+    "physicalWeakQuarterIncompleteStrongOffbeat": {
+      "definition": "40_quarters_.5+i*.5_strength.3;offbeats_.75+i*.5_strength1_except_i_mod_3_equals2",
+      "scores": {
+        "B": {
+          "50": {
+            "hits": 0,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 0,
+            "recall": 0,
+            "f1": 0
+          },
+          "70": {
+            "hits": 0,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 0,
+            "recall": 0,
+            "f1": 0
+          }
+        },
+        "C": {
+          "50": {
+            "hits": 40,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "70": {
+            "hits": 40,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          }
+        }
+      },
+      "expectationMet": true
+    },
+    "equalCompletePhaseNegative": {
+      "definition": "both_complete_phases;explicit_metrical_ambiguity",
+      "scores": {
+        "B": {
+          "50": {
+            "hits": 0,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 0,
+            "recall": 0,
+            "f1": 0
+          },
+          "70": {
+            "hits": 0,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 0,
+            "recall": 0,
+            "f1": 0
+          }
+        },
+        "C": {
+          "50": {
+            "hits": 0,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 0,
+            "recall": 0,
+            "f1": 0
+          },
+          "70": {
+            "hits": 0,
+            "predicted": 40,
+            "reference": 40,
+            "precision": 0,
+            "recall": 0,
+            "f1": 0
+          }
+        }
+      },
+      "expectationMet": true,
+      "zeroPrior": true,
+      "wholeClockAndDPExact": true
+    },
+    "calls": {
+      "directHelper": 5,
+      "directDP": 10,
+      "tracedClock": 8,
+      "stockClock": 8,
+      "tracedClockHelper": 3,
+      "stockClockHelperFromFrozenSource": 3
+    },
+    "noReferenceUsedInCandidate": true
+  },
+  "independentOracle": {
+    "pass": true,
+    "validCases": 94,
+    "namedCases": 30,
+    "seededCases": 64,
+    "invalidCases": 8,
+    "separateLongAnalyticCase": 1,
+    "helperCalls": 103,
+    "assertions": 113584,
+    "failures": 0,
+    "mutationFailures": 0,
+    "comparisons": {
+      "forward": 618,
+      "backward": 618,
+      "maxMarginal": 618,
+      "reliability": 264,
+      "envelope": 32159
+    },
+    "pathChecks": {
+      "exact": 25,
+      "unique": 76,
+      "numericalTie": 5
+    },
+    "maximumRealizedShortEnumerationPaths": 256,
+    "floatingOracleToleranceFixedBeforeCalls": 1e-12,
+    "noLongExhaustivePathClaim": true,
+    "storage": {
+      "frames": 30001,
+      "blocks": 151,
+      "work": {
+        "frames": 30001,
+        "blocks": 151,
+        "eligibleBlocks": 151,
+        "eligibleStates": 604,
+        "maximumStates": 4,
+        "chains": 1,
+        "forwardTransitions": 2400,
+        "backwardTransitions": 2400,
+        "positiveFrames": 25715,
+        "alignmentEvaluations": 0,
+        "changedFrames": 0,
+        "typedBytes": 263262,
+        "returnedTypedBytes": 241367,
+        "scratchTypedBytes": 21895,
+        "profileBlocks": 151,
+        "profileStates": 604
+      },
+      "analyticalSymmetryOnly": true,
+      "noLongExhaustivePathClaim": true
+    },
+    "wallMs": 37.8006,
+    "maxRSSKiB": 67852,
+    "deadlineMs": 60000,
+    "v8OldSpaceMiB": 256,
+    "sampledRSSGuardMiB": 512,
+    "continuousOSRSSHardCap": false,
+    "phonePerformanceClaim": false,
+    "musicalQualityQualifiedByOracle": false
+  },
+  "musicExecution": {
+    "calls": {
+      "traceAnalysis": 82,
+      "stockAnalysis": 82,
+      "chart": 864,
+      "geometry": 72,
+      "fresh": 0,
+      "ASAP": 0,
+      "ledgerWriter": 0
+    },
+    "childSpawnCount": 1,
+    "childClosed": true,
+    "exit": 0,
+    "elapsedMs": 39728.3118,
+    "cpuMs": 47468,
+    "maxRSSKiB": 286932,
+    "deadlineMs": 360000,
+    "v8OldSpaceMB": 512,
+    "continuousOSRSSHardCap": false,
+    "automaticRetries": 0,
+    "noTuningAfterScores": true,
+    "desktopTimingNotPhonePerformance": true
+  },
+  "metadataCorrection": {
+    "originalPairedCSVExpectedRows": 41,
+    "actualRows": 82,
+    "explanation": "41_inputs_times_2_arms",
+    "changedVerifierLiteralOnly": "41_to_82",
+    "originalVerifierAndFailurePreserved": true,
+    "separateCachedV2FrozenPins": 809,
+    "sourceAndResultsPinsExact": true,
+    "v2SpawnCount": 1,
+    "v2Exit": 0,
+    "v2ElapsedMs": 528,
+    "candidateMusicOrSummaryRetries": 0,
+    "gateOrSourceEdits": 0
+  },
+  "cachedDispersionAudit": {
+    "cachedOnly": true,
+    "algorithmCalls": 0,
+    "counts": {
+      "songs": 5,
+      "blocks": 85,
+      "phases": 260,
+      "selected": 55,
+      "unknownBlocks": 30,
+      "fewPairPhases": 25
+    },
+    "checks": {
+      "oldFieldCellsExact": 1560,
+      "oldPhasesExact": 260,
+      "profileBlocksExact": 85,
+      "profileStatesExact": 129,
+      "investigationsExact": 5,
+      "onsetInputsExact": 5
+    },
+    "mismatches": [],
+    "songs": [
+      {
+        "song": "country.00022",
+        "blocks": 17,
+        "allPhases": 54,
+        "noChosenBlocks": 0,
+        "chosenPhases": 17,
+        "chosenCoverage": {
+          "n": 17,
+          "min": 0.4230769230769231,
+          "median": 0.75,
+          "mean": 0.6779344830697638,
+          "max": 0.8571428571428571
+        },
+        "chosenGTCompatibility": {
+          "n": 17,
+          "min": 0.08695652173913043,
+          "median": 0.23076923076923078,
+          "mean": 0.22312465207875085,
+          "max": 0.4
+        },
+        "chosenClockCompatibility": {
+          "n": 17,
+          "min": 0.30434782608695654,
+          "median": 0.8333333333333334,
+          "mean": 0.7276145804211492,
+          "max": 1
+        },
+        "chosenStd": {
+          "n": 17,
+          "min": 0.010498555307301953,
+          "median": 0.024737317606143512,
+          "mean": 0.02430544092433405,
+          "max": 0.034198550582543584
+        },
+        "chosenMAD": {
+          "n": 17,
+          "min": 0.005205178845732128,
+          "median": 0.018299523201690704,
+          "mean": 0.018250282670051327,
+          "max": 0.03416575232244057
+        },
+        "chosenReliability": {
+          "n": 17,
+          "min": 0.24432123191320243,
+          "median": 0.4317852511111673,
+          "mean": 0.6054103719501233,
+          "max": 1
+        },
+        "chosenMargin": {
+          "n": 10,
+          "min": 0.32331361185622143,
+          "median": 0.46976998169823325,
+          "mean": 0.513132946924661,
+          "max": 0.7598979997536865
+        },
+        "fewPairPhases": 4,
+        "pairwiseAll": {
+          "std": {
+            "concordant": 20,
+            "discordant": 31,
+            "GTtie": 6,
+            "dispersionTie": 0,
+            "bothTie": 0,
+            "unavailable": 7,
+            "total": 64
+          },
+          "MAD": {
+            "concordant": 22,
+            "discordant": 29,
+            "GTtie": 6,
+            "dispersionTie": 0,
+            "bothTie": 0,
+            "unavailable": 7,
+            "total": 64
+          },
+          "maxAbsCenteredResidual": {
+            "concordant": 15,
+            "discordant": 36,
+            "GTtie": 6,
+            "dispersionTie": 0,
+            "bothTie": 0,
+            "unavailable": 7,
+            "total": 64
+          }
+        },
+        "pairwiseEligible": {
+          "std": {
+            "concordant": 6,
+            "discordant": 8,
+            "GTtie": 0,
+            "dispersionTie": 0,
+            "bothTie": 0,
+            "unavailable": 0,
+            "total": 14
+          },
+          "MAD": {
+            "concordant": 6,
+            "discordant": 8,
+            "GTtie": 0,
+            "dispersionTie": 0,
+            "bothTie": 0,
+            "unavailable": 0,
+            "total": 14
+          },
+          "maxAbsCenteredResidual": {
+            "concordant": 7,
+            "discordant": 7,
+            "GTtie": 0,
+            "dispersionTie": 0,
+            "bothTie": 0,
+            "unavailable": 0,
+            "total": 14
+          }
+        }
+      },
+      {
+        "song": "hiphop.00013",
+        "blocks": 17,
+        "allPhases": 66,
+        "noChosenBlocks": 0,
+        "chosenPhases": 17,
+        "chosenCoverage": {
+          "n": 17,
+          "min": 0.75,
+          "median": 1,
+          "mean": 0.9668067226890757,
+          "max": 1
+        },
+        "chosenGTCompatibility": {
+          "n": 17,
+          "min": 0,
+          "median": 0,
+          "mean": 0,
+          "max": 0
+        },
+        "chosenClockCompatibility": {
+          "n": 17,
+          "min": 0,
+          "median": 1,
+          "mean": 0.6383322559793149,
+          "max": 1
+        },
+        "chosenStd": {
+          "n": 17,
+          "min": 0.0028905556985252324,
+          "median": 0.007194232502771129,
+          "mean": 0.008689419021283012,
+          "max": 0.01800499166616813
+        },
+        "chosenMAD": {
+          "n": 17,
+          "min": 0.002387621715346455,
+          "median": 0.003938908896892218,
+          "mean": 0.004955786236061023,
+          "max": 0.018136587968520246
+        },
+        "chosenReliability": {
+          "n": 17,
+          "min": 0.07445211704536378,
+          "median": 0.07445211704536378,
+          "mean": 0.12889611016034347,
+          "max": 1
+        },
+        "chosenMargin": {
+          "n": 16,
+          "min": 0.08044112942886272,
+          "median": 0.08044112942886272,
+          "mean": 0.08044112942886406,
+          "max": 0.08044112942886628
+        },
+        "fewPairPhases": 0,
+        "pairwiseAll": {
+          "std": {
+            "concordant": 37,
+            "discordant": 12,
+            "GTtie": 47,
+            "dispersionTie": 0,
+            "bothTie": 0,
+            "unavailable": 0,
+            "total": 96
+          },
+          "MAD": {
+            "concordant": 28,
+            "discordant": 16,
+            "GTtie": 45,
+            "dispersionTie": 5,
+            "bothTie": 2,
+            "unavailable": 0,
+            "total": 96
+          },
+          "maxAbsCenteredResidual": {
+            "concordant": 35,
+            "discordant": 14,
+            "GTtie": 47,
+            "dispersionTie": 0,
+            "bothTie": 0,
+            "unavailable": 0,
+            "total": 96
+          }
+        },
+        "pairwiseEligible": {
+          "std": {
+            "concordant": 33,
+            "discordant": 7,
+            "GTtie": 32,
+            "dispersionTie": 0,
+            "bothTie": 0,
+            "unavailable": 0,
+            "total": 72
+          },
+          "MAD": {
+            "concordant": 26,
+            "discordant": 11,
+            "GTtie": 31,
+            "dispersionTie": 3,
+            "bothTie": 1,
+            "unavailable": 0,
+            "total": 72
+          },
+          "maxAbsCenteredResidual": {
+            "concordant": 31,
+            "discordant": 9,
+            "GTtie": 32,
+            "dispersionTie": 0,
+            "bothTie": 0,
+            "unavailable": 0,
+            "total": 72
+          }
+        }
+      },
+      {
+        "song": "jazz.00035",
+        "blocks": 17,
+        "allPhases": 48,
+        "noChosenBlocks": 13,
+        "chosenPhases": 4,
+        "chosenCoverage": {
+          "n": 4,
+          "min": 0.44,
+          "median": 0.9444444444444444,
+          "mean": 0.8322222222222222,
+          "max": 1
+        },
+        "chosenGTCompatibility": {
+          "n": 4,
+          "min": 0,
+          "median": 0.31,
+          "mean": 0.37375,
+          "max": 0.875
+        },
+        "chosenClockCompatibility": {
+          "n": 4,
+          "min": 0.2,
+          "median": 0.6875,
+          "mean": 0.6020833333333333,
+          "max": 0.8333333333333334
+        },
+        "chosenStd": {
+          "n": 4,
+          "min": 0.02352911447249398,
+          "median": 0.02747678815569066,
+          "mean": 0.027675254778571006,
+          "max": 0.03221832833040872
+        },
+        "chosenMAD": {
+          "n": 4,
+          "min": 0.015377733928245263,
+          "median": 0.01702410205547711,
+          "mean": 0.01963384246663402,
+          "max": 0.029109431827336607
+        },
+        "chosenReliability": {
+          "n": 4,
+          "min": 0.5021117587361585,
+          "median": 0.8017618979332062,
+          "mean": 0.7764088886506427,
+          "max": 1
+        },
+        "chosenMargin": {
+          "n": 2,
+          "min": 1.0084828624624596,
+          "median": 1.2653511643932518,
+          "mean": 1.2653511643932518,
+          "max": 1.5222194663240438
+        },
+        "fewPairPhases": 5,
+        "pairwiseAll": {
+          "std": {
+            "concordant": 17,
+            "discordant": 11,
+            "GTtie": 9,
+            "dispersionTie": 0,
+            "bothTie": 0,
+            "unavailable": 10,
+            "total": 47
+          },
+          "MAD": {
+            "concordant": 15,
+            "discordant": 13,
+            "GTtie": 9,
+            "dispersionTie": 0,
+            "bothTie": 0,
+            "unavailable": 10,
+            "total": 47
+          },
+          "maxAbsCenteredResidual": {
+            "concordant": 10,
+            "discordant": 18,
+            "GTtie": 9,
+            "dispersionTie": 0,
+            "bothTie": 0,
+            "unavailable": 10,
+            "total": 47
+          }
+        },
+        "pairwiseEligible": {
+          "std": {
+            "concordant": 0,
+            "discordant": 1,
+            "GTtie": 1,
+            "dispersionTie": 0,
+            "bothTie": 0,
+            "unavailable": 0,
+            "total": 2
+          },
+          "MAD": {
+            "concordant": 0,
+            "discordant": 1,
+            "GTtie": 1,
+            "dispersionTie": 0,
+            "bothTie": 0,
+            "unavailable": 0,
+            "total": 2
+          },
+          "maxAbsCenteredResidual": {
+            "concordant": 0,
+            "discordant": 1,
+            "GTtie": 1,
+            "dispersionTie": 0,
+            "bothTie": 0,
+            "unavailable": 0,
+            "total": 2
+          }
+        }
+      },
+      {
+        "song": "classical.00011",
+        "blocks": 17,
+        "allPhases": 28,
+        "noChosenBlocks": 17,
+        "chosenPhases": 0,
+        "chosenCoverage": {
+          "n": 0,
+          "min": null,
+          "median": null,
+          "mean": null,
+          "max": null
+        },
+        "chosenGTCompatibility": {
+          "n": 0,
+          "min": null,
+          "median": null,
+          "mean": null,
+          "max": null
+        },
+        "chosenClockCompatibility": {
+          "n": 0,
+          "min": null,
+          "median": null,
+          "mean": null,
+          "max": null
+        },
+        "chosenStd": {
+          "n": 0,
+          "min": null,
+          "median": null,
+          "mean": null,
+          "max": null
+        },
+        "chosenMAD": {
+          "n": 0,
+          "min": null,
+          "median": null,
+          "mean": null,
+          "max": null
+        },
+        "chosenReliability": {
+          "n": 0,
+          "min": null,
+          "median": null,
+          "mean": null,
+          "max": null
+        },
+        "chosenMargin": {
+          "n": 0,
+          "min": null,
+          "median": null,
+          "mean": null,
+          "max": null
+        },
+        "fewPairPhases": 13,
+        "pairwiseAll": {
+          "std": {
+            "concordant": 1,
+            "discordant": 2,
+            "GTtie": 1,
+            "dispersionTie": 0,
+            "bothTie": 0,
+            "unavailable": 7,
+            "total": 11
+          },
+          "MAD": {
+            "concordant": 1,
+            "discordant": 2,
+            "GTtie": 1,
+            "dispersionTie": 0,
+            "bothTie": 0,
+            "unavailable": 7,
+            "total": 11
+          },
+          "maxAbsCenteredResidual": {
+            "concordant": 1,
+            "discordant": 2,
+            "GTtie": 1,
+            "dispersionTie": 0,
+            "bothTie": 0,
+            "unavailable": 7,
+            "total": 11
+          }
+        },
+        "pairwiseEligible": {
+          "std": {
+            "concordant": 0,
+            "discordant": 0,
+            "GTtie": 0,
+            "dispersionTie": 0,
+            "bothTie": 0,
+            "unavailable": 0,
+            "total": 0
+          },
+          "MAD": {
+            "concordant": 0,
+            "discordant": 0,
+            "GTtie": 0,
+            "dispersionTie": 0,
+            "bothTie": 0,
+            "unavailable": 0,
+            "total": 0
+          },
+          "maxAbsCenteredResidual": {
+            "concordant": 0,
+            "discordant": 0,
+            "GTtie": 0,
+            "dispersionTie": 0,
+            "bothTie": 0,
+            "unavailable": 0,
+            "total": 0
+          }
+        }
+      },
+      {
+        "song": "disco.00031",
+        "blocks": 17,
+        "allPhases": 64,
+        "noChosenBlocks": 0,
+        "chosenPhases": 17,
+        "chosenCoverage": {
+          "n": 17,
+          "min": 0.8125,
+          "median": 1,
+          "mean": 0.9481689734717416,
+          "max": 1
+        },
+        "chosenGTCompatibility": {
+          "n": 17,
+          "min": 0.8125,
+          "median": 1,
+          "mean": 0.9535034602076126,
+          "max": 1
+        },
+        "chosenClockCompatibility": {
+          "n": 17,
+          "min": 0.8125,
+          "median": 1,
+          "mean": 0.9734717416378315,
+          "max": 1
+        },
+        "chosenStd": {
+          "n": 17,
+          "min": 0.006247589460958504,
+          "median": 0.018745440444600612,
+          "mean": 0.016902998906955742,
+          "max": 0.0340261380721574
+        },
+        "chosenMAD": {
+          "n": 17,
+          "min": 0.0017051048061507146,
+          "median": 0.006820419224602858,
+          "mean": 0.009980479996878096,
+          "max": 0.0265538410486148
+        },
+        "chosenReliability": {
+          "n": 17,
+          "min": 0.46081984458292663,
+          "median": 0.6213217526679915,
+          "mean": 0.6261270359568893,
+          "max": 1
+        },
+        "chosenMargin": {
+          "n": 16,
+          "min": 0.8546676652564624,
+          "median": 1.640764308606414,
+          "mean": 1.5615296901996032,
+          "max": 1.8597638575514033
+        },
+        "fewPairPhases": 3,
+        "pairwiseAll": {
+          "std": {
+            "concordant": 29,
+            "discordant": 17,
+            "GTtie": 36,
+            "dispersionTie": 0,
+            "bothTie": 0,
+            "unavailable": 8,
+            "total": 90
+          },
+          "MAD": {
+            "concordant": 35,
+            "discordant": 9,
+            "GTtie": 36,
+            "dispersionTie": 2,
+            "bothTie": 0,
+            "unavailable": 8,
+            "total": 90
+          },
+          "maxAbsCenteredResidual": {
+            "concordant": 15,
+            "discordant": 31,
+            "GTtie": 36,
+            "dispersionTie": 0,
+            "bothTie": 0,
+            "unavailable": 8,
+            "total": 90
+          }
+        },
+        "pairwiseEligible": {
+          "std": {
+            "concordant": 13,
+            "discordant": 7,
+            "GTtie": 4,
+            "dispersionTie": 0,
+            "bothTie": 0,
+            "unavailable": 0,
+            "total": 24
+          },
+          "MAD": {
+            "concordant": 15,
+            "discordant": 4,
+            "GTtie": 4,
+            "dispersionTie": 1,
+            "bothTie": 0,
+            "unavailable": 0,
+            "total": 24
+          },
+          "maxAbsCenteredResidual": {
+            "concordant": 12,
+            "discordant": 8,
+            "GTtie": 4,
+            "dispersionTie": 0,
+            "bothTie": 0,
+            "unavailable": 0,
+            "total": 24
+          }
+        }
+      }
+    ],
+    "pairwiseAll": {
+      "std": {
+        "concordant": 104,
+        "discordant": 73,
+        "GTtie": 99,
+        "dispersionTie": 0,
+        "bothTie": 0,
+        "unavailable": 32,
+        "total": 308
+      },
+      "MAD": {
+        "concordant": 101,
+        "discordant": 69,
+        "GTtie": 97,
+        "dispersionTie": 7,
+        "bothTie": 2,
+        "unavailable": 32,
+        "total": 308
+      },
+      "maxAbsCenteredResidual": {
+        "concordant": 76,
+        "discordant": 101,
+        "GTtie": 99,
+        "dispersionTie": 0,
+        "bothTie": 0,
+        "unavailable": 32,
+        "total": 308
+      }
+    },
+    "pairwiseEligible": {
+      "std": {
+        "concordant": 52,
+        "discordant": 23,
+        "GTtie": 37,
+        "dispersionTie": 0,
+        "bothTie": 0,
+        "unavailable": 0,
+        "total": 112
+      },
+      "MAD": {
+        "concordant": 47,
+        "discordant": 24,
+        "GTtie": 36,
+        "dispersionTie": 4,
+        "bothTie": 1,
+        "unavailable": 0,
+        "total": 112
+      },
+      "maxAbsCenteredResidual": {
+        "concordant": 50,
+        "discordant": 25,
+        "GTtie": 37,
+        "dispersionTie": 0,
+        "bothTie": 0,
+        "unavailable": 0,
+        "total": 112
+      }
+    },
+    "exactSameOriginal50msNearestCursorPairs": true,
+    "stdPopulationCenteredAtMean": true,
+    "MADCenteredAtMedian": true,
+    "fewerThanTwoPairsDispersion": null,
+    "fixedGTCompatibilityUsesOriginalAnchorPlusResidualAndPeriod": true,
+    "referenceOffsetTempoSearch": false,
+    "overlappingBlocksAndRelatedPhasesIndependent": false,
+    "lowDispersionCalibratesCorrectness": false,
+    "newFeatureThresholdSelectorOrCandidateValidated": false,
+    "allPossibleDispersionFeaturesRefuted": false
+  },
+  "unchangedLedger": {
+    "clips": 210,
+    "runs": 89,
+    "freezes": 89,
+    "sha256": "df1957bce05ea31a1216a07e6303e46420eb6f3c45de5f425a34c44383ca79c1"
+  },
+  "independentRootReview": {
+    "cachedOnly": true,
+    "algorithmCalls": 0,
+    "complete": true,
+    "frozenPins": {
+      "consumer": 210,
+      "postflight": 809,
+      "dispersion": 52,
+      "runtime": 24
+    },
+    "successful": 36,
+    "normalRejects": 5,
+    "observed": 5,
+    "rawCountPRFFormulas": 3024,
+    "all18MacroMetricsRecomputed": true,
+    "primary18MetricNegativeCells": 22,
+    "allModePRFNegativeCells": 38,
+    "exactPairedDeltaArithmetic": "original_summary_mean_of_per_clip_deltas;independent_recheck_also_difference_of_macro_means;rounding_slack_only",
+    "runtimeUnchanged": true
+  },
+  "sourceEvidenceSHA256": {
+    ".qa/phase-lattice-clock-v1/summary.json": "f4a379e5ae0341339861d44c27ba96a9bc1fcbb1c5339f250db82fa7f482770a",
+    ".qa/phase-lattice-clock-v1/postflight.json": "88ce15c2d324481db3378f809bae9fb8ded953af0b12ca35de772eeb664aff90",
+    ".qa/phase-lattice-clock-v1/report.json": "08a9a5b15b790273dead34be5b07d7d6050450571a4bd8d2a6fc0392649691b1",
+    ".qa/phase-lattice-clock-v1/mathematical-report.json": "1660d762bf255d844df8f4042d7884fd4a36bb391ead2b4e1382ced0239e8ae5",
+    ".qa/phase-lattice-clock-v1/qualification.json": "3158fd4bd68634f641aed2a8e4dbf5880d3cb155e50e46822ad693fd3e2cc58e",
+    ".qa/phase-lattice-clock-v1/freeze.json": "51ac76ce28d0dce66de9ceb0ee08930bb652ce109cb8565fe329f172d78226cf",
+    ".qa/phase-lattice-clock-v1/postflight-v2-freeze.json": "d07fc8b66fe5ef60bdf5a707b4b45dd979e5ab63b797a3c66450178009e8cbfb",
+    ".qa/phase-lattice-clock-v1/postflight-v2.diff": "570c2676ed9734e251f007db3d42240c946c1b8a8b465397488c5032d02703dc",
+    ".qa/phase-lattice-clock-v1/postflight-owned-v2.json": "752b0975976931fea77b473b58671570ee29a14926a7559aa4998119b4753d50",
+    ".qa/phase-lattice-clock-v1/metric-regressions.csv": "edd549057df2cf540e2b16bb77d99c9a4e4b26aabcfecc3063e4830ec6ef522a",
+    ".qa/phase-lattice-clock-v1/all-mode-regressions.csv": "9126c4551b7b56a9e1c5fb2c0316d0168a23fce54cdbeb6e7284c1d8819650a1",
+    ".qa/phase-lattice-clock-v1/paired.csv": "c00255eb2a9f670d81bba0375c411fbe6e7dd931976e2e16d723d7c9b7741ae0",
+    ".qa/phase-lattice-clock-v1/four-finger.csv": "198e6263148816b1ad4644402bf6a0a240f36261f7fa495b273a6a921efb9c50",
+    ".qa/phase-lattice-dispersion-audit-v1/summary.json": "6631a0d4d93064a4930f18083c2e37b31a9beed00c00d8ddf26ed2ec79815b9f",
+    ".qa/phase-lattice-dispersion-audit-v1/postflight.json": "85a42d961649041d673384f8f7fcc8b55200d62b2eecf0fc2d55b1f574e9d686",
+    ".qa/phase-lattice-dispersion-audit-v1/freeze.json": "629f5efd9e72137e9808dae34a7e0e7828449722ed1c8afca349bcf26de37171",
+    ".qa/phase-lattice-oracle-v1/report.json": "25e8e1c269749e8fd69ca5626703af0b85d2d8e18ca88b1d9144bab311decf51",
+    ".qa/phase-lattice-oracle-v1/freeze.json": "69c9a21aacaaf591728b2856b4f93567d7ae53b01fb6605cfadbf3b9db2ad2f4",
+    ".qa/phase-lattice-oracle-v1/terminal.json": "1cf692333d42a4a00f004ec114d2f6a9b46135e865f4648ae624c98c4353d90f",
+    ".qa/phase-lattice-v1/phase-lattice.template.ts": "f26394775038d289af90462366840c294aa65acb9a7c6d7650708c96d66e97c7",
+    ".qa/public-phase-lattice-root-v1/root-review.json": "b3bebe7c7ed0298fdc944f8014e1ecfc46a6edf58a73d61fce71988a64d6633e",
+    "benchmarks/prototypes/phase-lattice-v1.patch": "4d2c68c8301d1be2a68706accd015d3c2f1d0e80e65afc4e7799d7e63eb99fa4",
+    "src/core/rhythm.ts": "f79cdafab5bc406f50c6bff63506fbf46f15db8ec2a83b2d8e702250b3a28dd9",
+    "benchmarks/dsp-cohorts.json": "df1957bce05ea31a1216a07e6303e46420eb6f3c45de5f425a34c44383ca79c1"
+  },
+  "publicArtifacts": {
+    "phase-lattice-paired.csv": {
+      "sha256": "c00255eb2a9f670d81bba0375c411fbe6e7dd931976e2e16d723d7c9b7741ae0",
+      "dataRows": 82,
+      "source": "paired.csv"
+    },
+    "phase-lattice-regressions.csv": {
+      "sha256": "edd549057df2cf540e2b16bb77d99c9a4e4b26aabcfecc3063e4830ec6ef522a",
+      "dataRows": 22,
+      "source": "metric-regressions.csv"
+    },
+    "phase-lattice-all-mode-regressions.csv": {
+      "sha256": "9126c4551b7b56a9e1c5fb2c0316d0168a23fce54cdbeb6e7284c1d8819650a1",
+      "dataRows": 38,
+      "source": "all-mode-regressions.csv"
+    },
+    "phase-lattice-four-finger.csv": {
+      "sha256": "198e6263148816b1ad4644402bf6a0a240f36261f7fa495b273a6a921efb9c50",
+      "dataRows": 36,
+      "source": "four-finger.csv"
+    }
+  },
+  "limits": {
+    "gameAccuracyIsReferenceBeatF1": false,
+    "generalMusicGain": false,
+    "phoneHardwareTest": false,
+    "audioOrReferenceTimeArraysExported": false,
+    "mergeOrDeployAuthorizedByReport": false
+  }
+}
