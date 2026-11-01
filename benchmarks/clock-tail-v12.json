@@ -1,0 +1,78 @@
+{
+  "schema": 1,
+  "experiment": "clock-tail-boundary-v12",
+  "date": "2026-11-01",
+  "status": "bugfix_nonregression_pass_release_checks_separate",
+  "recognition": {"engine": "pure_DSP", "neuralRuntime": false, "modelAssets": false},
+  "baselineCommit": "734caf4070f7e8e992ac7ebc8304ec0cec5c59f8",
+  "candidateRhythmSHA256": "f79cdafab5bc406f50c6bff63506fbf46f15db8ec2a83b2d8e702250b3a28dd9",
+  "rule": {"positiveEvidence": "projected.strength>0", "suffixLimitSeconds": 0.08, "numericSlackSeconds": 1e-9, "noPositiveEvidence": "empty_clock", "retimeMeasuredEvents": false, "preserveInternalRests": true},
+  "targetedEvidence": {
+    "kind": "synthetic_actual_trackBeats_pipeline_and_actual_source_tests",
+    "boundaryTests": 6,
+    "maskedAuxiliaryTail": {"lastPositiveSeconds": 1.5, "gatedOutAuxiliarySeconds": 2.2, "oldLastClockSeconds": 2, "newLastClockSeconds": 1.5},
+    "closed80msFloatingPointCase": true,
+    "genuineTailRetained": true,
+    "internalRestRetained": true,
+    "zeroEvidenceEmpty": true,
+    "callerInputsUnmodified": true,
+    "quietPoint001OldEndingLossFixed": false,
+    "realMusicUsedForBoundaryFixture": false,
+    "sourceTest": "src/core/rhythm-boundaries.test.ts",
+    "sourceTestSHA256": "7f69d48e07bdf75eb4075277fa88a6b5320a8c9e64a2cf2218c49d3264c4290d",
+    "preflightFreezeSHA256": "45d3f98202d59bb6fd4f4fb23906e61b7162a9cf33147a23c4baed2c41047936",
+    "oldPipelinePreflightSHA256": "bd993d66094645fa92aacaac6fc932950f8e8732330759d141d01a4096848b58"
+  },
+  "smallScreen": {
+    "syntheticInputs": 36, "observedInputs": 5, "successfulSynthetic": 31, "successfulObserved": 5, "normalRejects": 5,
+    "checksPassed": 274, "fullAnalysisExactPairs": 36, "fullChartExactPairs": 144,
+    "negativeEntries": 0, "suffixTriggers": 0, "fourMeasuredCountRatioMinimum": 1,
+    "strictAllFourGraphs": true, "stockRejectPathsSeparatelyExecuted": false,
+    "freezeSHA256": "2f236c24a4fed2ae2e9f9d32f3d3840616552bbbb65702d3596656392523728b",
+    "reportSHA256": "c08f56ff7c02df5e2d34aa1d0fb816ffab59b042dc8cd678aa5277b3d3996870",
+    "summarySHA256": "412e4cbb29efaa5c41b946be7438468b331161e295c589db53215269db381a7e"
+  },
+  "observed210": {
+    "tracks": 210, "genres": 10, "newBlindHoldout": false,
+    "mainChartVersions": {"before": 11, "after": 11, "normalized": false},
+    "headClockPulseMetricCount": 18, "perClipMetricCells": 3780, "allMetricDeltasExactlyZero": true,
+    "macro": {
+      "head50F1": {"before": 0.6330618640188252, "after": 0.6330618640188252, "delta": 0},
+      "head70F1": {"before": 0.6927436792043614, "after": 0.6927436792043614, "delta": 0},
+      "clock50F1": {"before": 0.654195092196321, "after": 0.654195092196321, "delta": 0},
+      "clock70F1": {"before": 0.7235445138311929, "after": 0.7235445138311929, "delta": 0}
+    },
+    "fullAnalysisExact": 210, "clockExact": 210, "pulseExact": 210, "usedGeometryExact": 210,
+    "physicalCharts": 1680, "allValid": true, "allDeterministic": true, "allRouteChecked": true, "oneHoldConflicts": 0,
+    "fourMeasuredHeads": {"before": 19865, "after": 19865, "minimumPerClipRatio": 1, "integerCountFailures": 0},
+    "strictPrimaryNegatives": 0, "allModeNegatives": 0, "suffixTriggerClips": 0, "removedTailFrames": 0,
+    "rawPhysicalSourceLocalEnvelopeDPUnchanged": true, "prefixAndInternalRestsPreserved": true,
+    "gate": {"kind": "prospective_bugfix_nonregression", "f1Metrics": ["head50", "head70", "clock50", "clock70"], "levels": ["macro", "each_genre", "each_clip"], "minimumDelta": 0, "epsilon": 1e-12, "officialComparatorEpsilonDiagnosticOnly": 1e-9, "everyFourMeasuredIntegerCountNondecrease": true, "pass": true},
+    "originalPinsVerified": 570, "finalCachedPinsVerified": 599,
+    "pipelineFreezeSHA256": "0bb4651e2b9e377a13eb54cd0902c046f4dbfe37687a959af0e76cf9dfca17db",
+    "executionFreezeSHA256": "63e68755ee987df6bbca071f656663fb25b3f828444d943d323d1f775405a218",
+    "sidecarFreezeSHA256": "a0b57c21ed2ae8bb687a6c3ed6d4a7e25059cdbfaae8df1c00cafc5e27bbc6eb",
+    "qualificationSHA256": "0a3caeddecb141171a30911bd5e829f6e366af1370f35c2da7b55b9ae743b6e8",
+    "summarySHA256": "5597584d608f005f69c5a879bb4e6c4278a5a6a925a4d29d742d984f578c5e60",
+    "postflightSHA256": "dd1930cc8512be115345f00992ceb9ecd9e8182bfac82ad8ec24d7e950cb98e2",
+    "independentRootReviewSHA256": "65b37f06a7a6e9fe9f54d69d3a131f9ef5ad84fdb8c4b4d76b3176ff3d1198ae"
+  },
+  "bookkeepingCorrection": {
+    "originalIncorrectPrimaryCount": 18, "correctPrimaryInputs": 16, "successful": 15, "normalSilenceRejection": 1,
+    "firstFailureAndOriginalScriptPreserved": true, "correction": "frozen_cached_statistics_v2_only", "musicRerunsAfterMetadataFailure": 0,
+    "postprocessingV2FreezeSHA256": "e9944de7d18fcc91ad62f4df64252565660387a304969fdab3e9aca82c7b4002"
+  },
+  "ledger": {"clips": 210, "runs": 89, "freezes": 89, "original210IdentitiesAnd82RunPrefixExact": true, "completedDiagnosticAppends": 7, "sha256": "df1957bce05ea31a1216a07e6303e46420eb6f3c45de5f425a34c44383ca79c1"},
+  "formalVersion12": {
+    "status": "cached_chart_parity_and_actual_source_diff_pass", "topLevelVersion": 12,
+    "cachedAnalysisInputs": 36, "syntheticInputs": 31, "observedInputs": 5, "chartsCompared": 144, "deterministicRepeats": 144,
+    "chartCalls": 432, "audioCalls": 0, "analyzerCalls": 0, "wallMs": 3989.2164,
+    "rawCompleteJSONEqual": false, "onlyTopLevelVersionDiffers": true, "explicitVersionMappingExact": true,
+    "actualRuntimeFilesCompared": 24, "postBroadChangedFiles": ["src/core/chart.ts", "src/types.ts"],
+    "actualDiff": "chart output literal11->12;types version union appends12;rhythm and all other runtime files unchanged",
+    "noClaimOf210ChartRegeneration": true, "mainBroadVersionNormalization": false,
+    "freezeSHA256": "29fd7a152ee1c9d60b8841a082ea71ce4ace20c33909cc2bf4481baeba81ff18",
+    "proofSHA256": "78247fdd20e8ff25d203c4f4a83e9c3e2c68e99cea4d5bb9df216891589f1d6f"
+  },
+  "limits": {"globalMusicQualityImprovementClaim": false, "previousPhaseAndMetreCounterexamplesSolved": false, "quietPoint001EndingLossSolved": false, "phonePerformanceClaim": false, "freshOrASAPUsed": false, "publicationAuthorizedByThisReport": false, "privateAudioReferenceArraysOrPathsExported": false}
+}
