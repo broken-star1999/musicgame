@@ -1,0 +1,1494 @@
+diff --git a/src/core/analysis.ts b/src/core/analysis.ts
+index ff70260..f80c16c 100644
+--- a/src/core/analysis.ts
++++ b/src/core/analysis.ts
+@@ -1,4 +1,11 @@
+ import { analyzeAudio as source } from './signal-analysis';
+ import { bindCanonical } from './signal-binding';
++import { applyRationalAnalysis, type RationalContext } from './rational-application';
++import type { Analysis } from '../types';
+ export { fingerprint, estimateTempo } from './signal-analysis';
+-export function analyzeAudio(...args: Parameters<typeof source>): ReturnType<typeof source> { return bindCanonical(source(...args)); }
++export function analyzeAudio(samples: Float32Array, sampleRate: number, progress?: (value: number, stage: string) => void): Analysis {
++  const holder: { value?: RationalContext } = {};
++  const baseline = bindCanonical(source(samples, sampleRate, (value, stage) => progress?.(value * .8, stage), value => { holder.value = value; }));
++  if (!holder.value) throw Error('Original physical context was not returned');
++  return applyRationalAnalysis(baseline, holder.value, (value, stage) => progress?.(.8 + value * .2, stage)).analysis;
++}
+diff --git a/src/core/chart.ts b/src/core/chart.ts
+index 009cc9b..f473306 100644
+--- a/src/core/chart.ts
++++ b/src/core/chart.ts
+@@ -1,3 +1,5 @@
++import { rationalNoteTime, rationalSingleFingerEvents } from './rational-application';
++import { selectRationalOnsets } from './rational-selection';
+ import type { Analysis, Chart, Difficulty, Note, NoteType } from '../types';
+ import { reusePhraseTemplates } from './phrases';
+ import { fingerReleaseTime } from './chart-constraints';
+@@ -33,11 +35,16 @@ export function generateChart(analysis: Analysis, difficulty: Difficulty, bpmOve
+       events = annotateSignalEvents({ ...analysis, rhythm: reference, pulse: { ...analysis.pulse, onsets: raw } }).pulse!.onsets;
+     }
+   }
+-  const sourceOnsets = events.filter(onset => !onset.role || onset.role === 'beat' || (config.max >= 2 && onset.role === 'half') || (config.max >= 3 && onset.role === 'quarter') || config.max === 4);
++  if (analysis.rational && bpmOverride === undefined && config.max === 1) events = rationalSingleFingerEvents(events, analysis.rational, config.gap);
++  const sourceOnsets = events.filter(onset => !onset.role || onset.role === 'beat' || (config.max >= 2 && (onset.role === 'half' || onset.role === 'third')) || (config.max >= 3 && onset.role === 'quarter') || config.max === 4);
+   const strengthSorted = sourceOnsets.map(x => x.strength).sort((a, b) => a - b);
+   const threshold = Math.min(config.threshold, (strengthSorted[Math.floor(strengthSorted.length * 0.75)] || config.threshold) * 0.55);
+-  const noteTime = (onset: Analysis['onsets'][number]) => onset.role || onset.boundary ? onset.time : bpmOverride !== undefined || (analysis.rhythm?.confidence ?? 1) >= 0.45 ? snapToBeat(onset.time, beats, bpm) : onset.time;
+-  const selected = selectMusicalOnsets(sourceOnsets.filter(onset => onset.time <= analysis.duration - 0.18), config.gap, threshold, noteTime);
++  const legacyNoteTime = (onset: Analysis['onsets'][number]) => onset.role || onset.boundary ? onset.time : bpmOverride !== undefined || (analysis.rhythm?.confidence ?? 1) >= 0.45 ? snapToBeat(onset.time, beats, bpm) : onset.time;
++  const noteTime = (onset: Analysis['onsets'][number]) => rationalNoteTime(onset, analysis.rational, bpmOverride, legacyNoteTime);
++  const eligible = sourceOnsets.filter(onset => onset.time <= analysis.duration - 0.18);
++  const selected = analysis.rational && bpmOverride === undefined
++    ? selectRationalOnsets(eligible, config.gap, threshold, noteTime, analysis.rational)
++    : selectMusicalOnsets(eligible, config.gap, threshold, noteTime);
+   // Motif progression and repetition compare the same retained musical layer,
+   // rather than letting rejected ornaments change every subsequent lane.
+   const musicalAnalysis = { ...analysis, onsets: selected };
+diff --git a/src/core/conditional-content.ts b/src/core/conditional-content.ts
+new file mode 100644
+index 0000000..334d561
+--- /dev/null
++++ b/src/core/conditional-content.ts
+@@ -0,0 +1,199 @@
++/** Candidate-conditioned content arithmetic only. No FFT, audio, I/O, search or GT. */
++export const CONTENT_DIMENSIONS = 12;
++export const CONTENT_SOURCE_HALF_WINDOW = 2048;
++export const MAX_QUERY_CELL_TRIALS = 4096;
++
++export type FrameReason = 'valid' | 'invalid-vector' | 'zero-vector' | 'incomplete-source-window';
++const REASONS: readonly FrameReason[] = ['valid', 'invalid-vector', 'zero-vector', 'incomplete-source-window'];
++
++export interface ConditionalContentInput {
++  readonly chroma: readonly (readonly number[])[];
++  readonly step: number;
++  readonly duration: number;
++  readonly sampleRate: number;
++}
++export interface ConditionalPhase {
++  readonly period: number;
++  readonly anchor: number;
++  readonly from: number;
++  readonly to: number;
++}
++export interface BuildWork {
++  readonly frames: number;
++  readonly validFrames: number;
++  readonly invalidVectors: number;
++  readonly zeroVectors: number;
++  readonly incompleteWindows: number;
++  readonly normEvaluations: number;
++  readonly prefixComponentsStored: number;
++  readonly normalizedComponents: number;
++  readonly typedArrays: 3;
++  readonly typedBytes: number;
++}
++export interface QuarterDescription {
++  readonly from: number;
++  readonly to: number;
++  readonly firstFrame: number;
++  readonly endFrameExclusive: number;
++  readonly validFrames: number;
++  readonly mean: readonly number[] | null;
++}
++export interface ContentCell {
++  readonly k: number;
++  readonly boundary: number;
++  readonly quarters: readonly QuarterDescription[];
++  readonly valid: boolean;
++  readonly reason: 'available' | 'empty-quarter';
++  readonly dOn: number | null;
++  readonly dOff: number | null;
++  readonly difference: number | null;
++}
++export interface QueryWork {
++  candidateCellTrials: number;
++  completeCells: number;
++  validCells: number;
++  unavailableCells: number;
++  lowerBoundQueries: number;
++  binaryComparisons: number;
++  meanComponents: number;
++  squaredDifferenceComponents: number;
++}
++export interface ConditionalContentResult {
++  readonly phase: ConditionalPhase;
++  readonly cells: readonly ContentCell[];
++  readonly score: number | null;
++  readonly rawScore: number | null;
++  readonly rangeClamped: boolean;
++  readonly onSum: number;
++  readonly offSum: number;
++  readonly differenceSum: number;
++  readonly reason: 'available' | 'no-complete-cell' | 'no-valid-cell';
++  readonly work: QueryWork;
++}
++
++/** Prefix storage is an immutable snapshot. Caller vectors are never retained. */
++export class ConditionalContentIndex {
++  readonly frameCount: number;
++  readonly step: number;
++  readonly duration: number;
++  readonly sampleRate: number;
++  readonly buildWork: BuildWork;
++  #prefix: Float64Array;
++  #counts: Uint32Array;
++  #reasons: Uint8Array;
++
++  constructor(input: ConditionalContentInput) {
++    if (!input || !Array.isArray(input.chroma) || ![input.step, input.duration, input.sampleRate].every(Number.isFinite)
++      || input.step <= 0 || input.duration <= 0 || input.sampleRate <= 0) throw Error('Invalid content timeline');
++    const count = input.chroma.length, prefixLength = (count + 1) * CONTENT_DIMENSIONS;
++    if (!Number.isSafeInteger(prefixLength) || count > 0xffffffff || (count > 0 && !Number.isFinite((count - 1) * input.step)))
++      throw Error('Content prefix size or frame times are not representable');
++    const half = CONTENT_SOURCE_HALF_WINDOW / input.sampleRate;
++    if (!Number.isFinite(half) || half <= 0) throw Error('Content source window is not representable');
++    this.frameCount = count; this.step = input.step; this.duration = input.duration; this.sampleRate = input.sampleRate;
++    this.#prefix = new Float64Array(prefixLength);
++    this.#counts = new Uint32Array(count + 1);
++    this.#reasons = new Uint8Array(count);
++    let validFrames = 0, invalidVectors = 0, zeroVectors = 0, incompleteWindows = 0, normEvaluations = 0;
++    for (let i = 0; i < count; i++) {
++      const before = i * CONTENT_DIMENSIONS, after = (i + 1) * CONTENT_DIMENSIONS;
++      for (let pitch = 0; pitch < CONTENT_DIMENSIONS; pitch++) this.#prefix[after + pitch] = this.#prefix[before + pitch];
++      this.#counts[i + 1] = this.#counts[i];
++      const row = input.chroma[i];
++      if (!Array.isArray(row) || row.length !== CONTENT_DIMENSIONS || !row.every(value => Number.isFinite(value) && value >= 0)) {
++        this.#reasons[i] = 1; invalidVectors++; continue;
++      }
++      normEvaluations++;
++      const norm = Math.hypot(...row);
++      if (!Number.isFinite(norm)) { this.#reasons[i] = 1; invalidVectors++; continue; }
++      if (!(norm > 0)) { this.#reasons[i] = 2; zeroVectors++; continue; }
++      const time = i * input.step;
++      if (time - half < 0 || time + half > input.duration) { this.#reasons[i] = 3; incompleteWindows++; continue; }
++      validFrames++; this.#counts[i + 1]++;
++      for (let pitch = 0; pitch < CONTENT_DIMENSIONS; pitch++) this.#prefix[after + pitch] += row[pitch] / norm;
++    }
++    this.buildWork = Object.freeze({ frames: count, validFrames, invalidVectors, zeroVectors, incompleteWindows,
++      normEvaluations, prefixComponentsStored: count * CONTENT_DIMENSIONS, normalizedComponents: validFrames * CONTENT_DIMENSIONS,
++      typedArrays: 3, typedBytes: this.#prefix.byteLength + this.#counts.byteLength + this.#reasons.byteLength });
++    Object.freeze(this);
++  }
++
++  frameState(index: number): { index: number; time: number; valid: boolean; reason: FrameReason } {
++    if (!Number.isSafeInteger(index) || index < 0 || index >= this.frameCount) throw Error('Invalid content frame index');
++    return { index, time: index * this.step, valid: this.#reasons[index] === 0, reason: REASONS[this.#reasons[index]] };
++  }
++
++  #lowerBound(time: number, work: QueryWork): number {
++    work.lowerBoundQueries++;
++    let low = 0, high = this.frameCount;
++    while (low < high) {
++      const middle = low + Math.floor((high - low) / 2); work.binaryComparisons++;
++      if (middle * this.step < time) low = middle + 1; else high = middle;
++    }
++    return low;
++  }
++
++  describe(phase: ConditionalPhase): ConditionalContentResult {
++    if (!phase || ![phase.period, phase.anchor, phase.from, phase.to].every(Number.isFinite)
++      || phase.period <= 0 || phase.from < 0 || phase.to < phase.from || phase.to > this.duration)
++      throw Error('Invalid fixed content phase domain');
++    const q = phase.period / 4;
++    if (!(q > 0) || !Number.isFinite(3 * q)) throw Error('Content quarter is not representable');
++    const lowRatio = (phase.from + q - phase.anchor) / phase.period;
++    const highRatio = (phase.to - 3 * q - phase.anchor) / phase.period;
++    const first = Math.floor(lowRatio) - 1, last = Math.ceil(highRatio) + 1;
++    if (![lowRatio, highRatio].every(Number.isFinite) || !Number.isSafeInteger(first) || !Number.isSafeInteger(last)
++      || Math.abs(first) > Number.MAX_SAFE_INTEGER - 2 || Math.abs(last) > Number.MAX_SAFE_INTEGER - 2)
++      throw Error('Content lattice ordinal is not safely representable');
++    if (last - first + 1 > MAX_QUERY_CELL_TRIALS) throw Error('Content phase exceeds explicit 4096-cell query budget');
++    const work: QueryWork = { candidateCellTrials: 0, completeCells: 0, validCells: 0, unavailableCells: 0,
++      lowerBoundQueries: 0, binaryComparisons: 0, meanComponents: 0, squaredDifferenceComponents: 0 };
++    const cells: ContentCell[] = [];
++    let onSum = 0, offSum = 0, differenceSum = 0;
++    for (let k = first; k <= last; k++) {
++      work.candidateCellTrials++;
++      const b = phase.anchor + k * phase.period;
++      const bounds = [b - q, b, b + q, b + 2 * q, b + 3 * q];
++      if (!bounds.every(Number.isFinite)) throw Error('Content cell boundaries are not finite');
++      if (bounds[0] < phase.from || bounds[4] > phase.to || bounds[0] < 0 || bounds[4] > this.duration) continue;
++      if (!bounds.every((value, i) => i === 0 || value > bounds[i - 1])) throw Error('Distinct content quarter boundaries are not representable');
++      work.completeCells++;
++      const indices = bounds.map(value => this.#lowerBound(value, work));
++      const quarters: QuarterDescription[] = [];
++      for (let quarter = 0; quarter < 4; quarter++) {
++        const from = indices[quarter], to = indices[quarter + 1], valid = this.#counts[to] - this.#counts[from];
++        const mean = valid ? Array<number>(CONTENT_DIMENSIONS) : null;
++        if (mean) for (let pitch = 0; pitch < CONTENT_DIMENSIONS; pitch++) {
++          mean[pitch] = (this.#prefix[to * CONTENT_DIMENSIONS + pitch] - this.#prefix[from * CONTENT_DIMENSIONS + pitch]) / valid;
++          work.meanComponents++;
++        }
++        quarters.push({ from: bounds[quarter], to: bounds[quarter + 1], firstFrame: from, endFrameExclusive: to, validFrames: valid, mean });
++      }
++      if (quarters.some(quarter => quarter.mean === null)) {
++        work.unavailableCells++; cells.push({ k, boundary: b, quarters, valid: false, reason: 'empty-quarter', dOn: null, dOff: null, difference: null }); continue;
++      }
++      let dOn = 0, dOff = 0;
++      for (let pitch = 0; pitch < CONTENT_DIMENSIONS; pitch++) {
++        const on = quarters[0].mean![pitch] - quarters[1].mean![pitch];
++        const off = quarters[2].mean![pitch] - quarters[3].mean![pitch];
++        dOn += .5 * on * on; dOff += .5 * off * off; work.squaredDifferenceComponents += 2;
++      }
++      if (!Number.isFinite(dOn) || !Number.isFinite(dOff)) throw Error('Content distance is not finite');
++      const difference = dOn - dOff;
++      onSum += dOn; offSum += dOff; differenceSum += difference; work.validCells++;
++      cells.push({ k, boundary: b, quarters, valid: true, reason: 'available', dOn, dOff, difference });
++    }
++    const rawScore = work.validCells ? differenceSum / work.validCells : null;
++    if (rawScore !== null && !Number.isFinite(rawScore)) throw Error('Content score is not finite');
++    // The exact unit-vector mean geometry bounds S. Preserve any floating overshoot.
++    const score = rawScore === null ? null : Math.max(-1, Math.min(1, rawScore));
++    return { phase: { ...phase }, cells, score, rawScore, rangeClamped: score !== rawScore, onSum, offSum, differenceSum,
++      reason: work.validCells ? 'available' : work.completeCells ? 'no-valid-cell' : 'no-complete-cell', work };
++  }
++}
++
++export function buildConditionalContentIndex(input: ConditionalContentInput): ConditionalContentIndex { return new ConditionalContentIndex(input); }
++export function evaluateConditionalContent(index: ConditionalContentIndex, phase: ConditionalPhase): ConditionalContentResult {
++  if (!(index instanceof ConditionalContentIndex)) throw Error('Conditional content index required');
++  return index.describe(phase);
++}
+diff --git a/src/core/metrical-matching.ts b/src/core/metrical-matching.ts
+new file mode 100644
+index 0000000..850af43
+--- /dev/null
++++ b/src/core/metrical-matching.ts
+@@ -0,0 +1,296 @@
++/** Sparse monotone assignment of existing physical events to fixed targets.
++ * No role carried by an input event is read. Empty path is node -1.
++ * Rewards are engineering scores, not probabilities or calibrated likelihoods.
++ */
++export type MatchRole = 'primary' | 'half' | 'third' | 'quarter';
++export type MatchDenominator = 1 | 2 | 3 | 4;
++
++export interface MatchEvent {
++  readonly id: number;
++  readonly time: number;
++  readonly strength: number;
++  /** Already computed from the EVENT owner's weight/salience mass. */
++  readonly explanationWeight: number;
++}
++
++export interface MatchTarget {
++  readonly time: number;
++  readonly tolerance: number;
++  readonly denominator: MatchDenominator;
++  readonly role: MatchRole;
++  readonly ordinal: number;
++  readonly fraction: number;
++}
++
++export interface MatchNode {
++  readonly eventId: number;
++  /** Index in this call's original local event subset, not its global ID. */
++  readonly eventIndex: number;
++  readonly targetIndex: number;
++  readonly previous: number;
++  readonly reward: number;
++  readonly edgeReward: number;
++  readonly compatibility: number;
++  readonly eventTime: number;
++  readonly targetTime: number;
++  readonly tolerance: number;
++  readonly denominator: MatchDenominator;
++  readonly role: MatchRole;
++  readonly ordinal: number;
++  readonly fraction: number;
++}
++
++export interface FrontierEntry {
++  readonly endId: number;
++  readonly reward: number;
++  readonly node: number;
++}
++
++export interface MatchedPair {
++  readonly node: number;
++  readonly eventId: number;
++  readonly eventIndex: number;
++  readonly targetIndex: number;
++  readonly eventTime: number;
++  readonly targetTime: number;
++  readonly tolerance: number;
++  readonly denominator: MatchDenominator;
++  readonly role: MatchRole;
++  readonly ordinal: number;
++  readonly fraction: number;
++  readonly compatibility: number;
++  readonly edgeReward: number;
++}
++
++export interface MatchingWork {
++  inputEvents: number;
++  inputTargets: number;
++  eventValidationReads: number;
++  targetValidationReads: number;
++  firstAllowedIndex: number;
++  allowedEvents: number;
++  binarySearchComparisons: number;
++  legalEdges: number;
++  positiveRewardEdges: number;
++  nonPositiveEdgesSkipped: number;
++  sameEndDominatedCandidates: number;
++  nodesCreated: number;
++  fenwickQueries: number;
++  fenwickQueryVisits: number;
++  fenwickUpdateCalls: number;
++  fenwickUpdateVisits: number;
++  maximumTargetLegalEdges: number;
++  maximumTargetCreatedNodes: number;
++  frontierEndingCandidates: number;
++  frontierPrunedEndings: number;
++  frontierEntries: number;
++  /** Two Int32 scratch arrays: (allowedEvents+1) plus allowedEvents cells. */
++  peakExplicitTypedBytes: number;
++  /** Returned nodes/frontier/backtrace are plain records, not typed arrays. */
++  returnedTypedBytes: number;
++  materializeCalls: number;
++  backtraceNodes: number;
++}
++
++export interface MatchResult {
++  /** Ascending endId and strictly increasing reward, including empty path. */
++  readonly frontier: readonly FrontierEntry[];
++  readonly nodes: readonly MatchNode[];
++  readonly work: MatchingWork;
++  /** Backtrace only; no matching, edge evaluation or solver rerun. */
++  readonly materialize: (node: number) => MatchedPair[];
++}
++
++const MAX_NODE = 0x7fff_fffe;
++
++function targetMetadataConsistent(target: MatchTarget): boolean {
++  switch (target.denominator) {
++    case 1: return target.role === 'primary' && target.fraction === 0;
++    case 2: return target.role === 'half' && target.fraction === .5;
++    case 3: return target.role === 'third' && (target.fraction === 1 / 3 || target.fraction === 2 / 3);
++    case 4: return target.role === 'quarter' && (target.fraction === .25 || target.fraction === .75);
++    default: return false;
++  }
++}
++
++// A separate factory deliberately captures only nodes/work, never scratch
++// Fenwick arrays or the caller's event/target arrays.
++function backtracer(nodes: readonly MatchNode[], work: MatchingWork): (node: number) => MatchedPair[] {
++  return (node: number): MatchedPair[] => {
++    work.materializeCalls++;
++    if (!Number.isSafeInteger(node) || node < -1 || node >= nodes.length)
++      throw Error('Matching backtrace node is outside the returned forest');
++    const result: MatchedPair[] = [];
++    while (node >= 0) {
++      const current = nodes[node];
++      work.backtraceNodes++;
++      result.push({ node, eventId: current.eventId, eventIndex: current.eventIndex,
++        targetIndex: current.targetIndex, eventTime: current.eventTime,
++        targetTime: current.targetTime, tolerance: current.tolerance,
++        denominator: current.denominator, role: current.role,
++        ordinal: current.ordinal, fraction: current.fraction,
++        compatibility: current.compatibility, edgeReward: current.edgeReward });
++      node = current.previous;
++    }
++    result.reverse();
++    return result;
++  };
++}
++
++/** Events have strictly increasing global IDs and nondecreasing times.
++ * Targets are in their fixed nondecreasing time/input order. The canonical
++ * Fenwick index is the event's position AFTER afterId, never its global ID.
++ */
++export function matchFrontier(events: readonly MatchEvent[], targets: readonly MatchTarget[],
++  afterId: number, primaryCoefficient: number): MatchResult {
++  if (!Array.isArray(events) || !Array.isArray(targets)) throw Error('Matching inputs must be arrays');
++  if (!Number.isSafeInteger(afterId) || afterId < -1) throw Error('Invalid global event cursor');
++  if (!Number.isFinite(primaryCoefficient) || primaryCoefficient < 0) throw Error('Invalid primary coefficient');
++  if (events.length > MAX_NODE) throw Error('Too many local physical events');
++  const work: MatchingWork = {
++    inputEvents: events.length, inputTargets: targets.length,
++    eventValidationReads: 0, targetValidationReads: 0,
++    firstAllowedIndex: 0, allowedEvents: 0, binarySearchComparisons: 0,
++    legalEdges: 0, positiveRewardEdges: 0, nonPositiveEdgesSkipped: 0,
++    sameEndDominatedCandidates: 0, nodesCreated: 0,
++    fenwickQueries: 0, fenwickQueryVisits: 0, fenwickUpdateCalls: 0,
++    fenwickUpdateVisits: 0, maximumTargetLegalEdges: 0,
++    maximumTargetCreatedNodes: 0, frontierEndingCandidates: 0,
++    frontierPrunedEndings: 0, frontierEntries: 0,
++    peakExplicitTypedBytes: 0, returnedTypedBytes: 0,
++    materializeCalls: 0, backtraceNodes: 0,
++  };
++  let previousId = -1, previousTime = -Infinity;
++  for (const event of events) {
++    work.eventValidationReads++;
++    if (!event || !Number.isSafeInteger(event.id) || event.id < 0 || event.id <= previousId
++      || !Number.isFinite(event.time) || event.time < 0 || event.time < previousTime
++      || !Number.isFinite(event.strength) || event.strength < 0 || event.strength > 1
++      || !Number.isFinite(event.explanationWeight) || event.explanationWeight < 0)
++      throw Error('Invalid or unordered physical matching event');
++    previousId = event.id; previousTime = event.time;
++  }
++  previousTime = -Infinity;
++  for (const target of targets) {
++    work.targetValidationReads++;
++    if (!target || !Number.isFinite(target.time) || target.time < 0 || target.time < previousTime
++      || !Number.isFinite(target.tolerance) || target.tolerance <= 0
++      || !Number.isFinite(target.time - target.tolerance) || !Number.isFinite(target.time + target.tolerance)
++      || !targetMetadataConsistent(target)
++      || !Number.isSafeInteger(target.ordinal) || !Number.isFinite(target.fraction)
++      || target.fraction < 0 || target.fraction >= 1)
++      throw Error('Invalid or unordered fixed matching target');
++    previousTime = target.time;
++  }
++  let low = 0, high = events.length;
++  while (low < high) {
++    const middle = (low + high) >>> 1;
++    work.binarySearchComparisons++;
++    if (events[middle].id <= afterId) low = middle + 1;
++    else high = middle;
++  }
++  const first = low, count = events.length - first;
++  work.firstAllowedIndex = first; work.allowedEvents = count;
++  const fenwick = new Int32Array(count + 1).fill(-1);
++  const bestEnd = new Int32Array(count).fill(-1);
++  work.peakExplicitTypedBytes = fenwick.byteLength + bestEnd.byteLength;
++  const nodes: MatchNode[] = [];
++  const score = (node: number): number => node < 0 ? 0 : nodes[node].reward;
++  // Query traversal order is not event order. Resolve exact score ties by the
++  // earliest ending event, then the first created node, independent of tree shape.
++  const better = (a: number, b: number): boolean => {
++    if (a === b) return false;
++    const aScore = score(a), bScore = score(b);
++    if (aScore !== bScore) return aScore > bScore;
++    if (a < 0) return true;
++    if (b < 0) return false;
++    if (nodes[a].eventIndex !== nodes[b].eventIndex) return nodes[a].eventIndex < nodes[b].eventIndex;
++    return a < b;
++  };
++  const prefix = (lastAllowedPosition: number): number => {
++    work.fenwickQueries++;
++    let winner = -1;
++    for (let index = lastAllowedPosition + 1; index > 0; index -= index & -index) {
++      work.fenwickQueryVisits++;
++      if (better(fenwick[index], winner)) winner = fenwick[index];
++    }
++    return winner;
++  };
++  const update = (position: number, node: number): void => {
++    work.fenwickUpdateCalls++;
++    for (let index = position + 1; index <= count; index += index & -index) {
++      work.fenwickUpdateVisits++;
++      if (better(node, fenwick[index])) fenwick[index] = node;
++    }
++  };
++  for (let targetIndex = 0; targetIndex < targets.length; targetIndex++) {
++    const target = targets[targetIndex], startNode = nodes.length;
++    // Use the ORIGINAL closed subtraction predicate, not t +/- tolerance, so
++    // rounding near the boundary cannot exclude an otherwise legal edge.
++    low = first; high = events.length;
++    while (low < high) {
++      const middle = (low + high) >>> 1, time = events[middle].time;
++      work.binarySearchComparisons++;
++      if (time < target.time && Math.abs(time - target.time) > target.tolerance) low = middle + 1;
++      else high = middle;
++    }
++    const from = low;
++    high = events.length;
++    while (low < high) {
++      const middle = (low + high) >>> 1, time = events[middle].time;
++      work.binarySearchComparisons++;
++      if (time > target.time && Math.abs(time - target.time) > target.tolerance) high = middle;
++      else low = middle + 1;
++    }
++    const to = low;
++    work.maximumTargetLegalEdges = Math.max(work.maximumTargetLegalEdges, to - from);
++    for (let eventIndex = from; eventIndex < to; eventIndex++) {
++      const event = events[eventIndex], distance = Math.abs(event.time - target.time);
++      if (distance > target.tolerance) throw Error('Internal closed matching range is inconsistent');
++      work.legalEdges++;
++      const compatibility = .75 * (1 - distance / target.tolerance) + .25 * event.strength;
++      const complexity = 1 - 1 / target.denominator;
++      const edgeReward = (target.denominator === 1 ? primaryCoefficient * compatibility : 0)
++        + event.explanationWeight * (compatibility - complexity);
++      if (!Number.isFinite(compatibility) || !Number.isFinite(edgeReward)) throw Error('Nonfinite matching edge arithmetic');
++      // A nonpositive edge consumes a later cursor without improving reward;
++      // skipping this edge/target always retains a dominating prefix path.
++      if (!(edgeReward > 0)) { work.nonPositiveEdgesSkipped++; continue; }
++      work.positiveRewardEdges++;
++      const position = eventIndex - first, previous = prefix(position - 1);
++      const reward = score(previous) + edgeReward;
++      if (!Number.isFinite(reward)) throw Error('Nonfinite matching path arithmetic');
++      if (bestEnd[position] >= 0 && !(reward > nodes[bestEnd[position]].reward)) {
++        work.sameEndDominatedCandidates++;
++        continue;
++      }
++      if (nodes.length >= MAX_NODE) throw Error('Too many sparse matching nodes');
++      const node = nodes.length;
++      nodes.push(Object.freeze({ eventId: event.id, eventIndex, targetIndex, previous,
++        reward, edgeReward, compatibility, eventTime: event.time, targetTime: target.time,
++        tolerance: target.tolerance, denominator: target.denominator,
++        role: target.role, ordinal: target.ordinal, fraction: target.fraction }));
++      work.nodesCreated++;
++      bestEnd[position] = node;
++    }
++    work.maximumTargetCreatedNodes = Math.max(work.maximumTargetCreatedNodes, nodes.length - startNode);
++    // Crucial target-batched update: nodes created by this target were NOT
++    // queryable while any other edge of this same target was being evaluated.
++    for (let node = startNode; node < nodes.length; node++) update(nodes[node].eventIndex - first, node);
++  }
++  const frontier: FrontierEntry[] = [Object.freeze({ endId: afterId, reward: 0, node: -1 })];
++  let maximumReward = 0;
++  for (let position = 0; position < count; position++) {
++    const node = bestEnd[position];
++    if (node < 0) continue;
++    work.frontierEndingCandidates++;
++    if (nodes[node].reward > maximumReward) {
++      maximumReward = nodes[node].reward;
++      frontier.push(Object.freeze({ endId: nodes[node].eventId, reward: maximumReward, node }));
++    } else work.frontierPrunedEndings++;
++  }
++  work.frontierEntries = frontier.length;
++  const frozenNodes = Object.freeze(nodes);
++  return Object.freeze({ frontier: Object.freeze(frontier), nodes: frozenNodes,
++    work, materialize: backtracer(frozenNodes, work) });
++}
+diff --git a/src/core/phase-dp-types.ts b/src/core/phase-dp-types.ts
+index fc23de2..24f8388 100644
+--- a/src/core/phase-dp-types.ts
++++ b/src/core/phase-dp-types.ts
+@@ -4,7 +4,7 @@ export interface Onset {
+     band: number;
+     attack?: number;
+     boundary?: true;
+-    role?: 'beat' | 'half' | 'quarter' | 'free';
++    role?: 'beat' | 'half' | 'third' | 'quarter' | 'free';
+ }
+ export interface Rhythm {
+     beats: number[];
+diff --git a/src/core/rational-application.ts b/src/core/rational-application.ts
+new file mode 100644
+index 0000000..73165e7
+--- /dev/null
++++ b/src/core/rational-application.ts
+@@ -0,0 +1,202 @@
++import type { Analysis, Onset, Rhythm, RhythmSection } from '../types';
++import { buildConditionalContentIndex } from './conditional-content';
++import { trackRationalMetre, type PhysicalBundle, type PhysicalMember, type OriginalBlock } from './rational-metre';
++
++export type RationalRole = 'beat' | 'half' | 'third' | 'quarter' | 'free';
++export interface RationalOnset extends Omit<Onset, 'role'> { role?: RationalRole }
++export interface RationalMetadata {
++  version: 'RME1-Q';
++  primaryHeads: { time: number; targetTime: number; ordinal: number; chain: number; period: number }[];
++  roleEvidence: { time: number; denominator: 1 | 2 | 3 | 4; compatibility: number }[];
++  unknownIntervals: { from: number; to: number }[];
++  knownBlocks: number;
++  sourceFrames: number;
++  assignments: number;
++}
++export interface RationalAnalysis extends Omit<Analysis, 'pulse' | 'rhythm'> {
++  pulse?: { onsets: RationalOnset[]; sections: RhythmSection[] };
++  rhythm?: Rhythm & { method?: 'RME1-Q' };
++  rational?: RationalMetadata;
++}
++export interface RationalContext {
++  /** Mixed, low, mid, high ORIGINAL detector streams, before old role binding. */
++  readonly streams: readonly (readonly Onset[])[];
++  readonly blocks: readonly OriginalBlock[];
++  readonly sampleRate: number;
++}
++export interface BundlePreparation {
++  readonly events: readonly PhysicalBundle[];
++  readonly representatives: readonly Onset[];
++  readonly memberCount: number;
++  readonly boundaryMembersExcluded: number;
++}
++
++/** Exact-time grouping only. No nearby-time clustering, averaging or old roles. */
++export function prepareRationalBundles(streams: readonly (readonly Onset[])[], duration: number): BundlePreparation {
++  if (!Array.isArray(streams) || streams.length !== 4 || !Number.isFinite(duration) || duration <= 0)
++    throw Error('Four original physical streams and a finite duration are required');
++  const groups = new Map<number, { members: PhysicalMember[]; representative: Onset; representativeSource: number }>();
++  let memberCount = 0, boundaryMembersExcluded = 0;
++  streams.forEach((stream, sourceIndex) => {
++    if (!Array.isArray(stream)) throw Error('Physical stream must be an array');
++    let last = -Infinity;
++    stream.forEach((event, index) => {
++      if (!event || !Number.isFinite(event.time) || event.time < 0 || event.time >= duration || event.time < last
++        || !Number.isFinite(event.strength) || event.strength < 0 || !Number.isSafeInteger(event.band) || event.band < 0 || event.band > 2)
++        throw Error('Invalid original physical event');
++      last = event.time;
++      if (event.boundary) { boundaryMembersExcluded++; return; }
++      const member: PhysicalMember = { source: sourceIndex as 0 | 1 | 2 | 3, index, time: event.time, strength: event.strength };
++      const copy = { ...event }; delete copy.role;
++      const old = groups.get(event.time);
++      if (!old) groups.set(event.time, { members: [member], representative: copy, representativeSource: sourceIndex });
++      else {
++        old.members.push(member);
++        if (event.strength > old.representative.strength || event.strength === old.representative.strength && sourceIndex < old.representativeSource) {
++          old.representative = copy; old.representativeSource = sourceIndex;
++        }
++      }
++      memberCount++;
++    });
++  });
++  const representatives: Onset[] = [];
++  const events = [...groups.entries()].sort((a, b) => a[0] - b[0]).map(([time, group], id): PhysicalBundle => {
++    let sourceMask = 0, strength = 0;
++    for (const member of group.members) { sourceMask |= 1 << member.source; strength = Math.max(strength, Math.min(1, Math.max(0, member.strength))); }
++    representatives.push({ ...group.representative });
++    return { id, time, strength, sourceMask, members: group.members };
++  });
++  return { events, representatives, memberCount, boundaryMembersExcluded };
++}
++
++const roleOf = (denominator: number): RationalRole => denominator === 1 ? 'beat' : denominator === 2 ? 'half' : denominator === 3 ? 'third' : 'quarter';
++function tempoFrom(beats: readonly number[]): { time: number; bpm: number }[] {
++  return beats.slice(1).map((time, i) => {
++    const from = Math.max(0, i - 1), to = Math.min(beats.length - 1, i + 2);
++    return { time, bpm: Math.round(60 * (to - from) / (beats[to] - beats[from]) * 10) / 10 };
++  });
++}
++
++/** Keep the chosen lattice only between actual matched primary TARGETS.
++ * Event residuals never clip a legal endpoint. Interior unmatched targets remain
++ * geometry, not new physical heads. Each connected known chain calls this once.
++ */
++export function rationalChainGeometry(targetTimes: readonly number[], matchedTargetTimes: readonly number[], duration: number): number[] {
++  if (!matchedTargetTimes.length) return [];
++  let first = Infinity, last = -Infinity;
++  for (const time of matchedTargetTimes) {
++    if (!Number.isFinite(time) || time < 0 || time >= duration) throw Error('Matched primary target is outside the audio domain');
++    first = Math.min(first, time); last = Math.max(last, time);
++  }
++  const geometry = targetTimes.filter(time => time >= first && time <= last && time >= 0 && time < duration);
++  const retained = new Set(geometry);
++  if (matchedTargetTimes.some(time => !retained.has(time))) throw Error('Selected primary target is missing from its chain geometry');
++  return geometry;
++}
++
++/** Automatic RME onsets are original physical events, including unassigned
++ * unknown-region events and known-target matches whose event lies in an unknown
++ * halo. None is retimed by the new global confidence/grid. Without RME metadata,
++ * or with an explicit manual BPM, delegate to the unchanged legacy timing path.
++ */
++export function rationalNoteTime(onset: RationalOnset, metadata: RationalMetadata | undefined, bpmOverride: number | undefined,
++  legacyTiming: (onset: RationalOnset) => number): number {
++  return metadata !== undefined && bpmOverride === undefined ? onset.time : legacyTiming(onset);
++}
++
++/** Apply exactly one joint explanation AFTER the unchanged baseline canonical pass.
++ * The old binder must not run again on this result. All heads retain original times.
++ */
++export function applyRationalAnalysis(baseline: Analysis, context: RationalContext,
++  progress?: (fraction: number, stage: string) => void): {
++    analysis: RationalAnalysis;
++    explanation: ReturnType<typeof trackRationalMetre>;
++    bundles: BundlePreparation;
++  } {
++  if (!Number.isFinite(context.sampleRate) || context.sampleRate <= 0) throw Error('Invalid original sample rate');
++  const bundles = prepareRationalBundles(context.streams, baseline.duration);
++  const content = buildConditionalContentIndex({ chroma: baseline.chroma ?? [], step: baseline.chromaStep ?? .05,
++    duration: baseline.duration, sampleRate: context.sampleRate });
++  const explanation = trackRationalMetre({ duration: baseline.duration, events: bundles.events, blocks: context.blocks, content,
++    progress: (block, total) => progress?.((block + 1) / Math.max(1, total), '正在联合选择节拍层级与音符角色') });
++  const known = explanation.selectedStates.filter(state => !state.unknown);
++  // A wholly unavailable original candidate lattice preserves the exact old
++  // object, without an RME marker. Mixed unknown input instead uses the explicit
++  // physical-time / finite-utility bridge, not a partial legacy chart fallback.
++  if (!known.length) return { analysis: baseline, explanation, bundles };
++  const primary = explanation.assignments.filter(assignment => assignment.denominator === 1);
++  if (primary.length < 2) throw Error('联合节拍选择没有建立足够的主拍起点，请更换节奏更清楚的音乐。');
++  const unknown = explanation.unknownIntervals.map(interval => ({ from: interval.from, to: interval.to }));
++  const isUnknown = (time: number): boolean => unknown.some(interval => time >= interval.from && time < interval.to);
++  const pulse = baseline.pulse ?? { onsets: baseline.onsets, sections: [] };
++  const byTime = new Map<number, RationalOnset>();
++  for (const event of pulse.onsets) {
++    const copy: RationalOnset = { ...event };
++    if (!event.boundary && !isUnknown(event.time)) copy.role = 'free';
++    byTime.set(event.time, copy);
++  }
++  for (const assignment of explanation.assignments) {
++    const event = bundles.representatives[assignment.eventId];
++    if (!event || event.time !== assignment.eventTime) throw Error('Joint assignment lost its original physical representative');
++    byTime.set(event.time, { ...event, role: roleOf(assignment.denominator) });
++  }
++  const regular = [...byTime.values()].filter(event => !event.boundary);
++  for (const event of byTime.values()) if (event.boundary && regular.some(other => Math.abs(other.time - event.time) <= .085)) byTime.delete(event.time);
++  const onsets = [...byTime.values()].sort((a, b) => a.time - b.time);
++
++  // Geometry uses selected primary lattice targets. Only matched IDs produce heads.
++  // Exact matched TARGET bounds retain legal 80--90ms residual endpoint matches.
++  const geometry: number[] = [];
++  const primaryHeads: RationalMetadata['primaryHeads'] = [];
++  let chain = -1, ordinal = 0, wasUnknown = true;
++  let current: typeof explanation.selectedStates[number][] = [];
++  const finishChain = () => {
++    if (!current.length) return;
++    const actual = current.flatMap(state => state.assignments.filter(assignment => assignment.denominator === 1));
++    geometry.push(...rationalChainGeometry(current.flatMap(state => state.primaryTargets.map(target => target.time)),
++      actual.map(assignment => assignment.targetTime), baseline.duration));
++    current = [];
++  };
++  for (const state of explanation.selectedStates) {
++    if (state.unknown) { finishChain(); wasUnknown = true; continue; }
++    if (wasUnknown) { chain++; ordinal = 0; wasUnknown = false; }
++    current.push(state);
++    const matched = new Map(state.assignments.filter(assignment => assignment.denominator === 1).map(assignment => [assignment.targetTime, assignment]));
++    for (const target of state.primaryTargets) {
++      const assignment = matched.get(target.time);
++      if (assignment) primaryHeads.push({ time: assignment.eventTime, targetTime: target.time, ordinal, chain, period: assignment.period });
++      ordinal++;
++    }
++  }
++  finishChain();
++  if (primaryHeads.length !== primary.length) throw Error('Selected primary identities and complete target ordinals differ');
++  for (const time of baseline.rhythm?.beats ?? []) if (isUnknown(time)) geometry.push(time);
++  geometry.sort((a, b) => a - b);
++  const beats = geometry.filter((time, i) => i === 0 || time > geometry[i - 1]);
++  if (beats.length < 2) throw Error('联合节拍选择没有形成可用的连续参考。');
++  const totalPrimaryTargets = known.reduce((sum, state) => sum + state.primaryTargets.length, 0);
++  const confidence = primary.reduce((sum, assignment) => sum + assignment.compatibility, 0) / Math.max(1, totalPrimaryTargets);
++  const periods = known.map(state => ({ period: state.period!, weight: state.ownedTo - state.ownedFrom })).sort((a, b) => a.period - b.period);
++  const halfWeight = periods.reduce((sum, value) => sum + value.weight, 0) / 2;
++  let accumulated = 0, dominantPeriod = periods[0].period;
++  for (const value of periods) { accumulated += value.weight; dominantPeriod = value.period; if (accumulated >= halfWeight) break; }
++  const metadata: RationalMetadata = { version: 'RME1-Q', primaryHeads,
++    roleEvidence: explanation.assignments.map(assignment => ({ time: assignment.eventTime, denominator: assignment.denominator, compatibility: assignment.compatibility })),
++    unknownIntervals: unknown, knownBlocks: known.length, sourceFrames: bundles.events.length, assignments: explanation.assignments.length };
++  const analysis: RationalAnalysis = { ...baseline, bpm: Math.round(60 / dominantPeriod * 10) / 10, confidence: Math.max(0, Math.min(1, confidence)),
++    rhythm: { beats, tempo: tempoFrom(beats), confidence: Math.max(0, Math.min(1, confidence)), downbeats: [], meterConfidence: 0, method: 'RME1-Q' },
++    pulse: { ...pulse, onsets }, rational: metadata };
++  return { analysis, explanation, bundles };
++}
++
++/** Stable single-finger thinning is based on the complete target ordinal,
++ * including unmatched targets. It never alternates phase according to salience.
++ */
++export function rationalSingleFingerEvents(events: readonly RationalOnset[], metadata: RationalMetadata, gap: number): RationalOnset[] {
++  const heads = new Map(metadata.primaryHeads.map(head => [head.time, head]));
++  return events.filter(event => {
++    if (event.role !== 'beat') return true;
++    const head = heads.get(event.time);
++    return !head || head.ordinal % Math.max(1, Math.ceil(gap / head.period)) === 0;
++  });
++}
+diff --git a/src/core/rational-metre.ts b/src/core/rational-metre.ts
+new file mode 100644
+index 0000000..859f115
+--- /dev/null
++++ b/src/core/rational-metre.ts
+@@ -0,0 +1,584 @@
++import { evaluateConditionalContent, ConditionalContentIndex, type ConditionalContentResult } from './conditional-content';
++import { matchFrontier, type MatchEvent, type MatchTarget, type MatchRole, type MatchDenominator, type MatchResult, type MatchNode } from './metrical-matching';
++
++export const OWNED_SECONDS = 2;
++export const MAX_PERIOD_HYPOTHESES = 22;
++export const MAX_PHASES_PER_HYPOTHESIS = 4;
++export const MAX_BASIC_STATES = 88;
++export const BEAM_LIMIT = 104;
++const EPS = 1e-9;
++
++export interface PhysicalMember {
++  readonly source: 0 | 1 | 2 | 3;
++  readonly index: number;
++  readonly time: number;
++  readonly strength: number;
++  readonly boundary?: boolean;
++}
++export interface PhysicalBundle {
++  readonly id: number;
++  readonly time: number;
++  readonly strength: number;
++  readonly sourceMask: number;
++  readonly members: readonly PhysicalMember[];
++}
++export interface OriginalPhase {
++  readonly anchor: number | null;
++  readonly meanResidual: number | null;
++  readonly coverage: number | null;
++  readonly supported: boolean;
++  readonly unknown: boolean;
++}
++export interface OriginalHypothesis {
++  readonly period: number | null;
++  readonly phases: readonly OriginalPhase[];
++}
++export interface OriginalBlock {
++  readonly time: number;
++  readonly from: number;
++  readonly to: number;
++  readonly hypotheses: readonly OriginalHypothesis[];
++  /** Retained caller metadata only; the consumer never filters to this value. */
++  readonly preferredPeriod?: number | null;
++}
++export interface RationalMetreInput {
++  readonly duration: number;
++  readonly events: readonly PhysicalBundle[];
++  readonly blocks: readonly OriginalBlock[];
++  readonly content: ConditionalContentIndex;
++  readonly progress?: (blockIndex: number, totalBlocks: number) => void;
++}
++export interface PrimaryTarget { readonly time: number; readonly ordinal: number; readonly fraction: 0; readonly denominator: 1 }
++export interface ContentSummary {
++  readonly score: number | null;
++  readonly rawScore: number | null;
++  readonly loss: number;
++  readonly reason: ConditionalContentResult['reason'];
++  readonly cells: number;
++  readonly validCells: number;
++  readonly work: Readonly<Record<string, number>>;
++}
++export interface CandidateDiagnostic {
++  readonly candidateId: string;
++  readonly hypothesisIndex: number;
++  readonly phaseIndex: number;
++  readonly period: number | null;
++  readonly anchor: number | null;
++  readonly originalCoverage: number | null;
++  readonly originalSupported: boolean;
++  readonly originalUnknown: boolean;
++  readonly eligible: boolean;
++  readonly reason: string;
++  targets?: number;
++  primaryTargets?: number;
++  primaryCoefficient?: number;
++  localConstant?: number;
++  content?: ContentSummary;
++}
++export interface BlockDiagnostic {
++  readonly blockIndex: number;
++  readonly inputBlockIndex: number | null;
++  readonly time: number;
++  readonly ownedFrom: number;
++  readonly ownedTo: number;
++  readonly weight: number;
++  readonly eventMass: number;
++  reason: string;
++  readonly candidates: CandidateDiagnostic[];
++  retained: number;
++  proposed: number;
++  pruned: number;
++  basicRepresentatives: number;
++  localCacheEntries: number;
++}
++export interface MatchPathProof {
++  readonly cacheId: number;
++  readonly blockIndex: number;
++  readonly candidateId: string;
++  readonly canonicalAfterId: number;
++  readonly node: number;
++  readonly reward: number;
++  /** Actual records copied from this call's returned forest, with original IDs. */
++  readonly nodes: readonly { readonly node: number; readonly record: MatchNode }[];
++}
++export interface JointAssignment {
++  readonly eventId: number;
++  readonly eventTime: number;
++  readonly strength: number;
++  readonly blockIndex: number;
++  readonly ownedFrom: number;
++  readonly ownedTo: number;
++  readonly candidateId: string;
++  readonly hypothesisIndex: number;
++  readonly phaseIndex: number;
++  readonly period: number;
++  readonly anchor: number;
++  readonly localTargetIndex: number;
++  readonly targetTime: number;
++  readonly tolerance: number;
++  readonly ordinal: number;
++  readonly fraction: number;
++  readonly denominator: MatchDenominator;
++  readonly role: MatchRole;
++  readonly matchCacheId: number;
++  readonly matchNode: number;
++  readonly compatibility: number;
++  readonly edgeReward: number;
++}
++export interface SelectedState {
++  readonly graphNode: number;
++  readonly blockIndex: number;
++  readonly ownedFrom: number;
++  readonly ownedTo: number;
++  readonly weight: number;
++  readonly unknown: boolean;
++  readonly reason: string;
++  readonly candidateId: string | null;
++  readonly hypothesisIndex: number | null;
++  readonly phaseIndex: number | null;
++  readonly period: number | null;
++  readonly anchor: number | null;
++  readonly primaryTargets: readonly PrimaryTarget[];
++  readonly assignments: readonly JointAssignment[];
++  readonly endingCursor: number;
++  readonly totalLoss: number;
++  readonly predecessor: number;
++  readonly localConstant: number;
++  readonly transitionCost: number;
++  readonly rho: number | null;
++  readonly match: { readonly cacheId: number; readonly node: number; readonly reward: number; readonly canonicalAfterId: number; readonly callerAfterId: number } | null;
++  readonly content: ContentSummary | null;
++}
++export interface RationalMetreWork {
++  physicalBundles: number;
++  physicalMembers: number;
++  sourceBlocks: number;
++  ownedBlocks: number;
++  contextOnlyBlocks: number;
++  originalHypotheses: number;
++  originalPhases: number;
++  eligibleBasicStates: number;
++  contentQueries: number;
++  targetTrials: number;
++  targets: number;
++  primaryTargets: number;
++  eventBinaryComparisons: number;
++  localEventCopies: number;
++  matchingCalls: number;
++  matchingCacheHits: number;
++  matchingCacheEntries: number;
++  matchingReturnedNodes: number;
++  matchingReturnedFrontierEntries: number;
++  frontierExpansions: number;
++  emptyCursorRebases: number;
++  transitionRequests: number;
++  transitionEvaluations: number;
++  transitionCacheHits: number;
++  rhoTrials: number;
++  graphProposals: number;
++  graphSameCursorPruned: number;
++  graphDominatedPruned: number;
++  graphBeamPruned: number;
++  graphRetainedNodes: number;
++  unknownRetainedNodes: number;
++  materializeCalls: number;
++  materializedPairs: number;
++  pathProofNodesStored: number;
++  peakLocalCacheEntries: number;
++  peakLocalMatcherNodes: number;
++  peakFrontierProposals: number;
++  peakRetainedBeam: number;
++  primaryTargetRecordsStored: number;
++  /** Unique immutable JointAssignment objects allocated, not graph references. */
++  assignmentRecordsStored: number;
++  assignmentArraysAllocated: number;
++  assignmentArrayReferences: number;
++  assignmentRecordReferences: number;
++  tieComparisons: number;
++  tieIndexArraysAllocated: number;
++  tieIndexEntriesAllocated: number;
++  peakTieIndexEntries: number;
++  tieAncestorReads: number;
++  tieNodePairComparisons: number;
++  explicitOwnedTypedArrays: number;
++  explicitOwnedTypedBytes: number;
++  contentWork: Record<string, number>;
++  matcherWork: Record<string, number>;
++}
++export interface RationalMetreResult {
++  readonly version: 'RME1-Q';
++  readonly totalLoss: number;
++  readonly selectedStates: readonly SelectedState[];
++  readonly assignments: readonly JointAssignment[];
++  readonly primaryIds: readonly number[];
++  readonly primaryEventTimes: readonly number[];
++  /** Only targets with actual primary assignments; no invented playable heads. */
++  readonly chosenPrimaryTargetTimes: readonly number[];
++  readonly unknownIntervals: readonly { readonly from: number; readonly to: number; readonly blockIndex: number; readonly reason: string }[];
++  readonly blocks: readonly BlockDiagnostic[];
++  readonly contextBlocks: readonly { readonly inputBlockIndex: number; readonly time: number; readonly reason: 'out-of-owned-domain'; readonly candidates: readonly CandidateDiagnostic[] }[];
++  readonly matchingProofs: readonly MatchPathProof[];
++  readonly retainedGraph: readonly SelectedState[];
++  readonly work: RationalMetreWork;
++  readonly approximation: { readonly basicLimit: 88; readonly beamLimit: 104; readonly exactGlobalOptimumClaim: false };
++}
++
++interface BasicState {
++  candidateId: string; hypothesisIndex: number; phaseIndex: number; period: number; anchor: number;
++  targets: MatchTarget[]; primaryTargets: PrimaryTarget[]; primaryCoefficient: number; localConstant: number;
++  content: ContentSummary; localEvents: MatchEvent[];
++}
++interface CachedPath { assignments: readonly JointAssignment[]; proof: MatchPathProof }
++interface LocalCache {
++  id: number; canonicalAfterId: number; result: MatchResult; state: BasicState; blockIndex: number;
++  materialized: Map<number, CachedPath>;
++}
++interface Transition { cost: number; rho: number; rhoOrder: number }
++interface Proposal {
++  state: BasicState | null; cursor: number; loss: number; predecessor: number; predecessorOrder: number;
++  transition: Transition | null; cache: LocalCache | null; node: number; reward: number;
++  callerAfterId: number; order: number; unknownConstant: number;
++}
++const FRACTIONS: readonly { fraction: number; denominator: MatchDenominator; role: MatchRole }[] = [
++  { fraction: 0, denominator: 1, role: 'primary' }, { fraction: 1 / 4, denominator: 4, role: 'quarter' },
++  { fraction: 1 / 3, denominator: 3, role: 'third' }, { fraction: 1 / 2, denominator: 2, role: 'half' },
++  { fraction: 2 / 3, denominator: 3, role: 'third' }, { fraction: 3 / 4, denominator: 4, role: 'quarter' },
++];
++const RHOS = [{ rho: 1, p: 1, q: 1 }, { rho: .5, p: 1, q: 2 }, { rho: 2, p: 2, q: 1 }, { rho: 2 / 3, p: 2, q: 3 }, { rho: 1.5, p: 3, q: 2 }] as const;
++const finiteOrNull = (v: number | null): number | null => v !== null && Number.isFinite(v) ? v : null;
++
++function addWork(into: Record<string, number>, from: object): void {
++  for (const [key, value] of Object.entries(from)) if (typeof value === 'number') {
++    if (!Number.isFinite(value)) throw Error('Nonfinite helper work counter');
++    into[key] = (into[key] ?? 0) + value;
++  }
++}
++function binaryTime(events: readonly PhysicalBundle[], target: number, upper: boolean, work: RationalMetreWork): number {
++  let low = 0, high = events.length;
++  while (low < high) { const middle = low + Math.floor((high - low) / 2); work.eventBinaryComparisons++;
++    if (events[middle].time < target || (upper && events[middle].time === target)) low = middle + 1; else high = middle;
++  }
++  return low;
++}
++function firstAllowed(events: readonly MatchEvent[], afterId: number, work: RationalMetreWork): number {
++  let low = 0, high = events.length;
++  while (low < high) { const middle = low + Math.floor((high - low) / 2); work.eventBinaryComparisons++;
++    if (events[middle].id <= afterId) low = middle + 1; else high = middle;
++  }
++  return low;
++}
++function enumerateTargets(from: number, to: number, period: number, anchor: number, work: RationalMetreWork): MatchTarget[] {
++  const lo = Math.floor((from - anchor) / period) - 1, hi = Math.ceil((to - anchor) / period) + 1;
++  if (!Number.isSafeInteger(lo) || !Number.isSafeInteger(hi) || Math.abs(lo) > Number.MAX_SAFE_INTEGER - 8 || Math.abs(hi) > Number.MAX_SAFE_INTEGER - 8 || hi - lo > 32)
++    throw Error('Metrical target ordinals are not safely representable');
++  const targets: MatchTarget[] = [];
++  for (let ordinal = lo; ordinal <= hi; ordinal++) for (const f of FRACTIONS) {
++    work.targetTrials++;
++    const time = anchor + (ordinal + f.fraction) * period;
++    if (!Number.isFinite(time)) throw Error('Nonfinite metrical target');
++    if (time < from || time >= to) continue;
++    const tolerance = f.denominator === 1 ? Math.min(.09, .2 * period) : f.denominator === 2 ? Math.min(.05, .12 * period) : Math.min(.03, .07 * period);
++    targets.push({ time, tolerance, denominator: f.denominator, role: f.role, ordinal, fraction: f.fraction });
++  }
++  targets.sort((a, b) => a.time - b.time || a.fraction - b.fraction || a.ordinal - b.ordinal);
++  for (let i = 1; i < targets.length; i++) if (!(targets[i].time > targets[i - 1].time)) throw Error('Distinct metrical targets collapsed numerically');
++  work.targets += targets.length; work.primaryTargets += targets.filter(t => t.denominator === 1).length;
++  return targets;
++}
++function phaseDiagnostics(block: OriginalBlock, inputBlockIndex: number): CandidateDiagnostic[] {
++  if (!block || !Number.isFinite(block.time) || block.time < 0 || typeof block.from !== 'number' || typeof block.to !== 'number' || !Array.isArray(block.hypotheses))
++    throw Error('Invalid original metrical block metadata');
++  if (block.hypotheses.length > MAX_PERIOD_HYPOTHESES) throw Error('Original metrical hypotheses exceed 22, including reserved proposals');
++  const domainReason = !Number.isFinite(block.from) || !Number.isFinite(block.to) || block.from < 0 || block.to < block.from || block.to - block.from > 8 + EPS ? 'invalid-original-window' : null;
++  const result: CandidateDiagnostic[] = [];
++  for (let hypothesisIndex = 0; hypothesisIndex < block.hypotheses.length; hypothesisIndex++) {
++    const h = block.hypotheses[hypothesisIndex];
++    if (!h || !Array.isArray(h.phases) || h.phases.length > MAX_PHASES_PER_HYPOTHESIS || (typeof h.period !== 'number' && h.period !== null)) throw Error('Malformed original metrical hypothesis');
++    const periodReason = h.period === null || !Number.isFinite(h.period) || h.period < .27 - EPS || h.period > 1.2 + EPS ? 'invalid-original-period' : null;
++    for (let phaseIndex = 0; phaseIndex < h.phases.length; phaseIndex++) {
++      const p = h.phases[phaseIndex];
++      if (!p || typeof p.supported !== 'boolean' || typeof p.unknown !== 'boolean'
++        || (p.anchor !== null && typeof p.anchor !== 'number') || (p.meanResidual !== null && typeof p.meanResidual !== 'number') || (p.coverage !== null && typeof p.coverage !== 'number'))
++        throw Error('Malformed original metrical phase');
++      const anchor = p.anchor === null || p.meanResidual === null ? null : p.anchor + p.meanResidual;
++      const valid = p.anchor !== null && Number.isFinite(p.anchor) && p.meanResidual !== null && Number.isFinite(p.meanResidual)
++        && anchor !== null && Number.isFinite(anchor) && p.coverage !== null && Number.isFinite(p.coverage) && p.coverage >= 0 && p.coverage <= 1;
++      const reason = domainReason ?? periodReason ?? (!valid ? 'invalid-original-phase' : p.unknown ? 'original-unknown' : !p.supported ? 'original-unsupported' : 'eligible');
++      result.push({ candidateId: `${inputBlockIndex}:${hypothesisIndex}:${phaseIndex}`, hypothesisIndex, phaseIndex,
++        period: finiteOrNull(h.period), anchor: finiteOrNull(anchor), originalCoverage: finiteOrNull(p.coverage),
++        originalSupported: p.supported, originalUnknown: p.unknown, eligible: reason === 'eligible', reason });
++    }
++  }
++  if (result.length > MAX_BASIC_STATES) throw Error('Original basic metrical states exceed 88');
++  return result;
++}
++
++/** All actual heads come from a retained match frontier, never a second solver. */
++export function trackRationalMetre(input: RationalMetreInput): RationalMetreResult {
++  if (!input || !Number.isFinite(input.duration) || input.duration <= 0 || !Array.isArray(input.events) || !Array.isArray(input.blocks)) throw Error('Invalid rational metre input');
++  const { duration, events, blocks, content } = input;
++  const count = Math.ceil(duration / OWNED_SECONDS);
++  if (!Number.isSafeInteger(count) || count > 1_000_000 || !(content instanceof ConditionalContentIndex) || content.duration !== duration) throw Error('Owned timeline or content association is invalid');
++  const work: RationalMetreWork = { physicalBundles: events.length, physicalMembers: 0, sourceBlocks: blocks.length, ownedBlocks: count,
++    contextOnlyBlocks: 0, originalHypotheses: 0, originalPhases: 0, eligibleBasicStates: 0, contentQueries: 0,
++    targetTrials: 0, targets: 0, primaryTargets: 0, eventBinaryComparisons: 0, localEventCopies: 0,
++    matchingCalls: 0, matchingCacheHits: 0, matchingCacheEntries: 0, matchingReturnedNodes: 0, matchingReturnedFrontierEntries: 0,
++    frontierExpansions: 0, emptyCursorRebases: 0, transitionRequests: 0, transitionEvaluations: 0, transitionCacheHits: 0, rhoTrials: 0,
++    graphProposals: 0, graphSameCursorPruned: 0, graphDominatedPruned: 0, graphBeamPruned: 0, graphRetainedNodes: 0, unknownRetainedNodes: 0,
++    materializeCalls: 0, materializedPairs: 0, pathProofNodesStored: 0, peakLocalCacheEntries: 0, peakLocalMatcherNodes: 0,
++    peakFrontierProposals: 0, peakRetainedBeam: 0, primaryTargetRecordsStored: 0, assignmentRecordsStored: 0,
++    assignmentArraysAllocated: 1, assignmentArrayReferences: 0, assignmentRecordReferences: 0,
++    tieComparisons: 0, tieIndexArraysAllocated: 1, tieIndexEntriesAllocated: 0, peakTieIndexEntries: 0, tieAncestorReads: 0, tieNodePairComparisons: 0,
++    explicitOwnedTypedArrays: 4, explicitOwnedTypedBytes: events.length * 12 + count * 16, contentWork: {}, matcherWork: {} };
++  const owners = new Uint32Array(events.length), explanationWeights = new Float64Array(events.length);
++  const masses = new Float64Array(count), blockWeights = new Float64Array(count);
++  for (let b = 0; b < count; b++) blockWeights[b] = (Math.min((b + 1) * 2, duration) - b * 2) / 2;
++  const memberIdentities = new Set<string>(), eventById = new Map<number, PhysicalBundle>();
++  for (let i = 0; i < events.length; i++) {
++    const e = events[i];
++    if (!e || !Number.isSafeInteger(e.id) || e.id < 0 || !Number.isFinite(e.time) || e.time < 0 || e.time >= duration
++      || !Number.isFinite(e.strength) || e.strength < 0 || e.strength > 1 || !Number.isInteger(e.sourceMask) || e.sourceMask < 1 || e.sourceMask > 15 || !Array.isArray(e.members) || !e.members.length
++      || (i > 0 && (e.id <= events[i - 1].id || e.time <= events[i - 1].time))) throw Error('Physical bundles must have strictly increasing exact IDs/times and valid salience');
++    let mask = 0, salience = 0;
++    for (const m of e.members) {
++      work.physicalMembers++;
++      if (!m || !Number.isInteger(m.source) || m.source < 0 || m.source > 3 || !Number.isSafeInteger(m.index) || m.index < 0 || m.time !== e.time || !Number.isFinite(m.strength) || (m.boundary !== undefined && m.boundary !== false))
++        throw Error('Physical member identity/time/source is invalid or boundary-censored');
++      const identity = `${m.source}:${m.index}`;
++      if (memberIdentities.has(identity)) throw Error('Physical member appears in more than one exact bundle');
++      memberIdentities.add(identity); mask |= 1 << m.source; salience = Math.max(salience, Math.max(0, Math.min(1, m.strength)));
++    }
++    if (mask !== e.sourceMask || salience !== e.strength) throw Error('Physical bundle mask/salience differs from its exact members');
++    const owner = Math.floor(e.time / 2); owners[i] = owner; masses[owner] += e.strength; eventById.set(e.id, e);
++  }
++  for (let i = 0; i < events.length; i++) {
++    const owner = owners[i]; explanationWeights[i] = masses[owner] > 0 ? blockWeights[owner] * events[i].strength / masses[owner] : 0;
++    if (!Number.isFinite(explanationWeights[i])) throw Error('Physical owner explanation weight is not finite');
++  }
++  const associated = new Map<number, { index: number; block: OriginalBlock; candidates: CandidateDiagnostic[] }>();
++  const contextBlocks: { inputBlockIndex: number; time: number; reason: 'out-of-owned-domain'; candidates: CandidateDiagnostic[] }[] = [];
++  for (let i = 0; i < blocks.length; i++) {
++    const block = blocks[i], candidates = phaseDiagnostics(block, i), b = Math.round(block.time / 2);
++    if (!Number.isSafeInteger(b) || Math.abs(block.time - b * 2) > EPS) throw Error('Original metrical block time does not associate with a 2-second owner');
++    work.originalHypotheses += block.hypotheses.length; work.originalPhases += candidates.length;
++    if (associated.has(b)) throw Error('Duplicate original metrical block time');
++    associated.set(b, { index: i, block, candidates });
++    if (b >= count) { work.contextOnlyBlocks++; contextBlocks.push({ inputBlockIndex: i, time: block.time, reason: 'out-of-owned-domain', candidates }); }
++  }
++  const graph: SelectedState[] = [], proofByKey = new Map<string, MatchPathProof>(), diagnostics: BlockDiagnostic[] = [];
++  const unknownIntervals: { from: number; to: number; blockIndex: number; reason: string }[] = [];
++  // One shared immutable empty array per call. Nonempty actual plans below are
++  // allocated once per (cache,node), even when several graph predecessors use it.
++  const emptyAssignments: readonly JointAssignment[] = Object.freeze([]);
++  const emptyTieIndices: readonly number[] = Object.freeze([]);
++  let beam: SelectedState[] = [], cacheSequence = 0, proposalSequence = 0;
++  const cachedPath = (cache: LocalCache, node: number): CachedPath => {
++    const old = cache.materialized.get(node); if (old) return old;
++    const pairs = cache.result.materialize(node); work.materializeCalls++; work.materializedPairs += pairs.length;
++    const nodes: { node: number; record: MatchNode }[] = [];
++    let current = node;
++    while (current >= 0) { const record = cache.result.nodes[current]; nodes.push({ node: current, record }); current = record.previous; }
++    nodes.reverse();
++    const proof: MatchPathProof = { cacheId: cache.id, blockIndex: cache.blockIndex, candidateId: cache.state.candidateId,
++      canonicalAfterId: cache.canonicalAfterId, node, reward: node < 0 ? 0 : cache.result.nodes[node].reward, nodes };
++    const state = cache.state, from = cache.blockIndex * 2, to = Math.min(from + 2, duration);
++    const assignments: readonly JointAssignment[] = pairs.length ? Object.freeze(pairs.map(pair => {
++      const originalEvent = eventById.get(pair.eventId);
++      if (!originalEvent || originalEvent.time !== pair.eventTime) throw Error('Actual matcher path lost physical identity');
++      return Object.freeze({ eventId: pair.eventId, eventTime: pair.eventTime, strength: originalEvent.strength,
++        blockIndex: cache.blockIndex, ownedFrom: from, ownedTo: to, candidateId: state.candidateId, hypothesisIndex: state.hypothesisIndex, phaseIndex: state.phaseIndex,
++        period: state.period, anchor: state.anchor, localTargetIndex: pair.targetIndex, targetTime: pair.targetTime, tolerance: pair.tolerance,
++        ordinal: pair.ordinal, fraction: pair.fraction, denominator: pair.denominator, role: pair.role,
++        matchCacheId: cache.id, matchNode: pair.node, compatibility: pair.compatibility, edgeReward: pair.edgeReward });
++    })) : emptyAssignments;
++    if (pairs.length) work.assignmentArraysAllocated++;
++    work.assignmentRecordsStored += assignments.length;
++    const result = { assignments, proof }; cache.materialized.set(node, result); return result;
++  };
++  // Read only the already returned forest for equal-score ordering. These
++  // short index stacks die with the comparison; no pairs/proof are cached for
++  // a path which may later be pruned. This preserves materialize's forward order.
++  const tieIndices = (cache: LocalCache | null, node: number): readonly number[] => {
++    if (!cache || node < 0) return emptyTieIndices;
++    const indices: number[] = []; work.tieIndexArraysAllocated++;
++    let current = node;
++    while (current >= 0) { indices.push(current); work.tieAncestorReads++; current = cache.result.nodes[current].previous; }
++    work.tieIndexEntriesAllocated += indices.length;
++    return indices.reverse();
++  };
++  const compare = (a: Proposal, b: Proposal): number => {
++    if (a.loss !== b.loss) return a.loss < b.loss ? -1 : 1;
++    const ah = a.state?.hypothesisIndex ?? -1, bh = b.state?.hypothesisIndex ?? -1;
++    if (ah !== bh) return ah - bh;
++    const ap = a.state?.phaseIndex ?? -1, bp = b.state?.phaseIndex ?? -1;
++    if (ap !== bp) return ap - bp;
++    if (a.cursor !== b.cursor) return a.cursor - b.cursor;
++    work.tieComparisons++;
++    const aa = tieIndices(a.cache, a.node), bb = tieIndices(b.cache, b.node);
++    work.peakTieIndexEntries = Math.max(work.peakTieIndexEntries, aa.length + bb.length);
++    for (let i = 0; i < Math.min(aa.length, bb.length); i++) {
++      const an = a.cache!.result.nodes[aa[i]], bn = b.cache!.result.nodes[bb[i]]; work.tieNodePairComparisons++;
++      if (an.targetIndex !== bn.targetIndex) return an.targetIndex - bn.targetIndex;
++      if (an.eventId !== bn.eventId) return an.eventId - bn.eventId;
++    }
++    if (aa.length !== bb.length) return aa.length - bb.length;
++    return a.predecessorOrder - b.predecessorOrder || (a.transition?.rhoOrder ?? -1) - (b.transition?.rhoOrder ?? -1) || a.order - b.order;
++  };
++  for (let b = 0; b < count; b++) {
++    const from = b * 2, to = Math.min(from + 2, duration), weight = blockWeights[b], original = associated.get(b);
++    const diagnostic: BlockDiagnostic = { blockIndex: b, inputBlockIndex: original?.index ?? null, time: from, ownedFrom: from, ownedTo: to,
++      weight, eventMass: masses[b], reason: original ? 'no-supported-original-state' : 'missing-original-block', candidates: original?.candidates ?? [],
++      retained: 0, proposed: 0, pruned: 0, basicRepresentatives: 0, localCacheEntries: 0 };
++    diagnostics.push(diagnostic);
++    const states: BasicState[] = [];
++    for (const c of diagnostic.candidates) {
++      if (!c.eligible) continue;
++      const period = c.period!, anchor = c.anchor!, targets = enumerateTargets(from, to, period, anchor, work);
++      const primaryTargets = targets.filter(t => t.denominator === 1).map(t => ({ time: t.time, ordinal: t.ordinal, fraction: 0 as const, denominator: 1 as const }));
++      const described = evaluateConditionalContent(content, { from, to, period, anchor }); work.contentQueries++; addWork(work.contentWork, described.work);
++      const contentSummary: ContentSummary = { score: described.score, rawScore: described.rawScore, loss: described.score === null ? .5 : (1 - described.score) / 2,
++        reason: described.reason, cells: described.cells.length, validCells: described.work.validCells, work: { ...described.work } };
++      const primaryCoefficient = primaryTargets.length ? weight / primaryTargets.length : 0;
++      const localConstant = weight * (Number(primaryTargets.length > 0) + Number(masses[b] > 0) + contentSummary.loss);
++      let localEvents: MatchEvent[] = [];
++      if (targets.length) {
++        // Include a conservative halo, then let the matcher apply its exact
++        // closed subtraction predicate. Rounding cannot trim a legal edge.
++        const lo = binaryTime(events, from - .1, false, work), hi = binaryTime(events, to + .1, true, work);
++        localEvents = events.slice(lo, hi).map((e, i) => ({ id: e.id, time: e.time, strength: e.strength, explanationWeight: explanationWeights[lo + i] }));
++        work.localEventCopies += localEvents.length;
++      }
++      states.push({ candidateId: c.candidateId, hypothesisIndex: c.hypothesisIndex, phaseIndex: c.phaseIndex, period, anchor,
++        targets, primaryTargets, primaryCoefficient, localConstant, content: contentSummary, localEvents });
++      c.targets = targets.length; c.primaryTargets = primaryTargets.length; c.primaryCoefficient = primaryCoefficient; c.localConstant = localConstant; c.content = contentSummary;
++    }
++    work.eligibleBasicStates += states.length;
++    const localCache = new Map<string, LocalCache>(), transitionCache = new Map<string, Transition>();
++    const previous: (SelectedState | null)[] = beam.length ? beam : [null];
++    const allProposals: Proposal[] = [], perBasic: Proposal[][] = [];
++    let localNodes = 0;
++    const transitionFor = (old: SelectedState | null, state: BasicState): Transition | null => {
++      work.transitionRequests++;
++      if (!old || old.unknown) return null;
++      const key = `${old.candidateId}>${state.candidateId}`, found = transitionCache.get(key);
++      if (found) { work.transitionCacheHits++; return found; }
++      let best: Transition | null = null; work.transitionEvaluations++;
++      for (let order = 0; order < RHOS.length; order++) {
++        const r = RHOS[order]; work.rhoTrials++;
++        const ratio = (state.period / old.period!) / r.rho;
++        const periodCost = Math.log(ratio) ** 2 + (r.rho === 1 ? 0 : 1 / 16);
++        const z = (from - old.anchor!) / (old.period! / r.q) - (from - state.anchor) / (state.period / r.p);
++        const cost = periodCost + 4 * (z - Math.round(z)) ** 2;
++        if (!Number.isFinite(cost)) throw Error('Nonfinite rational metrical transition');
++        if (!best || cost < best.cost) best = { cost, rho: r.rho, rhoOrder: order };
++      }
++      transitionCache.set(key, best!); return best;
++    };
++    for (const state of states) {
++      const byCursor = new Map<number, Proposal>();
++      for (let predecessorOrder = 0; predecessorOrder < previous.length; predecessorOrder++) {
++        const old = previous[predecessorOrder], afterId = old?.endingCursor ?? -1;
++        const start = firstAllowed(state.localEvents, afterId, work), key = `${state.candidateId}/${start}`;
++        let cache = localCache.get(key);
++        if (cache) work.matchingCacheHits++;
++        else {
++          const canonicalAfterId = start === 0 ? -1 : state.localEvents[start - 1].id;
++          const result = matchFrontier(state.localEvents, state.targets, canonicalAfterId, state.primaryCoefficient);
++          cache = { id: cacheSequence++, canonicalAfterId, result, state, blockIndex: b, materialized: new Map() };
++          localCache.set(key, cache); work.matchingCalls++; work.matchingCacheEntries++; work.matchingReturnedNodes += result.nodes.length;
++          work.matchingReturnedFrontierEntries += result.frontier.length; localNodes += result.nodes.length;
++        }
++        const transition = transitionFor(old, state);
++        for (const item of cache.result.frontier) {
++          work.frontierExpansions++;
++          // A cached empty entry belongs to its call's canonical cursor; rebase
++          // it to this real predecessor without consuming unmatched events.
++          const cursor = item.node < 0 ? afterId : item.endId;
++          if (item.node < 0 && cursor !== item.endId) work.emptyCursorRebases++;
++          if (cursor < afterId) throw Error('Rational graph cursor moved backward');
++          const loss = (old?.totalLoss ?? 0) + state.localConstant + (transition?.cost ?? 0) - item.reward;
++          if (!Number.isFinite(loss)) throw Error('Nonfinite rational graph loss');
++          const proposal: Proposal = { state, cursor, loss, predecessor: old?.graphNode ?? -1, predecessorOrder, transition,
++            cache, node: item.node, reward: item.reward, callerAfterId: afterId, order: proposalSequence++, unknownConstant: 0 };
++          work.graphProposals++; diagnostic.proposed++;
++          const found = byCursor.get(cursor);
++          if (!found || compare(proposal, found) < 0) { if (found) work.graphSameCursorPruned++; byCursor.set(cursor, proposal); }
++          else work.graphSameCursorPruned++;
++        }
++      }
++      const frontier: Proposal[] = [];
++      let bestLoss = Infinity;
++      for (const proposal of [...byCursor.values()].sort((a, z) => a.cursor - z.cursor || compare(a, z))) {
++        if (proposal.loss < bestLoss) { bestLoss = proposal.loss; frontier.push(proposal); }
++        else work.graphDominatedPruned++;
++      }
++      if (!frontier.length) throw Error('Eligible basic state lost its empty path');
++      frontier.sort(compare); perBasic.push(frontier); allProposals.push(...frontier);
++    }
++    let retained: Proposal[];
++    if (states.length) {
++      diagnostic.reason = 'supported';
++      const representatives = perBasic.map(list => list[0]), reserved = new Set(representatives);
++      const alternatives = allProposals.filter(p => !reserved.has(p)).sort(compare);
++      retained = [...representatives, ...alternatives.slice(0, BEAM_LIMIT - representatives.length)].sort(compare);
++      diagnostic.basicRepresentatives = representatives.length;
++      work.graphBeamPruned += alternatives.length - (retained.length - representatives.length);
++    } else {
++      const constant = weight * (Number(masses[b] > 0) + .5), byCursor = new Map<number, Proposal>();
++      unknownIntervals.push({ from, to, blockIndex: b, reason: diagnostic.reason });
++      for (let predecessorOrder = 0; predecessorOrder < previous.length; predecessorOrder++) {
++        const old = previous[predecessorOrder];
++        const proposal: Proposal = { state: null, cursor: old?.endingCursor ?? -1, loss: (old?.totalLoss ?? 0) + constant,
++          predecessor: old?.graphNode ?? -1, predecessorOrder, transition: null, cache: null, node: -1, reward: 0,
++          callerAfterId: old?.endingCursor ?? -1, order: proposalSequence++, unknownConstant: constant };
++        const found = byCursor.get(proposal.cursor);
++        if (!found || compare(proposal, found) < 0) byCursor.set(proposal.cursor, proposal);
++        work.graphProposals++; diagnostic.proposed++;
++      }
++      let bestLoss = Infinity;
++      retained = [...byCursor.values()].sort((a, z) => a.cursor - z.cursor || compare(a, z)).filter(p => {
++        if (p.loss < bestLoss) { bestLoss = p.loss; return true; } work.graphDominatedPruned++; return false;
++      }).sort(compare).slice(0, BEAM_LIMIT);
++    }
++    work.peakFrontierProposals = Math.max(work.peakFrontierProposals, allProposals.length);
++    diagnostic.retained = retained.length; diagnostic.pruned = diagnostic.proposed - retained.length; diagnostic.localCacheEntries = localCache.size;
++    work.peakLocalCacheEntries = Math.max(work.peakLocalCacheEntries, localCache.size); work.peakLocalMatcherNodes = Math.max(work.peakLocalMatcherNodes, localNodes);
++    beam = retained.map(proposal => {
++      const state = proposal.state, path = proposal.cache ? cachedPath(proposal.cache, proposal.node) : null;
++      if (path && !proofByKey.has(`${path.proof.cacheId}:${path.proof.node}`)) {
++        proofByKey.set(`${path.proof.cacheId}:${path.proof.node}`, path.proof); work.pathProofNodesStored += path.proof.nodes.length;
++      }
++      const assignments = path ? path.assignments : emptyAssignments;
++      for (const assignment of assignments) if (assignment.eventId <= proposal.callerAfterId) throw Error('Actual matcher path reused its caller prefix');
++      const record: SelectedState = { graphNode: graph.length, blockIndex: b, ownedFrom: from, ownedTo: to, weight,
++        unknown: state === null, reason: state ? 'supported' : diagnostic.reason, candidateId: state?.candidateId ?? null,
++        hypothesisIndex: state?.hypothesisIndex ?? null, phaseIndex: state?.phaseIndex ?? null, period: state?.period ?? null, anchor: state?.anchor ?? null,
++        primaryTargets: state?.primaryTargets ?? [], assignments, endingCursor: proposal.cursor, totalLoss: proposal.loss, predecessor: proposal.predecessor,
++        localConstant: state?.localConstant ?? proposal.unknownConstant, transitionCost: proposal.transition?.cost ?? 0, rho: proposal.transition?.rho ?? null,
++        match: proposal.cache ? { cacheId: proposal.cache.id, node: proposal.node, reward: proposal.reward,
++          canonicalAfterId: proposal.cache.canonicalAfterId, callerAfterId: proposal.callerAfterId } : null, content: state?.content ?? null };
++      graph.push(record); work.graphRetainedNodes++; if (record.unknown) work.unknownRetainedNodes++;
++      work.assignmentArrayReferences++; work.assignmentRecordReferences += assignments.length;
++      return record;
++    });
++    work.primaryTargetRecordsStored += states.reduce((sum, state) => sum + state.primaryTargets.length, 0);
++    for (const entry of localCache.values()) addWork(work.matcherWork, entry.result.work);
++    work.peakRetainedBeam = Math.max(work.peakRetainedBeam, beam.length);
++    input.progress?.(b, count);
++  }
++  if (!beam.length) throw Error('Rational graph has no complete terminal path');
++  // Every beam is already sorted by the fixed full score/candidate/cursor tie.
++  const terminal = beam[0], selectedStates: SelectedState[] = [];
++  let node = terminal.graphNode;
++  while (node >= 0) { const current = graph[node]; selectedStates.push(current); node = current.predecessor; }
++  selectedStates.reverse();
++  if (selectedStates.length !== count) throw Error('Rational graph terminal omitted an owned block');
++  const assignments = selectedStates.flatMap(state => state.assignments);
++  for (let i = 1; i < assignments.length; i++) if (!(assignments[i].eventId > assignments[i - 1].eventId)) throw Error('Complete rational path reuses or reorders physical events');
++  const primary = assignments.filter(assignment => assignment.denominator === 1);
++  return { version: 'RME1-Q', totalLoss: terminal.totalLoss, selectedStates, assignments,
++    primaryIds: primary.map(assignment => assignment.eventId), primaryEventTimes: primary.map(assignment => assignment.eventTime),
++    chosenPrimaryTargetTimes: primary.map(assignment => assignment.targetTime), unknownIntervals, blocks: diagnostics, contextBlocks,
++    matchingProofs: [...proofByKey.values()], retainedGraph: graph, work,
++    approximation: { basicLimit: 88, beamLimit: 104, exactGlobalOptimumClaim: false } };
++}
+diff --git a/src/core/rational-selection.ts b/src/core/rational-selection.ts
+new file mode 100644
+index 0000000..2079703
+--- /dev/null
++++ b/src/core/rational-selection.ts
+@@ -0,0 +1,34 @@
++import type { RationalOnset, RationalMetadata } from './rational-application';
++
++/** Finite metrical evidence; an erroneous label is never lexicographically infinite.
++ * All automatic RME regions, including unknown remainder, share this new utility:
++ * strength^2 + .005 + (assigned ? compatibility/denominator : 0).
++ * Unknown old roles remain threshold/filter candidates but confer no new bonus.
++ * This is not exact legacy selection for mixed unknown input; whole-unknown input
++ * has no RME marker and the chart bridge never calls this selector for it.
++ * The actual chart bridge supplies rationalNoteTime, preserving physical order.
++ */
++export function selectRationalOnsets(onsets: readonly RationalOnset[], gap: number, threshold: number,
++  timing: (onset: RationalOnset) => number, metadata: RationalMetadata): RationalOnset[] {
++  const evidence = new Map(metadata.roleEvidence.map(value => [value.time, value]));
++  const events = onsets.filter(onset => onset.strength >= threshold || onset.role === 'beat').slice().sort((a, b) => a.time - b.time);
++  const times = events.map(timing), scores = new Float64Array(events.length + 1), previous = new Int32Array(events.length), take = new Uint8Array(events.length);
++  for (let i = 0; i < events.length; i++) {
++    let low = 0, high = i;
++    while (low < high) {
++      const middle = (low + high) >>> 1;
++      if (times[i] - times[middle] >= gap - 1e-6) low = middle + 1; else high = middle;
++    }
++    previous[i] = low;
++    const observation = evidence.get(events[i].time);
++    const finiteRoleValue = observation ? observation.compatibility / observation.denominator : 0;
++    const value = scores[low] + events[i].strength ** 2 + .005 + finiteRoleValue;
++    const choose = value > scores[i] + 1e-10;
++    scores[i + 1] = choose ? value : scores[i]; take[i] = Number(choose);
++  }
++  const selected: RationalOnset[] = [];
++  for (let i = events.length - 1; i >= 0;) {
++    if (take[i]) { selected.push(events[i]); i = previous[i] - 1; } else i--;
++  }
++  return selected.reverse();
++}
+diff --git a/src/core/rhythm.ts b/src/core/rhythm.ts
+index 7534f26..5dcc2fd 100644
+--- a/src/core/rhythm.ts
++++ b/src/core/rhythm.ts
+@@ -1,14 +1,15 @@
+ import { gateClockEvidence } from './phase-gate';
+ import { phaseDP } from './phase-dp';
+-import { investigateTempo } from './tempo-families';
++import { investigateTempo, type TempoInvestigation } from './tempo-families';
+ import type { Analysis, Onset, Rhythm } from '../types';
+ const STEP = 0.01;
+ /** Onset-envelope autocorrelation + a tempo-continuity dynamic program.
+  * All positions are in recording time; the grid never creates chart notes. */
+-export function trackBeats(onsets: Onset[], duration: number, bpm: number, sourceOnsets?: Onset[]): Rhythm {
++export function trackBeats(onsets: Onset[], duration: number, bpm: number, sourceOnsets?: Onset[], capture?: (value: TempoInvestigation) => void): Rhythm {
+     if (onsets.length < 4)
+         return { beats: [], tempo: [], confidence: 0, downbeats: [], meterConfidence: 0 };
+     const investigation = investigateTempo(onsets, duration, bpm);
++    capture?.(investigation);
+     const projected = gateClockEvidence(onsets, investigation.blocks, sourceOnsets);
+     const frames = Math.ceil(duration / STEP) + 1, envelope = new Float64Array(frames);
+     const reference = Math.max(1e-8, ...onsets.map(onset => onset.strength));
+@@ -78,6 +79,7 @@ export function timeAtBeat(beats: number[], position: number, fallbackBpm: numbe
+     return beats[index] + (position - index) * (beats[index + 1] - beats[index]);
+ }
+ export function chartBeats(analysis: Analysis, bpmOverride?: number): number[] {
++    if (bpmOverride === undefined && analysis.rhythm?.method === 'RME1-Q' && analysis.rhythm.beats.length > 1) return analysis.rhythm.beats;
+     if (bpmOverride === undefined && analysis.rhythm && analysis.rhythm.confidence >= 0.45 && analysis.rhythm.beats.length > 1)
+         return analysis.rhythm.beats;
+     // A possible recording-boundary cue has no measured rise. It must not seed
+diff --git a/src/core/signal-analysis.ts b/src/core/signal-analysis.ts
+index 13ef671..fd24114 100644
+--- a/src/core/signal-analysis.ts
++++ b/src/core/signal-analysis.ts
+@@ -1,3 +1,4 @@
++import type { RationalContext } from './rational-application';
+ import { mergeClockOnsets } from './clock-evidence';
+ import { reinforceCoincidentOnsets } from './clock-evidence';
+ import type { Analysis, Onset } from '../types';
+@@ -52,7 +53,7 @@ export function estimateTempo(onsets: Onset[]): {
+     }
+     return { bpm: best, confidence: Math.min(1, aligned / Math.max(total, 1e-8)) };
+ }
+-export function analyzeAudio(samples: Float32Array, sampleRate: number, progress?: (value: number, stage: string) => void): Analysis {
++export function analyzeAudio(samples: Float32Array, sampleRate: number, progress?: (value: number, stage: string) => void, capture?: (value: RationalContext) => void): Analysis {
+     const n = 1024, hop = Math.round(sampleRate * 0.01);
+     const frames = Math.max(0, Math.floor((samples.length - n) / hop) + 1);
+     if (!frames)
+@@ -173,7 +174,8 @@ export function analyzeAudio(samples: Float32Array, sampleRate: number, progress
+     progress?.(0.83, '正在提取乐句音高与持续声音特征');
+     const { chroma, tonalEnergy } = extractTonalFeatures(samples, sampleRate, hop, rms);
+     progress?.(0.86, '正在跟踪连续拍点与局部速度');
+-    const rhythm = trackBeats(reinforceCoincidentOnsets(mergeClockOnsets(onsets, musicalOnsets), streams, 'weighted'), samples.length / sampleRate, tempo.bpm, musicalOnsets);
++    let originalBlocks: RationalContext['blocks'] = [];
++    const rhythm = trackBeats(reinforceCoincidentOnsets(mergeClockOnsets(onsets, musicalOnsets), streams, 'weighted'), samples.length / sampleRate, tempo.bpm, musicalOnsets, value => { originalBlocks = value.blocks; });
+     const energy: number[] = [];
+     for (let i = 0; i < frames; i += 5)
+         energy.push(rms[i] / maxRms);
+@@ -197,5 +199,6 @@ export function analyzeAudio(samples: Float32Array, sampleRate: number, progress
+         ? [boundary, ...musicalOnsets] : musicalOnsets;
+     const rawOnsets = boundaryOnset ? [boundaryOnset, ...onsets] : onsets;
+     const candidates = [...rawOnsets, ...streams.flat(), ...boundaryStreams.flatMap(event => event ? [event] : [])].sort((a, b) => a.time - b.time);
++    capture?.({ streams: [onsets, ...streams], blocks: originalBlocks, sampleRate });
+     return annotateSignalEvents({ duration: samples.length / sampleRate, ...tempo, rhythm, pulse: { ...pulse, onsets: pulseOnsets }, candidates, onsets: rawOnsets, energy, energyStep: hop * 5 / sampleRate, chroma, tonalEnergy, chromaStep: hop * 5 / sampleRate, waveform: waveform.map(x => x / maxWave), fingerprint: fingerprint(samples) });
+ }
+diff --git a/src/types.ts b/src/types.ts
+index 813c05c..6c7e17a 100644
+--- a/src/types.ts
++++ b/src/types.ts
+@@ -2,9 +2,10 @@ export type Difficulty = 'one' | 'two' | 'three' | 'four';
+ export type ScrollMode = 'perspective' | 'screen';
+ export type NoteType = 'tap' | 'hold' | 'left' | 'right' | 'up';
+ export type Grade = 'perfect' | 'great' | 'good' | 'miss';
+-export interface Onset { time: number; strength: number; band: number; attack?: number; boundary?: true; role?: 'beat' | 'half' | 'quarter' | 'free' }
++export interface Onset { time: number; strength: number; band: number; attack?: number; boundary?: true; role?: 'beat' | 'half' | 'third' | 'quarter' | 'free' }
+ export interface RhythmSection { start: number; end: number; band: 'low' | 'mid' | 'high' | 'mixed'; support: number }
+ export interface Rhythm {
++  method?: 'RME1-Q';
+   beats: number[];
+   tempo: { time: number; bpm: number }[];
+   confidence: number;
+@@ -12,6 +13,7 @@ export interface Rhythm {
+   meterConfidence: number;
+ }
+ export interface Analysis {
++  rational?: import('./core/rational-application').RationalMetadata;
+   duration: number;
+   bpm: number;
+   confidence: number;
