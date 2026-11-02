@@ -1,0 +1,725 @@
+diff --git a/src/core/analysis.ts b/src/core/analysis.ts
+index ff70260..b7e96d6 100644
+--- a/src/core/analysis.ts
++++ b/src/core/analysis.ts
+@@ -1,4 +1,19 @@
+ import { analyzeAudio as source } from './signal-analysis';
+ import { bindCanonical } from './signal-binding';
++import { applyUnifiedAttackAnalysis, prepareUnifiedAttackFeatures, type UnifiedAttackContext } from './unified-attack-application';
++import type { Analysis } from '../types';
+ export { fingerprint, estimateTempo } from './signal-analysis';
+-export function analyzeAudio(...args: Parameters<typeof source>): ReturnType<typeof source> { return bindCanonical(source(...args)); }
++function original(samples: Float32Array, sampleRate: number, progress?: (value: number, stage: string) => void) {
++ const holder: { value?: UnifiedAttackContext } = {};
++ const baseline=bindCanonical(source(samples,sampleRate,progress,context=>{holder.value=context;}));
++ if(!holder.value)throw Error('Original raw physical context was not returned');
++ return {baseline,context:holder.value};
++}
++export function analyzeAudio(samples: Float32Array,sampleRate: number,progress?: (value:number,stage:string)=>void): Analysis {
++ const {baseline,context}=original(samples,sampleRate,(value,stage)=>progress?.(value*.8,stage));
++ return applyUnifiedAttackAnalysis(baseline,context,(value,stage)=>progress?.(.8+value*.2,stage)).analysis;
++}
++export function analyzeFeatureAudio(samples: Float32Array,sampleRate: number,progress?: (value:number,stage:string)=>void): Analysis {
++ const {baseline,context}=original(samples,sampleRate,progress);
++ return prepareUnifiedAttackFeatures(baseline,context);
++}
+diff --git a/src/core/chart.ts b/src/core/chart.ts
+index 009cc9b..f3db741 100644
+--- a/src/core/chart.ts
++++ b/src/core/chart.ts
+@@ -1,3 +1,4 @@
++import { fixedSalienceThreshold } from './unified-attack-salience';
+ import type { Analysis, Chart, Difficulty, Note, NoteType } from '../types';
+ import { reusePhraseTemplates } from './phrases';
+ import { fingerReleaseTime } from './chart-constraints';
+@@ -35,8 +36,10 @@ export function generateChart(analysis: Analysis, difficulty: Difficulty, bpmOve
+   }
+   const sourceOnsets = events.filter(onset => !onset.role || onset.role === 'beat' || (config.max >= 2 && onset.role === 'half') || (config.max >= 3 && onset.role === 'quarter') || config.max === 4);
+   const strengthSorted = sourceOnsets.map(x => x.strength).sort((a, b) => a - b);
+-  const threshold = Math.min(config.threshold, (strengthSorted[Math.floor(strengthSorted.length * 0.75)] || config.threshold) * 0.55);
+-  const noteTime = (onset: Analysis['onsets'][number]) => onset.role || onset.boundary ? onset.time : bpmOverride !== undefined || (analysis.rhythm?.confidence ?? 1) >= 0.45 ? snapToBeat(onset.time, beats, bpm) : onset.time;
++  const legacyThreshold = Math.min(config.threshold, (strengthSorted[Math.floor(strengthSorted.length * 0.75)] || config.threshold) * 0.55);
++  const threshold = fixedSalienceThreshold(analysis, difficulty, legacyThreshold);
++  const legacyNoteTime = (onset: Analysis['onsets'][number]) => onset.role || onset.boundary ? onset.time : bpmOverride !== undefined || (analysis.rhythm?.confidence ?? 1) >= 0.45 ? snapToBeat(onset.time, beats, bpm) : onset.time;
++  const noteTime = (onset: Analysis['onsets'][number]) => analysis.unifiedAttackClock?.version === 'UA1-common-attack/v1' && bpmOverride === undefined ? onset.time : legacyNoteTime(onset);
+   const selected = selectMusicalOnsets(sourceOnsets.filter(onset => onset.time <= analysis.duration - 0.18), config.gap, threshold, noteTime);
+   // Motif progression and repetition compare the same retained musical layer,
+   // rather than letting rejected ornaments change every subsequent lane.
+diff --git a/src/core/rhythm.ts b/src/core/rhythm.ts
+index 7534f26..fd6997a 100644
+--- a/src/core/rhythm.ts
++++ b/src/core/rhythm.ts
+@@ -78,6 +78,7 @@ export function timeAtBeat(beats: number[], position: number, fallbackBpm: numbe
+     return beats[index] + (position - index) * (beats[index + 1] - beats[index]);
+ }
+ export function chartBeats(analysis: Analysis, bpmOverride?: number): number[] {
++    if (bpmOverride === undefined && analysis.unifiedAttackClock?.version === 'UA1-common-attack/v1' && analysis.rhythm && analysis.rhythm.beats.length > 1) return analysis.rhythm.beats;
+     if (bpmOverride === undefined && analysis.rhythm && analysis.rhythm.confidence >= 0.45 && analysis.rhythm.beats.length > 1)
+         return analysis.rhythm.beats;
+     // A possible recording-boundary cue has no measured rise. It must not seed
+diff --git a/src/core/signal-analysis.ts b/src/core/signal-analysis.ts
+index 13ef671..e47f242 100644
+--- a/src/core/signal-analysis.ts
++++ b/src/core/signal-analysis.ts
+@@ -1,3 +1,4 @@
++import type { UnifiedAttackContext } from './unified-attack-application';
+ import { mergeClockOnsets } from './clock-evidence';
+ import { reinforceCoincidentOnsets } from './clock-evidence';
+ import type { Analysis, Onset } from '../types';
+@@ -52,7 +53,7 @@ export function estimateTempo(onsets: Onset[]): {
+     }
+     return { bpm: best, confidence: Math.min(1, aligned / Math.max(total, 1e-8)) };
+ }
+-export function analyzeAudio(samples: Float32Array, sampleRate: number, progress?: (value: number, stage: string) => void): Analysis {
++export function analyzeAudio(samples: Float32Array, sampleRate: number, progress?: (value: number, stage: string) => void, capture?: (value: UnifiedAttackContext) => void): Analysis {
+     const n = 1024, hop = Math.round(sampleRate * 0.01);
+     const frames = Math.max(0, Math.floor((samples.length - n) / hop) + 1);
+     if (!frames)
+@@ -197,5 +198,6 @@ export function analyzeAudio(samples: Float32Array, sampleRate: number, progress
+         ? [boundary, ...musicalOnsets] : musicalOnsets;
+     const rawOnsets = boundaryOnset ? [boundaryOnset, ...onsets] : onsets;
+     const candidates = [...rawOnsets, ...streams.flat(), ...boundaryStreams.flatMap(event => event ? [event] : [])].sort((a, b) => a.time - b.time);
++    capture?.({ streams: [onsets, ...streams], sampleRate });
+     return annotateSignalEvents({ duration: samples.length / sampleRate, ...tempo, rhythm, pulse: { ...pulse, onsets: pulseOnsets }, candidates, onsets: rawOnsets, energy, energyStep: hop * 5 / sampleRate, chroma, tonalEnergy, chromaStep: hop * 5 / sampleRate, waveform: waveform.map(x => x / maxWave), fingerprint: fingerprint(samples) });
+ }
+diff --git a/src/core/unified-attack-application.ts b/src/core/unified-attack-application.ts
+new file mode 100644
+index 0000000..3751011
+--- /dev/null
++++ b/src/core/unified-attack-application.ts
+@@ -0,0 +1,148 @@
++import type { Analysis, Onset, Rhythm } from '../types';
++import { estimateTempo } from './signal-analysis';
++import { trackBeats } from './rhythm';
++import { prepareUnifiedAtoms, type UnifiedAtomsResult } from './unified-attack-atoms';
++import { bindUnifiedRoles } from './unified-attack-roles';
++import { prepareSalience, compactSalience, type ArrangementSalience, type SaliencePreparation } from './unified-attack-salience';
++
++export interface UnifiedAttackContext {
++  readonly streams: readonly (readonly Onset[])[];
++  readonly sampleRate: number;
++}
++export interface UnifiedAttackObservations {
++  readonly version: 'UA1-observation-stats/v1';
++  readonly fingerprint: string;
++  readonly duration: number;
++  readonly atoms: number;
++  readonly regularMembers: number;
++  readonly excludedBoundaryMembers: number;
++  readonly sourceMemberCounts: readonly number[];
++  readonly representativeSourceCounts: readonly number[];
++  readonly sourceMaskCounts: Readonly<Record<string, number>>;
++}
++export interface UnifiedAttackClockMetadata {
++  readonly version: 'UA1-common-attack/v1';
++  readonly primaryHeads: readonly { readonly time: number; readonly period: number }[];
++  readonly counts: { readonly atoms: number; readonly bindings: number; readonly primary: number; readonly half: number; readonly quarter: number };
++}
++export interface UnifiedAttackFeatureAnalysis extends Analysis { readonly unifiedAttackObservations: UnifiedAttackObservations }
++export interface UnifiedAttackAnalysis extends UnifiedAttackFeatureAnalysis {
++  readonly unifiedAttackClock: UnifiedAttackClockMetadata;
++  readonly arrangementSalience: ArrangementSalience;
++}
++export type UnifiedRoleResult = ReturnType<typeof bindUnifiedRoles>;
++export interface UnifiedAttackApplication {
++  readonly analysis: UnifiedAttackAnalysis;
++  readonly atoms: UnifiedAtomsResult;
++  readonly roles: UnifiedRoleResult;
++  readonly seed: ReturnType<typeof estimateTempo>;
++  readonly rhythm: Rhythm;
++  readonly salience: SaliencePreparation;
++}
++
++function contextFor(baseline: Analysis, context: UnifiedAttackContext): void {
++  if (!baseline || typeof baseline.fingerprint !== 'string' || !Number.isFinite(baseline.duration) || baseline.duration <= 0
++    || !context || !Number.isFinite(context.sampleRate) || context.sampleRate <= 0)
++    throw Error('Invalid original common-attack context');
++}
++
++export function unifiedAttackStatistics(baseline: Analysis, prepared: UnifiedAtomsResult): UnifiedAttackObservations {
++  const sourceMemberCounts = [0, 0, 0, 0], representativeSourceCounts = [0, 0, 0, 0], sourceMaskCounts: Record<string, number> = {};
++  for (const atom of prepared.atoms) {
++    representativeSourceCounts[atom.representative.source]++;
++    sourceMaskCounts[String(atom.sourceMask)] = (sourceMaskCounts[String(atom.sourceMask)] ?? 0) + 1;
++    for (const member of atom.members) sourceMemberCounts[member.source]++;
++  }
++  return { version: 'UA1-observation-stats/v1', fingerprint: baseline.fingerprint, duration: baseline.duration,
++    atoms: prepared.atoms.length, regularMembers: prepared.members, excludedBoundaryMembers: prepared.excludedBoundaryMembers,
++    sourceMemberCounts, representativeSourceCounts, sourceMaskCounts };
++}
++
++/** Feature-only control: one physical grouping, no clock, role, normalizer or B-field replacement. */
++export function prepareUnifiedAttackFeatures(baseline: Analysis, context: UnifiedAttackContext): UnifiedAttackFeatureAnalysis {
++  contextFor(baseline, context);
++  const atoms = prepareUnifiedAtoms(context.streams, baseline.duration);
++  return { ...baseline, unifiedAttackObservations: unifiedAttackStatistics(baseline, atoms) };
++}
++
++function tempoFrom(beats: readonly number[]): Rhythm['tempo'] {
++  return beats.slice(1).map((time, i) => {
++    const from = Math.max(0, i - 1), to = Math.min(beats.length - 1, i + 2);
++    return { time, bpm: Math.round(60 * (to - from) / (beats[to] - beats[from]) * 10) / 10 };
++  });
++}
++
++/** Only accepted tracker output is clipped; this does not create physical note events. */
++export function normalizeUnifiedRhythm(rhythm: Rhythm, duration: number): Rhythm {
++  const beats = rhythm.beats.filter(time => Number.isFinite(time) && time >= 0 && time < duration);
++  if (beats.some((time, i) => i > 0 && time <= beats[i - 1])) throw Error('Common-attack reference does not progress');
++  if (beats.length < 2) throw Error('共同起音没有形成足够的连续拍点，请更换节奏更清楚的音乐。');
++  const retained = new Set(beats);
++  return { ...rhythm, beats, tempo: tempoFrom(beats), downbeats: rhythm.downbeats.filter(time => retained.has(time)) };
++}
++
++/** Actual materialization seam, with no hidden process registry or second role fit. */
++export function materializeUnifiedAttackAnalysis(baseline: Analysis, context: UnifiedAttackContext, prepared: UnifiedAtomsResult,
++  roles: UnifiedRoleResult, rhythm: Rhythm, seed: ReturnType<typeof estimateTempo>, salience: SaliencePreparation): UnifiedAttackAnalysis {
++  if (salience.fingerprint !== baseline.fingerprint || salience.duration !== baseline.duration)
++    throw Error('Common-attack salience input identity differs');
++  const byTime = new Map<number, Onset>();
++  for (const event of salience.basePool) {
++    const copy: Onset = { ...event };
++    if (!event.boundary) copy.role = 'free';
++    byTime.set(event.time, copy);
++  }
++  const atoms = new Map(prepared.atoms.map(atom => [atom.id, atom]));
++  const targets = new Map<number, UnifiedRoleResult['targets'][number]>();
++  for (const target of roles.targets) if (target.atomId !== null) {
++    if (targets.has(target.atomId)) throw Error('One common atom was reserved by two targets');
++    targets.set(target.atomId, target);
++  }
++  const used = new Set<number>();
++  const primaryHeads: { time: number; period: number }[] = [];
++  const counts = { atoms: prepared.atoms.length, bindings: roles.bindings.length, primary: 0, half: 0, quarter: 0 };
++  for (const binding of roles.bindings) {
++    const atom = atoms.get(binding.atomId), member = context.streams[binding.source]?.[binding.sourceMemberIndex];
++    const canonical = salience.byTime.get(binding.time), target = targets.get(binding.atomId);
++    if (!atom || used.has(binding.atomId) || atom.time !== binding.time || !member || member.boundary || member.time !== binding.time
++      || atom.representative.source !== binding.source || atom.representative.index !== binding.sourceMemberIndex
++      || !canonical || !target || target.actualTime !== binding.time || target.targetTime !== binding.targetTime
++      || target.role !== binding.role || target.period !== binding.period || target.compatibility !== binding.compatibility
++      || !Number.isFinite(binding.period) || binding.period <= 0 || !Number.isFinite(binding.targetTime)
++      || binding.targetTime < 0 || binding.targetTime >= baseline.duration
++      || !Number.isFinite(binding.compatibility) || binding.compatibility < 0 || binding.compatibility > 1
++      || Math.abs(binding.time - binding.targetTime) > target.tolerance)
++      throw Error('Common-attack binding lost its real member/target identity');
++    const copy: Onset = { ...canonical, role: binding.role }; delete copy.boundary;
++    byTime.set(binding.time, copy); used.add(binding.atomId);
++    if (binding.role === 'beat') { counts.primary++; primaryHeads.push({ time: binding.time, period: binding.period }); }
++    else counts[binding.role]++;
++  }
++  if (targets.size !== roles.bindings.length) throw Error('Common-attack target tape differs from actual bindings');
++  const regular = [...byTime.values()].filter(event => !event.boundary);
++  for (const event of byTime.values()) if (event.boundary && regular.some(other => Math.abs(other.time - event.time) <= .085)) byTime.delete(event.time);
++  const onsets = [...byTime.values()].sort((a, b) => a.time - b.time);
++  const unifiedAttackClock: UnifiedAttackClockMetadata = { version: 'UA1-common-attack/v1', primaryHeads, counts };
++  return { ...baseline, bpm: seed.bpm, confidence: seed.confidence, rhythm,
++    pulse: { onsets, sections: [{ start: 0, end: baseline.duration, band: 'mixed', support: rhythm.confidence }] },
++    unifiedAttackObservations: unifiedAttackStatistics(baseline, prepared), unifiedAttackClock, arrangementSalience: compactSalience(salience) };
++}
++
++/** Full candidate: one atoms call, one accepted tempo call, one accepted tracker call, one role binder. */
++export function applyUnifiedAttackAnalysis(baseline: Analysis, context: UnifiedAttackContext,
++  progress?: (fraction: number, stage: string) => void): UnifiedAttackApplication {
++  contextFor(baseline, context);
++  progress?.(.05, '正在合并多声部起音');
++  const atoms = prepareUnifiedAtoms(context.streams, baseline.duration);
++  const salience = prepareSalience(baseline, context.streams);
++  const clockPoints: Onset[] = atoms.atoms.map(atom => ({ time: atom.time, strength: 1, band: 1 }));
++  progress?.(.25, '正在估计共同节拍');
++  const seed = estimateTempo(clockPoints);
++  progress?.(.5, '正在跟踪共同拍点');
++  const rhythm = normalizeUnifiedRhythm(trackBeats(clockPoints, baseline.duration, seed.bpm, clockPoints), baseline.duration);
++  progress?.(.8, '正在绑定真实起音');
++  const roles = bindUnifiedRoles(atoms.atoms, rhythm.beats, baseline.duration);
++  const analysis = materializeUnifiedAttackAnalysis(baseline, context, atoms, roles, rhythm, seed, salience);
++  progress?.(1, '共同起音谱面分析完成');
++  return { analysis, atoms, roles, seed, rhythm, salience };
++}
+diff --git a/src/core/unified-attack-atoms.ts b/src/core/unified-attack-atoms.ts
+new file mode 100644
+index 0000000..b8460ea
+--- /dev/null
++++ b/src/core/unified-attack-atoms.ts
+@@ -0,0 +1,109 @@
++/** UA1 hypothesis-independent observation families. This module preserves raw
++ * witnesses and never assigns musical roles or scores source amplitudes. */
++export type SourceId = 0 | 1 | 2 | 3;
++export interface SourceEvent {
++  readonly time: number;
++  readonly strength: number;
++  readonly band: number;
++  readonly boundary?: boolean;
++}
++export interface AtomMember {
++  readonly source: SourceId;
++  readonly index: number;
++  readonly time: number;
++  readonly strength: number;
++  readonly band: number;
++}
++export interface UnifiedAtom {
++  readonly id: number;
++  readonly time: number;
++  readonly sourceMask: number;
++  readonly members: readonly AtomMember[];
++  readonly representative: AtomMember;
++}
++export type Atom = UnifiedAtom;
++export interface AtomWork {
++  inputReads: number;
++  regularMembers: number;
++  boundaryMembers: number;
++  cursorAdvances: number;
++  mergeSlotComparisons: number;
++  memberRecords: number;
++  distinctTimeRecords: number;
++  families: number;
++  maximumMembersInFamily: number;
++  maximumDistinctTimesInFamily: number;
++}
++export interface UnifiedAtomsResult {
++  readonly version: 'UA1-atoms/v1';
++  readonly atoms: readonly UnifiedAtom[];
++  /** Total regular raw members. Each is retained in exactly one atom. */
++  readonly members: number;
++  readonly excludedBoundaryMembers: number;
++  readonly work: AtomWork;
++}
++export const UNIFIED_ATOM_LIMITS = Object.freeze({
++  sources: 4, maximumDuration: 300, maximumMembersPerSource: 200000,
++  maximumMembers: 800000, maximumAtoms: 800000, maximumFamilySpanSeconds: .05,
++});
++
++/** Sources must be the four original sorted pre-role streams. Boundary members
++ * are validated but excluded before both exact-time union and family formation.
++ * Four-way merge gives time/source/index order without amplitude-based ties.
++ */
++export function prepareUnifiedAtoms(streams: readonly (readonly SourceEvent[])[], duration: number): UnifiedAtomsResult {
++  const L = UNIFIED_ATOM_LIMITS;
++  if (!Number.isFinite(duration) || duration <= 0 || duration > L.maximumDuration
++    || !Array.isArray(streams) || streams.length !== L.sources) throw Error('UA1 requires four original streams and a finite recording domain');
++  const work: AtomWork = { inputReads: 0, regularMembers: 0, boundaryMembers: 0,
++    cursorAdvances: 0, mergeSlotComparisons: 0, memberRecords: 0, distinctTimeRecords: 0,
++    families: 0, maximumMembersInFamily: 0, maximumDistinctTimesInFamily: 0 };
++  for (const stream of streams) {
++    if (!Array.isArray(stream) || stream.length > L.maximumMembersPerSource) throw Error('UA1 original stream exceeds its member domain');
++    let previous = -Infinity;
++    for (const event of stream) {
++      work.inputReads++;
++      if (!event || !Number.isFinite(event.time) || event.time < 0 || event.time >= duration || event.time < previous
++        || !Number.isFinite(event.strength) || event.strength < 0 || !Number.isInteger(event.band) || event.band < 0 || event.band > 2
++        || event.boundary !== undefined && typeof event.boundary !== 'boolean') throw Error('UA1 original source member is invalid or unordered');
++      previous = event.time;
++      if (event.boundary) work.boundaryMembers++; else work.regularMembers++;
++    }
++  }
++  const cursor = [0, 0, 0, 0], atoms: UnifiedAtom[] = [];
++  let family: AtomMember[] = [], distinctRepresentatives: AtomMember[] = [], sourceMask = 0;
++  const skipBoundary = (source: number): void => {
++    const stream = streams[source];
++    while (cursor[source] < stream.length && stream[cursor[source]].boundary) {
++      cursor[source]++; work.cursorAdvances++;
++    }
++  };
++  const flush = (): void => {
++    if (!family.length) return;
++    const representative = distinctRepresentatives[Math.floor((distinctRepresentatives.length - 1) / 2)];
++    atoms.push({ id: atoms.length, time: representative.time, sourceMask, members: family, representative });
++    work.families++; work.maximumMembersInFamily = Math.max(work.maximumMembersInFamily, family.length);
++    work.maximumDistinctTimesInFamily = Math.max(work.maximumDistinctTimesInFamily, distinctRepresentatives.length);
++    family = []; distinctRepresentatives = []; sourceMask = 0;
++  };
++  for (let source = 0; source < L.sources; source++) skipBoundary(source);
++  while (true) {
++    let chosen = -1;
++    for (let source = 0; source < L.sources; source++) {
++      if (cursor[source] >= streams[source].length) continue;
++      work.mergeSlotComparisons++;
++      if (chosen < 0 || streams[source][cursor[source]].time < streams[chosen][cursor[chosen]].time) chosen = source;
++    }
++    if (chosen < 0) break;
++    const index = cursor[chosen], event = streams[chosen][index];
++    const member: AtomMember = { source: chosen as SourceId, index, time: event.time, strength: event.strength, band: event.band };
++    if (family.length && member.time - family[0].time > L.maximumFamilySpanSeconds) flush();
++    if (!family.length || member.time !== family[family.length - 1].time) {
++      distinctRepresentatives.push(member); work.distinctTimeRecords++;
++    }
++    family.push(member); sourceMask |= 1 << chosen; work.memberRecords++;
++    cursor[chosen]++; work.cursorAdvances++; skipBoundary(chosen);
++  }
++  flush();
++  return { version: 'UA1-atoms/v1', atoms, members: work.regularMembers, excludedBoundaryMembers: work.boundaryMembers, work };
++}
+diff --git a/src/core/unified-attack-roles.ts b/src/core/unified-attack-roles.ts
+new file mode 100644
+index 0000000..1545bdb
+--- /dev/null
++++ b/src/core/unified-attack-roles.ts
+@@ -0,0 +1,177 @@
++import { UNIFIED_ATOM_LIMITS, type AtomMember, type SourceId, type UnifiedAtom } from './unified-attack-atoms';
++
++export type UnifiedRole = 'beat' | 'half' | 'quarter';
++export interface UnifiedRoleBinding {
++  readonly atomId: number;
++  readonly time: number;
++  readonly targetTime: number;
++  readonly role: UnifiedRole;
++  readonly source: SourceId;
++  readonly sourceMemberIndex: number;
++  readonly period: number;
++  readonly compatibility: number;
++}
++export interface UnifiedRoleTarget {
++  readonly targetTime: number;
++  readonly role: UnifiedRole;
++  readonly period: number;
++  readonly tolerance: number;
++  readonly intervalIndex: number;
++  readonly atomId: number | null;
++  readonly actualTime: number | null;
++  readonly compatibility: number | null;
++}
++export interface UnifiedRoleWork {
++  atomValidationReads: number;
++  memberValidationReads: number;
++  medianScanReads: number;
++  beatValidationReads: number;
++  targets: number;
++  nearestQueries: number;
++  binaryComparisons: number;
++  successorTraversals: number;
++  predecessorTraversals: number;
++  selectedAtoms: number;
++  primaryBindings: number;
++  halfBindings: number;
++  quarterBindings: number;
++  bindingSortComparisons: number;
++  explicitTypedBytes: number;
++}
++export interface UnifiedRoleResult {
++  readonly version: 'UA1-roles/v1';
++  /** Sorted by actual member time/id. Targets preserve reservation traversal. */
++  readonly bindings: readonly UnifiedRoleBinding[];
++  readonly targets: readonly UnifiedRoleTarget[];
++  readonly work: UnifiedRoleWork;
++}
++export const UNIFIED_ROLE_LIMITS = Object.freeze({ maximumBeatRecords: 30001, maximumAtoms: 800000, maximumMembers: 800000 });
++
++function validMember(member: AtomMember, duration: number): boolean {
++  return !!member && Number.isInteger(member.source) && member.source >= 0 && member.source < 4
++    && Number.isSafeInteger(member.index) && member.index >= 0 && member.index < UNIFIED_ATOM_LIMITS.maximumMembersPerSource
++    && Number.isFinite(member.time) && member.time >= 0 && member.time < duration
++    && Number.isFinite(member.strength) && member.strength >= 0 && Number.isInteger(member.band) && member.band >= 0 && member.band <= 2;
++}
++function sameMember(a: AtomMember, b: AtomMember): boolean {
++  return a.source === b.source && a.index === b.index && a.time === b.time && a.strength === b.strength && a.band === b.band;
++}
++
++/** Validate the prepared canonical value shape, not JS reference identity. The
++ * caller/bridge still owns correspondence to its original raw source arrays.
++ */
++function validateAtoms(atoms: readonly UnifiedAtom[], duration: number, work: UnifiedRoleWork): void {
++  let lastTime = -Infinity, lastFamilyFirst = -Infinity, lastFamilyLast = -Infinity, memberCount = 0;
++  const lastSourceIndex = [-1, -1, -1, -1];
++  for (let at = 0; at < atoms.length; at++) {
++    const atom = atoms[at]; work.atomValidationReads++;
++    if (!atom || atom.id !== at || !Number.isFinite(atom.time) || atom.time < 0 || atom.time >= duration || atom.time <= lastTime
++      || !Number.isSafeInteger(atom.sourceMask) || atom.sourceMask < 1 || atom.sourceMask > 15
++      || !Array.isArray(atom.members) || !atom.members.length || !validMember(atom.representative, duration)) throw Error('UA1 role input is not a canonical atom');
++    let mask = 0, previous: AtomMember | null = null, distinct = 0;
++    for (const member of atom.members) {
++      work.memberValidationReads++; memberCount++;
++      if (memberCount > UNIFIED_ROLE_LIMITS.maximumMembers || !validMember(member, duration)
++        || member.index <= lastSourceIndex[member.source]
++        || previous && (member.time < previous.time || member.time === previous.time
++          && (member.source < previous.source || member.source === previous.source && member.index <= previous.index)))
++        throw Error('UA1 atom member order/identity is invalid');
++      if (!previous || member.time !== previous.time) distinct++;
++      mask |= 1 << member.source; lastSourceIndex[member.source] = member.index; previous = member;
++    }
++    const first = atom.members[0].time, last = atom.members[atom.members.length - 1].time;
++    if (mask !== atom.sourceMask || last - first > UNIFIED_ATOM_LIMITS.maximumFamilySpanSeconds
++      || first <= lastFamilyLast || at > 0 && first - lastFamilyFirst <= UNIFIED_ATOM_LIMITS.maximumFamilySpanSeconds)
++      throw Error('UA1 atom family is not the fixed earliest-anchor grouping');
++    const median = Math.floor((distinct - 1) / 2); let rank = -1, priorTime: number | null = null, expected: AtomMember | null = null;
++    for (const member of atom.members) {
++      work.medianScanReads++;
++      if (priorTime === null || member.time !== priorTime) {
++        rank++; priorTime = member.time;
++        if (rank === median) { expected = member; break; }
++      }
++    }
++    if (!expected || atom.time !== expected.time || !sameMember(atom.representative, expected)) throw Error('UA1 representative is not the distinct-time lower median witness');
++    lastTime = atom.time; lastFamilyFirst = first; lastFamilyLast = last;
++  }
++}
++
++/** All primary targets reserve their closest unused atom first. Each interval
++ * then reserves half, quarter .25 and quarter .75, in that order. Raw closed
++ * subtraction predicates are never expanded by an epsilon. */
++export function bindUnifiedRoles(atoms: readonly UnifiedAtom[], beats: readonly number[], duration: number): UnifiedRoleResult {
++  if (!Number.isFinite(duration) || duration <= 0 || duration > UNIFIED_ATOM_LIMITS.maximumDuration
++    || !Array.isArray(atoms) || atoms.length > UNIFIED_ROLE_LIMITS.maximumAtoms
++    || !Array.isArray(beats) || beats.length > UNIFIED_ROLE_LIMITS.maximumBeatRecords) throw Error('UA1 role input exceeds the finite recording domain');
++  const work: UnifiedRoleWork = { atomValidationReads: 0, memberValidationReads: 0, medianScanReads: 0, beatValidationReads: 0,
++    targets: 0, nearestQueries: 0, binaryComparisons: 0, successorTraversals: 0, predecessorTraversals: 0,
++    selectedAtoms: 0, primaryBindings: 0, halfBindings: 0, quarterBindings: 0, bindingSortComparisons: 0, explicitTypedBytes: 0 };
++  validateAtoms(atoms, duration, work);
++  let previousBeat = -Infinity;
++  for (const beat of beats) {
++    work.beatValidationReads++;
++    if (!Number.isFinite(beat) || beat < 0 || beat >= duration || beat <= previousBeat) throw Error('UA1 reference beats must be strictly recording-ordered');
++    previousBeat = beat;
++  }
++  const bindings: UnifiedRoleBinding[] = [], targets: UnifiedRoleTarget[] = [];
++  if (beats.length < 2) return { version: 'UA1-roles/v1', bindings, targets, work };
++  const size = atoms.length, next = new Int32Array(size + 1), prior = new Int32Array(size + 1), used = new Uint8Array(size);
++  work.explicitTypedBytes = next.byteLength + prior.byteLength + used.byteLength;
++  for (let index = 0; index <= size; index++) { next[index] = index; prior[index] = index; }
++  const successor = (value: number): number => {
++    let root = value;
++    while (next[root] !== root) { root = next[root]; work.successorTraversals++; }
++    while (next[value] !== value) { const old = next[value]; next[value] = root; value = old; work.successorTraversals++; }
++    return root;
++  };
++  const predecessor = (value: number): number => {
++    let root = value;
++    while (prior[root] !== root) { root = prior[root]; work.predecessorTraversals++; }
++    while (prior[value] !== value) { const old = prior[value]; prior[value] = root; value = old; work.predecessorTraversals++; }
++    return root;
++  };
++  const closestUnused = (target: number, tolerance: number): number => {
++    work.nearestQueries++;
++    let low = 0, high = size;
++    while (low < high) {
++      const middle = (low + high) >>> 1; work.binaryComparisons++;
++      if (atoms[middle].time < target) low = middle + 1; else high = middle;
++    }
++    const left = predecessor(low) - 1, right = successor(low); let chosen = -1, distance = Infinity;
++    for (const index of [left, right]) {
++      if (index < 0 || index >= size) continue;
++      if (used[index]) throw Error('UA1 unused-atom index is inconsistent');
++      const difference = Math.abs(atoms[index].time - target);
++      if (difference > tolerance) continue;
++      if (difference < distance || difference === distance && (chosen < 0 || atoms[index].time < atoms[chosen].time
++        || atoms[index].time === atoms[chosen].time && atoms[index].id < atoms[chosen].id)) { chosen = index; distance = difference; }
++    }
++    return chosen;
++  };
++  const reserve = (targetTime: number, role: UnifiedRole, period: number, tolerance: number, intervalIndex: number): void => {
++    work.targets++;
++    const chosen = closestUnused(targetTime, tolerance);
++    if (chosen < 0) {
++      targets.push({ targetTime, role, period, tolerance, intervalIndex, atomId: null, actualTime: null, compatibility: null });
++      return;
++    }
++    const atom = atoms[chosen], difference = Math.abs(atom.time - targetTime), compatibility = tolerance === 0 ? 1 : 1 - difference / tolerance;
++    bindings.push({ atomId: atom.id, time: atom.time, targetTime, role, source: atom.representative.source,
++      sourceMemberIndex: atom.representative.index, period, compatibility });
++    targets.push({ targetTime, role, period, tolerance, intervalIndex, atomId: atom.id, actualTime: atom.time, compatibility });
++    used[chosen] = 1; next[chosen] = successor(chosen + 1); prior[chosen + 1] = predecessor(chosen); work.selectedAtoms++;
++    if (role === 'beat') work.primaryBindings++; else if (role === 'half') work.halfBindings++; else work.quarterBindings++;
++  };
++  for (let index = 0; index < beats.length; index++) {
++    const period = index + 1 < beats.length ? beats[index + 1] - beats[index] : beats[index] - beats[index - 1];
++    reserve(beats[index], 'beat', period, Math.min(.09, .2 * period), index);
++  }
++  for (let index = 0; index + 1 < beats.length; index++) {
++    const start = beats[index], period = beats[index + 1] - start;
++    reserve(start + .5 * period, 'half', period, Math.min(.05, .12 * period), index);
++    reserve(start + .25 * period, 'quarter', period, Math.min(.03, .07 * period), index);
++    reserve(start + .75 * period, 'quarter', period, Math.min(.03, .07 * period), index);
++  }
++  bindings.sort((a, b) => { work.bindingSortComparisons++; return a.time - b.time || a.atomId - b.atomId; });
++  return { version: 'UA1-roles/v1', bindings, targets, work };
++}
+diff --git a/src/core/unified-attack-salience.ts b/src/core/unified-attack-salience.ts
+new file mode 100644
+index 0000000..0ff694e
+--- /dev/null
++++ b/src/core/unified-attack-salience.ts
+@@ -0,0 +1,169 @@
++import type { Analysis, Difficulty, Onset } from '../types';
++
++export const SALIENCE_VERSION = 'baseline-canonical-first/v1' as const;
++const MODES = ['one', 'two', 'three', 'four'] as const;
++const SPECS = Object.freeze({
++  one: Object.freeze({ max: 1, threshold: .23 }),
++  two: Object.freeze({ max: 2, threshold: .16 }),
++  three: Object.freeze({ max: 3, threshold: .105 }),
++  four: Object.freeze({ max: 4, threshold: .055 }),
++});
++
++export interface SalienceOrigin {
++  readonly kind: 'baseline-canonical' | 'raw-member-max';
++  readonly baseIndex: number | null;
++  /** Arrangement representative only; never a selected clock-source witness. */
++  readonly source: 0 | 1 | 2 | 3 | null;
++  readonly memberIndex: number | null;
++}
++export interface SalienceDomain {
++  readonly mode: Difficulty;
++  readonly basis: 'baseline-pulse' | 'baseline-onsets';
++  /** Frozen OLD automatic-role membership, before new bindings/manual rebind. */
++  readonly baseIndices: readonly number[];
++  readonly count: number;
++  readonly q75: number | null;
++  readonly threshold: number;
++}
++export interface SaliencePreparation {
++  readonly version: typeof SALIENCE_VERSION;
++  readonly fingerprint: string;
++  readonly duration: number;
++  readonly byTime: ReadonlyMap<number, Readonly<Onset>>;
++  readonly originsByTime: ReadonlyMap<number, SalienceOrigin>;
++  readonly basePool: readonly Readonly<Onset>[];
++  readonly domains: Readonly<Record<Difficulty, SalienceDomain>>;
++  readonly thresholds: Readonly<Record<Difficulty, number>>;
++  readonly regularFrames: number;
++  readonly originalMembers: number;
++  readonly excludedBoundaryMembers: number;
++}
++/** Small structured-clone-safe context, carried even for wholly unknown clocks. */
++export interface ArrangementSalience {
++  readonly version: typeof SALIENCE_VERSION;
++  readonly fingerprint: string;
++  readonly duration: number;
++  readonly domains: Readonly<Record<Difficulty, { readonly count: number; readonly q75: number | null; readonly threshold: number }>>;
++}
++
++export function compactSalience(prepared: SaliencePreparation): ArrangementSalience {
++  const domains = {} as Record<Difficulty, { readonly count: number; readonly q75: number | null; readonly threshold: number }>;
++  for (const mode of MODES) {
++    const value = prepared.domains[mode];
++    domains[mode] = Object.freeze({ count: value.count, q75: value.q75, threshold: value.threshold });
++  }
++  return Object.freeze({ version: SALIENCE_VERSION, fingerprint: prepared.fingerprint, duration: prepared.duration, domains: Object.freeze(domains) });
++}
++
++/** Auto AND manual use the same pre-bridge domain after worker transport. An
++ * absent field means original B behavior; a malformed present field is an error.
++ */
++export function fixedSalienceThreshold(analysis: Pick<Analysis, 'duration' | 'fingerprint'> & { arrangementSalience?: ArrangementSalience }, mode: Difficulty,
++  legacyThreshold: number): number {
++  const value = analysis.arrangementSalience;
++  if (value === undefined) return legacyThreshold;
++  if (value.version !== SALIENCE_VERSION || value.fingerprint !== analysis.fingerprint || value.duration !== analysis.duration || !value.domains)
++    throw Error('Arrangement salience belongs to a different input/version');
++  for (const difficulty of MODES) {
++    const domain = value.domains[difficulty], cap = SPECS[difficulty].threshold;
++    if (!domain || !Number.isSafeInteger(domain.count) || domain.count < 0
++      || domain.q75 !== null && (!Number.isFinite(domain.q75) || domain.q75 < 0)
++      || (domain.count === 0) !== (domain.q75 === null)
++      || domain.threshold !== Math.min(cap, (domain.q75 || cap) * .55)) throw Error('Invalid fixed arrangement salience domain');
++  }
++  return value.domains[mode].threshold;
++}
++
++/** Read-only lookup facade: callbacks do not expose the mutable backing Map. */
++class FixedIndex<K, V> implements ReadonlyMap<K, V> {
++  readonly #map: Map<K, V>;
++  constructor(entries: Iterable<readonly [K, V]>) { this.#map = new Map(entries); Object.freeze(this); }
++  get size(): number { return this.#map.size; }
++  get(key: K): V | undefined { return this.#map.get(key); }
++  has(key: K): boolean { return this.#map.has(key); }
++  keys() { return this.#map.keys(); }
++  values() { return this.#map.values(); }
++  entries() { return this.#map.entries(); }
++  [Symbol.iterator]() { return this.#map[Symbol.iterator](); }
++  forEach(callback: (value: V, key: K, map: ReadonlyMap<K, V>) => void, thisArg?: unknown): void {
++    for (const [key, value] of this.#map) callback.call(thisArg, value, key, this);
++  }
++}
++
++function validEvent(event: Onset, duration: number): void {
++  if (!event || !Number.isFinite(event.time) || event.time < 0 || event.time >= duration
++    || !Number.isFinite(event.strength) || event.strength < 0
++    || !Number.isSafeInteger(event.band) || event.band < 0 || event.band > 2)
++    throw Error('Invalid physical/canonical salience event');
++}
++function oldRoleEligible(event: Onset, maximum: number): boolean {
++  return !event.role || event.role === 'beat' || maximum >= 2 && event.role === 'half'
++    || maximum >= 3 && event.role === 'quarter' || maximum === 4;
++}
++
++/** Prepare once BEFORE any new clock/source/role decision. No score, target,
++ * new role, BPM override, genre or quality result is an input to this function.
++ * Old physical frames retain the canonical arrangement strength/band; new frame
++ * times get the greatest original regular member strength with fixed source/index
++ * ties. All original source evidence remains separately owned by the caller.
++ */
++export function prepareSalience(baseline: Analysis, streams: readonly (readonly Onset[])[]): SaliencePreparation {
++  if (!baseline || !Number.isFinite(baseline.duration) || baseline.duration <= 0
++    || !Array.isArray(streams) || streams.length !== 4) throw Error('Baseline and four original streams are required');
++  const duration = baseline.duration;
++  const maxima = new Map<number, { event: Onset; source: 0 | 1 | 2 | 3; memberIndex: number }>();
++  let originalMembers = 0, excludedBoundaryMembers = 0;
++  streams.forEach((stream, sourceIndex) => {
++    if (!Array.isArray(stream)) throw Error('Original source stream must be an array');
++    let previous = -Infinity;
++    stream.forEach((event, memberIndex) => {
++      validEvent(event, duration);
++      if (event.time < previous) throw Error('Original source times must be ordered');
++      previous = event.time;
++      if (event.boundary) { excludedBoundaryMembers++; return; }
++      originalMembers++;
++      const old = maxima.get(event.time);
++      // Traversal is source0..3 then original member index; strict > therefore
++      // keeps the earliest source/index when raw strengths are exactly equal.
++      if (!old || event.strength > old.event.strength)
++        maxima.set(event.time, { event, source: sourceIndex as 0 | 1 | 2 | 3, memberIndex });
++    });
++  });
++  const base = baseline.pulse?.onsets ?? baseline.onsets;
++  if (!Array.isArray(base)) throw Error('Canonical baseline pool must be an array');
++  const canonical = new Map<number, Readonly<Onset>>(), origins = new Map<number, SalienceOrigin>();
++  const basePool: Readonly<Onset>[] = [];
++  let previousBase = -Infinity;
++  base.forEach((event, baseIndex) => {
++    validEvent(event, duration);
++    if (event.time < previousBase || canonical.has(event.time)) throw Error('Canonical baseline times must be ordered and unique');
++    previousBase = event.time;
++    // A new third-role overlay is not an acceptable pre-bridge baseline.
++    if (event.role !== undefined && !['beat', 'half', 'quarter', 'free'].includes(event.role)) throw Error('Expected original baseline roles');
++    if (!event.boundary && !maxima.has(event.time)) throw Error('Baseline regular onset lacks an original physical member');
++    const copy = Object.freeze({ ...event }); basePool.push(copy); canonical.set(copy.time, copy);
++    origins.set(copy.time, Object.freeze({ kind: 'baseline-canonical', baseIndex, source: null, memberIndex: null }));
++  });
++  for (const [time, winner] of maxima) if (!canonical.has(time)) {
++    const copy = { ...winner.event }; delete copy.role; delete copy.boundary;
++    canonical.set(time, Object.freeze(copy));
++    origins.set(time, Object.freeze({ kind: 'raw-member-max', baseIndex: null, source: winner.source, memberIndex: winner.memberIndex }));
++  }
++  const domains = {} as Record<Difficulty, SalienceDomain>, thresholds = {} as Record<Difficulty, number>;
++  for (const mode of MODES) {
++    const spec = SPECS[mode], baseIndices: number[] = [];
++    basePool.forEach((event, index) => { if (oldRoleEligible(event, spec.max)) baseIndices.push(index); });
++    const sorted = baseIndices.map(index => basePool[index].strength).sort((a, b) => a - b);
++    const value = sorted[Math.floor(sorted.length * .75)];
++    // Preserve the ORIGINAL zero/empty fallback and arithmetic grouping exactly.
++    const threshold = Math.min(spec.threshold, (value || spec.threshold) * .55);
++    domains[mode] = Object.freeze({ mode, basis: baseline.pulse ? 'baseline-pulse' : 'baseline-onsets',
++      baseIndices: Object.freeze(baseIndices), count: baseIndices.length, q75: value ?? null, threshold });
++    thresholds[mode] = threshold;
++  }
++  const ordered = [...canonical.entries()].sort((a, b) => a[0] - b[0]);
++  return Object.freeze({ version: SALIENCE_VERSION, fingerprint: baseline.fingerprint, duration,
++    byTime: new FixedIndex(ordered), originsByTime: new FixedIndex(ordered.map(([time]) => [time, origins.get(time)!] as const)),
++    basePool: Object.freeze(basePool), domains: Object.freeze(domains), thresholds: Object.freeze(thresholds),
++    regularFrames: maxima.size, originalMembers, excludedBoundaryMembers });
++}
+diff --git a/src/types.ts b/src/types.ts
+index 813c05c..3a0ce54 100644
+--- a/src/types.ts
++++ b/src/types.ts
+@@ -12,6 +12,9 @@ export interface Rhythm {
+   meterConfidence: number;
+ }
+ export interface Analysis {
++  unifiedAttackClock?: import('./core/unified-attack-application').UnifiedAttackClockMetadata;
++  unifiedAttackObservations?: import('./core/unified-attack-application').UnifiedAttackObservations;
++  arrangementSalience?: import('./core/unified-attack-salience').ArrangementSalience;
+   duration: number;
+   bpm: number;
+   confidence: number;

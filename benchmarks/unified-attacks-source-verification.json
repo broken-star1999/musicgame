@@ -1,0 +1,282 @@
+{
+  "schema": 1,
+  "passiveSourceVerification": true,
+  "complete": true,
+  "passed": true,
+  "candidate": "UA1-common-attack/v1",
+  "baselineCommit": "aeaf78284cb66601fd02bf9e40eaf99642285689",
+  "ordinaryGitApplyCheck": true,
+  "ordinaryGitApply": true,
+  "scratchCommit": false,
+  "actualCounts": {
+    "baseline": 24,
+    "candidate": 28,
+    "modified": 5,
+    "added": 4,
+    "unchanged": 19
+  },
+  "allActualCSourceFilesCompared": 28,
+  "byteIdenticalFiles": 28,
+  "exactInventory": true,
+  "compatibilityFilenameAliases": 0,
+  "byteIdenticalAuthoredSalience": true,
+  "noExecutablePredecessorSolverImports": true,
+  "inheritedBaselineEarlyRejects": 5,
+  "inheritedRejectsAreCandidateTrials": false,
+  "numericalResultBinding": null,
+  "runtimeSrcDependenciesPublicUnchanged": true,
+  "noSourceGraphRegeneration": true,
+  "independentTree": ".qa/unified-attacks-public-source-v1/apply-check-tree",
+  "patchSHA256": "048c441cd56662ab13244b3e1c56ed738d5ea698fec492480374767294452871",
+  "sourceManifestSHA256": "f98e7194dc6c5943e4a0b2b14e51dfa8ce59bdadb5125d9d9cdffa6c11746605",
+  "actualPreparationSHA256": "a3f7063db1b9115905cd2feed079cdc898f7f70bfa91ab7712129049223c28a5",
+  "staticBundleSHA256": "74e6bfb3ed0b1327bc52278c037cd1e1c85e17a308ccbe344ca21b45f535dabd",
+  "cachedFreezeSHA256": "860a8d5f9b80c9bcdaeef37f05b0afdc7203f73897d834210704035db550542c",
+  "cachedFreezePinnedFiles": 385,
+  "passiveScriptSHA256": {
+    "preparer": "880b78af8170c3e69f23d5ea9ae7fd3891d7cf369a4f3f771ce46bfeb90eedef",
+    "verifier": "bde37fa81312c4b9a4f91e1e07d180579f9d323f9fde69e8d6cbe753cd8a9e90"
+  },
+  "calls": {
+    "application": 0,
+    "feature": 0,
+    "atoms": 0,
+    "roles": 0,
+    "clock": 0,
+    "tracker": 0,
+    "chart": 0,
+    "analyzer": 0,
+    "matcher": 0,
+    "FFT": 0,
+    "sourceGeneration": 0,
+    "audioOrPCM": 0,
+    "metric": 0
+  },
+  "comparisons": [
+    {
+      "path": "src/core/analysis-fallback.ts",
+      "bytes": 209,
+      "sha256": "eda2ec9970bba7318c6cb1ce60520c54d2cee6ca7ff92f98416dfa781dbaff1e",
+      "baselineSHA256": "eda2ec9970bba7318c6cb1ce60520c54d2cee6ca7ff92f98416dfa781dbaff1e",
+      "status": "unchanged",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/analysis.ts",
+      "bytes": 1335,
+      "sha256": "92fba5de5badb4bd0f8289c46882eab8cf548cb6ed9c2786ea2404dabc7089d7",
+      "baselineSHA256": "e3f33c635510cbaf2c7f8d07a2d35230eca1617c03045ab58837d82d5f77b7e7",
+      "status": "modified",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/chart-constraints.ts",
+      "bytes": 1628,
+      "sha256": "35e4f304aed8eb2dfe49bb4dbae6d7b7db7b5deea34732a96dc7df05aeec1736",
+      "baselineSHA256": "35e4f304aed8eb2dfe49bb4dbae6d7b7db7b5deea34732a96dc7df05aeec1736",
+      "status": "unchanged",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/chart.ts",
+      "bytes": 9663,
+      "sha256": "1120a11eeafb67ceab5d397e21c193df49726f4d0d858d819579804ddcefd250",
+      "baselineSHA256": "25e9dfe901aac3248ff6e2d8d26d2ab465800094178b7090afc99bb2a6440c5f",
+      "status": "modified",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/chroma.ts",
+      "bytes": 2431,
+      "sha256": "4172510959a332bfeff4970964dd5c8ad2a696d1725bbd1496481d8d82f84ded",
+      "baselineSHA256": "4172510959a332bfeff4970964dd5c8ad2a696d1725bbd1496481d8d82f84ded",
+      "status": "unchanged",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/clock-evidence.ts",
+      "bytes": 2638,
+      "sha256": "128164a84bf29dc71667d9f82517dd0a595e6daf9b4045e69756c84e7e5b0c16",
+      "baselineSHA256": "128164a84bf29dc71667d9f82517dd0a595e6daf9b4045e69756c84e7e5b0c16",
+      "status": "unchanged",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/fingering.ts",
+      "bytes": 5318,
+      "sha256": "797d6bc08a44163a261e4e02c22fe8ea4e57eff67bfd5fdc9a5d938b2b23d83e",
+      "baselineSHA256": "797d6bc08a44163a261e4e02c22fe8ea4e57eff67bfd5fdc9a5d938b2b23d83e",
+      "status": "unchanged",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/musical-events.ts",
+      "bytes": 6183,
+      "sha256": "a4b51ea2fbb794656cbfabcaab3edbbe485925398f2afd2ccd82e991d2e3e185",
+      "baselineSHA256": "a4b51ea2fbb794656cbfabcaab3edbbe485925398f2afd2ccd82e991d2e3e185",
+      "status": "unchanged",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/onset-selection.ts",
+      "bytes": 2099,
+      "sha256": "00a59956b5a27c49d78f6e8cb76fa1aa2bdde5d364d57a2815716a4b096c917f",
+      "baselineSHA256": "00a59956b5a27c49d78f6e8cb76fa1aa2bdde5d364d57a2815716a4b096c917f",
+      "status": "unchanged",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/patterns.ts",
+      "bytes": 4133,
+      "sha256": "10966f254c5e5025ff8acd12986fa3218daa6e0467e75313768ce9833fe34ffc",
+      "baselineSHA256": "10966f254c5e5025ff8acd12986fa3218daa6e0467e75313768ce9833fe34ffc",
+      "status": "unchanged",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/phase-dp-kernel.ts",
+      "bytes": 11547,
+      "sha256": "d0575991cc06e5470bb7ad420c1324d2b2f06909bb20e7ac82017ec499a8f438",
+      "baselineSHA256": "d0575991cc06e5470bb7ad420c1324d2b2f06909bb20e7ac82017ec499a8f438",
+      "status": "unchanged",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/phase-dp-types.ts",
+      "bytes": 2388,
+      "sha256": "737c54e98f9f614ed997a207624d1556b666df2fe40fbfb8d1f5532c1eae798f",
+      "baselineSHA256": "737c54e98f9f614ed997a207624d1556b666df2fe40fbfb8d1f5532c1eae798f",
+      "status": "unchanged",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/phase-dp.ts",
+      "bytes": 1725,
+      "sha256": "33165fa8deefc87d52c1b463a2dbd3ca08ecfad16e655b8fcfc365f839400ae6",
+      "baselineSHA256": "33165fa8deefc87d52c1b463a2dbd3ca08ecfad16e655b8fcfc365f839400ae6",
+      "status": "unchanged",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/phase-gate.ts",
+      "bytes": 1777,
+      "sha256": "23f7a52d3a72076857868a8533995abaf0e009b16700514f3434ccb803901e01",
+      "baselineSHA256": "23f7a52d3a72076857868a8533995abaf0e009b16700514f3434ccb803901e01",
+      "status": "unchanged",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/phrases.ts",
+      "bytes": 9223,
+      "sha256": "8d9029820b333c3f699cecf9998c950294f50d0fe72751cc3fd13b871c5dfc89",
+      "baselineSHA256": "8d9029820b333c3f699cecf9998c950294f50d0fe72751cc3fd13b871c5dfc89",
+      "status": "unchanged",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/rhythm-source.ts",
+      "bytes": 8488,
+      "sha256": "878fe191a23b67d36545b06fd41428df5832f3ac53db6fbc29cb44ebe51c5a90",
+      "baselineSHA256": "878fe191a23b67d36545b06fd41428df5832f3ac53db6fbc29cb44ebe51c5a90",
+      "status": "unchanged",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/rhythm.ts",
+      "bytes": 5937,
+      "sha256": "0fb8e4a73e2793c203559d6867c61c3c8f7f766427754125c0092506dc8a10d0",
+      "baselineSHA256": "f79cdafab5bc406f50c6bff63506fbf46f15db8ec2a83b2d8e702250b3a28dd9",
+      "status": "modified",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/signal-analysis.ts",
+      "bytes": 10941,
+      "sha256": "ca4b2783850a66feb197ac36965c4692ec941bcdbb1c393d23d0aba37b14f17c",
+      "baselineSHA256": "51ae75faeebee18a8c1f4a0e22e063d0067c0e5cd1f37fb8a5b045471682ce98",
+      "status": "modified",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/signal-binding.ts",
+      "bytes": 2448,
+      "sha256": "93c9e516abe08a08a0a43c54f01591e2bd6f8f33ad6291f20ec946ce60e8e36d",
+      "baselineSHA256": "93c9e516abe08a08a0a43c54f01591e2bd6f8f33ad6291f20ec946ce60e8e36d",
+      "status": "unchanged",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/signal-events.ts",
+      "bytes": 1474,
+      "sha256": "cfab9dd27bcd2d5a3daecce3ec4cf084e6897e5e72538ed3179d078ce6518c13",
+      "baselineSHA256": "cfab9dd27bcd2d5a3daecce3ec4cf084e6897e5e72538ed3179d078ce6518c13",
+      "status": "unchanged",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/signal-pool.ts",
+      "bytes": 2135,
+      "sha256": "3d54e98503ada15b29f9018f2c23528bda98e2e8a30ad78cbc55272568c1855e",
+      "baselineSHA256": "3d54e98503ada15b29f9018f2c23528bda98e2e8a30ad78cbc55272568c1855e",
+      "status": "unchanged",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/tempo-families.ts",
+      "bytes": 17285,
+      "sha256": "b4181a948486c12a09ac81150b7bb6d095d3337768664d5ef5abb1889dd7920c",
+      "baselineSHA256": "b4181a948486c12a09ac81150b7bb6d095d3337768664d5ef5abb1889dd7920c",
+      "status": "unchanged",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/tempo-family-config.ts",
+      "bytes": 727,
+      "sha256": "3036bb40ce762546651cad5a890c54809b9264df6f45311b7ba1ae98f178d13d",
+      "baselineSHA256": "3036bb40ce762546651cad5a890c54809b9264df6f45311b7ba1ae98f178d13d",
+      "status": "unchanged",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/unified-attack-application.ts",
+      "bytes": 9451,
+      "sha256": "a2bb3081caa9b3c1459eeeac58ba67900a740b60c2c1b9e51dc88cee69d51fd9",
+      "baselineSHA256": null,
+      "status": "added",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/unified-attack-atoms.ts",
+      "bytes": 5284,
+      "sha256": "a23aabe553e895ec52a0b6bd3a667909e569832f127e8c61516614ac1e597d44",
+      "baselineSHA256": null,
+      "status": "added",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/unified-attack-roles.ts",
+      "bytes": 10339,
+      "sha256": "fe1f11f970c473cd9870f5a1d4f292e0f44e982b58b1719a23c7c352361b06a5",
+      "baselineSHA256": null,
+      "status": "added",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/core/unified-attack-salience.ts",
+      "bytes": 9635,
+      "sha256": "302b41f19762385d17f9b2b68a15d69e6113caf14dbc7c3a434611374bc7cc84",
+      "baselineSHA256": null,
+      "status": "added",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/types.ts",
+      "bytes": 2636,
+      "sha256": "ad52481d136e30adf88f79bc85535378195d68eb8835b0c594a2d73ea1a72941",
+      "baselineSHA256": "37cad5619425d6d7387ba0024e03eb5a116a2f21dc377c1990ec0622393d1390",
+      "status": "modified",
+      "byteIdentical": true
+    }
+  ],
+  "verificationScope": "Only filesystem/Git reconstruction and source/provenance hashes. No source/candidate imports or calls, metrics, audio/PCM, tracked writes, commits, adoption or publication. Source fidelity proves no musical quality outcome."
+}

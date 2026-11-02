@@ -1,0 +1,706 @@
+{
+  "schema": 1,
+  "candidate": "UA1-common-attack/v1",
+  "state": "INACTIVE_SOURCE_RESEARCH_ARCHIVE",
+  "runtimeActive": false,
+  "automaticallyApplied": false,
+  "numericalResultsIncluded": false,
+  "numericalResultBinding": null,
+  "baselineCommit": "aeaf78284cb66601fd02bf9e40eaf99642285689",
+  "acceptedBaselineSourceCount": 24,
+  "candidateSourceCount": 28,
+  "changedFiles": 9,
+  "modifiedFiles": 5,
+  "addedFiles": 4,
+  "unchangedFiles": 19,
+  "chartVersion": 12,
+  "neuralComponents": false,
+  "patch": {
+    "proposedPublicPath": "benchmarks/prototypes/unified-attacks-v12.patch",
+    "sha256": "048c441cd56662ab13244b3e1c56ed738d5ea698fec492480374767294452871",
+    "bytes": 43121,
+    "format": "Ordinary git diff a/src b/src; git apply on accepted baseline. No QA resolver, source generation or candidate execution."
+  },
+  "compatibilityAliases": [],
+  "analysisMetadata": {
+    "clockProperty": "Analysis.unifiedAttackClock",
+    "clockMarker": "UA1-common-attack/v1",
+    "featureOnlyProperty": "Analysis.unifiedAttackObservations",
+    "featureOnlyMarker": "UA1-observation-stats/v1",
+    "salienceProperty": "Analysis.arrangementSalience",
+    "salienceVersion": "baseline-canonical-first/v1"
+  },
+  "integration": {
+    "sameCallRawInputs": "Existing analyzer exposes one callback with raw mixed onsets and three raw band streams. The baseline same-call analysis and canonical binding must finish successfully before UA1 application.",
+    "commonUnitClock": "Group the four raw streams once; one neutral unit-weight observation per physical attack atom drives a fresh accepted estimateTempo and accepted trackBeats. Raw strength is retained outside clock mass.",
+    "actualRoles": "Actual new beat times generate primary, half and quarter targets; bindings retain actual physical attack times and original member identity. Automatic C charts use the actual new grid and physical attack time.",
+    "fixedNormalizer": "Serializable canonical-first arrangementSalience preserves original canonical strength/band at known exact times and max-raw strength for absent exact times. Manual BPM retains accepted same-pool rebinding and timing.",
+    "selector": "Accepted lexicographic onset selector remains unchanged; no predecessor finite utility selector.",
+    "inheritedEarlyRejections": {
+      "count": 5,
+      "candidateExecuted": false,
+      "scope": "The five original B early rejects are inherited cache outcomes. This graph does not establish UA1 recovery, actual UA1 rejection behavior or independent C rejection parity on them."
+    },
+    "featureOnlyControl": "F adds only unifiedAttackObservations; it has no clock marker or arrangementSalience. F and C share this source graph through separate APIs."
+  },
+  "sourceReuse": {
+    "record": {
+      "destination": ".qa/unified-attacks-v1/salience.ts",
+      "origin": ".qa/slot-clock-v3/salience.ts",
+      "originSHA256": "2b21f7f5935773db2a1f3bdc82802d9e43192831b2a43f63aced5fb41459882a",
+      "destinationSHA256": "2b21f7f5935773db2a1f3bdc82802d9e43192831b2a43f63aced5fb41459882a",
+      "mode": "Byte-identical marker-independent canonical salience helper only",
+      "executablePredecessorSolverImport": false,
+      "oldSC2CandidateOrFitterCalls": 0
+    },
+    "recordSHA256": "6960039d440f8c7b1492bc3a49a4b57ebe74bd016e42a503da41294a6315a078",
+    "byteIdenticalAuthoredSalience": true,
+    "generatedRelativeImportRewriteOnly": true,
+    "noExecutablePredecessorSolverImports": true,
+    "scope": "Only the marker-independent generic salience helper is byte-copied from the prior research directory. UA1 imports its own explicit unified-attack-* modules; no SC2 fitter, path, readout or solver is imported."
+  },
+  "sourceContracts": {
+    "pins": {
+      ".qa/unified-attacks-v1/DESIGN.md": "e4b39f92678913e68187995920a97aac90355fb469f31125f70c342233c5d176",
+      ".qa/unified-attacks-v1/BRIDGE_CONTRACT.md": "5d4cb4bbe5c3bd81f242353941d63ee515d3978422c3af6a82cbec1a673fc3ad",
+      ".qa/unified-attacks-v1/ROOT_APPLICATION_REVIEW.md": "11640039bd0e784715de2e7e3e5d199cf7b3de990424f858c754dabc46953da9",
+      ".qa/unified-attacks-cached-v1/STATIC_REVIEW.md": "050ba0ef9e4c154b72f3710d0338798a94d4ea8e63ba411eef24d3dacf63ddc8"
+    },
+    "qualityScope": "This is an inactive source-only reconstruction proof. Source reconstruction and prior cached completion are not musical quality or release approval; numerical outcomes belong to a separately hash-bound public result projection. No tuning or publication is performed here."
+  },
+  "sourceGraph": {
+    "root": ".qa/unified-attacks-application-v1/stock/C/",
+    "actualPreparationSHA256": "a3f7063db1b9115905cd2feed079cdc898f7f70bfa91ab7712129049223c28a5",
+    "staticBundleSHA256": "74e6bfb3ed0b1327bc52278c037cd1e1c85e17a308ccbe344ca21b45f535dabd",
+    "cachedFreeze": {
+      "path": ".qa/unified-attacks-cached-v1/freeze.json",
+      "sha256": "860a8d5f9b80c9bcdaeef37f05b0afdc7203f73897d834210704035db550542c",
+      "pinnedFiles": 385,
+      "bindingKind": "Immutable source provenance only, not a numerical result binding"
+    },
+    "numericalResultBinding": null,
+    "noRegeneration": true,
+    "sourceRows": [
+      {
+        "path": "src/core/analysis-fallback.ts",
+        "bytes": 209,
+        "sha256": "eda2ec9970bba7318c6cb1ce60520c54d2cee6ca7ff92f98416dfa781dbaff1e",
+        "acceptedMainSHA256": "eda2ec9970bba7318c6cb1ce60520c54d2cee6ca7ff92f98416dfa781dbaff1e",
+        "status": "unchanged",
+        "origin": {
+          "kind": "accepted-main-unmodified",
+          "baselinePath": "src/core/analysis-fallback.ts"
+        }
+      },
+      {
+        "path": "src/core/analysis.ts",
+        "bytes": 1335,
+        "sha256": "92fba5de5badb4bd0f8289c46882eab8cf548cb6ed9c2786ea2404dabc7089d7",
+        "acceptedMainSHA256": "e3f33c635510cbaf2c7f8d07a2d35230eca1617c03045ab58837d82d5f77b7e7",
+        "status": "modified",
+        "origin": {
+          "kind": "UA1-integration-on-accepted-main",
+          "baselinePath": "src/core/analysis.ts"
+        }
+      },
+      {
+        "path": "src/core/chart-constraints.ts",
+        "bytes": 1628,
+        "sha256": "35e4f304aed8eb2dfe49bb4dbae6d7b7db7b5deea34732a96dc7df05aeec1736",
+        "acceptedMainSHA256": "35e4f304aed8eb2dfe49bb4dbae6d7b7db7b5deea34732a96dc7df05aeec1736",
+        "status": "unchanged",
+        "origin": {
+          "kind": "accepted-main-unmodified",
+          "baselinePath": "src/core/chart-constraints.ts"
+        }
+      },
+      {
+        "path": "src/core/chart.ts",
+        "bytes": 9663,
+        "sha256": "1120a11eeafb67ceab5d397e21c193df49726f4d0d858d819579804ddcefd250",
+        "acceptedMainSHA256": "25e9dfe901aac3248ff6e2d8d26d2ab465800094178b7090afc99bb2a6440c5f",
+        "status": "modified",
+        "origin": {
+          "kind": "UA1-integration-on-accepted-main",
+          "baselinePath": "src/core/chart.ts"
+        }
+      },
+      {
+        "path": "src/core/chroma.ts",
+        "bytes": 2431,
+        "sha256": "4172510959a332bfeff4970964dd5c8ad2a696d1725bbd1496481d8d82f84ded",
+        "acceptedMainSHA256": "4172510959a332bfeff4970964dd5c8ad2a696d1725bbd1496481d8d82f84ded",
+        "status": "unchanged",
+        "origin": {
+          "kind": "accepted-main-unmodified",
+          "baselinePath": "src/core/chroma.ts"
+        }
+      },
+      {
+        "path": "src/core/clock-evidence.ts",
+        "bytes": 2638,
+        "sha256": "128164a84bf29dc71667d9f82517dd0a595e6daf9b4045e69756c84e7e5b0c16",
+        "acceptedMainSHA256": "128164a84bf29dc71667d9f82517dd0a595e6daf9b4045e69756c84e7e5b0c16",
+        "status": "unchanged",
+        "origin": {
+          "kind": "accepted-main-unmodified",
+          "baselinePath": "src/core/clock-evidence.ts"
+        }
+      },
+      {
+        "path": "src/core/fingering.ts",
+        "bytes": 5318,
+        "sha256": "797d6bc08a44163a261e4e02c22fe8ea4e57eff67bfd5fdc9a5d938b2b23d83e",
+        "acceptedMainSHA256": "797d6bc08a44163a261e4e02c22fe8ea4e57eff67bfd5fdc9a5d938b2b23d83e",
+        "status": "unchanged",
+        "origin": {
+          "kind": "accepted-main-unmodified",
+          "baselinePath": "src/core/fingering.ts"
+        }
+      },
+      {
+        "path": "src/core/musical-events.ts",
+        "bytes": 6183,
+        "sha256": "a4b51ea2fbb794656cbfabcaab3edbbe485925398f2afd2ccd82e991d2e3e185",
+        "acceptedMainSHA256": "a4b51ea2fbb794656cbfabcaab3edbbe485925398f2afd2ccd82e991d2e3e185",
+        "status": "unchanged",
+        "origin": {
+          "kind": "accepted-main-unmodified",
+          "baselinePath": "src/core/musical-events.ts"
+        }
+      },
+      {
+        "path": "src/core/onset-selection.ts",
+        "bytes": 2099,
+        "sha256": "00a59956b5a27c49d78f6e8cb76fa1aa2bdde5d364d57a2815716a4b096c917f",
+        "acceptedMainSHA256": "00a59956b5a27c49d78f6e8cb76fa1aa2bdde5d364d57a2815716a4b096c917f",
+        "status": "unchanged",
+        "origin": {
+          "kind": "accepted-main-unmodified",
+          "baselinePath": "src/core/onset-selection.ts"
+        }
+      },
+      {
+        "path": "src/core/patterns.ts",
+        "bytes": 4133,
+        "sha256": "10966f254c5e5025ff8acd12986fa3218daa6e0467e75313768ce9833fe34ffc",
+        "acceptedMainSHA256": "10966f254c5e5025ff8acd12986fa3218daa6e0467e75313768ce9833fe34ffc",
+        "status": "unchanged",
+        "origin": {
+          "kind": "accepted-main-unmodified",
+          "baselinePath": "src/core/patterns.ts"
+        }
+      },
+      {
+        "path": "src/core/phase-dp-kernel.ts",
+        "bytes": 11547,
+        "sha256": "d0575991cc06e5470bb7ad420c1324d2b2f06909bb20e7ac82017ec499a8f438",
+        "acceptedMainSHA256": "d0575991cc06e5470bb7ad420c1324d2b2f06909bb20e7ac82017ec499a8f438",
+        "status": "unchanged",
+        "origin": {
+          "kind": "accepted-main-unmodified",
+          "baselinePath": "src/core/phase-dp-kernel.ts"
+        }
+      },
+      {
+        "path": "src/core/phase-dp-types.ts",
+        "bytes": 2388,
+        "sha256": "737c54e98f9f614ed997a207624d1556b666df2fe40fbfb8d1f5532c1eae798f",
+        "acceptedMainSHA256": "737c54e98f9f614ed997a207624d1556b666df2fe40fbfb8d1f5532c1eae798f",
+        "status": "unchanged",
+        "origin": {
+          "kind": "accepted-main-unmodified",
+          "baselinePath": "src/core/phase-dp-types.ts"
+        }
+      },
+      {
+        "path": "src/core/phase-dp.ts",
+        "bytes": 1725,
+        "sha256": "33165fa8deefc87d52c1b463a2dbd3ca08ecfad16e655b8fcfc365f839400ae6",
+        "acceptedMainSHA256": "33165fa8deefc87d52c1b463a2dbd3ca08ecfad16e655b8fcfc365f839400ae6",
+        "status": "unchanged",
+        "origin": {
+          "kind": "accepted-main-unmodified",
+          "baselinePath": "src/core/phase-dp.ts"
+        }
+      },
+      {
+        "path": "src/core/phase-gate.ts",
+        "bytes": 1777,
+        "sha256": "23f7a52d3a72076857868a8533995abaf0e009b16700514f3434ccb803901e01",
+        "acceptedMainSHA256": "23f7a52d3a72076857868a8533995abaf0e009b16700514f3434ccb803901e01",
+        "status": "unchanged",
+        "origin": {
+          "kind": "accepted-main-unmodified",
+          "baselinePath": "src/core/phase-gate.ts"
+        }
+      },
+      {
+        "path": "src/core/phrases.ts",
+        "bytes": 9223,
+        "sha256": "8d9029820b333c3f699cecf9998c950294f50d0fe72751cc3fd13b871c5dfc89",
+        "acceptedMainSHA256": "8d9029820b333c3f699cecf9998c950294f50d0fe72751cc3fd13b871c5dfc89",
+        "status": "unchanged",
+        "origin": {
+          "kind": "accepted-main-unmodified",
+          "baselinePath": "src/core/phrases.ts"
+        }
+      },
+      {
+        "path": "src/core/rhythm-source.ts",
+        "bytes": 8488,
+        "sha256": "878fe191a23b67d36545b06fd41428df5832f3ac53db6fbc29cb44ebe51c5a90",
+        "acceptedMainSHA256": "878fe191a23b67d36545b06fd41428df5832f3ac53db6fbc29cb44ebe51c5a90",
+        "status": "unchanged",
+        "origin": {
+          "kind": "accepted-main-unmodified",
+          "baselinePath": "src/core/rhythm-source.ts"
+        }
+      },
+      {
+        "path": "src/core/rhythm.ts",
+        "bytes": 5937,
+        "sha256": "0fb8e4a73e2793c203559d6867c61c3c8f7f766427754125c0092506dc8a10d0",
+        "acceptedMainSHA256": "f79cdafab5bc406f50c6bff63506fbf46f15db8ec2a83b2d8e702250b3a28dd9",
+        "status": "modified",
+        "origin": {
+          "kind": "UA1-integration-on-accepted-main",
+          "baselinePath": "src/core/rhythm.ts"
+        }
+      },
+      {
+        "path": "src/core/signal-analysis.ts",
+        "bytes": 10941,
+        "sha256": "ca4b2783850a66feb197ac36965c4692ec941bcdbb1c393d23d0aba37b14f17c",
+        "acceptedMainSHA256": "51ae75faeebee18a8c1f4a0e22e063d0067c0e5cd1f37fb8a5b045471682ce98",
+        "status": "modified",
+        "origin": {
+          "kind": "UA1-integration-on-accepted-main",
+          "baselinePath": "src/core/signal-analysis.ts"
+        }
+      },
+      {
+        "path": "src/core/signal-binding.ts",
+        "bytes": 2448,
+        "sha256": "93c9e516abe08a08a0a43c54f01591e2bd6f8f33ad6291f20ec946ce60e8e36d",
+        "acceptedMainSHA256": "93c9e516abe08a08a0a43c54f01591e2bd6f8f33ad6291f20ec946ce60e8e36d",
+        "status": "unchanged",
+        "origin": {
+          "kind": "accepted-main-unmodified",
+          "baselinePath": "src/core/signal-binding.ts"
+        }
+      },
+      {
+        "path": "src/core/signal-events.ts",
+        "bytes": 1474,
+        "sha256": "cfab9dd27bcd2d5a3daecce3ec4cf084e6897e5e72538ed3179d078ce6518c13",
+        "acceptedMainSHA256": "cfab9dd27bcd2d5a3daecce3ec4cf084e6897e5e72538ed3179d078ce6518c13",
+        "status": "unchanged",
+        "origin": {
+          "kind": "accepted-main-unmodified",
+          "baselinePath": "src/core/signal-events.ts"
+        }
+      },
+      {
+        "path": "src/core/signal-pool.ts",
+        "bytes": 2135,
+        "sha256": "3d54e98503ada15b29f9018f2c23528bda98e2e8a30ad78cbc55272568c1855e",
+        "acceptedMainSHA256": "3d54e98503ada15b29f9018f2c23528bda98e2e8a30ad78cbc55272568c1855e",
+        "status": "unchanged",
+        "origin": {
+          "kind": "accepted-main-unmodified",
+          "baselinePath": "src/core/signal-pool.ts"
+        }
+      },
+      {
+        "path": "src/core/tempo-families.ts",
+        "bytes": 17285,
+        "sha256": "b4181a948486c12a09ac81150b7bb6d095d3337768664d5ef5abb1889dd7920c",
+        "acceptedMainSHA256": "b4181a948486c12a09ac81150b7bb6d095d3337768664d5ef5abb1889dd7920c",
+        "status": "unchanged",
+        "origin": {
+          "kind": "accepted-main-unmodified",
+          "baselinePath": "src/core/tempo-families.ts"
+        }
+      },
+      {
+        "path": "src/core/tempo-family-config.ts",
+        "bytes": 727,
+        "sha256": "3036bb40ce762546651cad5a890c54809b9264df6f45311b7ba1ae98f178d13d",
+        "acceptedMainSHA256": "3036bb40ce762546651cad5a890c54809b9264df6f45311b7ba1ae98f178d13d",
+        "status": "unchanged",
+        "origin": {
+          "kind": "accepted-main-unmodified",
+          "baselinePath": "src/core/tempo-family-config.ts"
+        }
+      },
+      {
+        "path": "src/core/unified-attack-application.ts",
+        "bytes": 9451,
+        "sha256": "a2bb3081caa9b3c1459eeeac58ba67900a740b60c2c1b9e51dc88cee69d51fd9",
+        "acceptedMainSHA256": null,
+        "status": "added",
+        "origin": {
+          "kind": "UA1-authored-module-with-relative-import-rewriting",
+          "path": ".qa/unified-attacks-v1/application.ts",
+          "sha256": "5ce41d792d320e56ea26ca1f01c6fab1f916d3571f1b30dfa4ba4bcf15549ef4"
+        }
+      },
+      {
+        "path": "src/core/unified-attack-atoms.ts",
+        "bytes": 5284,
+        "sha256": "a23aabe553e895ec52a0b6bd3a667909e569832f127e8c61516614ac1e597d44",
+        "acceptedMainSHA256": null,
+        "status": "added",
+        "origin": {
+          "kind": "UA1-authored-module-with-relative-import-rewriting",
+          "path": ".qa/unified-attacks-v1/atoms.ts",
+          "sha256": "a23aabe553e895ec52a0b6bd3a667909e569832f127e8c61516614ac1e597d44"
+        }
+      },
+      {
+        "path": "src/core/unified-attack-roles.ts",
+        "bytes": 10339,
+        "sha256": "fe1f11f970c473cd9870f5a1d4f292e0f44e982b58b1719a23c7c352361b06a5",
+        "acceptedMainSHA256": null,
+        "status": "added",
+        "origin": {
+          "kind": "UA1-authored-module-with-relative-import-rewriting",
+          "path": ".qa/unified-attacks-v1/roles.ts",
+          "sha256": "9a9fed4f3ec2a01e5501cdd9ae7c396945b5e8155891c7201eb974f42781b69a"
+        }
+      },
+      {
+        "path": "src/core/unified-attack-salience.ts",
+        "bytes": 9635,
+        "sha256": "302b41f19762385d17f9b2b68a15d69e6113caf14dbc7c3a434611374bc7cc84",
+        "acceptedMainSHA256": null,
+        "status": "added",
+        "origin": {
+          "kind": "byte-identical-generic-helper-with-relative-import-rewriting",
+          "path": ".qa/unified-attacks-v1/salience.ts",
+          "sha256": "2b21f7f5935773db2a1f3bdc82802d9e43192831b2a43f63aced5fb41459882a"
+        }
+      },
+      {
+        "path": "src/types.ts",
+        "bytes": 2636,
+        "sha256": "ad52481d136e30adf88f79bc85535378195d68eb8835b0c594a2d73ea1a72941",
+        "acceptedMainSHA256": "37cad5619425d6d7387ba0024e03eb5a116a2f21dc377c1990ec0622393d1390",
+        "status": "modified",
+        "origin": {
+          "kind": "UA1-integration-on-accepted-main",
+          "baselinePath": "src/types.ts"
+        }
+      }
+    ],
+    "relativeImportEdges": [
+      {
+        "from": "src/core/analysis-fallback.ts",
+        "to": "src/types.ts"
+      },
+      {
+        "from": "src/core/analysis.ts",
+        "to": "src/core/signal-analysis.ts"
+      },
+      {
+        "from": "src/core/analysis.ts",
+        "to": "src/core/signal-binding.ts"
+      },
+      {
+        "from": "src/core/analysis.ts",
+        "to": "src/core/unified-attack-application.ts"
+      },
+      {
+        "from": "src/core/analysis.ts",
+        "to": "src/types.ts"
+      },
+      {
+        "from": "src/core/analysis.ts",
+        "to": "src/core/signal-analysis.ts"
+      },
+      {
+        "from": "src/core/chart-constraints.ts",
+        "to": "src/types.ts"
+      },
+      {
+        "from": "src/core/chart.ts",
+        "to": "src/core/unified-attack-salience.ts"
+      },
+      {
+        "from": "src/core/chart.ts",
+        "to": "src/types.ts"
+      },
+      {
+        "from": "src/core/chart.ts",
+        "to": "src/core/phrases.ts"
+      },
+      {
+        "from": "src/core/chart.ts",
+        "to": "src/core/chart-constraints.ts"
+      },
+      {
+        "from": "src/core/chart.ts",
+        "to": "src/core/rhythm.ts"
+      },
+      {
+        "from": "src/core/chart.ts",
+        "to": "src/core/patterns.ts"
+      },
+      {
+        "from": "src/core/chart.ts",
+        "to": "src/core/fingering.ts"
+      },
+      {
+        "from": "src/core/chart.ts",
+        "to": "src/core/onset-selection.ts"
+      },
+      {
+        "from": "src/core/chart.ts",
+        "to": "src/core/signal-events.ts"
+      },
+      {
+        "from": "src/core/clock-evidence.ts",
+        "to": "src/types.ts"
+      },
+      {
+        "from": "src/core/fingering.ts",
+        "to": "src/types.ts"
+      },
+      {
+        "from": "src/core/fingering.ts",
+        "to": "src/core/chart-constraints.ts"
+      },
+      {
+        "from": "src/core/musical-events.ts",
+        "to": "src/types.ts"
+      },
+      {
+        "from": "src/core/musical-events.ts",
+        "to": "src/core/rhythm.ts"
+      },
+      {
+        "from": "src/core/onset-selection.ts",
+        "to": "src/types.ts"
+      },
+      {
+        "from": "src/core/patterns.ts",
+        "to": "src/types.ts"
+      },
+      {
+        "from": "src/core/patterns.ts",
+        "to": "src/core/rhythm.ts"
+      },
+      {
+        "from": "src/core/phase-dp-kernel.ts",
+        "to": "src/core/phase-dp-types.ts"
+      },
+      {
+        "from": "src/core/phase-dp.ts",
+        "to": "src/core/phase-dp-types.ts"
+      },
+      {
+        "from": "src/core/phase-dp.ts",
+        "to": "src/core/phase-dp-kernel.ts"
+      },
+      {
+        "from": "src/core/phase-gate.ts",
+        "to": "src/types.ts"
+      },
+      {
+        "from": "src/core/phase-gate.ts",
+        "to": "src/core/tempo-families.ts"
+      },
+      {
+        "from": "src/core/phase-gate.ts",
+        "to": "src/core/clock-evidence.ts"
+      },
+      {
+        "from": "src/core/phrases.ts",
+        "to": "src/types.ts"
+      },
+      {
+        "from": "src/core/phrases.ts",
+        "to": "src/core/chart-constraints.ts"
+      },
+      {
+        "from": "src/core/phrases.ts",
+        "to": "src/core/rhythm.ts"
+      },
+      {
+        "from": "src/core/phrases.ts",
+        "to": "src/core/patterns.ts"
+      },
+      {
+        "from": "src/core/rhythm-source.ts",
+        "to": "src/types.ts"
+      },
+      {
+        "from": "src/core/rhythm.ts",
+        "to": "src/core/phase-gate.ts"
+      },
+      {
+        "from": "src/core/rhythm.ts",
+        "to": "src/core/phase-dp.ts"
+      },
+      {
+        "from": "src/core/rhythm.ts",
+        "to": "src/core/tempo-families.ts"
+      },
+      {
+        "from": "src/core/rhythm.ts",
+        "to": "src/types.ts"
+      },
+      {
+        "from": "src/core/signal-analysis.ts",
+        "to": "src/core/unified-attack-application.ts"
+      },
+      {
+        "from": "src/core/signal-analysis.ts",
+        "to": "src/core/clock-evidence.ts"
+      },
+      {
+        "from": "src/core/signal-analysis.ts",
+        "to": "src/core/clock-evidence.ts"
+      },
+      {
+        "from": "src/core/signal-analysis.ts",
+        "to": "src/types.ts"
+      },
+      {
+        "from": "src/core/signal-analysis.ts",
+        "to": "src/core/rhythm.ts"
+      },
+      {
+        "from": "src/core/signal-analysis.ts",
+        "to": "src/core/chroma.ts"
+      },
+      {
+        "from": "src/core/signal-analysis.ts",
+        "to": "src/core/rhythm-source.ts"
+      },
+      {
+        "from": "src/core/signal-analysis.ts",
+        "to": "src/core/signal-events.ts"
+      },
+      {
+        "from": "src/core/signal-binding.ts",
+        "to": "src/types.ts"
+      },
+      {
+        "from": "src/core/signal-binding.ts",
+        "to": "src/core/musical-events.ts"
+      },
+      {
+        "from": "src/core/signal-binding.ts",
+        "to": "src/core/signal-pool.ts"
+      },
+      {
+        "from": "src/core/signal-binding.ts",
+        "to": "src/core/clock-evidence.ts"
+      },
+      {
+        "from": "src/core/signal-binding.ts",
+        "to": "src/core/signal-pool.ts"
+      },
+      {
+        "from": "src/core/signal-binding.ts",
+        "to": "src/core/signal-pool.ts"
+      },
+      {
+        "from": "src/core/signal-events.ts",
+        "to": "src/types.ts"
+      },
+      {
+        "from": "src/core/signal-events.ts",
+        "to": "src/core/musical-events.ts"
+      },
+      {
+        "from": "src/core/signal-pool.ts",
+        "to": "src/types.ts"
+      },
+      {
+        "from": "src/core/signal-pool.ts",
+        "to": "src/core/clock-evidence.ts"
+      },
+      {
+        "from": "src/core/tempo-families.ts",
+        "to": "src/core/tempo-family-config.ts"
+      },
+      {
+        "from": "src/core/tempo-families.ts",
+        "to": "src/core/tempo-family-config.ts"
+      },
+      {
+        "from": "src/core/unified-attack-application.ts",
+        "to": "src/types.ts"
+      },
+      {
+        "from": "src/core/unified-attack-application.ts",
+        "to": "src/core/signal-analysis.ts"
+      },
+      {
+        "from": "src/core/unified-attack-application.ts",
+        "to": "src/core/rhythm.ts"
+      },
+      {
+        "from": "src/core/unified-attack-application.ts",
+        "to": "src/core/unified-attack-atoms.ts"
+      },
+      {
+        "from": "src/core/unified-attack-application.ts",
+        "to": "src/core/unified-attack-roles.ts"
+      },
+      {
+        "from": "src/core/unified-attack-application.ts",
+        "to": "src/core/unified-attack-salience.ts"
+      },
+      {
+        "from": "src/core/unified-attack-roles.ts",
+        "to": "src/core/unified-attack-atoms.ts"
+      },
+      {
+        "from": "src/core/unified-attack-salience.ts",
+        "to": "src/types.ts"
+      },
+      {
+        "from": "src/types.ts",
+        "to": "src/core/unified-attack-application.ts"
+      },
+      {
+        "from": "src/types.ts",
+        "to": "src/core/unified-attack-application.ts"
+      },
+      {
+        "from": "src/types.ts",
+        "to": "src/core/unified-attack-salience.ts"
+      }
+    ],
+    "externalImports": [
+      "fft.js"
+    ],
+    "explicitNewModulePaths": [
+      "src/core/unified-attack-application.ts",
+      "src/core/unified-attack-atoms.ts",
+      "src/core/unified-attack-roles.ts",
+      "src/core/unified-attack-salience.ts"
+    ],
+    "excludedPredecessorModules": [
+      "slot-clock-*",
+      "event-clock-*",
+      "rational-metre",
+      "metrical-matching",
+      "conditional-content",
+      "tactus-*"
+    ],
+    "commentsMayMentionPredecessor": true
+  },
+  "expectedIndependentVerification": {
+    "baselineSourceCount": 24,
+    "actualCandidateSourceCount": 28,
+    "command": "ordinary git apply --check then git apply in a separate fresh ignored QA baseline tree",
+    "compare": "All 28 applied TypeScript source bytes and exact inventory versus the actual locked C28 graph",
+    "report": "source-verification.json"
+  },
+  "scope": "Passive filesystem/Git/TypeScript parse export only. Zero application, feature, atoms, roles, clock, Chart, analyzer, matcher, FFT, source-generation, audio/PCM or metric calls. No tracked writes, commits, adoption or publication."
+}
